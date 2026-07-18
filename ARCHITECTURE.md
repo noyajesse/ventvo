@@ -372,3 +372,29 @@ Examples:
 - Books
 
 Circles will be developed after the core Ventro experience is established.
+# Technical Stack Decisions
+
+## Frontend
+
+Ventro will be built using Flutter and Dart.
+
+## State Management
+
+Riverpod will be used to manage application state.
+
+## Navigation
+
+GoRouter will handle navigation between screens.
+
+## Backend
+
+Firebase will provide backend services.
+
+Services planned:
+- Firebase Authentication
+- Cloud Firestore Database
+- Firebase Storage
+
+## Version Control
+
+Git and GitHub are used for source control and project history.
