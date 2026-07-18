@@ -259,3 +259,116 @@ Current achievement:
 Next phase:
 
 Designing the user experience and implementing the first Ventro screens.
+---
+
+# Product Decisions
+
+## Identity System
+
+Ventro uses a hybrid anonymous identity model.
+
+Users have private accounts for security and accountability, but their public identity remains anonymous.
+
+Public users see:
+- Anonymous username
+- Avatar
+- User-created identity
+
+Private system data:
+- Account ID
+- Authentication information
+- Security information
+
+This allows freedom of expression while preventing abuse.
+
+---
+
+## Feed System
+
+Ventro will use a personalized feed.
+
+Initial version:
+- User-selected interests
+- Categories
+- Mood preferences
+- Engagement history
+
+Future versions may include:
+- Machine learning recommendations
+- Similar experience matching
+
+Privacy principle:
+Personalization should improve discovery without exposing private user information.
+
+---
+
+## Content System
+
+The main content type in Ventro is called a Crashout.
+
+Users can create Crashouts containing:
+
+- Text
+- Optional images
+- Category
+- Mood
+
+Initial categories:
+- Personal Life
+- Relationships
+- School & Career
+- Society & World
+- Advice Needed
+- Random
+
+Mood selection:
+- Angry
+- Sad
+- Stressed
+- Disappointed
+- Confused
+- Hopeful
+- Funny
+- Thinking
+
+---
+
+## Interaction System
+
+Users can:
+
+- Validate Crashouts
+- Respond through comments
+- Report harmful content
+
+Validation replaces traditional "likes" because it represents understanding rather than popularity.
+
+---
+
+## Safety Philosophy
+
+Ventro prioritizes anonymous expression while maintaining accountability.
+
+The platform will include:
+
+- Reporting system
+- Content moderation
+- Account restrictions
+- Abuse prevention systems
+
+---
+
+## Future Expansion
+
+Ventro may introduce Circles.
+
+Circles are interest-based communities where users can connect around shared interests.
+
+Examples:
+- Anime & Manga
+- Gaming
+- Technology
+- Movies
+- Books
+
+Circles will be developed after the core Ventro experience is established.
