@@ -398,3 +398,55 @@ Services planned:
 ## Version Control
 
 Git and GitHub are used for source control and project history.
+---
+
+# Brand Identity
+
+## Tagline
+
+Ventro's primary tagline:
+
+"VENT your thoughts.
+FIND your people.
+FEEL understood."
+
+This represents the three core stages of the Ventro experience:
+
+1. Vent your thoughts
+   - Users express their feelings, experiences, and opinions freely.
+
+2. Find your people
+   - Users discover others with similar experiences and perspectives.
+
+3. Feel understood
+   - Users receive validation and meaningful connection.
+
+---
+
+## Emotional Promise
+
+Ventro aims to create a safe environment where users feel comfortable expressing themselves.
+
+Supporting message:
+
+"Let it out.
+No judgement.
+
+Be heard.
+By people who understand.
+
+Feel validated.
+Real support. Real emotions."
+
+---
+
+## User Experience Goal
+
+When someone opens Ventro, they should feel:
+
+- Safe
+- Understood
+- Connected
+- Accepted
+
+Ventro is designed around meaningful expression and human connection, not popularity or attention.
