@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'auth_choice_screen.dart';
+import 'signup_screen.dart';
 
 class AuthChoiceScreen extends StatelessWidget {
   const AuthChoiceScreen({super.key});
@@ -83,18 +83,19 @@ class AuthChoiceScreen extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-  onPressed: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const AuthChoiceScreen(),
-      ),
-    );
-  },
-  child: const Text(
-    'Start Venting',
-  ),
-),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const SignupScreen(),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'Continue with Email',
+                  ),
+                ),
               ),
 
               const SizedBox(height: 20),
