@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'auth_choice_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -30,22 +31,19 @@ class WelcomeScreen extends StatelessWidget {
                 'FEEL understood.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
                   height: 1.5,
-                  fontWeight: FontWeight.w600,
                 ),
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
 
               const Text(
-                'Let it out.\n'
-                'No judgement.\n\n'
-                'Be heard by people who understand.',
+                'Let it out. No judgement.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 17,
-                  height: 1.6,
                 ),
               ),
 
@@ -54,19 +52,18 @@ class WelcomeScreen extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const AuthChoiceScreen(),
+                      ),
+                    );
+                  },
                   child: const Text(
                     'Start Venting',
                   ),
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              TextButton(
-                onPressed: () {},
-                child: const Text(
-                  'Already have an account? Sign In',
                 ),
               ),
             ],
