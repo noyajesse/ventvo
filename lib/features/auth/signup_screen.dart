@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'ventro_voice_screen.dart';
 
 class SignupScreen extends StatelessWidget {
   const SignupScreen({super.key});
@@ -64,15 +65,23 @@ class SignupScreen extends StatelessWidget {
 
               const SizedBox(height: 35),
 
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  child: const Text(
-                    'Create Account',
-                  ),
-                ),
-              ),
+             SizedBox(
+  width: double.infinity,
+  child: ElevatedButton(
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              const VentroVoiceScreen(),
+        ),
+      );
+    },
+    child: const Text(
+      'Create Account',
+    ),
+  ),
+),
             ],
           ),
         ),
