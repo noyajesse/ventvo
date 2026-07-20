@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'vents_intent_screen.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -42,11 +42,18 @@ class HomeScreen extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {},
-                child: const Text(
-                  'Start a Vent',
-                ),
-              ),
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const VentsIntentScreen(),
+      ),
+    );
+  },
+  child: const Text(
+    'Start a Vent',
+  ),
+),
             ),
 
             const SizedBox(height: 30),
