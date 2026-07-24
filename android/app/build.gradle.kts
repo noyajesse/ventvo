@@ -5,7 +5,8 @@ plugins {
 }
 
 android {
-    namespace = "com.example.project_ventro"
+    namespace = "com.noyajesse.ventvo"
+
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -16,7 +17,8 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.project_ventro"
+        applicationId = "com.noyajesse.ventvo"
+
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
