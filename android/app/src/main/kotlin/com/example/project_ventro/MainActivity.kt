@@ -1,4 +1,4 @@
-package com.example.project_ventro
+package com.example.project_Ventvo
 
 import io.flutter.embedding.android.FlutterActivity
 

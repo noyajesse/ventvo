@@ -15,7 +15,7 @@ class WelcomeScreen extends StatelessWidget {
             children: [
 
               const Text(
-                'VENTRO',
+                'Ventvo',
                 style: TextStyle(
                   fontSize: 42,
                   fontWeight: FontWeight.bold,

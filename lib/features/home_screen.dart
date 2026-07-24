@@ -8,7 +8,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'VENTRO',
+          'Ventvo',
         ),
         centerTitle: true,
       ),
@@ -20,7 +20,7 @@ class HomeScreen extends StatelessWidget {
           children: [
 
             const Text(
-              'Welcome to Ventro 🌱',
+              'Welcome to Ventvo 🌱',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,

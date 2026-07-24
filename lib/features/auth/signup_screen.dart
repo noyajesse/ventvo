@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'ventro_voice_screen.dart';
+import 'ventvo_voice_screen.dart';
 
 class SignupScreen extends StatelessWidget {
   const SignupScreen({super.key});
@@ -26,7 +26,7 @@ class SignupScreen extends StatelessWidget {
 
               const Text(
                 'Your identity stays private.\n'
-                'Your Ventro Voice represents your presence.',
+                'Your Ventvo Voice represents your presence.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,
@@ -73,7 +73,7 @@ class SignupScreen extends StatelessWidget {
         context,
         MaterialPageRoute(
           builder: (context) =>
-              const VentroVoiceScreen(),
+              const VentvoVoiceScreen(),
         ),
       );
     },

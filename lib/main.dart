@@ -3,16 +3,16 @@ import 'features/auth/welcome_screen.dart';
 import 'core/theme/app_theme.dart';
 
 void main() {
-  runApp(const VentroApp());
+  runApp(const VentvoApp());
 }
 
-class VentroApp extends StatelessWidget {
-  const VentroApp({super.key});
+class VentvoApp extends StatelessWidget {
+  const VentvoApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Ventro',
+      title: 'Ventvo',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
       home: const WelcomeScreen(),

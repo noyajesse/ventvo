@@ -1,4 +1,4 @@
-# Ventro Development Log
+# Ventvo Development Log
 
 ## Version 0.1.0 - Initial Setup
 
@@ -16,9 +16,9 @@ Date: July 2026
 
 ### Flutter Project Creation
 - Created the Flutter project:
-  - Name: project_ventro
-  - App name: Ventro
-  - Location: C:\Development\Projects\project_ventro
+  - Name: project_Ventvo
+  - App name: Ventvo
+  - Location: C:\Development\Projects\project_Ventvo
 
 - Tested the default Flutter application successfully.
 - Confirmed the application runs in Chrome.
@@ -30,17 +30,17 @@ Date: July 2026
 - Added Flutter project files to Git tracking.
 - Created first commit:
 
-"Initial Ventro Flutter project setup"
+"Initial Ventvo Flutter project setup"
 
 ### GitHub Setup
 - Created GitHub repository:
-  https://github.com/noyajesse/ventro
+  https://github.com/noyajesse/Ventvo
 
 - Connected local Flutter project to GitHub remote repository.
 
 ## Current Project State
 
-Ventro is currently a clean Flutter starter project.
+Ventvo is currently a clean Flutter starter project.
 
 No custom application features have been developed yet.
 
@@ -48,7 +48,7 @@ The next phase will focus on:
 - Designing the application architecture.
 - Planning database structure.
 - Designing user flows.
-- Creating the first Ventro UI screens.
+- Creating the first Ventvo UI screens.
 
 ## Development Workflow
 

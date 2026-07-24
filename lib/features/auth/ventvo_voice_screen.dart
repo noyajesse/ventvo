@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../home_screen.dart';
 
-class VentroVoiceScreen extends StatelessWidget {
-  const VentroVoiceScreen({super.key});
+class VentvoVoiceScreen extends StatelessWidget {
+  const VentvoVoiceScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class VentroVoiceScreen extends StatelessWidget {
             children: [
 
               const Text(
-                'Create Your Ventro Voice',
+                'Create Your Ventvo Voice',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 28,
@@ -27,7 +27,7 @@ class VentroVoiceScreen extends StatelessWidget {
 
               const Text(
                 'Your real identity stays private.\n'
-                'Your Ventro Voice is how people know you.',
+                'Your Ventvo Voice is how people know you.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 17,
@@ -90,7 +90,7 @@ class VentroVoiceScreen extends StatelessWidget {
                     );
                   },
                   child: const Text(
-                    'Enter Ventro',
+                    'Enter Ventvo',
                   ),
                 ),
               ),

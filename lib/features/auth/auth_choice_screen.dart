@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'ventro_voice_screen.dart';
+import 'ventvo_voice_screen.dart';
 
 class AuthChoiceScreen extends StatelessWidget {
   const AuthChoiceScreen({super.key});
@@ -15,7 +15,7 @@ class AuthChoiceScreen extends StatelessWidget {
             children: [
 
               const Text(
-                'Welcome to Ventro',
+                'Welcome to Ventvo',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -40,7 +40,7 @@ class AuthChoiceScreen extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            const VentroVoiceScreen(),
+                            const VentvoVoiceScreen(),
                       ),
                     );
                   },

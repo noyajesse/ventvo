@@ -1,18 +1,17 @@
-# Ventro Architecture
-
+Ventvo#  Architecture
 ## Overview
 
-Ventro is an anonymous community platform designed for people to express their thoughts, frustrations, experiences, and opinions without the pressure of traditional social media.
+Ventvo is an anonymous community platform designed for people to express their thoughts, frustrations, experiences, and opinions without the pressure of traditional social media.
 
 The goal is to create a space where people can share honestly, find others with similar experiences, and have meaningful conversations.
 
-Unlike traditional social platforms that focus on followers, popularity, and personal branding, Ventro focuses on authenticity, connection, and expression.
+Unlike traditional social platforms that focus on followers, popularity, and personal branding, Ventvo focuses on authenticity, connection, and expression.
 
 ---
 
 # Core Concept
 
-Ventro supports two main types of expression:
+Ventvo supports two main types of expression:
 
 ## Personal Vents
 
@@ -38,7 +37,7 @@ Examples:
 
 # Platform Philosophy
 
-Ventro is built around:
+Ventvo is built around:
 
 - Anonymous expression
 - Meaningful conversations
@@ -118,7 +117,7 @@ Users should be able to:
 ## Welcome Screen
 
 Purpose:
-Introduce Ventro and its purpose.
+Introduce Ventvo and its purpose.
 
 ---
 
@@ -217,7 +216,7 @@ Stores:
 
 # Security Considerations
 
-Because Ventro involves anonymous expression, security is a priority.
+Because Ventvo involves anonymous expression, security is a priority.
 
 Initial security goals:
 
@@ -258,14 +257,14 @@ Current achievement:
 
 Next phase:
 
-Designing the user experience and implementing the first Ventro screens.
+Designing the user experience and implementing the first Ventvo screens.
 ---
 
 # Product Decisions
 
 ## Identity System
 
-Ventro uses a hybrid anonymous identity model.
+Ventvo uses a hybrid anonymous identity model.
 
 Users have private accounts for security and accountability, but their public identity remains anonymous.
 
@@ -285,7 +284,7 @@ This allows freedom of expression while preventing abuse.
 
 ## Feed System
 
-Ventro will use a personalized feed.
+Ventvo will use a personalized feed.
 
 Initial version:
 - User-selected interests
@@ -304,7 +303,7 @@ Personalization should improve discovery without exposing private user informati
 
 ## Content System
 
-The main content type in Ventro is called a Crashout.
+The main content type in Ventvo is called a Crashout.
 
 Users can create Crashouts containing:
 
@@ -347,7 +346,7 @@ Validation replaces traditional "likes" because it represents understanding rath
 
 ## Safety Philosophy
 
-Ventro prioritizes anonymous expression while maintaining accountability.
+Ventvo prioritizes anonymous expression while maintaining accountability.
 
 The platform will include:
 
@@ -360,7 +359,7 @@ The platform will include:
 
 ## Future Expansion
 
-Ventro may introduce Circles.
+Ventvo may introduce Circles.
 
 Circles are interest-based communities where users can connect around shared interests.
 
@@ -371,12 +370,12 @@ Examples:
 - Movies
 - Books
 
-Circles will be developed after the core Ventro experience is established.
+Circles will be developed after the core Ventvo experience is established.
 # Technical Stack Decisions
 
 ## Frontend
 
-Ventro will be built using Flutter and Dart.
+Ventvo will be built using Flutter and Dart.
 
 ## State Management
 
@@ -404,13 +403,13 @@ Git and GitHub are used for source control and project history.
 
 ## Tagline
 
-Ventro's primary tagline:
+Ventvo's primary tagline:
 
 "VENT your thoughts.
 FIND your people.
 FEEL understood."
 
-This represents the three core stages of the Ventro experience:
+This represents the three core stages of the Ventvo experience:
 
 1. Vent your thoughts
    - Users express their feelings, experiences, and opinions freely.
@@ -425,7 +424,7 @@ This represents the three core stages of the Ventro experience:
 
 ## Emotional Promise
 
-Ventro aims to create a safe environment where users feel comfortable expressing themselves.
+Ventvo aims to create a safe environment where users feel comfortable expressing themselves.
 
 Supporting message:
 
@@ -442,27 +441,27 @@ Real support. Real emotions."
 
 ## User Experience Goal
 
-When someone opens Ventro, they should feel:
+When someone opens Ventvo, they should feel:
 
 - Safe
 - Understood
 - Connected
 - Accepted
 
-Ventro is designed around meaningful expression and human connection, not popularity or attention.
+Ventvo is designed around meaningful expression and human connection, not popularity or attention.
 ---
 
-# Ventro Security Principles
+# Ventvo Security Principles
 
 ## Philosophy
 
-Security and privacy are core parts of the Ventro experience.
+Security and privacy are core parts of the Ventvo experience.
 
-Users share personal thoughts and experiences on Ventro, so the platform must protect their identity, information, and trust.
+Users share personal thoughts and experiences on Ventvo, so the platform must protect their identity, information, and trust.
 
 ## Identity Protection
 
-Ventro separates private accounts from public identities.
+Ventvo separates private accounts from public identities.
 
 Private Account:
 - Authentication information
@@ -470,17 +469,17 @@ Private Account:
 - Internal user ID
 - Security and moderation records
 
-Public Ventro Voice:
+Public Ventvo Voice:
 - Anonymous display identity
 - User contributions
 - Community interactions
 - Impact and reputation
 
-A user's real identity should never be exposed through their public Ventro Voice.
+A user's real identity should never be exposed through their public Ventvo Voice.
 
 ## Authentication Security
 
-Ventro will use secure authentication providers instead of storing passwords directly.
+Ventvo will use secure authentication providers instead of storing passwords directly.
 
 Security responsibilities:
 - Password handling
@@ -523,4 +522,4 @@ During development:
 
 ## Core Principle
 
-Ventro protects the person behind the Vent while allowing their voice to be heard.
+Ventvo protects the person behind the Vent while allowing their voice to be heard.
