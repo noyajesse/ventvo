@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'auth_choice_screen.dart';
+import '../auth/auth_choice_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});

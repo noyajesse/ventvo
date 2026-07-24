@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'ventvo_voice_screen.dart';
+import '../ventvo_voice/ventvo_voice_screen.dart';
 
 class AuthChoiceScreen extends StatelessWidget {
   const AuthChoiceScreen({super.key});
