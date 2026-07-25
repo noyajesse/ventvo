@@ -99,3 +99,22 @@ Every feature should follow this process:
 6. Review code.
 7. Commit changes to Git.
 8. Push changes to GitHub.
+### Documentation Practice
+
+Every major feature must include documentation updates before completion.
+
+Development process:
+
+1. Plan the feature
+2. Build the feature
+3. Test and fix issues
+4. Update documentation
+5. Commit changes
+6. Push to GitHub
+
+Documentation should capture:
+
+- Feature purpose
+- User experience flow
+- Technical structure changes
+- Important development decisions
