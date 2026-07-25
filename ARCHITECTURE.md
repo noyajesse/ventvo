@@ -523,3 +523,53 @@ During development:
 ## Core Principle
 
 Ventvo protects the person behind the Vent while allowing their voice to be heard.
+---
+
+## Ventvo Voice Architecture Update
+
+### Ventvo Voice Identity System
+
+Ventvo Voice is the user's anonymous public identity layer.
+
+A user's real identity remains private while their Ventvo Voice represents their presence inside the community.
+
+A Ventvo Voice consists of:
+
+- Voice Name
+- Voice Mark
+- Voice Essence
+
+### Authentication Flow
+
+Current user journey:
+
+Welcome Screen
+        ?
+Authentication
+        ?
+Ventvo Voice Creation
+        ?
+Ventvo Home Experience
+
+Authentication protects the account while Ventvo Voice creates the public anonymous identity.
+
+### Current Flutter Feature Structure
+
+lib/
+ +-- core/
+ +-- features/
+ ¦    +-- auth/
+ ¦    +-- onboarding/
+ ¦    +-- ventvo_voice/
+ ¦    ¦    +-- screens/
+ ¦    +-- home/
+ ¦    +-- vents/
+ ¦    +-- spaces/
+ ¦    +-- crash_out/
+
+### Development Workflow
+
+- main branch contains stable releases.
+- development branch contains active feature development.
+- Features are tested before merging.
+
