@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../ventvo_voice/ventvo_voice_screen.dart';
+import '../ventvo_voice/screens/ventvo_voice_welcome_screen.dart';
 
 class SignupScreen extends StatelessWidget {
   const SignupScreen({super.key});
@@ -73,7 +73,7 @@ class SignupScreen extends StatelessWidget {
         context,
         MaterialPageRoute(
           builder: (context) =>
-              const VentvoVoiceScreen(),
+              const VentvoVoiceWelcomeScreen(),
         ),
       );
     },
