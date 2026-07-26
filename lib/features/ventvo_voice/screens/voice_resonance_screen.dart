@@ -1,0 +1,127 @@
+import 'package:flutter/material.dart';
+
+class VoiceResonanceScreen extends StatefulWidget {
+  const VoiceResonanceScreen({super.key});
+
+  @override
+  State<VoiceResonanceScreen> createState() =>
+      _VoiceResonanceScreenState();
+}
+
+class _VoiceResonanceScreenState
+    extends State<VoiceResonanceScreen> {
+
+  String? selectedResonance;
+
+  final List<String> resonances = [
+    "Stillness",
+    "Spark",
+    "Flow",
+    "Horizon",
+    "Depth",
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF111111),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+
+              const Text(
+                "Choose your resonance.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              const Text(
+                "What atmosphere should your Voice carry?",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 17,
+                  height: 1.5,
+                ),
+              ),
+
+              const SizedBox(height: 40),
+
+              Wrap(
+                spacing: 15,
+                runSpacing: 15,
+                alignment: WrapAlignment.center,
+                children: resonances.map((item) {
+
+                  final selected =
+                      selectedResonance == item;
+
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedResonance = item;
+                      });
+                    },
+                    child: Container(
+                      width: 120,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 18,
+                      ),
+                      decoration: BoxDecoration(
+                        color: selected
+                            ? Colors.white24
+                            : Colors.transparent,
+                        borderRadius:
+                            BorderRadius.circular(20),
+                        border: Border.all(
+                          color: selected
+                              ? Colors.white
+                              : Colors.white24,
+                        ),
+                      ),
+                      child: Text(
+                        item,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  );
+
+                }).toList(),
+              ),
+
+              const SizedBox(height: 50),
+
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed: selectedResonance == null
+                      ? null
+                      : () {
+                          // Navigation will be connected later
+                        },
+                  child: const Text(
+                    "Continue",
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

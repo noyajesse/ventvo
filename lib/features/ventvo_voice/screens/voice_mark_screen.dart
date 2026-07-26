@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'voice_created_screen.dart';
+import 'voice_name_screen.dart';
 
 class VoiceMarkScreen extends StatelessWidget {
   const VoiceMarkScreen({super.key});
@@ -63,14 +63,13 @@ class VoiceMarkScreen extends StatelessWidget {
                 height: 55,
                 child: ElevatedButton(
                   onPressed: () {
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            const VoiceCreatedScreen(),
-                      ),
-                    );
+Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) =>
+        const VoiceNameScreen(),
+  ),
+);
 
                   },
                   child: const Text(

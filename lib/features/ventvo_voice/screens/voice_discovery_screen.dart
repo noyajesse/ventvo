@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'voice_mark_screen.dart';
+import 'voice_resonance_screen.dart';
 
 class VoiceDiscoveryScreen extends StatefulWidget {
   const VoiceDiscoveryScreen({super.key});
@@ -105,7 +105,7 @@ class _VoiceDiscoveryScreenState extends State<VoiceDiscoveryScreen> {
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                                const VoiceMarkScreen(),
+                               const VoiceResonanceScreen(),
                           ),
                         );
 

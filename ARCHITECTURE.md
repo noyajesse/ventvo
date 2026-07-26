@@ -558,18 +558,85 @@ Authentication protects the account while Ventvo Voice creates the public anonym
 lib/
  +-- core/
  +-- features/
- ¦    +-- auth/
- ¦    +-- onboarding/
- ¦    +-- ventvo_voice/
- ¦    ¦    +-- screens/
- ¦    +-- home/
- ¦    +-- vents/
- ¦    +-- spaces/
- ¦    +-- crash_out/
+ ï¿½    +-- auth/
+ ï¿½    +-- onboarding/
+ ï¿½    +-- ventvo_voice/
+ ï¿½    ï¿½    +-- screens/
+ ï¿½    +-- home/
+ ï¿½    +-- vents/
+ ï¿½    +-- spaces/
+ ï¿½    +-- crash_out/
 
 ### Development Workflow
 
 - main branch contains stable releases.
 - development branch contains active feature development.
 - Features are tested before merging.
+## Project Documentation Standards
 
+Ventvo maintains three core documents that guide development decisions:
+
+### Engineering Handbook
+
+Defines how Ventvo is built.
+
+Covers:
+
+- Architecture principles
+- Coding standards
+- State management decisions
+- Git workflow
+- Development process
+
+File:
+
+`ENGINEERING_HANDBOOK.md`
+
+---
+
+### Security Handbook
+
+Defines how Ventvo protects users and their data.
+
+Covers:
+
+- Identity separation
+- Privacy principles
+- Security reviews
+- Authorization rules
+- Secure development practices
+
+File:
+
+`SECURITY_HANDBOOK.md`
+
+---
+
+### Product Vision
+
+Defines why Ventvo exists and the long-term direction of the platform.
+
+Covers:
+
+- Ventvo mission
+- Ventvo Voice philosophy
+- User experience principles
+- Future expansion ideas
+
+File:
+
+`PRODUCT_VISION.md`
+
+---
+
+These documents work together:
+Product Vision
+â†“
+Engineering Handbook
+â†“
+Security Handbook
+â†“
+Implementation
+
+
+They ensure Ventvo grows with a clear purpose, strong engineering standards, and user trust as a priority.
