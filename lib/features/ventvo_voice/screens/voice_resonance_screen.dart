@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/voice_provider.dart';
+import 'voice_mark_screen.dart';
 
-class VoiceResonanceScreen extends StatefulWidget {
+class VoiceResonanceScreen extends ConsumerStatefulWidget {
   const VoiceResonanceScreen({super.key});
 
   @override
-  State<VoiceResonanceScreen> createState() =>
+  ConsumerState<VoiceResonanceScreen> createState() =>
       _VoiceResonanceScreenState();
 }
 
 class _VoiceResonanceScreenState
-    extends State<VoiceResonanceScreen> {
+    extends ConsumerState<VoiceResonanceScreen> {
 
   String? selectedResonance;
 
@@ -27,9 +30,12 @@ class _VoiceResonanceScreenState
       backgroundColor: const Color(0xFF111111),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 32,
+          ),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment:
+                MainAxisAlignment.center,
             children: [
 
               const Text(
@@ -45,7 +51,7 @@ class _VoiceResonanceScreenState
               const SizedBox(height: 20),
 
               const Text(
-                "What atmosphere should your Voice carry?",
+                "What feeling should your Voice leave behind?",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white70,
@@ -71,23 +77,29 @@ class _VoiceResonanceScreenState
                         selectedResonance = item;
                       });
                     },
+
                     child: Container(
                       width: 120,
-                      padding: const EdgeInsets.symmetric(
+                      padding:
+                          const EdgeInsets.symmetric(
                         vertical: 18,
                       ),
+
                       decoration: BoxDecoration(
                         color: selected
                             ? Colors.white24
                             : Colors.transparent,
+
                         borderRadius:
                             BorderRadius.circular(20),
+
                         border: Border.all(
                           color: selected
                               ? Colors.white
                               : Colors.white24,
                         ),
                       ),
+
                       child: Text(
                         item,
                         textAlign: TextAlign.center,
@@ -107,12 +119,33 @@ class _VoiceResonanceScreenState
               SizedBox(
                 width: double.infinity,
                 height: 55,
+
                 child: ElevatedButton(
-                  onPressed: selectedResonance == null
-                      ? null
-                      : () {
-                          // Navigation will be connected later
-                        },
+
+                  onPressed:
+                      selectedResonance == null
+                          ? null
+                          : () {
+
+                              ref
+                                  .read(
+                                    ventvoVoiceProvider
+                                        .notifier,
+                                  )
+                                  .updateResonance(
+                                    selectedResonance!,
+                                  );
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const VoiceMarkScreen(),
+                                ),
+                              );
+
+                            },
+
                   child: const Text(
                     "Continue",
                   ),

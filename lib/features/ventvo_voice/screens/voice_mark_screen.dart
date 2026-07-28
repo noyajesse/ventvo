@@ -1,8 +1,30 @@
 import 'package:flutter/material.dart';
-import 'voice_name_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class VoiceMarkScreen extends StatelessWidget {
+import 'voice_name_screen.dart';
+import '../providers/voice_provider.dart';
+
+class VoiceMarkScreen extends ConsumerStatefulWidget {
   const VoiceMarkScreen({super.key});
+
+  @override
+  ConsumerState<VoiceMarkScreen> createState() =>
+      _VoiceMarkScreenState();
+}
+
+class _VoiceMarkScreenState
+    extends ConsumerState<VoiceMarkScreen> {
+
+  String? selectedMark;
+
+  final List<String> marks = [
+    "◇",
+    "◈",
+    "△",
+    "○",
+    "∿",
+    "✦",
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -44,16 +66,9 @@ class VoiceMarkScreen extends StatelessWidget {
                 spacing: 20,
                 runSpacing: 20,
                 alignment: WrapAlignment.center,
-                children: [
-
-                  _mark("◇"),
-                  _mark("◈"),
-                  _mark("△"),
-                  _mark("○"),
-                  _mark("∿"),
-                  _mark("✦"),
-
-                ],
+                children: marks.map((mark) {
+                  return _mark(mark);
+                }).toList(),
               ),
 
               const SizedBox(height: 50),
@@ -62,16 +77,25 @@ class VoiceMarkScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton(
-                  onPressed: () {
-Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) =>
-        const VoiceNameScreen(),
-  ),
-);
+                  onPressed: selectedMark == null
+                      ? null
+                      : () {
 
-                  },
+                          ref
+                              .read(
+                                ventvoVoiceProvider.notifier,
+                              )
+                              .updateMark(selectedMark!);
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const VoiceNameScreen(),
+                            ),
+                          );
+
+                        },
                   child: const Text(
                     "Continue",
                   ),
@@ -87,22 +111,39 @@ Navigator.push(
 
 
   Widget _mark(String symbol) {
-    return Container(
-      height: 70,
-      width: 70,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: Colors.white24,
-          width: 2,
+
+    final selected = selectedMark == symbol;
+
+    return GestureDetector(
+      onTap: () {
+
+        setState(() {
+          selectedMark = symbol;
+        });
+
+      },
+      child: Container(
+        height: 70,
+        width: 70,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: selected
+              ? Colors.white24
+              : Colors.transparent,
+          border: Border.all(
+            color: selected
+                ? Colors.white
+                : Colors.white24,
+            width: 2,
+          ),
         ),
-      ),
-      child: Center(
-        child: Text(
-          symbol,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 30,
+        child: Center(
+          child: Text(
+            symbol,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 30,
+            ),
           ),
         ),
       ),

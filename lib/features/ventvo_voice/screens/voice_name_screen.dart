@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
-import 'voice_birth_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class VoiceNameScreen extends StatefulWidget {
+import 'voice_birth_screen.dart';
+import '../providers/voice_provider.dart';
+
+class VoiceNameScreen extends ConsumerStatefulWidget {
   const VoiceNameScreen({super.key});
 
   @override
-  State<VoiceNameScreen> createState() =>
+  ConsumerState<VoiceNameScreen> createState() =>
       _VoiceNameScreenState();
 }
 
-class _VoiceNameScreenState extends State<VoiceNameScreen> {
+class _VoiceNameScreenState
+    extends ConsumerState<VoiceNameScreen> {
+
   String? selectedName;
 
   final List<Map<String, String>> names = [
@@ -63,14 +68,17 @@ class _VoiceNameScreenState extends State<VoiceNameScreen> {
               const SizedBox(height: 40),
 
               ...names.map((item) {
+
                 final selected =
                     selectedName == item["name"];
 
                 return GestureDetector(
                   onTap: () {
+
                     setState(() {
                       selectedName = item["name"];
                     });
+
                   },
                   child: Container(
                     margin: const EdgeInsets.only(
@@ -78,18 +86,22 @@ class _VoiceNameScreenState extends State<VoiceNameScreen> {
                     ),
                     width: double.infinity,
                     padding: const EdgeInsets.all(20),
+
                     decoration: BoxDecoration(
                       color: selected
                           ? Colors.white24
                           : Colors.transparent,
+
                       borderRadius:
                           BorderRadius.circular(20),
+
                       border: Border.all(
                         color: selected
                             ? Colors.white
                             : Colors.white24,
                       ),
                     ),
+
                     child: Column(
                       children: [
 
@@ -117,6 +129,7 @@ class _VoiceNameScreenState extends State<VoiceNameScreen> {
                     ),
                   ),
                 );
+
               }),
 
               const SizedBox(height: 25),
@@ -124,10 +137,20 @@ class _VoiceNameScreenState extends State<VoiceNameScreen> {
               SizedBox(
                 width: double.infinity,
                 height: 55,
+
                 child: ElevatedButton(
+
                   onPressed: selectedName == null
                       ? null
                       : () {
+
+                          ref
+                              .read(
+                                ventvoVoiceProvider.notifier,
+                              )
+                              .updateName(selectedName!);
+
+
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -135,13 +158,16 @@ class _VoiceNameScreenState extends State<VoiceNameScreen> {
                                   const VoiceBirthScreen(),
                             ),
                           );
+
                         },
+
                   child: const Text(
                     "Continue",
                     style: TextStyle(
                       fontSize: 17,
                     ),
                   ),
+
                 ),
               ),
 

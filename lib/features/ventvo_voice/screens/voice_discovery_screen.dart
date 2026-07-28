@@ -9,7 +9,8 @@ class VoiceDiscoveryScreen extends StatefulWidget {
       _VoiceDiscoveryScreenState();
 }
 
-class _VoiceDiscoveryScreenState extends State<VoiceDiscoveryScreen> {
+class _VoiceDiscoveryScreenState
+    extends State<VoiceDiscoveryScreen> {
 
   bool discovered = false;
 
@@ -17,11 +18,16 @@ class _VoiceDiscoveryScreenState extends State<VoiceDiscoveryScreen> {
   void initState() {
     super.initState();
 
-    Future.delayed(const Duration(seconds: 3), () {
-      setState(() {
-        discovered = true;
-      });
-    });
+    Future.delayed(
+      const Duration(seconds: 3),
+      () {
+        if (mounted) {
+          setState(() {
+            discovered = true;
+          });
+        }
+      },
+    );
   }
 
   @override
@@ -31,9 +37,12 @@ class _VoiceDiscoveryScreenState extends State<VoiceDiscoveryScreen> {
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 32,
+            ),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment:
+                  MainAxisAlignment.center,
               children: [
 
                 Container(
@@ -61,7 +70,7 @@ class _VoiceDiscoveryScreenState extends State<VoiceDiscoveryScreen> {
 
                 Text(
                   discovered
-                      ? "Your Voice has emerged."
+                      ? "A Voice has appeared."
                       : "Finding your Voice...",
                   textAlign: TextAlign.center,
                   style: const TextStyle(
@@ -75,11 +84,12 @@ class _VoiceDiscoveryScreenState extends State<VoiceDiscoveryScreen> {
 
                 if (discovered)
                   const Text(
-                    "◇ Kaelor",
+                    "A Voice is waiting to be shaped.",
+                    textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
+                      color: Colors.white70,
+                      fontSize: 17,
+                      height: 1.5,
                     ),
                   )
                 else
@@ -105,13 +115,16 @@ class _VoiceDiscoveryScreenState extends State<VoiceDiscoveryScreen> {
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                               const VoiceResonanceScreen(),
+                                const VoiceResonanceScreen(),
                           ),
                         );
 
                       },
                       child: const Text(
-                        "Make it mine",
+                        "Shape My Voice",
+                        style: TextStyle(
+                          fontSize: 17,
+                        ),
                       ),
                     ),
                   ),
