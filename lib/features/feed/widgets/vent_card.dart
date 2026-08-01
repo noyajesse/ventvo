@@ -18,6 +18,28 @@ class VentCard extends StatelessWidget {
 
 
 
+  String spaceName() {
+
+    if (vent.interactionType == "Just Listen") {
+
+      return "🌊 Listening Space";
+
+    }
+
+
+    if (vent.interactionType == "Open Discussion") {
+
+      return "💬 Conversation Space";
+
+    }
+
+
+    return "🌱 Open Space";
+
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
 
@@ -55,14 +77,18 @@ class VentCard extends StatelessWidget {
 
         children: [
 
-Text(
-  "◇ ${vent.voiceMark}",
 
-            style: TextStyle(
+          // Voice identity
+
+          Text(
+
+            vent.voiceMark,
+
+            style: const TextStyle(
 
               color: Colors.white70,
 
-              fontSize: 15,
+              fontSize: 22,
 
               fontWeight: FontWeight.bold,
 
@@ -75,6 +101,8 @@ Text(
           const SizedBox(height: 18),
 
 
+
+          // Vent expression
 
           Text(
 
@@ -95,17 +123,19 @@ Text(
 
 
 
-          const SizedBox(height: 18),
+          const SizedBox(height: 20),
 
 
+
+          // Space type
 
           Container(
 
             padding: const EdgeInsets.symmetric(
 
-              horizontal: 12,
+              horizontal: 14,
 
-              vertical: 8,
+              vertical: 9,
 
             ),
 
@@ -123,7 +153,7 @@ Text(
 
             child: Text(
 
-              "🌊 ${vent.interactionType}",
+              spaceName(),
 
 
               style: const TextStyle(
@@ -140,7 +170,7 @@ Text(
 
 
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 22),
 
 
 
@@ -152,7 +182,29 @@ Text(
 
 
 
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
+
+
+
+          const Text(
+
+            "Resonance",
+
+            style: TextStyle(
+
+              color: Colors.white70,
+
+              fontSize: 14,
+
+              fontWeight: FontWeight.bold,
+
+            ),
+
+          ),
+
+
+
+          const SizedBox(height: 10),
 
 
 
@@ -181,7 +233,7 @@ Text(
 
               Text(
 
-                "0 Resonating",
+                "0 Voices connected",
 
                 style: TextStyle(
 
