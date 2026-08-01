@@ -228,3 +228,15 @@ Feed redesign:
 - Introduce Voice identity.
 - Prepare structure for Echo.
 - Prepare future Resonance Map connection.
+## Feed Identity Decision
+
+Ventvo Feed will prioritize Voice over profile identity.
+
+Default Feed display:
+- Voice symbol
+- Expression
+- Interaction space
+
+Identity can become more visible as connection and resonance grows.
+
+Ventvo avoids follower-based identity and focuses on meaningful connection.
