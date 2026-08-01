@@ -152,3 +152,79 @@ Next:
 - Improve Feed card design.
 - Build Echo interaction.
 - Design Echo Note system.
+## 2026-08-01
+
+# Ventvo Feed Foundation Completed
+
+## Completed
+
+- Connected VoiceSpace with Vent creation.
+- Added Riverpod ventProvider for storing Vents.
+- VoiceSpace now displays created Vents.
+- Created Ventvo Feed screen.
+- Connected Feed with ventProvider.
+- Tested full flow:
+
+Voice → Create Vent → VoiceSpace → Feed
+
+## Product Decisions Locked
+
+### Just Listen
+
+Just Listen is a protected space.
+
+Allowed:
+- Echo
+
+Not allowed:
+- Comments
+- Echo Notes
+- Advice
+
+The purpose is to let someone express themselves without pressure.
+
+---
+
+### Open Discussion
+
+Open Discussion allows deeper connection.
+
+Allowed:
+- Echo
+- Echo Notes
+- Discussion
+
+Echo Notes are not comments.
+
+An Echo Note represents someone saying:
+
+"I relate to this experience."
+
+Echo Notes belong to an Echo, not directly to a Vent.
+
+---
+
+### Crash Out
+
+Crash Out is not a Vent interaction type.
+
+It is a temporary shared experience created when people discover a strong resonance with the same situation.
+
+Flow:
+
+Vent/Moment
+↓
+Echoes
+↓
+Shared resonance
+↓
+Crash Out experience
+
+## Next Development Stage
+
+Feed redesign:
+
+- Make Feed cards feel like Ventvo.
+- Introduce Voice identity.
+- Prepare structure for Echo.
+- Prepare future Resonance Map connection.
