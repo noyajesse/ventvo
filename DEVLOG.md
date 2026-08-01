@@ -240,3 +240,19 @@ Default Feed display:
 Identity can become more visible as connection and resonance grows.
 
 Ventvo avoids follower-based identity and focuses on meaningful connection.
+## Voice Identity Connected to Vents
+
+Completed:
+- Connected CreateVentScreen with ventvoVoiceProvider.
+- Vents now store the Voice mark that created them.
+- Feed cards now display the actual Voice identity.
+- Established relationship:
+
+Voice → Vent → Feed
+
+This creates the foundation for future:
+- Echo
+- Echo Notes
+- Resonance Map
+- Arc
+- Moments

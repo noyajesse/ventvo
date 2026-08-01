@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/vent.dart';
 import '../providers/vent_provider.dart';
+import '../providers/voice_provider.dart';
 
 
 class CreateVentScreen extends ConsumerStatefulWidget {
@@ -45,9 +46,14 @@ class _CreateVentScreenState
   @override
   Widget build(BuildContext context) {
 
+
+    final voice = ref.watch(ventvoVoiceProvider);
+
+
     final canRelease =
         selectedType != null &&
         controller.text.trim().length >= 3;
+
 
 
     return Scaffold(
@@ -63,8 +69,11 @@ class _CreateVentScreenState
           child: Padding(
 
             padding: const EdgeInsets.symmetric(
+
               horizontal: 32,
+
               vertical: 35,
+
             ),
 
 
@@ -87,8 +96,7 @@ class _CreateVentScreenState
 
                     fontSize: 32,
 
-                    fontWeight:
-                        FontWeight.bold,
+                    fontWeight: FontWeight.bold,
 
                   ),
 
@@ -100,11 +108,11 @@ class _CreateVentScreenState
 
 
 
-                const Text(
+                Text(
 
-                  "What wants to be heard?",
+                  "◇ ${voice.mark ?? "Voice"}",
 
-                  style: TextStyle(
+                  style: const TextStyle(
 
                     color: Colors.white70,
 
@@ -116,7 +124,7 @@ class _CreateVentScreenState
 
 
 
-                const SizedBox(height: 35),
+                const SizedBox(height: 30),
 
 
 
@@ -136,7 +144,6 @@ class _CreateVentScreenState
                   ),
 
 
-
                   decoration: InputDecoration(
 
                     hintText:
@@ -146,11 +153,9 @@ class _CreateVentScreenState
                     hintStyle:
                         const TextStyle(
 
-                      color:
-                          Colors.white38,
+                      color: Colors.white38,
 
                     ),
-
 
 
                     filled: true,
@@ -160,13 +165,11 @@ class _CreateVentScreenState
                         Colors.white10,
 
 
-
                     border:
                         OutlineInputBorder(
 
                       borderRadius:
                           BorderRadius.circular(22),
-
 
                       borderSide:
                           BorderSide.none,
@@ -194,8 +197,7 @@ class _CreateVentScreenState
 
                     fontSize: 19,
 
-                    fontWeight:
-                        FontWeight.bold,
+                    fontWeight: FontWeight.bold,
 
                   ),
 
@@ -239,12 +241,9 @@ class _CreateVentScreenState
 
                 SizedBox(
 
-                  width:
-                      double.infinity,
-
+                  width: double.infinity,
 
                   height: 55,
-
 
 
                   child: ElevatedButton(
@@ -254,10 +253,14 @@ class _CreateVentScreenState
 
                         ? () {
 
+
                             final vent = Vent(
 
+
                               id: DateTime.now()
+
                                   .millisecondsSinceEpoch
+
                                   .toString(),
 
 
@@ -269,6 +272,10 @@ class _CreateVentScreenState
                                   selectedType!,
 
 
+                              voiceMark:
+                                  voice.mark ?? "◇",
+
+
                               createdAt:
                                   DateTime.now(),
 
@@ -277,14 +284,19 @@ class _CreateVentScreenState
 
 
                             ref
+
                                 .read(
+
                                   ventProvider.notifier,
+
                                 )
+
                                 .addVent(vent);
 
 
 
                             Navigator.pop(context);
+
 
                           }
 
@@ -292,16 +304,15 @@ class _CreateVentScreenState
 
 
                     child: const Text(
+
                       "Release Vent",
+
                     ),
 
                   ),
 
                 ),
 
-
-
-                const SizedBox(height: 20),
 
               ],
 
@@ -316,6 +327,7 @@ class _CreateVentScreenState
     );
 
   }
+
 
 
 
@@ -348,18 +360,14 @@ class _CreateVentScreenState
 
       child: Container(
 
-        width:
-            double.infinity,
+        width: double.infinity,
 
 
-        padding:
-            const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(18),
 
 
 
-        decoration:
-            BoxDecoration(
-
+        decoration: BoxDecoration(
 
           color: isSelected
 
@@ -368,14 +376,12 @@ class _CreateVentScreenState
               : Colors.transparent,
 
 
-
           borderRadius:
+
               BorderRadius.circular(20),
 
 
-
-          border:
-              Border.all(
+          border: Border.all(
 
             color: isSelected
 
@@ -395,7 +401,6 @@ class _CreateVentScreenState
               CrossAxisAlignment.start,
 
 
-
           children: [
 
 
@@ -410,8 +415,7 @@ class _CreateVentScreenState
 
                 fontSize: 18,
 
-                fontWeight:
-                    FontWeight.bold,
+                fontWeight: FontWeight.bold,
 
               ),
 
@@ -430,8 +434,7 @@ class _CreateVentScreenState
 
               style: const TextStyle(
 
-                color:
-                    Colors.white70,
+                color: Colors.white70,
 
                 fontSize: 14,
 

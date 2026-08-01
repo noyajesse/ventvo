@@ -55,10 +55,8 @@ class VentCard extends StatelessWidget {
 
         children: [
 
-
-          const Text(
-
-            "◇ Voice",
+Text(
+  "◇ ${vent.voiceMark}",
 
             style: TextStyle(
 
