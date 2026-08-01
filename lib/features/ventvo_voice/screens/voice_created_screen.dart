@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../home/home_screen.dart';
+import 'voice_space_screen.dart';
 import '../providers/voice_provider.dart';
+import 'voice_space_screen.dart';
 
 class VoiceCreatedScreen extends ConsumerWidget {
   const VoiceCreatedScreen({super.key});
@@ -166,7 +166,7 @@ class VoiceCreatedScreen extends ConsumerWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
-                              const HomeScreen(),
+                             const VoiceSpaceScreen(),
                         ),
                       );
 
