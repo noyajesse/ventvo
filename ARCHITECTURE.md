@@ -640,3 +640,118 @@ Implementation
 
 
 They ensure Ventvo grows with a clear purpose, strong engineering standards, and user trust as a priority.
+ # Ventvo Architecture
+
+## Core Product Flow
+
+Ventvo is built around the idea that people do not simply create posts. They create spaces for expression.
+
+The core flow is:
+
+Voice
+↓
+Vent
+↓
+Space
+↓
+Resonance
+
+
+## Core Concepts
+
+### Voice
+
+A Voice represents a person's identity and expression inside Ventvo.
+
+A Voice contains:
+
+- Voice mark
+- Personal expression
+- Identity used when creating Moments
+
+
+### Vent
+
+A Vent is a thought, feeling, idea, or moment released by a Voice.
+
+Current Vent structure:
+
+- id
+- content
+- spaceType
+- voiceMark
+- createdAt
+
+
+### Space
+
+A Space defines how a Vent should be experienced by others.
+
+Current spaces:
+
+### Just Listen
+
+Purpose:
+A place where someone can express themselves without expecting solutions.
+
+Interaction philosophy:
+
+- Understanding before advice
+- Presence before responses
+
+
+### Open Discussion
+
+Purpose:
+A place where the creator welcomes different perspectives and conversation.
+
+Interaction philosophy:
+
+- Sharing viewpoints
+- Exploring ideas together
+
+
+## Future Systems
+
+The following systems will be added as separate features instead of being forced into the Vent model.
+
+### Resonance
+
+A way to represent meaningful connection between Voices.
+
+This is different from:
+
+- Likes
+- Popularity
+- Engagement numbers
+
+Resonance represents being understood.
+
+
+### Echo Notes
+
+A way for another Voice to leave a meaningful reflection on an existing Moment.
+
+Echo Notes should not become normal comments.
+
+They should preserve the original Voice and add another perspective.
+
+
+### Crash Out
+
+A separate experience for intense emotional moments.
+
+Crash Out is not a Vent type.
+
+It is a dedicated space/experience that can be entered from appropriate Moments.
+
+
+## Design Principle
+
+Ventvo should avoid copying traditional social media structures.
+
+The system should prioritize:
+
+- Expression over performance
+- Understanding over popularity
+- Connection over engagement
