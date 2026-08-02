@@ -288,3 +288,14 @@ Completed:
 Current flow:
 
 Voice → Vent → Space → Resonance → Echo
+## Foundation Review - Vent System
+
+Changes:
+- Refined Vent terminology.
+- Changed interactionType to spaceType.
+- Updated Vent creation and display flow.
+- Clarified that a Vent creates a space rather than selecting an interaction method.
+
+Reason:
+The terminology now matches Ventvo's core philosophy:
+users create spaces for expression, listening, and conversation.

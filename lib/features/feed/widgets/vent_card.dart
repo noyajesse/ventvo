@@ -20,16 +20,16 @@ class VentCard extends StatelessWidget {
 
   String spaceName() {
 
-    if (vent.interactionType == "Just Listen") {
+    if (vent.spaceType == "Just Listen") {
 
       return "🌊 Listening Space";
 
     }
 
 
-    if (vent.interactionType == "Open Discussion") {
+    if (vent.spaceType == "Open Discussion") {
 
-      return "💬 Conversation Space";
+      return "💬 Open Discussion Space";
 
     }
 
@@ -78,17 +78,18 @@ class VentCard extends StatelessWidget {
         children: [
 
 
+
           // Voice identity
 
           Text(
 
-            vent.voiceMark,
+            "◇ ${vent.voiceMark}",
 
             style: const TextStyle(
 
               color: Colors.white70,
 
-              fontSize: 22,
+              fontSize: 18,
 
               fontWeight: FontWeight.bold,
 
@@ -102,7 +103,7 @@ class VentCard extends StatelessWidget {
 
 
 
-          // Vent expression
+          // The moment expressed
 
           Text(
 
@@ -127,7 +128,7 @@ class VentCard extends StatelessWidget {
 
 
 
-          // Space type
+          // Space created by the Vent
 
           Container(
 
@@ -149,6 +150,7 @@ class VentCard extends StatelessWidget {
                   BorderRadius.circular(20),
 
             ),
+
 
 
             child: Text(
@@ -186,6 +188,8 @@ class VentCard extends StatelessWidget {
 
 
 
+          // Future Resonance area
+
           const Text(
 
             "Resonance",
@@ -215,7 +219,7 @@ class VentCard extends StatelessWidget {
 
               Text(
 
-                "🌊 Echo",
+                "🌊 Waiting for Voices",
 
                 style: TextStyle(
 
@@ -226,27 +230,10 @@ class VentCard extends StatelessWidget {
               ),
 
 
-
-              SizedBox(width: 25),
-
-
-
-              Text(
-
-                "0 Voices connected",
-
-                style: TextStyle(
-
-                  color: Colors.white54,
-
-                ),
-
-              ),
-
-
             ],
 
           ),
+
 
 
         ],

@@ -4,7 +4,7 @@ class Vent {
 
   final String content;
 
-  final String interactionType;
+  final String spaceType;
 
   final String voiceMark;
 
@@ -17,7 +17,7 @@ class Vent {
 
     required this.content,
 
-    required this.interactionType,
+    required this.spaceType,
 
     required this.voiceMark,
 

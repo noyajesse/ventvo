@@ -248,7 +248,7 @@ class VoiceSpaceScreen extends ConsumerWidget {
 
                                 Text(
 
-                                  "Meeting style: ${vent.interactionType}",
+                                  "Meeting style: ${vent.spaceType}",
 
 
                                   style: const TextStyle(

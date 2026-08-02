@@ -21,7 +21,9 @@ class _CreateVentScreenState
   final TextEditingController controller =
       TextEditingController();
 
-  String? selectedType;
+
+  String? selectedSpace;
+
 
 
   @override
@@ -34,6 +36,7 @@ class _CreateVentScreenState
   }
 
 
+
   @override
   void dispose() {
 
@@ -43,6 +46,7 @@ class _CreateVentScreenState
   }
 
 
+
   @override
   Widget build(BuildContext context) {
 
@@ -50,8 +54,9 @@ class _CreateVentScreenState
     final voice = ref.watch(ventvoVoiceProvider);
 
 
+
     final canRelease =
-        selectedType != null &&
+        selectedSpace != null &&
         controller.text.trim().length >= 3;
 
 
@@ -60,6 +65,7 @@ class _CreateVentScreenState
 
       backgroundColor:
           const Color(0xFF111111),
+
 
 
       body: SafeArea(
@@ -77,6 +83,7 @@ class _CreateVentScreenState
             ),
 
 
+
             child: Column(
 
               crossAxisAlignment:
@@ -86,9 +93,10 @@ class _CreateVentScreenState
               children: [
 
 
+
                 const Text(
 
-                  "Express your Voice",
+                  "Release a Moment",
 
                   style: TextStyle(
 
@@ -144,10 +152,11 @@ class _CreateVentScreenState
                   ),
 
 
+
                   decoration: InputDecoration(
 
                     hintText:
-                        "Write your thought here...",
+                        "What wants to be heard?",
 
 
                     hintStyle:
@@ -158,6 +167,7 @@ class _CreateVentScreenState
                     ),
 
 
+
                     filled: true,
 
 
@@ -165,11 +175,13 @@ class _CreateVentScreenState
                         Colors.white10,
 
 
+
                     border:
                         OutlineInputBorder(
 
                       borderRadius:
                           BorderRadius.circular(22),
+
 
                       borderSide:
                           BorderSide.none,
@@ -188,8 +200,7 @@ class _CreateVentScreenState
 
                 const Text(
 
-                  "How should people meet this Vent?",
-
+                  "Choose the space for this moment",
 
                   style: TextStyle(
 
@@ -209,7 +220,7 @@ class _CreateVentScreenState
 
 
 
-                _ventOption(
+                _spaceOption(
 
                   title: "Just Listen",
 
@@ -224,12 +235,12 @@ class _CreateVentScreenState
 
 
 
-                _ventOption(
+                _spaceOption(
 
                   title: "Open Discussion",
 
                   description:
-                      "Invite different Voices into the conversation.",
+                      "A space where different Voices can share perspectives.",
 
                 ),
 
@@ -246,12 +257,14 @@ class _CreateVentScreenState
                   height: 55,
 
 
+
                   child: ElevatedButton(
 
 
                     onPressed: canRelease
 
                         ? () {
+
 
 
                             final vent = Vent(
@@ -268,12 +281,15 @@ class _CreateVentScreenState
                                   controller.text.trim(),
 
 
-                              interactionType:
-                                  selectedType!,
+
+                              spaceType:
+                                  selectedSpace!,
+
 
 
                               voiceMark:
                                   voice.mark ?? "◇",
+
 
 
                               createdAt:
@@ -298,21 +314,22 @@ class _CreateVentScreenState
                             Navigator.pop(context);
 
 
+
                           }
 
                         : null,
 
 
+
                     child: const Text(
 
-                      "Release Vent",
+                      "Release Moment",
 
                     ),
 
                   ),
 
                 ),
-
 
               ],
 
@@ -331,7 +348,8 @@ class _CreateVentScreenState
 
 
 
-  Widget _ventOption({
+
+  Widget _spaceOption({
 
     required String title,
 
@@ -340,22 +358,25 @@ class _CreateVentScreenState
   }) {
 
 
+
     final isSelected =
-        selectedType == title;
+        selectedSpace == title;
 
 
 
     return GestureDetector(
 
+
       onTap: () {
 
         setState(() {
 
-          selectedType = title;
+          selectedSpace = title;
 
         });
 
       },
+
 
 
       child: Container(
@@ -363,11 +384,13 @@ class _CreateVentScreenState
         width: double.infinity,
 
 
-        padding: const EdgeInsets.all(18),
+        padding:
+            const EdgeInsets.all(18),
 
 
 
         decoration: BoxDecoration(
+
 
           color: isSelected
 
@@ -376,9 +399,11 @@ class _CreateVentScreenState
               : Colors.transparent,
 
 
+
           borderRadius:
 
               BorderRadius.circular(20),
+
 
 
           border: Border.all(
@@ -395,31 +420,43 @@ class _CreateVentScreenState
 
 
 
+
         child: Column(
 
+
           crossAxisAlignment:
+
               CrossAxisAlignment.start,
+
 
 
           children: [
 
 
+
             Text(
+
 
               title,
 
 
               style: const TextStyle(
 
+
                 color: Colors.white,
+
 
                 fontSize: 18,
 
-                fontWeight: FontWeight.bold,
+
+                fontWeight:
+                    FontWeight.bold,
+
 
               ),
 
             ),
+
 
 
 
@@ -427,20 +464,27 @@ class _CreateVentScreenState
 
 
 
+
             Text(
+
 
               description,
 
 
               style: const TextStyle(
 
+
                 color: Colors.white70,
 
+
                 fontSize: 14,
+
 
               ),
 
             ),
+
+
 
           ],
 
