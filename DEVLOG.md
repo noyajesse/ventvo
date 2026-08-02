@@ -1,3 +1,24 @@
+## Product Direction Review - Ventvo Principles
+
+Date: 2026-08-02
+
+Completed:
+- Reviewed Ventvo's core purpose and direction.
+- Defined Ventvo as a connection system built around human moments, not a traditional social media platform.
+- Created VENTVO_PRINCIPLES.md as the product decision filter for future features.
+
+Key decisions:
+- Voice remains the foundation instead of traditional profiles.
+- Vents represent moments, not normal social posts.
+- Connection is measured through Resonance instead of likes or popularity.
+- Just Listen and Open Discussion now have different interaction rules.
+- Just Listen allows Resonance but does not allow Echo Notes or Discussion.
+- Open Discussion allows Resonance, Echo Notes, Discussion, and optional Crash Out.
+- Echo Notes are reflections, not comments.
+- Crash Out remains a temporary shared emotional space.
+
+Development principle:
+Every future feature must solve a real human problem and strengthen Ventvo's purpose of helping people express themselves and feel understood.
 # Ventvo Development Log
 
 ## Version 0.1.0 - Initial Setup
