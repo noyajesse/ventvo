@@ -299,3 +299,293 @@ Changes:
 Reason:
 The terminology now matches Ventvo's core philosophy:
 users create spaces for expression, listening, and conversation.
+## 2026-08-08
+
+# Ventvo Connection Spaces & Crash Out Foundation
+
+## Voice Experience Progress
+
+Completed and tested the core Ventvo Voice experience.
+
+Changes:
+
+* Continued development of the Ventvo Voice identity system.
+* Voice creation flow is functional.
+* Voice Space displays the user's Voice identity and created Vents.
+* Navigation between Voice-related screens was tested.
+* Back navigation was treated as a development/navigation concern rather than adding a physical back button to every screen.
+
+Current relationship:
+
+Voice → Voice Space → Vents → Feed
+
+---
+
+## Just Listen
+
+Completed the first prototype of the Just Listen experience.
+
+Product decision:
+
+Just Listen is intentionally different from normal social interaction.
+
+Purpose:
+
+> Someone can express a moment without asking people to fix it.
+
+Current prototype behavior:
+
+* A user can select Just Listen when creating a Vent.
+* The Feed identifies the Vent as a Listening Space.
+* A listener can select "Heard".
+* The current Heard/check interaction is a prototype demonstration only.
+
+Important:
+
+The current local Heard state is not the final production behavior.
+
+Future production behavior will require persistent interaction state and backend storage.
+
+---
+
+## Open Discussion
+
+Completed the first Open Discussion prototype.
+
+Product decision:
+
+Open Discussion provides a space where people can engage more deeply with a Vent.
+
+Current prototype behavior:
+
+* Open Discussion Vents are identified separately from Just Listen Vents.
+* Feed displays an "Open Discussion Space".
+* Users can select "Join Discussion".
+* A dedicated DiscussionScreen has been created.
+* Navigation into and back from the discussion experience has been tested.
+
+Current state:
+
+The discussion experience is currently a functional prototype.
+
+Future work will include:
+
+* Persistent discussions
+* Real participant data
+* Discussion state
+* Echo Notes
+* Proper connection and conversation rules
+
+---
+
+# Crash Out Direction Review
+
+Crash Out was re-evaluated based on Ventvo's core purpose and the problem Ventvo is intended to solve.
+
+## Product Definition
+
+Crash Out is not intended to be a diary, notes application, or simple emotional dumping tool.
+
+Crash Out is Ventvo's private release-and-connection pathway.
+
+The user can release something without immediately needing to explain it, justify it, or interact with anyone.
+
+## Crash Out Experience
+
+Initial direction:
+
+Crash Out
+↓
+Release
+↓
+Choose what happens next
+
+Possible outcomes:
+
+* Let Go
+* Keep Private
+* Turn into a Vent
+* Find People Who Understand
+
+The original Crash Out remains private unless the user intentionally chooses otherwise.
+
+---
+
+## Human Connection Direction
+
+The strongest new direction for Crash Out is:
+
+> Find People Who Understand.
+
+Instead of immediately providing advice or attempting to act as therapy, Ventvo can eventually help the user discover a small group of Voices with sufficiently similar experiences.
+
+Target experience:
+
+Crash Out
+↓
+Private understanding
+↓
+Compatibility matching
+↓
+Up to 3 Voices
+↓
+Small Circle
+↓
+Just Listen / Open Discussion
+
+Users do not need to be told that they are being "matched" in a technical sense.
+
+The experience should feel like:
+
+> "These are people who understand."
+
+rather than:
+
+> "An algorithm matched you."
+
+---
+
+## AI Matching Direction
+
+AI matching is a future system component.
+
+AI will eventually help identify meaningful similarities between experiences rather than relying only on simple keywords.
+
+The system should consider factors such as:
+
+* Situation
+* Experience
+* Context
+* Connection need
+* Desired interaction style
+
+The goal is not to diagnose users or provide therapy.
+
+The goal is to help Ventvo discover people who may genuinely understand one another.
+
+### Development Strategy
+
+AI matching will NOT be implemented yet.
+
+During development, the matching experience can use demonstration data.
+
+This allows the product experience to be tested before building the complete backend and AI infrastructure.
+
+---
+
+# Crash Out Technical Foundation
+
+Crash Out has been separated from the Vent model.
+
+This is an important architectural decision.
+
+A Crash Out is not simply another type of Vent.
+
+A Crash Out begins as a private release and can later become a Vent if the user chooses.
+
+Created:
+
+* `features/crash_out/models/crash_out.dart`
+* `features/crash_out/providers/crash_out_provider.dart`
+
+### Crash Out Model
+
+The model currently supports:
+
+* Text Crash Outs
+* Future voice Crash Outs
+* Creation timestamps
+* Crash Out status
+* Matching eligibility
+* Connection need
+
+Current statuses include:
+
+* Released
+* Kept Private
+* Let Go
+* Converted to Vent
+* Finding People
+
+Current connection needs include:
+
+* Just Listen
+* Shared Experience
+* Open Discussion
+* Unsure
+
+### Provider
+
+Created a dedicated `crashOutProvider`.
+
+The provider currently supports:
+
+* Adding Crash Outs
+* Updating Crash Out status
+* Enabling matching
+* Deleting Crash Outs
+
+The provider remains independent from `ventProvider`.
+
+---
+
+# Current Product Architecture
+
+Ventvo now has two distinct expression pathways:
+
+### Vent
+
+Voice
+↓
+Vent
+↓
+Space
+↓
+Resonance
+↓
+Connection
+
+### Crash Out
+
+Private Release
+↓
+Choose what happens
+↓
+Keep / Let Go / Vent / Find People
+↓
+Future compatibility matching
+↓
+Small Circle
+↓
+Just Listen / Open Discussion
+
+This separation should be preserved as development continues.
+
+---
+
+# Current Development Principle
+
+Crash Out should not become a collection of unrelated features.
+
+Every addition must strengthen one of two purposes:
+
+1. Give someone a safe way to release what they are carrying.
+2. Help them find meaningful human understanding when they want it.
+
+The feature should remain simple enough that the user immediately understands what it is for.
+
+## Next Development Stage
+
+Build the Crash Out entry experience.
+
+Planned:
+
+* Crash Out entry screen
+* Text release
+* Voice release foundation
+* Release/fate screen
+* Demo "Find People Who Understand" experience
+* Small Circle prototype
+* Connection to Just Listen and Open Discussion
+
+AI matching and backend matching infrastructure will come later.

@@ -282,8 +282,7 @@ class _CreateVentScreenState
 
 
 
-                              spaceType:
-                                  selectedSpace!,
+                              responseIntent: selectedSpace!,
 
 
 

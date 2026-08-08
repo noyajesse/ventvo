@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../providers/voice_provider.dart';
 import 'voice_mark_screen.dart';
 
@@ -13,7 +14,6 @@ class VoiceResonanceScreen extends ConsumerStatefulWidget {
 
 class _VoiceResonanceScreenState
     extends ConsumerState<VoiceResonanceScreen> {
-
   String? selectedResonance;
 
   final List<String> resonances = [
@@ -34,10 +34,8 @@ class _VoiceResonanceScreenState
             horizontal: 32,
           ),
           child: Column(
-            mainAxisAlignment:
-                MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-
               const Text(
                 "Choose your resonance.",
                 textAlign: TextAlign.center,
@@ -67,7 +65,6 @@ class _VoiceResonanceScreenState
                 runSpacing: 15,
                 alignment: WrapAlignment.center,
                 children: resonances.map((item) {
-
                   final selected =
                       selectedResonance == item;
 
@@ -77,29 +74,23 @@ class _VoiceResonanceScreenState
                         selectedResonance = item;
                       });
                     },
-
                     child: Container(
                       width: 120,
-                      padding:
-                          const EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                         vertical: 18,
                       ),
-
                       decoration: BoxDecoration(
                         color: selected
                             ? Colors.white24
                             : Colors.transparent,
-
                         borderRadius:
                             BorderRadius.circular(20),
-
                         border: Border.all(
                           color: selected
                               ? Colors.white
                               : Colors.white24,
                         ),
                       ),
-
                       child: Text(
                         item,
                         textAlign: TextAlign.center,
@@ -110,7 +101,6 @@ class _VoiceResonanceScreenState
                       ),
                     ),
                   );
-
                 }).toList(),
               ),
 
@@ -119,14 +109,11 @@ class _VoiceResonanceScreenState
               SizedBox(
                 width: double.infinity,
                 height: 55,
-
                 child: ElevatedButton(
-
                   onPressed:
                       selectedResonance == null
                           ? null
                           : () {
-
                               ref
                                   .read(
                                     ventvoVoiceProvider
@@ -143,9 +130,7 @@ class _VoiceResonanceScreenState
                                       const VoiceMarkScreen(),
                                 ),
                               );
-
                             },
-
                   child: const Text(
                     "Continue",
                   ),

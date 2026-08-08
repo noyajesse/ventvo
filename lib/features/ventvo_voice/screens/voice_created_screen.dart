@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'voice_space_screen.dart';
 import '../providers/voice_provider.dart';
-import 'voice_space_screen.dart';
-
 class VoiceCreatedScreen extends ConsumerWidget {
   const VoiceCreatedScreen({super.key});
 
