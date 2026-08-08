@@ -589,3 +589,80 @@ Planned:
 * Connection to Just Listen and Open Discussion
 
 AI matching and backend matching infrastructure will come later.
+```
+## 2026-08-08
+
+# Crash Out Foundation - Entry and Fate Flow
+
+## Completed
+
+### Crash Out Entry Experience
+
+- Added Crash Out entry screen.
+- Connected Crash Out to Voice Space.
+- Users can now enter Crash Out directly from their Voice Space.
+- Added text-based emotional release input.
+- Added disabled/enabled Release behavior based on whether text has been entered.
+- Added placeholder voice-release entry for future voice implementation.
+
+### Crash Out Release Flow
+
+Implemented the initial flow:
+
+Voice Space
+↓
+Crash Out
+↓
+Release
+↓
+Crash Out Fate
+
+### Crash Out Fate Options
+
+Added four possible outcomes after releasing:
+
+- Let Go
+- Keep Private
+- Turn into a Vent
+- Find People Who Understand
+
+These actions are currently prototype interactions. Their full functionality will be implemented in later stages.
+
+### Product Direction
+
+Crash Out remains separate from the normal Vent interaction system.
+
+A Vent is an expression intentionally brought into Ventvo.
+
+Crash Out is a temporary space where a person can release something before deciding what, if anything, should happen to it.
+
+The future "Find People Who Understand" option will connect Crash Out to Ventvo's resonance/matching system.
+
+## Current Flow
+
+Voice Space
+↓
+Create a Vent
+or
+Crash Out
+↓
+Release
+↓
+Fate
+
+## Next Development Stage
+
+Implement the actual behavior of Crash Out outcomes:
+
+1. Let Go
+2. Keep Private
+3. Turn into a Vent
+4. Find People Who Understand
+
+The matching system will be designed separately and should not be treated as a simple social-media group or public discussion.
+
+## Development Note
+
+The Crash Out UI and navigation are now functioning as a prototype foundation. Further implementation should focus on making each outcome meaningful rather than adding more UI without underlying behavior.
+```
+
