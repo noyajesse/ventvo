@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/crash_out.dart';
 import '../providers/crash_out_provider.dart';
+import '../../ventvo_voice/screens/voice_space_screen.dart';
 
 class CrashOutFateScreen extends ConsumerWidget {
   final CrashOut crashOut;
@@ -13,19 +14,76 @@ class CrashOutFateScreen extends ConsumerWidget {
     required this.crashOut,
   });
 
-  void _updateStatus(
+  void _returnToVoiceSpace(
+    BuildContext context,
+  ) {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            const VoiceSpaceScreen(),
+      ),
+      (route) => false,
+    );
+  }
+
+  void _letGo(
     BuildContext context,
     WidgetRef ref,
-    CrashOutStatus status,
+  ) {
+    ref
+        .read(crashOutProvider.notifier)
+        .deleteCrashOut(crashOut.id);
+
+    _returnToVoiceSpace(context);
+  }
+
+  void _keepPrivate(
+    BuildContext context,
+    WidgetRef ref,
   ) {
     ref
         .read(crashOutProvider.notifier)
         .updateStatus(
           crashOut.id,
-          status,
+          CrashOutStatus.keptPrivate,
         );
 
-    Navigator.pop(context);
+    _returnToVoiceSpace(context);
+  }
+
+  void _turnIntoVent(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
+    ref
+        .read(crashOutProvider.notifier)
+        .updateStatus(
+          crashOut.id,
+          CrashOutStatus.convertedToVent,
+        );
+
+    _returnToVoiceSpace(context);
+  }
+
+  void _findPeople(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
+    ref
+        .read(crashOutProvider.notifier)
+        .enableMatching(
+          crashOut.id,
+        );
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Finding people who understand...',
+        ),
+      ),
+    );
   }
 
   @override
@@ -34,45 +92,63 @@ class CrashOutFateScreen extends ConsumerWidget {
     WidgetRef ref,
   ) {
     return Scaffold(
-      backgroundColor: const Color(0xFF111111),
+      backgroundColor:
+          const Color(0xFF111111),
 
       appBar: AppBar(
-        backgroundColor: const Color(0xFF111111),
+        backgroundColor:
+            const Color(0xFF111111),
         elevation: 0,
+
         title: const Text(
           'Crash Out',
           style: TextStyle(
             color: Colors.white,
-            fontWeight: FontWeight.bold,
+            fontWeight:
+                FontWeight.bold,
           ),
         ),
       ),
 
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(
+          padding:
+              const EdgeInsets.symmetric(
             horizontal: 28,
             vertical: 24,
           ),
+
           child: Column(
             children: [
-              const SizedBox(height: 45),
+              const SizedBox(
+                height: 45,
+              ),
 
               const Text(
                 'You let it out.',
-                textAlign: TextAlign.center,
+
+                textAlign:
+                    TextAlign.center,
+
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 30,
-                  fontWeight: FontWeight.bold,
+                  fontWeight:
+                      FontWeight.bold,
                 ),
               ),
 
-              const SizedBox(height: 18),
+              const SizedBox(
+                height: 18,
+              ),
 
               const Text(
-                "You don't have to do anything else with it.",
-                textAlign: TextAlign.center,
+                "You don't have to do "
+                "anything else with it.",
+
+                textAlign:
+                    TextAlign.center,
+
                 style: TextStyle(
                   color: Colors.white54,
                   fontSize: 17,
@@ -80,83 +156,97 @@ class CrashOutFateScreen extends ConsumerWidget {
                 ),
               ),
 
-              const SizedBox(height: 50),
+              const SizedBox(
+                height: 50,
+              ),
 
               Expanded(
                 child: ListView(
                   children: [
                     _FateOption(
-                      icon: Icons.cloud_off_outlined,
+                      icon: Icons
+                          .cloud_off_outlined,
+
                       title: 'Let Go',
+
                       description:
-                          'Leave it here and let it disappear.',
+                          'Leave it here and '
+                          'let it disappear.',
+
                       onTap: () {
-                        _updateStatus(
+                        _letGo(
                           context,
                           ref,
-                          CrashOutStatus.letGo,
                         );
                       },
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(
+                      height: 16,
+                    ),
 
                     _FateOption(
-                      icon: Icons.lock_outline,
+                      icon: Icons
+                          .lock_outline,
+
                       title: 'Keep Private',
+
                       description:
-                          'Keep this moment for yourself.',
+                          'Keep this moment '
+                          'for yourself.',
+
                       onTap: () {
-                        _updateStatus(
+                        _keepPrivate(
                           context,
                           ref,
-                          CrashOutStatus.keptPrivate,
                         );
                       },
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(
+                      height: 16,
+                    ),
 
                     _FateOption(
-                      icon: Icons.waves_outlined,
-                      title: 'Turn into a Vent',
+                      icon: Icons
+                          .waves_outlined,
+
+                      title:
+                          'Turn into a Vent',
+
                       description:
-                          'Bring this moment into Ventvo.',
+                          'Bring this moment '
+                          'into Ventvo.',
+
                       onTap: () {
-                        _updateStatus(
+                        _turnIntoVent(
                           context,
                           ref,
-                          CrashOutStatus.convertedToVent,
                         );
                       },
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(
+                      height: 16,
+                    ),
 
                     _FateOption(
-                      icon: Icons.people_outline,
+                      icon: Icons
+                          .people_outline,
+
                       title:
                           'Find People Who Understand',
-                      description:
-                          'Find a small group of Voices '
-                          'who may understand what you are going through.',
-                      onTap: () {
-                        ref
-                            .read(
-                              crashOutProvider.notifier,
-                            )
-                            .enableMatching(
-                              crashOut.id,
-                            );
 
-                        ScaffoldMessenger.of(
+                      description:
+                          'Find a small group '
+                          'of Voices who may '
+                          'understand what you '
+                          'are going through.',
+
+                      onTap: () {
+                        _findPeople(
                           context,
-                        ).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Finding people who understand...',
-                            ),
-                          ),
+                          ref,
                         );
                       },
                     ),
@@ -171,7 +261,8 @@ class CrashOutFateScreen extends ConsumerWidget {
   }
 }
 
-class _FateOption extends StatelessWidget {
+class _FateOption
+    extends StatelessWidget {
   final IconData icon;
   final String title;
   final String description;
@@ -185,16 +276,26 @@ class _FateOption extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(22),
-      child: Container(
-        padding: const EdgeInsets.all(20),
 
-        decoration: BoxDecoration(
+      borderRadius:
+          BorderRadius.circular(22),
+
+      child: Container(
+        padding:
+            const EdgeInsets.all(20),
+
+        decoration:
+            BoxDecoration(
           color: Colors.white10,
-          borderRadius: BorderRadius.circular(22),
+
+          borderRadius:
+              BorderRadius.circular(22),
+
           border: Border.all(
             color: Colors.white12,
           ),
@@ -206,7 +307,8 @@ class _FateOption extends StatelessWidget {
               width: 48,
               height: 48,
 
-              decoration: const BoxDecoration(
+              decoration:
+                  const BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.white12,
               ),
@@ -218,29 +320,40 @@ class _FateOption extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(width: 16),
+            const SizedBox(
+              width: 16,
+            ),
 
             Expanded(
               child: Column(
                 crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                    CrossAxisAlignment
+                        .start,
 
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+
+                    style:
+                        const TextStyle(
                       color: Colors.white,
                       fontSize: 17,
-                      fontWeight: FontWeight.bold,
+                      fontWeight:
+                          FontWeight.bold,
                     ),
                   ),
 
-                  const SizedBox(height: 6),
+                  const SizedBox(
+                    height: 6,
+                  ),
 
                   Text(
                     description,
-                    style: const TextStyle(
-                      color: Colors.white54,
+
+                    style:
+                        const TextStyle(
+                      color:
+                          Colors.white54,
                       fontSize: 14,
                       height: 1.4,
                     ),

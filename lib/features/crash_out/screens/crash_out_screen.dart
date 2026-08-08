@@ -6,7 +6,6 @@ import '../models/crash_out.dart';
 import '../providers/crash_out_provider.dart';
 import 'crash_out_fate_screen.dart';
 
-
 class CrashOutScreen extends ConsumerStatefulWidget {
   const CrashOutScreen({super.key});
 
@@ -75,6 +74,7 @@ class _CrashOutScreenState
         backgroundColor:
             const Color(0xFF111111),
         elevation: 0,
+
         title: const Text(
           'Crash Out',
           style: TextStyle(
@@ -102,7 +102,8 @@ class _CrashOutScreenState
                 "You don't have to make\n"
                 "sense of it yet.",
 
-                textAlign: TextAlign.center,
+                textAlign:
+                    TextAlign.center,
 
                 style: TextStyle(
                   color: Colors.white,
@@ -118,7 +119,8 @@ class _CrashOutScreenState
               const Text(
                 "Just let it out.",
 
-                textAlign: TextAlign.center,
+                textAlign:
+                    TextAlign.center,
 
                 style: TextStyle(
                   color: Colors.white54,
@@ -135,17 +137,26 @@ class _CrashOutScreenState
                   padding:
                       const EdgeInsets.all(20),
 
-                  decoration: BoxDecoration(
-                    color: Colors.white10,
+                  decoration:
+                      BoxDecoration(
+                    color:
+                        Colors.white10,
+
                     borderRadius:
-                        BorderRadius.circular(24),
-                    border: Border.all(
-                      color: Colors.white12,
+                        BorderRadius.circular(
+                      24,
+                    ),
+
+                    border:
+                        Border.all(
+                      color:
+                          Colors.white12,
                     ),
                   ),
 
                   child: TextField(
-                    controller: _controller,
+                    controller:
+                        _controller,
 
                     expands: true,
                     maxLines: null,
@@ -154,8 +165,10 @@ class _CrashOutScreenState
                     textAlignVertical:
                         TextAlignVertical.top,
 
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style:
+                        const TextStyle(
+                      color:
+                          Colors.white,
                       fontSize: 18,
                       height: 1.5,
                     ),
@@ -165,7 +178,8 @@ class _CrashOutScreenState
 
                     decoration:
                         const InputDecoration(
-                      border: InputBorder.none,
+                      border:
+                          InputBorder.none,
 
                       hintText:
                           "Let it out...",
@@ -186,11 +200,12 @@ class _CrashOutScreenState
               SizedBox(
                 width: double.infinity,
 
-                child: OutlinedButton.icon(
+                child:
+                    OutlinedButton.icon(
                   onPressed: () {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(
+                    ScaffoldMessenger
+                        .of(context)
+                        .showSnackBar(
                       const SnackBar(
                         content: Text(
                           "Voice release is coming next.",
@@ -208,16 +223,20 @@ class _CrashOutScreenState
                   ),
 
                   style:
-                      OutlinedButton.styleFrom(
+                      OutlinedButton
+                          .styleFrom(
                     foregroundColor:
                         Colors.white,
 
-                    side: const BorderSide(
-                      color: Colors.white24,
+                    side:
+                        const BorderSide(
+                      color:
+                          Colors.white24,
                     ),
 
                     padding:
-                        const EdgeInsets.symmetric(
+                        const EdgeInsets
+                            .symmetric(
                       vertical: 15,
                     ),
 
@@ -238,15 +257,18 @@ class _CrashOutScreenState
                 width: double.infinity,
                 height: 55,
 
-                child: ElevatedButton(
+                child:
+                    ElevatedButton(
                   onPressed:
                       hasText
                           ? _releaseText
                           : null,
 
-                  child: const Text(
+                  child:
+                      const Text(
                     "Release",
-                    style: TextStyle(
+                    style:
+                        TextStyle(
                       fontSize: 17,
                     ),
                   ),

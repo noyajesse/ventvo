@@ -665,4 +665,179 @@ The matching system will be designed separately and should not be treated as a s
 
 The Crash Out UI and navigation are now functioning as a prototype foundation. Further implementation should focus on making each outcome meaningful rather than adding more UI without underlying behavior.
 ```
+```markdown
+## 2026-08-08
+
+# Crash Out - Release and Private Storage Flow
+
+## Completed
+
+Implemented the first functional Crash Out flow.
+
+### Crash Out Entry
+
+Users can now:
+
+- Open Crash Out from Voice Space.
+- Write their thoughts as text.
+- Release the Crash Out.
+- Continue to a dedicated Crash Out fate screen.
+
+### Crash Out Fate System
+
+After releasing a Crash Out, users are presented with different possible paths.
+
+Currently implemented:
+
+#### Let Go
+
+- Deletes the Crash Out from `crashOutProvider`.
+- The Crash Out is no longer available in the user's private space.
+- The user returns to Voice Space.
+
+#### Keep Private
+
+- Changes the Crash Out status to `CrashOutStatus.keptPrivate`.
+- The Crash Out remains stored in `crashOutProvider`.
+- The Crash Out does not appear in the normal Vent feed.
+- The Crash Out can be accessed through the Private section of Voice Space.
+
+### Private Crash Outs
+
+Created a dedicated Private Crash Outs screen.
+
+Location:
+
+`lib/features/crash_out/screens/private_crash_outs_screen.dart`
+
+The screen:
+
+- Displays only Crash Outs with `CrashOutStatus.keptPrivate`.
+- Clearly identifies them as private.
+- Keeps private Crash Outs separate from normal Vents.
+- Provides a dedicated space for viewing previously kept Crash Outs.
+
+### Voice Space Integration
+
+Voice Space now separates:
+
+- Normal Vents
+- Private Crash Outs
+
+Private Crash Outs are represented by a private section showing the number of stored private Crash Outs.
+
+Users can select:
+
+`View Private Crash Outs`
+
+to enter the dedicated private screen.
+
+### Crash Out State Management
+
+Created and connected:
+
+`CrashOutNotifier`
+
+through:
+
+`crashOutProvider`
+
+The provider currently supports:
+
+- Adding Crash Outs
+- Updating Crash Out status
+- Deleting Crash Outs
+- Enabling future matching eligibility
+
+### Current Crash Out Model
+
+Crash Outs currently support:
+
+- Text
+- Future voice/audio path
+- Crash Out type
+- Creation timestamp
+- Status
+- Matching eligibility
+- Connection need
+
+### Product Decision
+
+Crash Out is intentionally kept separate from the normal Vent system.
+
+A Crash Out represents something the user wants to release without immediately turning it into a social post.
+
+A private Crash Out:
+
+- Is not a Vent.
+- Does not appear in Feed.
+- Does not receive normal Vent interactions.
+- Is visible only to its owner.
+
+## Not Yet Implemented
+
+The following Crash Out paths are currently placeholders/future functionality:
+
+### Turn into a Vent
+
+Not yet implemented.
+
+The current system does not yet convert a Crash Out into a real Vent.
+
+Future behavior:
+
+`Crash Out → Turn into a Vent → Vent → Feed`
+
+### Find People Who Understand
+
+Not yet implemented.
+
+The matching system has not yet been built.
+
+Future behavior will allow a user to choose this path and eventually be connected with a small number of people whose experiences strongly resonate with the Crash Out.
+
+The matching system and AI-assisted similarity detection are still under design.
+
+### Voice Crash Out
+
+Not yet implemented.
+
+The current Crash Out experience supports text only.
+
+## Current Flow
+
+Voice Space
+
+↓
+
+Crash Out
+
+↓
+
+Write thoughts
+
+↓
+
+Release
+
+↓
+
+Fate Screen
+
+↓
+
+Let Go → Delete
+
+OR
+
+Keep Private → Private Crash Outs
+
+## Next Development Stage
+
+The next Crash Out feature to implement is:
+
+**Turn into a Vent**
+
+This should be implemented separately from the private Crash Out system so that Crash Outs do not accidentally appear as normal Vents unless the user explicitly chooses to convert one.
+```
 

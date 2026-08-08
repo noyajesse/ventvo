@@ -4,38 +4,54 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/voice_provider.dart';
 import '../providers/vent_provider.dart';
+
 import '../../feed/screens/feed_screen.dart';
 import '../../crash_out/screens/crash_out_screen.dart';
+import '../../crash_out/screens/private_crash_outs_screen.dart';
+import '../../crash_out/models/crash_out.dart';
+import '../../crash_out/providers/crash_out_provider.dart';
+
 import 'create_vent_screen.dart';
 
 class VoiceSpaceScreen extends ConsumerWidget {
   const VoiceSpaceScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
     final voice = ref.watch(ventvoVoiceProvider);
     final vents = ref.watch(ventProvider);
+    final crashOuts = ref.watch(crashOutProvider);
+
+    final privateCrashOuts = crashOuts
+        .where(
+          (crashOut) =>
+              crashOut.status == CrashOutStatus.keptPrivate,
+        )
+        .toList();
 
     return Scaffold(
       backgroundColor: const Color(0xFF111111),
-
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: 32,
             vertical: 40,
           ),
-
           child: SingleChildScrollView(
             child: Column(
               children: [
                 const SizedBox(height: 20),
 
-                // Voice identity
+                // ─────────────────────────────
+                // VOICE IDENTITY
+                // ─────────────────────────────
+
                 Container(
                   height: 140,
                   width: 140,
-
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
@@ -43,7 +59,6 @@ class VoiceSpaceScreen extends ConsumerWidget {
                       width: 2,
                     ),
                   ),
-
                   child: Center(
                     child: Text(
                       voice.mark ?? "◇",
@@ -60,7 +75,6 @@ class VoiceSpaceScreen extends ConsumerWidget {
                 Text(
                   voice.name ?? "Unnamed Voice",
                   textAlign: TextAlign.center,
-
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 34,
@@ -74,7 +88,6 @@ class VoiceSpaceScreen extends ConsumerWidget {
                   voice.expression ??
                       "Your Voice is waiting.",
                   textAlign: TextAlign.center,
-
                   style: const TextStyle(
                     color: Colors.white70,
                     fontSize: 18,
@@ -83,14 +96,15 @@ class VoiceSpaceScreen extends ConsumerWidget {
 
                 const SizedBox(height: 50),
 
-                // Voice statistics
+                // ─────────────────────────────
+                // VOICE STATISTICS
+                // ─────────────────────────────
+
                 Text(
                   "0 Moments\n"
                   "${vents.length} Vents\n"
                   "0 Arcs",
-
                   textAlign: TextAlign.center,
-
                   style: const TextStyle(
                     color: Colors.white54,
                     fontSize: 16,
@@ -100,13 +114,15 @@ class VoiceSpaceScreen extends ConsumerWidget {
 
                 const SizedBox(height: 45),
 
-                // Your Vents
+                // ─────────────────────────────
+                // YOUR VENTS
+                // ─────────────────────────────
+
                 if (vents.isNotEmpty)
                   Column(
                     children: [
                       const Text(
                         "Your Vents",
-
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 22,
@@ -119,51 +135,36 @@ class VoiceSpaceScreen extends ConsumerWidget {
                       ...vents.map(
                         (vent) {
                           return Container(
-                            margin:
-                                const EdgeInsets.only(
+                            margin: const EdgeInsets.only(
                               bottom: 15,
                             ),
-
-                            padding:
-                                const EdgeInsets.all(18),
-
+                            padding: const EdgeInsets.all(18),
                             width: double.infinity,
-
                             decoration: BoxDecoration(
                               color: Colors.white10,
                               borderRadius:
-                                  BorderRadius.circular(
-                                20,
-                              ),
+                                  BorderRadius.circular(20),
                             ),
-
                             child: Column(
                               crossAxisAlignment:
-                                  CrossAxisAlignment
-                                      .start,
-
+                                  CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   vent.content,
-
-                                  style:
-                                      const TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,
+                                    height: 1.4,
                                   ),
                                 ),
 
-                                const SizedBox(
-                                  height: 12,
-                                ),
+                                const SizedBox(height: 12),
 
                                 Text(
-                                  "Space: ${vent.responseIntent}",
-
-                                  style:
-                                      const TextStyle(
-                                    color:
-                                        Colors.white54,
+                                  "Space: "
+                                  "${vent.responseIntent}",
+                                  style: const TextStyle(
+                                    color: Colors.white54,
                                     fontSize: 14,
                                   ),
                                 ),
@@ -175,13 +176,127 @@ class VoiceSpaceScreen extends ConsumerWidget {
                     ],
                   ),
 
+                // ─────────────────────────────
+                // PRIVATE CRASH OUTS
+                // ─────────────────────────────
+
+                if (privateCrashOuts.isNotEmpty)
+                  Column(
+                    children: [
+                      const SizedBox(height: 35),
+
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white10,
+                          borderRadius:
+                              BorderRadius.circular(22),
+                          border: Border.all(
+                            color: Colors.white12,
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          children: [
+                            const Row(
+                              children: [
+                                Icon(
+                                  Icons.lock_outline,
+                                  color: Colors.white70,
+                                  size: 20,
+                                ),
+
+                                SizedBox(width: 10),
+
+                                Text(
+                                  "Private",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 19,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 10),
+
+                            Text(
+                              "${privateCrashOuts.length} "
+                              "${privateCrashOuts.length == 1 ? 'Private Crash Out' : 'Private Crash Outs'}",
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 15,
+                              ),
+                            ),
+
+                            const SizedBox(height: 5),
+
+                            const Text(
+                              "Things you chose to keep "
+                              "for yourself.",
+                              style: TextStyle(
+                                color: Colors.white38,
+                                fontSize: 14,
+                                height: 1.4,
+                              ),
+                            ),
+
+                            const SizedBox(height: 18),
+
+                            SizedBox(
+                              width: double.infinity,
+                              child: OutlinedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const PrivateCrashOutsScreen(),
+                                    ),
+                                  );
+                                },
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor:
+                                      Colors.white,
+                                  side: const BorderSide(
+                                    color: Colors.white24,
+                                  ),
+                                  padding:
+                                      const EdgeInsets.symmetric(
+                                    vertical: 13,
+                                  ),
+                                  shape:
+                                      RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                      16,
+                                    ),
+                                  ),
+                                ),
+                                child: const Text(
+                                  "View Private Crash Outs",
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+
                 const SizedBox(height: 50),
 
-                // Create a Vent
+                // ─────────────────────────────
+                // CREATE A VENT
+                // ─────────────────────────────
+
                 SizedBox(
                   width: double.infinity,
                   height: 55,
-
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(
@@ -192,7 +307,6 @@ class VoiceSpaceScreen extends ConsumerWidget {
                         ),
                       );
                     },
-
                     child: const Text(
                       "Create a Vent",
                     ),
@@ -201,11 +315,13 @@ class VoiceSpaceScreen extends ConsumerWidget {
 
                 const SizedBox(height: 15),
 
-                // Crash Out
+                // ─────────────────────────────
+                // CRASH OUT
+                // ─────────────────────────────
+
                 SizedBox(
                   width: double.infinity,
                   height: 55,
-
                   child: OutlinedButton(
                     onPressed: () {
                       Navigator.push(
@@ -216,25 +332,16 @@ class VoiceSpaceScreen extends ConsumerWidget {
                         ),
                       );
                     },
-
-                    style:
-                        OutlinedButton.styleFrom(
-                      foregroundColor:
-                          Colors.white,
-
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.white,
                       side: const BorderSide(
                         color: Colors.white24,
                       ),
-
-                      shape:
-                          RoundedRectangleBorder(
+                      shape: RoundedRectangleBorder(
                         borderRadius:
-                            BorderRadius.circular(
-                          18,
-                        ),
+                            BorderRadius.circular(18),
                       ),
                     ),
-
                     child: const Text(
                       "Crash Out",
                     ),
@@ -243,11 +350,13 @@ class VoiceSpaceScreen extends ConsumerWidget {
 
                 const SizedBox(height: 15),
 
-                // Explore Feed
+                // ─────────────────────────────
+                // EXPLORE FEED
+                // ─────────────────────────────
+
                 SizedBox(
                   width: double.infinity,
                   height: 55,
-
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(
@@ -258,7 +367,6 @@ class VoiceSpaceScreen extends ConsumerWidget {
                         ),
                       );
                     },
-
                     child: const Text(
                       "Explore Feed",
                     ),

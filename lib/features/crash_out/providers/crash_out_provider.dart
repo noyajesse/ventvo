@@ -22,41 +22,40 @@ class CrashOutNotifier extends Notifier<List<CrashOut>> {
   ) {
     state = [
       for (final crashOut in state)
-        if (crashOut.id == id)
-          CrashOut(
-            id: crashOut.id,
-            textContent: crashOut.textContent,
-            audioPath: crashOut.audioPath,
-            type: crashOut.type,
-            createdAt: crashOut.createdAt,
-            status: status,
-            matchingEligible:
-                crashOut.matchingEligible,
-            connectionNeed:
-                crashOut.connectionNeed,
-          )
-        else
-          crashOut,
+        crashOut.id == id
+            ? CrashOut(
+                id: crashOut.id,
+                textContent: crashOut.textContent,
+                audioPath: crashOut.audioPath,
+                type: crashOut.type,
+                createdAt: crashOut.createdAt,
+                status: status,
+                matchingEligible:
+                    crashOut.matchingEligible,
+                connectionNeed:
+                    crashOut.connectionNeed,
+              )
+            : crashOut,
     ];
   }
 
   void enableMatching(String id) {
     state = [
       for (final crashOut in state)
-        if (crashOut.id == id)
-          CrashOut(
-            id: crashOut.id,
-            textContent: crashOut.textContent,
-            audioPath: crashOut.audioPath,
-            type: crashOut.type,
-            createdAt: crashOut.createdAt,
-            status: CrashOutStatus.findingPeople,
-            matchingEligible: true,
-            connectionNeed:
-                crashOut.connectionNeed,
-          )
-        else
-          crashOut,
+        crashOut.id == id
+            ? CrashOut(
+                id: crashOut.id,
+                textContent: crashOut.textContent,
+                audioPath: crashOut.audioPath,
+                type: crashOut.type,
+                createdAt: crashOut.createdAt,
+                status:
+                    CrashOutStatus.findingPeople,
+                matchingEligible: true,
+                connectionNeed:
+                    crashOut.connectionNeed,
+              )
+            : crashOut,
     ];
   }
 
