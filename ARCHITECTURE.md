@@ -737,13 +737,83 @@ Echo Notes should not become normal comments.
 They should preserve the original Voice and add another perspective.
 
 
-### Crash Out
+## Crash Out
 
-A separate experience for intense emotional moments.
+Crash Out is a separate experience from the normal Vent system.
 
-Crash Out is not a Vent type.
+It allows a Voice to release something privately before deciding whether it should become part of the wider Ventvo experience.
 
-It is a dedicated space/experience that can be entered from appropriate Moments.
+Crash Out is **not a Vent type**.
+
+### Current Crash Out Model
+
+A Crash Out currently contains:
+
+* id
+* content
+* type
+* createdAt
+* status
+
+Current statuses:
+
+* `released`
+* `keptPrivate`
+* `convertedToVent`
+
+### Current Flow
+
+```text
+Voice Space
+↓
+Crash Out
+↓
+Release
+↓
+Fate
+├── Keep Private
+└── Future outcomes
+```
+
+The private path is currently implemented.
+
+```text
+Keep Private
+↓
+Private Crash Outs
+```
+
+Private Crash Outs remain separate from the normal Feed and Vent system.
+
+### Future Crash Out Integration
+
+Future Crash Out outcomes may connect with other Ventvo systems, but these systems should be implemented independently rather than being forced into the Crash Out model prematurely.
+
+Potential future relationships include:
+
+```text
+Crash Out
+↓
+Vent
+↓
+Space
+↓
+Resonance
+↓
+Connection
+```
+
+The exact behavior of these future systems will be defined before implementation.
+
+### Architectural Principle
+
+Crash Out and Vent must remain separate concepts.
+
+A Crash Out represents a private release.
+
+A Vent represents an intentional expression brought into the Ventvo community.
+
+A Crash Out should only enter the Vent system when the user explicitly chooses to do so.
 
 
 ## Design Principle

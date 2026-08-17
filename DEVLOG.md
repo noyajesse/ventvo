@@ -839,5 +839,99 @@ The next Crash Out feature to implement is:
 **Turn into a Vent**
 
 This should be implemented separately from the private Crash Out system so that Crash Outs do not accidentally appear as normal Vents unless the user explicitly chooses to convert one.
+
+
+# 2026-08-15
+
+## Crash Out Model Simplification
+
+### Completed
+
+The Crash Out system was reviewed and simplified to keep the current implementation aligned with Ventvo's product direction.
+
+### Changes
+
+The Crash Out model was reduced to the states that are currently required by the implemented experience.
+
+Removed from the Crash Out model:
+
+* `letGo`
+* `findingPeople`
+* `ConnectionNeed`
+* The previous connection/matching state structure
+
+The current Crash Out statuses are:
+
+* `released`
+* `keptPrivate`
+* `convertedToVent`
+
+### Product Decision
+
+Crash Out remains a separate experience from the normal Vent system.
+
+A Crash Out begins as a private emotional release. The user can decide what happens to it rather than being forced into a social interaction.
+
+The current implemented private path is:
+
+```text
+Voice Space
+↓
+Crash Out
+↓
+Write / Release
+↓
+Fate
+↓
+Keep Private
+↓
+Private Crash Outs
 ```
 
+The future connection/matching concept has **not** been implemented as part of the current Crash Out model.
+
+This keeps the current implementation focused and prevents future product concepts from being prematurely built into the data model.
+
+### Voice Space
+
+Voice Space continues to provide access to:
+
+* Vent creation
+* Crash Out
+* Feed exploration
+* Private Crash Outs
+
+### Create Vent
+
+The Vent creation experience was also simplified to remain focused on Ventvo's current two-space model:
+
+* Just Listen
+* Open Discussion
+
+These represent two different ways a Vent can be experienced.
+
+### Current Product Architecture
+
+The current foundation remains:
+
+```text
+Ventvo Voice
+↓
+Voice Space
+├── Create Vent
+│   ├── Just Listen
+│   └── Open Discussion
+│
+├── Crash Out
+│   └── Private Crash Outs
+│
+└── Explore Feed
+```
+
+### Important Development Principle
+
+Future concepts such as deeper Resonance systems, Resonance Maps, Echo Notes, and other connection experiences should be implemented as their own systems when their underlying behavior is ready.
+
+They should not be added to the current models simply because they are part of the long-term product vision.
+
+The goal is to keep the current codebase simple, functional, and faithful to the product decisions already made.
