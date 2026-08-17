@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -49,6 +48,9 @@ class _CrashOutScreenState
       createdAt: DateTime.now(),
     );
 
+    // Add the Crash Out to the user's Crash Out history.
+    // Its initial state remains "released" until
+    // the user chooses what to do with it.
     ref
         .read(crashOutProvider.notifier)
         .addCrashOut(crashOut);
@@ -281,4 +283,3 @@ class _CrashOutScreenState
     );
   }
 }
-

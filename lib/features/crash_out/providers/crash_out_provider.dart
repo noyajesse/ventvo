@@ -1,4 +1,3 @@
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/crash_out.dart';
@@ -16,44 +15,23 @@ class CrashOutNotifier extends Notifier<List<CrashOut>> {
     ];
   }
 
-  void updateStatus(
-    String id,
-    CrashOutStatus status,
-  ) {
+  void keepPrivate(String id) {
     state = [
       for (final crashOut in state)
         crashOut.id == id
-            ? CrashOut(
-                id: crashOut.id,
-                textContent: crashOut.textContent,
-                audioPath: crashOut.audioPath,
-                type: crashOut.type,
-                createdAt: crashOut.createdAt,
-                status: status,
-                matchingEligible:
-                    crashOut.matchingEligible,
-                connectionNeed:
-                    crashOut.connectionNeed,
+            ? crashOut.copyWith(
+                status: CrashOutStatus.keptPrivate,
               )
             : crashOut,
     ];
   }
 
-  void enableMatching(String id) {
+  void markConvertedToVent(String id) {
     state = [
       for (final crashOut in state)
         crashOut.id == id
-            ? CrashOut(
-                id: crashOut.id,
-                textContent: crashOut.textContent,
-                audioPath: crashOut.audioPath,
-                type: crashOut.type,
-                createdAt: crashOut.createdAt,
-                status:
-                    CrashOutStatus.findingPeople,
-                matchingEligible: true,
-                connectionNeed:
-                    crashOut.connectionNeed,
+            ? crashOut.copyWith(
+                status: CrashOutStatus.convertedToVent,
               )
             : crashOut,
     ];
@@ -69,10 +47,6 @@ class CrashOutNotifier extends Notifier<List<CrashOut>> {
 }
 
 final crashOutProvider =
-    NotifierProvider<
-      CrashOutNotifier,
-      List<CrashOut>
-    >(
+    NotifierProvider<CrashOutNotifier, List<CrashOut>>(
   CrashOutNotifier.new,
 );
-

@@ -1,4 +1,3 @@
-
 enum CrashOutType {
   text,
   voice,
@@ -7,16 +6,7 @@ enum CrashOutType {
 enum CrashOutStatus {
   released,
   keptPrivate,
-  letGo,
   convertedToVent,
-  findingPeople,
-}
-
-enum ConnectionNeed {
-  justListen,
-  sharedExperience,
-  openDiscussion,
-  unsure,
 }
 
 class CrashOut {
@@ -32,24 +22,33 @@ class CrashOut {
 
   final DateTime createdAt;
 
-  CrashOutStatus status;
+  /// Current lifecycle state of this Crash Out.
+  final CrashOutStatus status;
 
-  /// Whether this Crash Out can eventually be considered
-  /// by the matching system.
-  final bool matchingEligible;
-
-  /// What kind of human connection the user wants.
-  final ConnectionNeed? connectionNeed;
-
-  CrashOut({
+  const CrashOut({
     required this.id,
     this.textContent,
     this.audioPath,
     required this.type,
     required this.createdAt,
     this.status = CrashOutStatus.released,
-    this.matchingEligible = false,
-    this.connectionNeed,
   });
-}
 
+  CrashOut copyWith({
+    String? id,
+    String? textContent,
+    String? audioPath,
+    CrashOutType? type,
+    DateTime? createdAt,
+    CrashOutStatus? status,
+  }) {
+    return CrashOut(
+      id: id ?? this.id,
+      textContent: textContent ?? this.textContent,
+      audioPath: audioPath ?? this.audioPath,
+      type: type ?? this.type,
+      createdAt: createdAt ?? this.createdAt,
+      status: status ?? this.status,
+    );
+  }
+}
