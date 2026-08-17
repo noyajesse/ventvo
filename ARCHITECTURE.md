@@ -1,827 +1,790 @@
-Ventvo#  Architecture
+# Ventvo Architecture
+
+
 ## Overview
 
-Ventvo is an anonymous community platform designed for people to express their thoughts, frustrations, experiences, and opinions without the pressure of traditional social media.
 
-The goal is to create a space where people can share honestly, find others with similar experiences, and have meaningful conversations.
+Ventvo is an anonymous community platform built around authentic expression, meaningful conversation, and human connection.
 
-Unlike traditional social platforms that focus on followers, popularity, and personal branding, Ventvo focuses on authenticity, connection, and expression.
 
----
+Ventvo does not treat every expression as a traditional social-media post.
 
-# Core Concept
 
-Ventvo supports two main types of expression:
+The core idea is:
 
-## Personal Vents
 
-Users can share personal experiences, emotions, challenges, and situations.
+> A person creates a moment, chooses how that moment should be experienced, and may eventually discover meaningful resonance with other people.
 
-Examples:
-- Personal struggles
-- Life experiences
-- Challenges
-- Advice requests
 
-## World Vents
+The primary product architecture is:
 
-Users can discuss opinions, social topics, events, and ideas.
 
-Examples:
-- Society
-- Culture
-- Current issues
-- General discussions
+```text
+Voice
+  ↓
+Vent
+  ↓
+Space
+  ↓
+Resonance
+  ↓
+Connection
 
----
+Crash Out is a separate expression pathway:
 
-# Platform Philosophy
+Voice Space
+  ↓
+Crash Out
+  ↓
+Private Release
+  ↓
+Fate
+1. Ventvo Voice
+Purpose
 
-Ventvo is built around:
+Ventvo Voice is the anonymous public identity layer of Ventvo.
 
-- Anonymous expression
-- Meaningful conversations
-- Emotional honesty
-- Community support
-- Reduced social pressure
-
-The platform should avoid becoming a popularity competition.
-
----
-
-# Initial Technology Stack
-
-## Frontend
-
-Technology:
-- Flutter
-- Dart
-
-Purpose:
-- Cross-platform mobile application development
-- Android and iOS support
-
----
-
-## Backend
-
-Planned:
-
-- Backend API
-- Authentication system
-- Database
-- Cloud storage
-
-(The final backend technology will be decided after evaluating requirements.)
-
----
-
-# Core Features (MVP)
-
-## User System
-
-Users should be able to:
-
-- Create an account
-- Maintain an anonymous identity
-- Manage their profile
-- Control privacy settings
-
----
-
-## Crashouts (Posts)
-
-Users should be able to:
-
-- Create a Crashout
-- Select a category or mood
-- Read other Crashouts
-- React to posts
-- Respond through comments
-
----
-
-## Community Interaction
-
-Users should be able to:
-
-- Validate posts
-- Join discussions
-- Find similar experiences
-- Report harmful content
-
----
-
-# Main App Screens (Initial)
-
-## Welcome Screen
-
-Purpose:
-Introduce Ventvo and its purpose.
-
----
-
-## Authentication Screen
-
-Purpose:
-Allow users to create accounts or sign in.
-
----
-
-## Home Feed
-
-Purpose:
-Display community Crashouts.
-
-Possible sections:
-- Trending
-- Recent
-- Categories
-
----
-
-## Create Crashout Screen
-
-Purpose:
-Allow users to express themselves.
-
-Possible inputs:
-- Text
-- Mood
-- Category
-- What type of response they want
-
----
-
-## Comments/Discussion Screen
-
-Purpose:
-Allow meaningful conversations.
-
----
-
-## Profile Screen
-
-Purpose:
-Manage user settings and history.
-
----
-
-# Initial Data Structure
-
-Planned entities:
-
-## Users
-
-Stores:
-- User ID
-- Username
-- Profile settings
-- Account information
-
----
-
-## Crashouts
-
-Stores:
-- Crashout ID
-- Author ID
-- Content
-- Category
-- Timestamp
-- Reaction count
-
----
-
-## Comments
-
-Stores:
-- Comment ID
-- Crashout ID
-- Author ID
-- Content
-- Timestamp
-
----
-
-## Reports
-
-Stores:
-- Report ID
-- Content ID
-- Reason
-- Status
-
----
-
-# Security Considerations
-
-Because Ventvo involves anonymous expression, security is a priority.
-
-Initial security goals:
-
-- Protect user information
-- Prevent harassment
-- Prevent spam
-- Provide reporting tools
-- Moderate harmful content
-- Secure authentication
-
----
-
-# Development Approach
-
-Every feature follows:
-
-1. Planning
-2. Architecture review
-3. Implementation
-4. Testing
-5. Security review
-6. Git commit
-7. GitHub backup
-
----
-
-# Current Status
-
-Version:
-0.1.0
-
-Current achievement:
-
-- Flutter environment configured
-- Project created
-- GitHub connected
-- Initial documentation created
-
-Next phase:
-
-Designing the user experience and implementing the first Ventvo screens.
----
-
-# Product Decisions
-
-## Identity System
-
-Ventvo uses a hybrid anonymous identity model.
-
-Users have private accounts for security and accountability, but their public identity remains anonymous.
-
-Public users see:
-- Anonymous username
-- Avatar
-- User-created identity
-
-Private system data:
-- Account ID
-- Authentication information
-- Security information
-
-This allows freedom of expression while preventing abuse.
-
----
-
-## Feed System
-
-Ventvo will use a personalized feed.
-
-Initial version:
-- User-selected interests
-- Categories
-- Mood preferences
-- Engagement history
-
-Future versions may include:
-- Machine learning recommendations
-- Similar experience matching
-
-Privacy principle:
-Personalization should improve discovery without exposing private user information.
-
----
-
-## Content System
-
-The main content type in Ventvo is called a Crashout.
-
-Users can create Crashouts containing:
-
-- Text
-- Optional images
-- Category
-- Mood
-
-Initial categories:
-- Personal Life
-- Relationships
-- School & Career
-- Society & World
-- Advice Needed
-- Random
-
-Mood selection:
-- Angry
-- Sad
-- Stressed
-- Disappointed
-- Confused
-- Hopeful
-- Funny
-- Thinking
-
----
-
-## Interaction System
-
-Users can:
-
-- Validate Crashouts
-- Respond through comments
-- Report harmful content
-
-Validation replaces traditional "likes" because it represents understanding rather than popularity.
-
----
-
-## Safety Philosophy
-
-Ventvo prioritizes anonymous expression while maintaining accountability.
-
-The platform will include:
-
-- Reporting system
-- Content moderation
-- Account restrictions
-- Abuse prevention systems
-
----
-
-## Future Expansion
-
-Ventvo may introduce Circles.
-
-Circles are interest-based communities where users can connect around shared interests.
-
-Examples:
-- Anime & Manga
-- Gaming
-- Technology
-- Movies
-- Books
-
-Circles will be developed after the core Ventvo experience is established.
-# Technical Stack Decisions
-
-## Frontend
-
-Ventvo will be built using Flutter and Dart.
-
-## State Management
-
-Riverpod will be used to manage application state.
-
-## Navigation
-
-GoRouter will handle navigation between screens.
-
-## Backend
-
-Firebase will provide backend services.
-
-Services planned:
-- Firebase Authentication
-- Cloud Firestore Database
-- Firebase Storage
-
-## Version Control
-
-Git and GitHub are used for source control and project history.
----
-
-# Brand Identity
-
-## Tagline
-
-Ventvo's primary tagline:
-
-"VENT your thoughts.
-FIND your people.
-FEEL understood."
-
-This represents the three core stages of the Ventvo experience:
-
-1. Vent your thoughts
-   - Users express their feelings, experiences, and opinions freely.
-
-2. Find your people
-   - Users discover others with similar experiences and perspectives.
-
-3. Feel understood
-   - Users receive validation and meaningful connection.
-
----
-
-## Emotional Promise
-
-Ventvo aims to create a safe environment where users feel comfortable expressing themselves.
-
-Supporting message:
-
-"Let it out.
-No judgement.
-
-Be heard.
-By people who understand.
-
-Feel validated.
-Real support. Real emotions."
-
----
-
-## User Experience Goal
-
-When someone opens Ventvo, they should feel:
-
-- Safe
-- Understood
-- Connected
-- Accepted
-
-Ventvo is designed around meaningful expression and human connection, not popularity or attention.
----
-
-# Ventvo Security Principles
-
-## Philosophy
-
-Security and privacy are core parts of the Ventvo experience.
-
-Users share personal thoughts and experiences on Ventvo, so the platform must protect their identity, information, and trust.
-
-## Identity Protection
-
-Ventvo separates private accounts from public identities.
-
-Private Account:
-- Authentication information
-- Email/provider details
-- Internal user ID
-- Security and moderation records
-
-Public Ventvo Voice:
-- Anonymous display identity
-- User contributions
-- Community interactions
-- Impact and reputation
-
-A user's real identity should never be exposed through their public Ventvo Voice.
-
-## Authentication Security
-
-Ventvo will use secure authentication providers instead of storing passwords directly.
-
-Security responsibilities:
-- Password handling
-- Authentication tokens
-- Account verification
-- Session security
-
-will be handled through trusted authentication services.
-
-## Database Protection
-
-Data access must follow the principle of least privilege.
-
-Users should only be able to:
-- Access their own private information
-- Modify their own content
-- Manage their own account settings
-
-Users should not be able to:
-- Access other users' private information
-- Modify another user's content
-- View restricted data
-
-## User Content Protection
-
-All user-generated content must be protected through:
-- Input validation
-- Content filtering
-- Abuse prevention
-- Reporting systems
-- Moderation controls
-
-## Development Security Rules
-
-During development:
-- Never commit passwords, API keys, or private credentials
-- Review generated code before using it
-- Test features for possible abuse scenarios
-- Keep sensitive configuration separate from public code
-
-## Core Principle
-
-Ventvo protects the person behind the Vent while allowing their voice to be heard.
----
-
-## Ventvo Voice Architecture Update
-
-### Ventvo Voice Identity System
-
-Ventvo Voice is the user's anonymous public identity layer.
-
-A user's real identity remains private while their Ventvo Voice represents their presence inside the community.
+A user has a private account for authentication and security, but their public presence is represented through their Ventvo Voice.
 
 A Ventvo Voice consists of:
 
-- Voice Name
-- Voice Mark
-- Voice Essence
+Voice Name
+Voice Mark
+Voice Essence
 
-### Authentication Flow
+The Voice is the identity attached to a user's expression inside Ventvo.
 
-Current user journey:
+Identity Separation
 
-Welcome Screen
-        ?
+Ventvo separates:
+
+Private Account Identity
+
+Private system information may include:
+
+Account ID
+Authentication information
+Email/provider information
+Security information
+Moderation records
+Public Ventvo Voice
+
+The community interacts with:
+
+Voice Name
+Voice Mark
+Voice Essence
+Vents
+Community interactions
+
+The user's real identity should not be exposed through their public Ventvo Voice.
+
+2. Voice Space
+
+Voice Space is the personal environment connected to a user's Ventvo Voice.
+
+It currently provides access to:
+
+Voice identity
+Created Vents
+Private Crash Outs
+Create Vent
+Crash Out
+Feed exploration
+
+Current relationship:
+
+Ventvo Voice
+      ↓
+Voice Space
+      ↓
+Vents / Crash Out / Feed
+
+Voice Space is not intended to become a traditional profile page.
+
+3. Vent
+Definition
+
+A Vent is a thought, feeling, idea, experience, opinion, or moment intentionally released by a Voice into Ventvo.
+
+A Vent is not simply a social-media post.
+
+A Vent creates a Space that communicates how the creator wants that moment to be experienced.
+
+Current Vent Structure
+
+The current Vent model contains:
+
+id
+content
+spaceType
+voiceMark
+createdAt
+
+The Vent also maintains its relationship with the Voice that created it through the creator's Voice Mark.
+
+Vent Relationship
+Voice
+  ↓
+Vent
+  ↓
+Space
+
+This relationship is one of the central foundations of Ventvo.
+
+4. Spaces
+
+A Space defines how other people should interact with a Vent.
+
+Ventvo currently has two core Spaces.
+
+4.1 Just Listen
+Purpose
+
+Just Listen exists for moments where the creator wants to be heard without receiving advice or solutions.
+
+The philosophy is:
+
+Presence before advice.
+
+The creator is not asking other people to fix the situation.
+
+Current Prototype
+
+The current prototype allows:
+
+Creation of a Just Listen Vent
+Display of the Vent as a Listening Space
+A listener selecting Heard
+
+The current Heard state is prototype behavior.
+
+Production implementation will eventually require persistent interaction state and backend storage.
+
+Interaction Rules
+
+Just Listen should remain protected from:
+
+Normal comments
+Advice
+Open discussion
+
+The purpose is simply to acknowledge:
+
+"I heard you."
+
+5. Open Discussion
+Purpose
+
+Open Discussion exists for moments where the creator welcomes conversation and different perspectives.
+
+The philosophy is:
+
+Explore together rather than simply react.
+
+Current Prototype
+
+The current implementation supports:
+
+Creation of an Open Discussion Vent
+Open Discussion Space identification
+Entering a dedicated Discussion screen
+Local discussion responses
+Future Development
+
+The discussion system will eventually require:
+
+Persistent discussion data
+Real participant data
+Conversation state
+Echoes
+Echo Notes
+Resonance connections
+Safety and moderation controls
+6. Resonance
+Definition
+
+Resonance is one of Ventvo's central systems.
+
+Resonance represents meaningful connection between people.
+
+It is not intended to become:
+
+A Like
+A popularity score
+A follower count
+A generic engagement metric
+
+Resonance answers a deeper question:
+
+"Did this moment connect with something in me?"
+
+Resonance Architecture
+
+Resonance sits above individual interactions.
+
+The intended architecture is:
+
+Voice
+  ↓
+Vent
+  ↓
+Space
+  ↓
+Resonance
+  ↓
+Connection
+
+A person may encounter a Vent, experience resonance with it, and eventually discover another Voice through that resonance.
+
+7. Resonance Threads
+
+Resonance Threads are a future system built on top of Resonance.
+
+They represent connections between related moments and experiences.
+
+A Resonance Thread may eventually allow Ventvo to connect:
+
+Moment
+  ↓
+Resonance
+  ↓
+Related Moment
+  ↓
+Another Voice
+
+The purpose is not to create another comment feed.
+
+The purpose is to reveal meaningful connections between experiences.
+
+Resonance Threads are not yet implemented.
+
+8. Resonance Maps
+
+Resonance Maps are a future visual/system layer of the Resonance architecture.
+
+A Resonance Map is intended to represent how moments and Voices connect through shared resonance.
+
+Conceptually:
+
+                 Voice
+                   │
+                 Vent
+                   │
+              Resonance
+              /    |    \
+           Voice  Vent  Voice
+             \     |     /
+              Resonance
+                   │
+                Connection
+
+The exact visual and technical implementation of Resonance Maps will be defined when the Resonance system is implemented.
+
+Resonance Maps are not currently implemented.
+
+9. Echo
+
+Echo is a future interaction layer built around meaningful responses to moments.
+
+An Echo should represent a Voice responding because something in the original moment resonated with them.
+
+Echo should not simply become another name for a comment.
+
+The intended distinction is:
+
+Vent
+  ↓
+Echo
+  ↓
+Possible deeper connection
+
+Echo is not yet implemented as a complete system.
+
+10. Echo Notes
+
+Echo Notes are intended to be deeper reflections associated with an Echo.
+
+They are not ordinary comments.
+
+An Echo Note should allow someone to communicate something similar to:
+
+"I understand this because I have experienced something like it."
+
+Echo Notes should preserve the meaning of the original moment while adding another person's perspective.
+
+The full Echo Note architecture is still under development.
+
+11. Crash Out
+
+Crash Out is a separate Ventvo experience.
+
+It is not a Vent type.
+
+It is not intended to be:
+
+A diary
+A notes application
+A collection of ordinary posts
+
+Crash Out provides a private release pathway.
+
+It allows a person to release something they are carrying before deciding what, if anything, should happen next.
+
+Crash Out Architecture
+Voice Space
+     ↓
+Crash Out
+     ↓
+Release
+     ↓
+Fate
+
+The Crash Out remains separate from the normal Vent system unless the user explicitly chooses to move it into that system.
+
+12. Crash Out Model
+
+The current Crash Out model supports:
+
+id
+content
+type
+createdAt
+status
+
+Current statuses include:
+
+released
+keptPrivate
+convertedToVent
+
+The model is intentionally separate from the Vent model.
+
+13. Crash Out Fate
+
+After releasing a Crash Out, the user can eventually choose what happens next.
+
+The intended outcomes are:
+
+Let Go
+Keep Private
+Turn into a Vent
+Find People Who Understand
+13.1 Let Go
+
+Let Go removes the Crash Out from the user's private Crash Out storage.
+
+Current behavior:
+
+Crash Out
+  ↓
+Let Go
+  ↓
+Deleted
+  ↓
+Voice Space
+13.2 Keep Private
+
+Keep Private stores the Crash Out privately.
+
+Current behavior:
+
+Crash Out
+  ↓
+Keep Private
+  ↓
+Private Crash Outs
+
+Private Crash Outs:
+
+Do not appear in the normal Feed
+Are not normal Vents
+Are accessible only through the user's private space
+13.3 Turn into a Vent
+
+This is a future pathway.
+
+Intended architecture:
+
+Crash Out
+  ↓
+Turn into a Vent
+  ↓
+Vent
+  ↓
+Space
+  ↓
+Feed
+  ↓
+Resonance
+
+The conversion should only happen when the user explicitly chooses it.
+
+13.4 Find People Who Understand
+
+This is a future connection pathway.
+
+The intended experience is not:
+
+"Your algorithmic match is User #123."
+
+Instead, it should feel like:
+
+"These are people who understand."
+
+The long-term direction is:
+
+Crash Out
+  ↓
+Private Understanding
+  ↓
+Resonance / Similarity
+  ↓
+Small Group
+  ↓
+Connection
+
+The earlier product direction allows this experience to eventually surface a small number of Voices rather than a large public audience.
+
+The exact matching system has not yet been implemented.
+
+14. Human Connection System
+
+Ventvo's connection system is intended to grow from Resonance rather than traditional social networking.
+
+The long-term direction is:
+
+Expression
+    ↓
+Vent
+    ↓
+Space
+    ↓
+Resonance
+    ↓
+Echo
+    ↓
+Deeper Understanding
+    ↓
+Connection
+
+The goal is meaningful connection rather than maximum engagement.
+
+15. Feed
+
+The Feed is the community discovery layer.
+
+Current prototype flow:
+
+Voice
+  ↓
+Vent
+  ↓
+ventProvider
+  ↓
+Feed
+
+Feed cards currently prioritize:
+
+Voice identity
+Vent expression
+Space type
+Appropriate interaction
+
+The Feed should not become a follower-based popularity feed.
+
+Future discovery behavior may use Resonance once the Resonance system exists.
+
+16. Discussion
+
+Open Discussion currently has a dedicated discussion experience.
+
+Current prototype behavior:
+
+Open Discussion Vent
+        ↓
+Discussion Screen
+        ↓
+Local Responses
+
+The current responses are demonstration data.
+
+Future implementation will require persistent backend data and proper participant identity.
+
+Discussion should remain separate from Just Listen.
+
+17. State Management
+
+Ventvo uses Riverpod for application state.
+
+Current providers include systems such as:
+
+Vent state
+Ventvo Voice state
+Crash Out state
+
+Crash Out state remains independent from Vent state.
+
+This separation is intentional.
+
+18. Navigation
+
+Ventvo uses Flutter navigation.
+
+The application currently contains separate feature screens for:
+
 Authentication
-        ?
-Ventvo Voice Creation
-        ?
-Ventvo Home Experience
+Onboarding
+Ventvo Voice
+Voice Space
+Vents
+Feed
+Discussion
+Crash Out
 
-Authentication protects the account while Ventvo Voice creates the public anonymous identity.
+Navigation should follow feature boundaries rather than creating unnecessary dependencies between unrelated systems.
 
-### Current Flutter Feature Structure
+19. Project Structure
+
+Current structure:
 
 lib/
- +-- core/
- +-- features/
- �    +-- auth/
- �    +-- onboarding/
- �    +-- ventvo_voice/
- �    �    +-- screens/
- �    +-- home/
- �    +-- vents/
- �    +-- spaces/
- �    +-- crash_out/
+├── core/
+└── features/
+    ├── auth/
+    ├── onboarding/
+    ├── ventvo_voice/
+    │   ├── models/
+    │   ├── providers/
+    │   └── screens/
+    ├── home/
+    ├── vents/
+    ├── feed/
+    │   ├── screens/
+    │   └── widgets/
+    ├── discussion/
+    ├── spaces/
+    └── crash_out/
+        ├── models/
+        ├── providers/
+        └── screens/
+20. Backend Direction
 
-### Development Workflow
 
-- main branch contains stable releases.
-- development branch contains active feature development.
-- Features are tested before merging.
-## Project Documentation Standards
+Supabase will provide Ventvo's backend services.
 
-Ventvo maintains three core documents that guide development decisions:
+Services planned:
 
-### Engineering Handbook
+- Supabase Authentication
+- PostgreSQL Database
+- Supabase Storage
+- Supabase Realtime
 
-Defines how Ventvo is built.
+21. Security Architecture
 
-Covers:
+Ventvo must protect the person behind the Voice.
 
-- Architecture principles
-- Coding standards
-- State management decisions
-- Git workflow
-- Development process
+The system should enforce separation between:
 
-File:
+Private Account
+      ↓
+Authentication / Security
+      ↓
+Ventvo Voice
+      ↓
+Community Expression
 
-`ENGINEERING_HANDBOOK.md`
+Security priorities include:
 
----
+Authentication
+Authorization
+Identity separation
+Privacy
+Input validation
+Abuse prevention
+Content moderation
+Reporting
+Secure data access
 
-### Security Handbook
+Users must not be able to access or modify another user's private data or protected content.
 
-Defines how Ventvo protects users and their data.
+22. Product Architecture Principles
 
-Covers:
+Ventvo should not copy traditional social-media architecture simply because those patterns are familiar.
 
-- Identity separation
-- Privacy principles
-- Security reviews
-- Authorization rules
-- Secure development practices
+The platform prioritizes:
 
-File:
+Expression over performance
+Understanding over popularity
+Connection over engagement
+Voice over traditional profiles
+Moments over generic posts
+Meaningful interaction over reaction farming
 
-`SECURITY_HANDBOOK.md`
+Every major feature should strengthen the central architecture:
 
----
+Voice
+  ↓
+Vent
+  ↓
+Space
+  ↓
+Resonance
+  ↓
+Connection
+23. Current vs Future Systems
+Implemented Foundation
 
-### Product Vision
+Currently functional or prototyped:
 
-Defines why Ventvo exists and the long-term direction of the platform.
+Authentication foundation
+Ventvo Voice creation
+Voice Space
+Vent creation
+Vent provider
+Feed foundation
+Voice identity in Vents
+Just Listen prototype
+Open Discussion prototype
+Discussion prototype
+Crash Out entry
+Crash Out release
+Crash Out Fate
+Let Go
+Keep Private
+Private Crash Out storage
+Product Systems Not Yet Fully Implemented
 
-Covers:
+These are established product directions but require further development:
 
-- Ventvo mission
-- Ventvo Voice philosophy
-- User experience principles
-- Future expansion ideas
+Resonance
+Resonance Threads
+Resonance Maps
+Echo
+Echo Notes
+Persistent discussions
+Persistent Resonance interactions
+Crash Out → Vent conversion
+Find People Who Understand
+Small connection groups
+Voice Crash Outs
+Backend persistence
+AI-assisted similarity discovery
+24. AI Matching Direction
 
-File:
+AI may eventually assist Ventvo in discovering meaningful similarities between experiences.
 
-`PRODUCT_VISION.md`
+The purpose would be:
 
----
+Help people discover others who may genuinely understand their experience.
 
-These documents work together:
-Product Vision
+AI should not be used to:
+
+Diagnose users
+Provide therapy
+Determine someone's mental health
+Replace human connection
+
+The system should focus on meaningful similarity and connection.
+
+AI matching will be developed only after the underlying Resonance and connection architecture is established.
+
+25. Architecture Decision
+
+Ventvo maintains a strict separation between its core expression systems.
+
+Vent
+
+An intentional expression brought into the Ventvo community.
+
+Space
+
+Defines how that Vent should be experienced.
+
+Resonance
+
+Represents meaningful connection.
+
+Crash Out
+
+A private release experience that exists outside the normal Vent system.
+
+This separation should be preserved as the project grows.
+
+26. Product Direction
+
+Ventvo's long-term architecture is not simply:
+
+Post
 ↓
-Engineering Handbook
+Like
 ↓
-Security Handbook
+Comment
 ↓
-Implementation
+Follower
 
-
-They ensure Ventvo grows with a clear purpose, strong engineering standards, and user trust as a priority.
- # Ventvo Architecture
-
-## Core Product Flow
-
-Ventvo is built around the idea that people do not simply create posts. They create spaces for expression.
-
-The core flow is:
+Instead, Ventvo is designed around:
 
 Voice
 ↓
-Vent
-↓
-Space
-↓
-Resonance
-
-
-## Core Concepts
-
-### Voice
-
-A Voice represents a person's identity and expression inside Ventvo.
-
-A Voice contains:
-
-- Voice mark
-- Personal expression
-- Identity used when creating Moments
-
-
-### Vent
-
-A Vent is a thought, feeling, idea, or moment released by a Voice.
-
-Current Vent structure:
-
-- id
-- content
-- spaceType
-- voiceMark
-- createdAt
-
-
-### Space
-
-A Space defines how a Vent should be experienced by others.
-
-Current spaces:
-
-### Just Listen
-
-Purpose:
-A place where someone can express themselves without expecting solutions.
-
-Interaction philosophy:
-
-- Understanding before advice
-- Presence before responses
-
-
-### Open Discussion
-
-Purpose:
-A place where the creator welcomes different perspectives and conversation.
-
-Interaction philosophy:
-
-- Sharing viewpoints
-- Exploring ideas together
-
-
-## Future Systems
-
-The following systems will be added as separate features instead of being forced into the Vent model.
-
-### Resonance
-
-A way to represent meaningful connection between Voices.
-
-This is different from:
-
-- Likes
-- Popularity
-- Engagement numbers
-
-Resonance represents being understood.
-
-
-### Echo Notes
-
-A way for another Voice to leave a meaningful reflection on an existing Moment.
-
-Echo Notes should not become normal comments.
-
-They should preserve the original Voice and add another perspective.
-
-
-## Crash Out
-
-Crash Out is a separate experience from the normal Vent system.
-
-It allows a Voice to release something privately before deciding whether it should become part of the wider Ventvo experience.
-
-Crash Out is **not a Vent type**.
-
-### Current Crash Out Model
-
-A Crash Out currently contains:
-
-* id
-* content
-* type
-* createdAt
-* status
-
-Current statuses:
-
-* `released`
-* `keptPrivate`
-* `convertedToVent`
-
-### Current Flow
-
-```text
-Voice Space
-↓
-Crash Out
-↓
-Release
-↓
-Fate
-├── Keep Private
-└── Future outcomes
-```
-
-The private path is currently implemented.
-
-```text
-Keep Private
-↓
-Private Crash Outs
-```
-
-Private Crash Outs remain separate from the normal Feed and Vent system.
-
-### Future Crash Out Integration
-
-Future Crash Out outcomes may connect with other Ventvo systems, but these systems should be implemented independently rather than being forced into the Crash Out model prematurely.
-
-Potential future relationships include:
-
-```text
-Crash Out
+Moment
 ↓
 Vent
 ↓
 Space
 ↓
 Resonance
+↓
+Understanding
 ↓
 Connection
-```
 
-The exact behavior of these future systems will be defined before implementation.
+That distinction is fundamental to the product.
 
-### Architectural Principle
+27. Documentation Hierarchy
 
-Crash Out and Vent must remain separate concepts.
+Ventvo documentation follows:
 
-A Crash Out represents a private release.
+PRODUCT_VISION.md
+       ↓
+ARCHITECTURE.md
+       ↓
+ENGINEERING_HANDBOOK.md
+       ↓
+SECURITY_HANDBOOK.md
+       ↓
+Implementation
+Product Vision
 
-A Vent represents an intentional expression brought into the Ventvo community.
+Defines why Ventvo exists.
 
-A Crash Out should only enter the Vent system when the user explicitly chooses to do so.
+Architecture
 
+Defines how the product concepts connect.
 
-## Design Principle
+Engineering Handbook
 
-Ventvo should avoid copying traditional social media structures.
+Defines how the software is built.
 
-The system should prioritize:
+Security Handbook
 
-- Expression over performance
-- Understanding over popularity
-- Connection over engagement
+Defines how users and their data are protected.
+
+The implementation should follow these documents rather than redefining the product direction independently.
+
+28. Current Development Principle
+
+Before implementing a new feature, answer:
+
+What human problem does this solve?
+
+Then determine:
+
+What product concept does it belong to?
+Does it strengthen Voice, Vent, Space, Resonance, or Connection?
+Is it a new system or part of an existing one?
+Does it require backend state?
+Does it introduce security or privacy risks?
+How does it affect the existing architecture?
+
+Ventvo should grow deliberately rather than accumulating unrelated social-media features
