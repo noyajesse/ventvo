@@ -1,24 +1,35 @@
 import 'package:flutter/material.dart';
 
+import 'ventvo_colors.dart';
+import 'ventvo_typography.dart';
+
 class AppTheme {
-  static ThemeData darkTheme = ThemeData(
+  AppTheme._();
+
+  static final ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
 
-    scaffoldBackgroundColor: const Color(0xFF0B0B10),
+    scaffoldBackgroundColor: VentvoColors.background,
 
     colorScheme: const ColorScheme.dark(
-      primary: Color(0xFF8B5CF6),
-      secondary: Color(0xFF38BDF8),
+      primary: VentvoColors.primary,
+      secondary: VentvoColors.secondary,
     ),
 
     textTheme: const TextTheme(
-      headlineLarge: TextStyle(
-        fontSize: 36,
-        fontWeight: FontWeight.bold,
-      ),
+      displayLarge: VentvoTypography.wordmark,
+      headlineMedium: VentvoTypography.hero,
+      bodyMedium: VentvoTypography.body,
+      labelLarge: VentvoTypography.button,
+    ),
 
-      bodyLarge: TextStyle(
-        fontSize: 18,
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        minimumSize: const Size(double.infinity, 54),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        textStyle: VentvoTypography.button,
       ),
     ),
   );
