@@ -331,9 +331,9 @@ Backend
 
 Planned:
 
-Firebase Authentication
+Superbase Authentication
 Cloud Firestore
-Firebase Storage
+Superbase Storage
 
 Backend implementation will be introduced as the application moves from prototype state toward production.
 
@@ -484,3 +484,87 @@ Tagline
 VENT your thoughts. FIND your people. FEEL understood.
 
 Ventvo is built for people who want to express what they are carrying and discover that they are not alone.
+---
+
+# Latest Development Milestone — Ventvo Voice Foundation
+
+Ventvo's onboarding experience has now been extended into the foundation of the **Ventvo Voice system**.
+
+The Voice is not presented as a personality type that a user simply chooses. It is the beginning of an evolving identity inside Ventvo.
+
+## Voice Foundations
+
+Ventvo currently defines three foundational Voice concepts:
+
+- **VAELOR** — Give it somewhere to exist.
+- **NYVEN** — You are heard.
+- **AUREN** — You can become something different.
+
+These are part of Ventvo's own vocabulary and philosophy. They are not intended to function as generic personality categories.
+
+Each foundation has an associated Voice Mark:
+
+- VAELOR — `◇`
+- NYVEN — `∿`
+- AUREN — `✦`
+
+## Voice Seed
+
+A new `VentvoVoiceSeed` represents the beginning state of a user's Voice.
+
+The Voice Seed contains:
+
+- Voice foundation profile
+- Voice Mark
+- Growth state
+
+The Seed is intentionally incomplete.
+
+A user's Voice is expected to evolve through their experiences and expression within Ventvo rather than remaining permanently fixed to the state created during onboarding.
+
+## Current Onboarding Flow
+
+The current experience follows:
+
+```text
+Welcome
+   ↓
+Authentication
+   ↓
+Finding Your Voice
+   ↓
+Voice Seed
+   ↓
+Voice Reveal
+   ↓
+Ventvo
+The Finding Your Voice screen intentionally avoids overwhelming the user with a personality questionnaire. The first experience should feel reflective and simple rather than requiring the user to define themselves before they have experienced Ventvo.
+
+The Voice Reveal experience introduces the user's initial Voice foundation and Mark.
+
+Visual Foundation
+
+A reusable Ventvo visual system has also been established:
+
+Centralized Ventvo colors
+Typography system
+Spacing system
+Ventvo Mark component
+Application theme
+Motion/animation foundation
+Atmospheric background treatment
+Consistent button and surface styling
+
+The visual direction intentionally favors a calm, intimate and reflective experience rather than the bright, high-energy visual language of conventional social platforms.
+
+Design Principle
+
+The Voice should answer:
+
+Who are you becoming here?
+
+rather than:
+
+Which personality type are you?
+
+The Voice begins as a seed and can evolve with the person.

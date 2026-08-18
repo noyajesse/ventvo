@@ -144,3 +144,44 @@ The current implementation focuses on:
 * Maintaining a clear path toward future Crash Out functionality without prematurely implementing matching or connection infrastructure.
 
 Future systems such as Resonance, Resonance Maps, Echo Notes, and deeper human-connection features will be developed separately when their underlying product and technical behavior is ready.
+
+### `CHANGELOG.md`
+
+And at the bottom:
+
+```markdown
+---
+
+## [Unreleased] — Ventvo Voice Foundation
+
+### Added
+
+- Ventvo visual theme foundation
+- Centralized Ventvo colors
+- Ventvo typography system
+- Ventvo spacing system
+- Ventvo motion system
+- Ventvo Mark component
+- Email authentication screen foundation
+- Finding Your Voice onboarding experience
+- Voice Reveal experience
+- `VentvoVoice` model
+- `VentvoVoiceProfile`
+- `VentvoVoiceSeed`
+- Initial Voice foundations:
+  - VAELOR
+  - NYVEN
+  - AUREN
+- Voice Marks associated with each foundation
+- Initial Voice growth state
+
+### Changed
+
+- Updated authentication choice experience
+- Updated Welcome experience
+- Refined onboarding visual direction
+- Established Voice as an evolving identity rather than a fixed personality category
+
+### Validation
+
+- `flutter analyze` passes with no issues.

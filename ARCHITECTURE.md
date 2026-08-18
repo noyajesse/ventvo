@@ -788,3 +788,122 @@ Does it introduce security or privacy risks?
 How does it affect the existing architecture?
 
 Ventvo should grow deliberately rather than accumulating unrelated social-media features
+
+### `ARCHITECTURE.md`
+
+At the bottom:
+
+```markdown
+---
+
+# Latest Architecture Addition — Ventvo Voice Foundation
+
+## Voice System
+
+The Ventvo Voice system now has a dedicated core layer:
+
+```text
+lib/core/voice/
+├── ventvo_voice.dart
+├── ventvo_voice_seed.dart
+└── ventvo_voice_system.dart
+VentvoVoice
+
+VentvoVoice defines the current foundational Voice vocabulary:
+
+VAELOR
+NYVEN
+AUREN
+
+Each foundation has:
+
+Name
+Principle
+Mark
+
+The current definitions are:
+
+Voice	Principle	Mark
+VAELOR	Give it somewhere to exist.	◇
+NYVEN	You are heard.	∿
+AUREN	You can become something different.	✦
+
+These foundations are part of Ventvo's internal language and should not be treated as ordinary selectable personality types.
+
+VentvoVoiceProfile
+
+VentvoVoiceProfile represents the balance between the three Voice foundations.
+
+It currently stores:
+
+vaelorWeight
+nyvenWeight
+aurenWeight
+
+This allows a Voice to eventually become more nuanced than a single permanent category.
+
+VentvoVoiceSeed
+
+VentvoVoiceSeed represents the initial state of a user's Voice.
+
+It contains:
+
+profile
+mark
+growth
+
+The Seed is deliberately incomplete.
+
+The architecture should allow the Voice to evolve as the user interacts with Ventvo rather than treating onboarding as the permanent definition of the person.
+
+Onboarding Architecture
+
+The current onboarding progression is:
+
+Welcome
+   ↓
+Authentication
+   ↓
+Finding Your Voice
+   ↓
+Voice Reveal
+
+FindingYourVoiceScreen introduces the Voice concept without forcing the user through a long personality questionnaire.
+
+VoiceRevealScreen presents the resulting Voice foundation and Mark.
+
+The Voice Seed is passed into the reveal experience so that the Voice identity is represented by actual domain data rather than isolated UI text.
+
+Visual Architecture
+
+The following reusable core systems have been introduced:
+
+lib/core/
+├── motion/
+│   └── ventvo_motion.dart
+│
+├── theme/
+│   ├── app_theme.dart
+│   ├── ventvo_colors.dart
+│   ├── ventvo_mark.dart
+│   ├── ventvo_spacing.dart
+│   └── ventvo_typography.dart
+│
+└── voice/
+    ├── ventvo_voice.dart
+    ├── ventvo_voice_seed.dart
+    └── ventvo_voice_system.dart
+
+This establishes a reusable foundation rather than placing visual and Voice logic directly inside individual screens.
+
+Design Constraint
+
+Future Voice-related features must preserve the distinction between:
+
+Voice Foundation
+        ↓
+Voice Seed
+        ↓
+Voice Evolution
+
+The system should not turn into a personality quiz or force users into a permanent identity.

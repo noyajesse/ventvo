@@ -935,3 +935,105 @@ Future concepts such as deeper Resonance systems, Resonance Maps, Echo Notes, an
 They should not be added to the current models simply because they are part of the long-term product vision.
 
 The goal is to keep the current codebase simple, functional, and faithful to the product decisions already made.
+ 
+### `DEVLOG.md`
+
+Add this as the latest entry:
+
+```markdown
+---
+
+# Development Milestone — Ventvo Voice & Visual Foundation
+
+## Summary
+
+The Ventvo onboarding experience was expanded into the first implementation of the Ventvo Voice foundation.
+
+This milestone established the relationship between the user's anonymous identity, Voice foundation, Voice Mark and future Voice evolution.
+
+## Implemented
+
+### Visual System
+
+Created the initial reusable Ventvo visual foundation:
+
+- `VentvoColors`
+- `VentvoTypography`
+- `VentvoSpacing`
+- `VentvoMark`
+- Updated `AppTheme`
+- `VentvoMotion`
+
+The visual direction was refined toward a darker, calmer and more intimate experience.
+
+### Authentication
+
+Updated the authentication choice experience and added the Email Authentication screen foundation.
+
+### Onboarding
+
+Implemented:
+
+- Welcome screen
+- Finding Your Voice screen
+- Voice Reveal screen
+
+The onboarding flow now introduces the Voice without overwhelming the user with a large questionnaire.
+
+### Voice System
+
+Created:
+
+- `VentvoVoice`
+- `VentvoVoiceProfile`
+- `VentvoVoiceSeed`
+- `VentvoVoiceSystem`
+
+The first three Ventvo Voice foundations are:
+
+**VAELOR**
+
+> Give it somewhere to exist.
+
+**NYVEN**
+
+> You are heard.
+
+**AUREN**
+
+> You can become something different.
+
+Each foundation has its own Mark.
+
+### Voice Evolution
+
+The Voice Seed was designed as an incomplete starting point.
+
+The intention is that a user's Voice can evolve over time rather than being permanently determined during onboarding.
+
+## Current Flow
+
+```text
+Welcome
+    ↓
+Authentication
+    ↓
+Finding Your Voice
+    ↓
+Voice Seed
+    ↓
+Voice Reveal
+Validation
+
+flutter analyze completed successfully with no issues.
+
+Git
+
+All work from this milestone was committed to the development branch.
+
+Milestone:
+
+Build Ventvo visual system and Voice onboarding
+Next Direction
+
+The next stage is to connect the revealed Voice to the main Ventvo experience so the Voice Seed and Mark remain part of the user's identity after onboarding.
