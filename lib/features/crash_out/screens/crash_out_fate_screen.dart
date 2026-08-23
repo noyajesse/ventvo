@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/crash_out.dart';
 import '../providers/crash_out_provider.dart';
+import '../../ventvo_voice/screens/create_vent_screen.dart';
 import '../../ventvo_voice/screens/voice_space_screen.dart';
 
 class CrashOutFateScreen extends ConsumerWidget {
@@ -61,11 +62,27 @@ class CrashOutFateScreen extends ConsumerWidget {
     _returnToVoiceSpace(context);
   }
 
+  void _turnIntoVent(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CreateVentScreen(
+          initialContent: crashOut.textContent,
+          crashOutId: crashOut.id,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(
     BuildContext context,
     WidgetRef ref,
   ) {
+    final canTurnIntoVent =
+        crashOut.type == CrashOutType.text &&
+        (crashOut.textContent?.trim().length ?? 0) >= 3;
+
     return Scaffold(
       backgroundColor: const Color(0xFF111111),
 
@@ -127,17 +144,47 @@ class CrashOutFateScreen extends ConsumerWidget {
 
               const Spacer(),
 
+              if (canTurnIntoVent) ...[
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _turnIntoVent(context);
+                    },
+
+                    child: const Text(
+                      'Turn into a Vent',
+
+                      style: TextStyle(
+                        fontSize: 17,
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 14),
+              ],
+
               SizedBox(
                 width: double.infinity,
                 height: 56,
 
-                child: ElevatedButton(
+                child: OutlinedButton(
                   onPressed: () {
                     _keepPrivate(
                       context,
                       ref,
                     );
                   },
+
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    side: const BorderSide(
+                      color: Colors.white24,
+                    ),
+                  ),
 
                   child: const Text(
                     'Keep Private',
