@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -6,6 +5,7 @@ import '../providers/voice_provider.dart';
 import '../providers/vent_provider.dart';
 
 import '../../feed/screens/feed_screen.dart';
+import '../../feed/widgets/vent_card.dart';
 import '../../crash_out/screens/crash_out_screen.dart';
 import '../../crash_out/screens/private_crash_outs_screen.dart';
 import '../../crash_out/models/crash_out.dart';
@@ -48,7 +48,6 @@ class VoiceSpaceScreen extends ConsumerWidget {
                 // ─────────────────────────────
                 // VOICE IDENTITY
                 // ─────────────────────────────
-
                 Container(
                   height: 140,
                   width: 140,
@@ -61,7 +60,7 @@ class VoiceSpaceScreen extends ConsumerWidget {
                   ),
                   child: Center(
                     child: Text(
-                      voice.mark ?? "◇",
+                      voice.mark ?? '◇',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 60,
@@ -73,7 +72,7 @@ class VoiceSpaceScreen extends ConsumerWidget {
                 const SizedBox(height: 40),
 
                 Text(
-                  voice.name ?? "Unnamed Voice",
+                  voice.name ?? 'Unnamed Voice',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Colors.white,
@@ -85,8 +84,7 @@ class VoiceSpaceScreen extends ConsumerWidget {
                 const SizedBox(height: 15),
 
                 Text(
-                  voice.expression ??
-                      "Your Voice is waiting.",
+                  voice.expression ?? 'Your Voice is waiting.',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Colors.white70,
@@ -99,11 +97,10 @@ class VoiceSpaceScreen extends ConsumerWidget {
                 // ─────────────────────────────
                 // VOICE STATISTICS
                 // ─────────────────────────────
-
                 Text(
-                  "0 Moments\n"
-                  "${vents.length} Vents\n"
-                  "0 Arcs",
+                  '0 Moments\n'
+                  '${vents.length} Vents\n'
+                  '0 Arcs',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Colors.white54,
@@ -117,61 +114,20 @@ class VoiceSpaceScreen extends ConsumerWidget {
                 // ─────────────────────────────
                 // YOUR VENTS
                 // ─────────────────────────────
-
                 if (vents.isNotEmpty)
                   Column(
                     children: [
                       const Text(
-                        "Your Vents",
+                        'Your Vents',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-
                       const SizedBox(height: 20),
-
                       ...vents.map(
-                        (vent) {
-                          return Container(
-                            margin: const EdgeInsets.only(
-                              bottom: 15,
-                            ),
-                            padding: const EdgeInsets.all(18),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.white10,
-                              borderRadius:
-                                  BorderRadius.circular(20),
-                            ),
-                            child: Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  vent.content,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    height: 1.4,
-                                  ),
-                                ),
-
-                                const SizedBox(height: 12),
-
-                                Text(
-                                  "Space: "
-                                  "${vent.responseIntent}",
-                                  style: const TextStyle(
-                                    color: Colors.white54,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
+                        (vent) => VentCard(vent: vent),
                       ),
                     ],
                   ),
@@ -179,26 +135,22 @@ class VoiceSpaceScreen extends ConsumerWidget {
                 // ─────────────────────────────
                 // PRIVATE CRASH OUTS
                 // ─────────────────────────────
-
                 if (privateCrashOuts.isNotEmpty)
                   Column(
                     children: [
                       const SizedBox(height: 35),
-
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
                           color: Colors.white10,
-                          borderRadius:
-                              BorderRadius.circular(22),
+                          borderRadius: BorderRadius.circular(22),
                           border: Border.all(
                             color: Colors.white12,
                           ),
                         ),
                         child: Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Row(
                               children: [
@@ -207,46 +159,35 @@ class VoiceSpaceScreen extends ConsumerWidget {
                                   color: Colors.white70,
                                   size: 20,
                                 ),
-
                                 SizedBox(width: 10),
-
                                 Text(
-                                  "Private",
+                                  'Private',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 19,
-                                    fontWeight:
-                                        FontWeight.bold,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ],
                             ),
-
                             const SizedBox(height: 10),
-
                             Text(
-                              "${privateCrashOuts.length} "
-                              "${privateCrashOuts.length == 1 ? 'Private Crash Out' : 'Private Crash Outs'}",
+                              '${privateCrashOuts.length} ${privateCrashOuts.length == 1 ? 'Private Crash Out' : 'Private Crash Outs'}',
                               style: const TextStyle(
                                 color: Colors.white70,
                                 fontSize: 15,
                               ),
                             ),
-
                             const SizedBox(height: 5),
-
                             const Text(
-                              "Things you chose to keep "
-                              "for yourself.",
+                              'Things you chose to keep for yourself.',
                               style: TextStyle(
                                 color: Colors.white38,
                                 fontSize: 14,
                                 height: 1.4,
                               ),
                             ),
-
                             const SizedBox(height: 18),
-
                             SizedBox(
                               width: double.infinity,
                               child: OutlinedButton(
@@ -260,25 +201,19 @@ class VoiceSpaceScreen extends ConsumerWidget {
                                   );
                                 },
                                 style: OutlinedButton.styleFrom(
-                                  foregroundColor:
-                                      Colors.white,
+                                  foregroundColor: Colors.white,
                                   side: const BorderSide(
                                     color: Colors.white24,
                                   ),
-                                  padding:
-                                      const EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                     vertical: 13,
                                   ),
-                                  shape:
-                                      RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(
-                                      16,
-                                    ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
                                   ),
                                 ),
                                 child: const Text(
-                                  "View Private Crash Outs",
+                                  'View Private Crash Outs',
                                 ),
                               ),
                             ),
@@ -293,7 +228,6 @@ class VoiceSpaceScreen extends ConsumerWidget {
                 // ─────────────────────────────
                 // CREATE A VENT
                 // ─────────────────────────────
-
                 SizedBox(
                   width: double.infinity,
                   height: 55,
@@ -302,14 +236,11 @@ class VoiceSpaceScreen extends ConsumerWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              const CreateVentScreen(),
+                          builder: (context) => const CreateVentScreen(),
                         ),
                       );
                     },
-                    child: const Text(
-                      "Create a Vent",
-                    ),
+                    child: const Text('Create a Vent'),
                   ),
                 ),
 
@@ -318,7 +249,6 @@ class VoiceSpaceScreen extends ConsumerWidget {
                 // ─────────────────────────────
                 // CRASH OUT
                 // ─────────────────────────────
-
                 SizedBox(
                   width: double.infinity,
                   height: 55,
@@ -327,8 +257,7 @@ class VoiceSpaceScreen extends ConsumerWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              const CrashOutScreen(),
+                          builder: (context) => const CrashOutScreen(),
                         ),
                       );
                     },
@@ -338,13 +267,10 @@ class VoiceSpaceScreen extends ConsumerWidget {
                         color: Colors.white24,
                       ),
                       shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(18),
+                        borderRadius: BorderRadius.circular(18),
                       ),
                     ),
-                    child: const Text(
-                      "Crash Out",
-                    ),
+                    child: const Text('Crash Out'),
                   ),
                 ),
 
@@ -353,7 +279,6 @@ class VoiceSpaceScreen extends ConsumerWidget {
                 // ─────────────────────────────
                 // EXPLORE FEED
                 // ─────────────────────────────
-
                 SizedBox(
                   width: double.infinity,
                   height: 55,
@@ -362,14 +287,11 @@ class VoiceSpaceScreen extends ConsumerWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              const FeedScreen(),
+                          builder: (context) => const FeedScreen(),
                         ),
                       );
                     },
-                    child: const Text(
-                      "Explore Feed",
-                    ),
+                    child: const Text('Explore Feed'),
                   ),
                 ),
 
@@ -382,4 +304,3 @@ class VoiceSpaceScreen extends ConsumerWidget {
     );
   }
 }
-
