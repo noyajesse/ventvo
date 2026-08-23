@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/ventvo_colors.dart';
 import '../../core/voice/ventvo_voice.dart';
 import '../../core/voice/ventvo_voice_seed.dart';
+import '../ventvo_voice/models/ventvo_voice.dart';
+import '../ventvo_voice/providers/voice_provider.dart';
+import '../ventvo_voice/screens/voice_space_screen.dart';
 
-class VoiceRevealScreen extends StatefulWidget {
+class VoiceRevealScreen extends ConsumerStatefulWidget {
   const VoiceRevealScreen({
     super.key,
     required this.seed,
@@ -13,10 +17,11 @@ class VoiceRevealScreen extends StatefulWidget {
   final VentvoVoiceSeed seed;
 
   @override
-  State<VoiceRevealScreen> createState() => _VoiceRevealScreenState();
+  ConsumerState<VoiceRevealScreen> createState() =>
+      _VoiceRevealScreenState();
 }
 
-class _VoiceRevealScreenState extends State<VoiceRevealScreen>
+class _VoiceRevealScreenState extends ConsumerState<VoiceRevealScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
@@ -38,30 +43,14 @@ class _VoiceRevealScreenState extends State<VoiceRevealScreen>
       duration: const Duration(milliseconds: 2600),
     );
 
-    // ------------------------------------------------------------
-    // Ambient atmosphere
-    // ------------------------------------------------------------
-
     _ambientFade = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(
-        0.0,
-        0.30,
-        curve: Curves.easeOut,
-      ),
+      curve: const Interval(0.0, 0.30, curve: Curves.easeOut),
     );
-
-    // ------------------------------------------------------------
-    // Mark
-    // ------------------------------------------------------------
 
     _markFade = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(
-        0.08,
-        0.42,
-        curve: Curves.easeOut,
-      ),
+      curve: const Interval(0.08, 0.42, curve: Curves.easeOut),
     );
 
     _markScale = Tween<double>(
@@ -70,25 +59,13 @@ class _VoiceRevealScreenState extends State<VoiceRevealScreen>
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(
-          0.05,
-          0.48,
-          curve: Curves.easeOutBack,
-        ),
+        curve: const Interval(0.05, 0.48, curve: Curves.easeOutBack),
       ),
     );
 
-    // ------------------------------------------------------------
-    // Voice name
-    // ------------------------------------------------------------
-
     _voiceFade = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(
-        0.34,
-        0.68,
-        curve: Curves.easeOut,
-      ),
+      curve: const Interval(0.34, 0.68, curve: Curves.easeOut),
     );
 
     _voiceSlide = Tween<Offset>(
@@ -97,25 +74,13 @@ class _VoiceRevealScreenState extends State<VoiceRevealScreen>
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(
-          0.34,
-          0.70,
-          curve: Curves.easeOutCubic,
-        ),
+        curve: const Interval(0.34, 0.70, curve: Curves.easeOutCubic),
       ),
     );
 
-    // ------------------------------------------------------------
-    // Message
-    // ------------------------------------------------------------
-
     _messageFade = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(
-        0.52,
-        0.82,
-        curve: Curves.easeOut,
-      ),
+      curve: const Interval(0.52, 0.82, curve: Curves.easeOut),
     );
 
     _messageSlide = Tween<Offset>(
@@ -124,25 +89,13 @@ class _VoiceRevealScreenState extends State<VoiceRevealScreen>
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(
-          0.52,
-          0.84,
-          curve: Curves.easeOutCubic,
-        ),
+        curve: const Interval(0.52, 0.84, curve: Curves.easeOutCubic),
       ),
     );
 
-    // ------------------------------------------------------------
-    // Button
-    // ------------------------------------------------------------
-
     _buttonFade = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(
-        0.72,
-        1.0,
-        curve: Curves.easeOut,
-      ),
+      curve: const Interval(0.72, 1.0, curve: Curves.easeOut),
     );
 
     _controller.forward();
@@ -154,54 +107,50 @@ class _VoiceRevealScreenState extends State<VoiceRevealScreen>
     super.dispose();
   }
 
-  // --------------------------------------------------------------
-  // Current Voice foundation
-  // --------------------------------------------------------------
-
-  VentvoVoice get _foundation {
-    return widget.seed.currentFoundation;
-  }
-
-  // --------------------------------------------------------------
-  // Voice essence
-  // --------------------------------------------------------------
+  VentvoVoice get _foundation => widget.seed.currentFoundation;
 
   String get _voiceEssence {
     switch (_foundation) {
       case VentvoVoice.vaelor:
         return 'A voice that gives what is inside a place to exist.';
-
       case VentvoVoice.nyven:
         return 'A voice that finds resonance in being heard.';
-
       case VentvoVoice.auren:
         return 'A voice that grows and becomes through expression.';
     }
   }
 
-  // --------------------------------------------------------------
-  // Voice color
-  // --------------------------------------------------------------
-
   Color get _voiceColor {
     switch (_foundation) {
       case VentvoVoice.vaelor:
         return VentvoColors.primary;
-
       case VentvoVoice.nyven:
         return VentvoColors.secondary;
-
       case VentvoVoice.auren:
         return VentvoColors.primary;
     }
   }
 
-  // --------------------------------------------------------------
-  // Enter Ventvo
-  // --------------------------------------------------------------
+  Future<void> _enterVentvo() async {
+    final voice = VentvoVoiceModel(
+      voiceId: DateTime.now().microsecondsSinceEpoch.toString(),
+      name: widget.seed.name,
+      mark: widget.seed.mark,
+      expression: _voiceEssence,
+      resonance: _foundation.principle,
+      createdAt: DateTime.now(),
+    );
 
-  void _enterVentvo() {
-    // Home navigation will be connected here.
+    await ref.read(ventvoVoiceProvider.notifier).setVoice(voice);
+
+    if (!mounted) return;
+
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (_) => const VoiceSpaceScreen(),
+      ),
+      (route) => false,
+    );
   }
 
   @override
@@ -212,10 +161,6 @@ class _VoiceRevealScreenState extends State<VoiceRevealScreen>
       backgroundColor: VentvoColors.background,
       body: Stack(
         children: [
-          // ==========================================================
-          // Atmospheric glow
-          // ==========================================================
-
           FadeTransition(
             opacity: _ambientFade,
             child: Stack(
@@ -229,14 +174,11 @@ class _VoiceRevealScreenState extends State<VoiceRevealScreen>
                       height: 430,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: _voiceColor.withValues(
-                          alpha: 0.045,
-                        ),
+                        color: _voiceColor.withValues(alpha: 0.045),
                       ),
                     ),
                   ),
                 ),
-
                 Positioned(
                   bottom: -200,
                   right: -160,
@@ -246,9 +188,7 @@ class _VoiceRevealScreenState extends State<VoiceRevealScreen>
                       height: 440,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: VentvoColors.secondary.withValues(
-                          alpha: 0.025,
-                        ),
+                        color: VentvoColors.secondary.withValues(alpha: 0.025),
                       ),
                     ),
                   ),
@@ -256,26 +196,12 @@ class _VoiceRevealScreenState extends State<VoiceRevealScreen>
               ],
             ),
           ),
-
-          // ==========================================================
-          // Main content
-          // ==========================================================
-
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 30,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 30),
               child: Column(
                 children: [
-                  const Spacer(
-                    flex: 2,
-                  ),
-
-                  // --------------------------------------------------
-                  // Voice Mark
-                  // --------------------------------------------------
-
+                  const Spacer(flex: 2),
                   FadeTransition(
                     opacity: _markFade,
                     child: ScaleTransition(
@@ -287,13 +213,7 @@ class _VoiceRevealScreenState extends State<VoiceRevealScreen>
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 46),
-
-                  // --------------------------------------------------
-                  // Introduction
-                  // --------------------------------------------------
-
                   FadeTransition(
                     opacity: _voiceFade,
                     child: SlideTransition(
@@ -309,13 +229,7 @@ class _VoiceRevealScreenState extends State<VoiceRevealScreen>
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 14),
-
-                  // --------------------------------------------------
-                  // Voice name
-                  // --------------------------------------------------
-
                   FadeTransition(
                     opacity: _voiceFade,
                     child: SlideTransition(
@@ -331,21 +245,13 @@ class _VoiceRevealScreenState extends State<VoiceRevealScreen>
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 24),
-
-                  // --------------------------------------------------
-                  // Voice essence
-                  // --------------------------------------------------
-
                   FadeTransition(
                     opacity: _messageFade,
                     child: SlideTransition(
                       position: _messageSlide,
                       child: ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          maxWidth: 330,
-                        ),
+                        constraints: const BoxConstraints(maxWidth: 330),
                         child: Text(
                           _voiceEssence,
                           textAlign: TextAlign.center,
@@ -357,13 +263,7 @@ class _VoiceRevealScreenState extends State<VoiceRevealScreen>
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 12),
-
-                  // --------------------------------------------------
-                  // Evolution message
-                  // --------------------------------------------------
-
                   FadeTransition(
                     opacity: _messageFade,
                     child: Text(
@@ -375,15 +275,7 @@ class _VoiceRevealScreenState extends State<VoiceRevealScreen>
                       ),
                     ),
                   ),
-
-                  const Spacer(
-                    flex: 2,
-                  ),
-
-                  // --------------------------------------------------
-                  // Enter Ventvo
-                  // --------------------------------------------------
-
+                  const Spacer(flex: 2),
                   FadeTransition(
                     opacity: _buttonFade,
                     child: SizedBox(
@@ -410,7 +302,6 @@ class _VoiceRevealScreenState extends State<VoiceRevealScreen>
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 34),
                 ],
               ),
@@ -421,10 +312,6 @@ class _VoiceRevealScreenState extends State<VoiceRevealScreen>
     );
   }
 }
-
-// ====================================================================
-// Voice Mark
-// ====================================================================
 
 class _VoiceMark extends StatelessWidget {
   const _VoiceMark({
