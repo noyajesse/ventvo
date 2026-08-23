@@ -4,32 +4,32 @@ class Vent {
 
   final String id;
   final String content;
-  final String responseIntent;
+  final String spaceType;
   final String voiceMark;
   final DateTime createdAt;
 
   const Vent({
     required this.id,
     required this.content,
-    required this.responseIntent,
+    required this.spaceType,
     required this.voiceMark,
     required this.createdAt,
   });
 
-  bool get isJustListen => responseIntent == justListen;
-  bool get isOpenDiscussion => responseIntent == openDiscussion;
+  bool get isJustListen => spaceType == justListen;
+  bool get isOpenDiscussion => spaceType == openDiscussion;
 
   Vent copyWith({
     String? id,
     String? content,
-    String? responseIntent,
+    String? spaceType,
     String? voiceMark,
     DateTime? createdAt,
   }) {
     return Vent(
       id: id ?? this.id,
       content: content ?? this.content,
-      responseIntent: responseIntent ?? this.responseIntent,
+      spaceType: spaceType ?? this.spaceType,
       voiceMark: voiceMark ?? this.voiceMark,
       createdAt: createdAt ?? this.createdAt,
     );
