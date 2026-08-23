@@ -19,26 +19,23 @@ class _VentCardState extends State<VentCard> {
   bool heard = false;
 
   String spaceName() {
-    if (widget.vent.responseIntent == "Just Listen") {
-      return "🌊 Listening Space";
+    if (widget.vent.isJustListen) {
+      return '🌊 Listening Space';
     }
 
-    if (widget.vent.responseIntent == "Open Discussion") {
-      return "💬 Open Discussion Space";
+    if (widget.vent.isOpenDiscussion) {
+      return '💬 Open Discussion Space';
     }
 
-    return "🌱 Open Space";
+    return '🌱 Open Space';
   }
 
   @override
   Widget build(BuildContext context) {
-    final isJustListen =
-        widget.vent.responseIntent == "Just Listen";
+    final isJustListen = widget.vent.isJustListen;
 
     return Container(
-      margin: const EdgeInsets.only(
-        bottom: 20,
-      ),
+      margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         color: Colors.white10,
@@ -47,19 +44,15 @@ class _VentCardState extends State<VentCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Voice identity
           Text(
-            "◇ ${widget.vent.voiceMark}",
+            '◇ ${widget.vent.voiceMark}',
             style: const TextStyle(
               color: Colors.white70,
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
-
           const SizedBox(height: 18),
-
-          // The moment expressed
           Text(
             widget.vent.content,
             style: const TextStyle(
@@ -68,10 +61,7 @@ class _VentCardState extends State<VentCard> {
               height: 1.4,
             ),
           ),
-
           const SizedBox(height: 20),
-
-          // Space / response intent
           Container(
             padding: const EdgeInsets.symmetric(
               horizontal: 14,
@@ -89,28 +79,19 @@ class _VentCardState extends State<VentCard> {
               ),
             ),
           ),
-
           const SizedBox(height: 22),
-
-          const Divider(
-            color: Colors.white12,
-          ),
-
+          const Divider(color: Colors.white12),
           const SizedBox(height: 14),
-
-          // Interaction
           if (isJustListen) ...[
             const Text(
-              "Just Listen",
+              Vent.justListen,
               style: TextStyle(
                 color: Colors.white70,
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 10),
-
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
@@ -125,38 +106,29 @@ class _VentCardState extends State<VentCard> {
                       : Icons.headphones_outlined,
                   size: 18,
                 ),
-                label: const Text(
-                  "Heard",
-                ),
+                label: const Text('Heard'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.white,
                   side: BorderSide(
-                    color: heard
-                        ? Colors.white54
-                        : Colors.white24,
+                    color: heard ? Colors.white54 : Colors.white24,
                   ),
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 13,
-                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 13),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
                 ),
               ),
             ),
-          ] else ...[
-            // Open Discussion
+          ] else if (widget.vent.isOpenDiscussion) ...[
             const Text(
-              "Open Discussion",
+              Vent.openDiscussion,
               style: TextStyle(
                 color: Colors.white70,
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 10),
-
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(
@@ -170,9 +142,7 @@ class _VentCardState extends State<VentCard> {
                     ),
                   );
                 },
-                child: const Text(
-                  "Join Discussion",
-                ),
+                child: const Text('Join Discussion'),
               ),
             ),
           ],
@@ -181,4 +151,3 @@ class _VentCardState extends State<VentCard> {
     );
   }
 }
-
