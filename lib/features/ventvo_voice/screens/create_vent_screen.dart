@@ -23,14 +23,12 @@ class CreateVentScreen extends ConsumerStatefulWidget {
       _CreateVentScreenState();
 }
 
-class _CreateVentScreenState
-    extends ConsumerState<CreateVentScreen> {
+class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
   late final TextEditingController controller;
 
   String? selectedSpace;
 
-  bool get isFromCrashOut =>
-      widget.crashOutId != null;
+  bool get isFromCrashOut => widget.crashOutId != null;
 
   @override
   void initState() {
@@ -96,8 +94,7 @@ class _CreateVentScreenState
     final voice = ref.watch(ventvoVoiceProvider);
 
     final canRelease =
-        selectedSpace != null &&
-        controller.text.trim().length >= 3;
+        selectedSpace != null && controller.text.trim().length >= 3;
 
     return Scaffold(
       backgroundColor: const Color(0xFF111111),
@@ -173,13 +170,13 @@ class _CreateVentScreenState
                 ),
                 const SizedBox(height: 18),
                 _spaceOption(
-                  title: 'Just Listen',
+                  title: Vent.justListen,
                   description:
                       'I want to be heard without needing answers.',
                 ),
                 const SizedBox(height: 15),
                 _spaceOption(
-                  title: 'Open Discussion',
+                  title: Vent.openDiscussion,
                   description:
                       'I want other Voices to share perspectives with me.',
                 ),
