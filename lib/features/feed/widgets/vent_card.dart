@@ -30,6 +30,14 @@ class _VentCardState extends State<VentCard> {
     return '🌱 Open Space';
   }
 
+  void _acknowledgeListening() {
+    if (heard) return;
+
+    setState(() {
+      heard = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final isJustListen = widget.vent.isJustListen;
@@ -83,9 +91,11 @@ class _VentCardState extends State<VentCard> {
           const Divider(color: Colors.white12),
           const SizedBox(height: 14),
           if (isJustListen) ...[
-            const Text(
-              Vent.justListen,
-              style: TextStyle(
+            Text(
+              heard
+                  ? 'You showed up. That is enough.'
+                  : 'No advice. No fixing. Just listen.',
+              style: const TextStyle(
                 color: Colors.white70,
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
@@ -95,22 +105,21 @@ class _VentCardState extends State<VentCard> {
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
-                onPressed: () {
-                  setState(() {
-                    heard = !heard;
-                  });
-                },
+                onPressed: heard ? null : _acknowledgeListening,
                 icon: Icon(
                   heard
                       ? Icons.check_circle_outline
                       : Icons.headphones_outlined,
                   size: 18,
                 ),
-                label: const Text('Heard'),
+                label: Text(
+                  heard ? 'Heard' : 'I’m listening',
+                ),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.white,
+                  disabledForegroundColor: Colors.white54,
                   side: BorderSide(
-                    color: heard ? Colors.white54 : Colors.white24,
+                    color: heard ? Colors.white24 : Colors.white24,
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 13),
                   shape: RoundedRectangleBorder(
