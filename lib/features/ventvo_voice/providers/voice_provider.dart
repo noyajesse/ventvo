@@ -1,40 +1,60 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../models/ventvo_voice.dart';
+import '../services/voice_storage.dart';
 
-class VentvoVoiceNotifier extends Notifier<VentvoVoice> {
+class VentvoVoiceNotifier extends AsyncNotifier<VentvoVoice?> {
+  final VentvoVoiceStorage _storage = VentvoVoiceStorage();
+
   @override
-  VentvoVoice build() {
-    return VentvoVoice(
-      createdAt: DateTime.now(),
-    );
+  Future<VentvoVoice?> build() async {
+    return _storage.load();
   }
 
-  void updateExpression(String expression) {
-    state = state.copyWith(
-      expression: expression,
-    );
+  Future<void> _persist(VentvoVoice voice) async {
+    state = AsyncData(voice);
+    await _storage.save(voice);
   }
 
-  void updateResonance(String resonance) {
-    state = state.copyWith(
-      resonance: resonance,
-    );
+  Future<void> setVoice(VentvoVoice voice) async {
+    await _persist(voice);
   }
 
-  void updateMark(String mark) {
-    state = state.copyWith(
-      mark: mark,
-    );
+  Future<void> updateExpression(String expression) async {
+    final voice = state.valueOrNull;
+    if (voice == null) return;
+
+    await _persist(voice.copyWith(expression: expression));
   }
 
-  void updateName(String name) {
-    state = state.copyWith(
-      name: name,
-    );
+  Future<void> updateResonance(String resonance) async {
+    final voice = state.valueOrNull;
+    if (voice == null) return;
+
+    await _persist(voice.copyWith(resonance: resonance));
+  }
+
+  Future<void> updateMark(String mark) async {
+    final voice = state.valueOrNull;
+    if (voice == null) return;
+
+    await _persist(voice.copyWith(mark: mark));
+  }
+
+  Future<void> updateName(String name) async {
+    final voice = state.valueOrNull;
+    if (voice == null) return;
+
+    await _persist(voice.copyWith(name: name));
+  }
+
+  Future<void> clearVoice() async {
+    await _storage.clear();
+    state = const AsyncData(null);
   }
 }
 
 final ventvoVoiceProvider =
-    NotifierProvider<VentvoVoiceNotifier, VentvoVoice>(
+    AsyncNotifierProvider<VentvoVoiceNotifier, VentvoVoice?>(
   VentvoVoiceNotifier.new,
 );
