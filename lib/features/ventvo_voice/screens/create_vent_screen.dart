@@ -54,6 +54,7 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
       content: content,
       spaceType: selectedSpace!,
       voiceMark: voice?.mark ?? '◇',
+      voiceName: voice?.name,
       createdAt: DateTime.now(),
     );
 
