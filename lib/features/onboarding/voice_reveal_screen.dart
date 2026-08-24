@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/ventvo_colors.dart';
-import '../../core/voice/ventvo_voice.dart';
+import '../../core/voice/ventvo_voice.dart' as voice_core;
 import '../../core/voice/ventvo_voice_seed.dart';
-import '../ventvo_voice/models/ventvo_voice.dart';
+import '../ventvo_voice/models/ventvo_voice.dart' as voice_model;
 import '../ventvo_voice/providers/voice_provider.dart';
 import '../ventvo_voice/screens/voice_space_screen.dart';
 
@@ -47,27 +47,20 @@ class _VoiceRevealScreenState extends ConsumerState<VoiceRevealScreen>
       parent: _controller,
       curve: const Interval(0.0, 0.30, curve: Curves.easeOut),
     );
-
     _markFade = CurvedAnimation(
       parent: _controller,
       curve: const Interval(0.08, 0.42, curve: Curves.easeOut),
     );
-
-    _markScale = Tween<double>(
-      begin: 0.55,
-      end: 1.0,
-    ).animate(
+    _markScale = Tween<double>(begin: 0.55, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
         curve: const Interval(0.05, 0.48, curve: Curves.easeOutBack),
       ),
     );
-
     _voiceFade = CurvedAnimation(
       parent: _controller,
       curve: const Interval(0.34, 0.68, curve: Curves.easeOut),
     );
-
     _voiceSlide = Tween<Offset>(
       begin: const Offset(0, 0.08),
       end: Offset.zero,
@@ -77,12 +70,10 @@ class _VoiceRevealScreenState extends ConsumerState<VoiceRevealScreen>
         curve: const Interval(0.34, 0.70, curve: Curves.easeOutCubic),
       ),
     );
-
     _messageFade = CurvedAnimation(
       parent: _controller,
       curve: const Interval(0.52, 0.82, curve: Curves.easeOut),
     );
-
     _messageSlide = Tween<Offset>(
       begin: const Offset(0, 0.06),
       end: Offset.zero,
@@ -92,7 +83,6 @@ class _VoiceRevealScreenState extends ConsumerState<VoiceRevealScreen>
         curve: const Interval(0.52, 0.84, curve: Curves.easeOutCubic),
       ),
     );
-
     _buttonFade = CurvedAnimation(
       parent: _controller,
       curve: const Interval(0.72, 1.0, curve: Curves.easeOut),
@@ -107,32 +97,32 @@ class _VoiceRevealScreenState extends ConsumerState<VoiceRevealScreen>
     super.dispose();
   }
 
-  VentvoVoice get _foundation => widget.seed.currentFoundation;
+  voice_core.VentvoVoice get _foundation => widget.seed.currentFoundation;
 
   String get _voiceEssence {
     switch (_foundation) {
-      case VentvoVoice.vaelor:
+      case voice_core.VentvoVoice.vaelor:
         return 'A voice that gives what is inside a place to exist.';
-      case VentvoVoice.nyven:
+      case voice_core.VentvoVoice.nyven:
         return 'A voice that finds resonance in being heard.';
-      case VentvoVoice.auren:
+      case voice_core.VentvoVoice.auren:
         return 'A voice that grows and becomes through expression.';
     }
   }
 
   Color get _voiceColor {
     switch (_foundation) {
-      case VentvoVoice.vaelor:
+      case voice_core.VentvoVoice.vaelor:
         return VentvoColors.primary;
-      case VentvoVoice.nyven:
+      case voice_core.VentvoVoice.nyven:
         return VentvoColors.secondary;
-      case VentvoVoice.auren:
+      case voice_core.VentvoVoice.auren:
         return VentvoColors.primary;
     }
   }
 
   Future<void> _enterVentvo() async {
-    final voice = VentvoVoiceModel(
+    final voice = voice_model.VentvoVoice(
       voiceId: DateTime.now().microsecondsSinceEpoch.toString(),
       name: widget.seed.name,
       mark: widget.seed.mark,
