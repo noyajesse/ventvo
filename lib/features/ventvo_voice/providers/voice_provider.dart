@@ -21,28 +21,28 @@ class VentvoVoiceNotifier extends AsyncNotifier<VentvoVoice?> {
   }
 
   Future<void> updateExpression(String expression) async {
-    final voice = state.valueOrNull;
+    final voice = state.asData?.value;
     if (voice == null) return;
 
     await _persist(voice.copyWith(expression: expression));
   }
 
   Future<void> updateResonance(String resonance) async {
-    final voice = state.valueOrNull;
+    final voice = state.asData?.value;
     if (voice == null) return;
 
     await _persist(voice.copyWith(resonance: resonance));
   }
 
   Future<void> updateMark(String mark) async {
-    final voice = state.valueOrNull;
+    final voice = state.asData?.value;
     if (voice == null) return;
 
     await _persist(voice.copyWith(mark: mark));
   }
 
   Future<void> updateName(String name) async {
-    final voice = state.valueOrNull;
+    final voice = state.asData?.value;
     if (voice == null) return;
 
     await _persist(voice.copyWith(name: name));
