@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/ventvo_colors.dart';
 import '../../core/theme/ventvo_mark.dart';
+import '../../core/voice/ventvo_voice.dart' as voice_core;
 import '../../core/voice/ventvo_voice_seed.dart';
 import '../../core/voice/ventvo_voice_system.dart';
-import 'voice_reveal_screen.dart';
+import '../ventvo_voice/models/ventvo_voice.dart' as voice_model;
+import '../ventvo_voice/providers/voice_provider.dart';
+import '../ventvo_voice/screens/voice_space_screen.dart';
 
-class FindingYourVoiceScreen extends StatefulWidget {
-  const FindingYourVoiceScreen({
-    super.key,
-  });
+class FindingYourVoiceScreen extends ConsumerStatefulWidget {
+  const FindingYourVoiceScreen({super.key});
 
   @override
-  State<FindingYourVoiceScreen> createState() =>
+  ConsumerState<FindingYourVoiceScreen> createState() =>
       _FindingYourVoiceScreenState();
 }
 
-class _FindingYourVoiceScreenState extends State<FindingYourVoiceScreen>
+class _FindingYourVoiceScreenState
+    extends ConsumerState<FindingYourVoiceScreen>
     with TickerProviderStateMixin {
   late final AnimationController _controller;
   late final AnimationController _formingController;
@@ -31,9 +34,16 @@ class _FindingYourVoiceScreenState extends State<FindingYourVoiceScreen>
   late final Animation<double> _formingFade;
   late final Animation<double> _formingScale;
   late final Animation<double> _formingRotation;
+  late final Animation<double> _revealFade;
+  late final Animation<double> _revealScale;
+  late final Animation<Offset> _revealSlide;
+  late final Animation<double> _messageFade;
+  late final Animation<Offset> _messageSlide;
+  late final Animation<double> _enterButtonFade;
 
   VentvoVoiceSeed? _seed;
   bool _isForming = false;
+  bool _isRevealed = false;
 
   @override
   void initState() {
@@ -46,26 +56,23 @@ class _FindingYourVoiceScreenState extends State<FindingYourVoiceScreen>
 
     _formingController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1050),
+      duration: const Duration(milliseconds: 2100),
     );
 
     _markFade = CurvedAnimation(
       parent: _controller,
       curve: const Interval(0.0, 0.28, curve: Curves.easeOut),
     );
-
     _markScale = Tween<double>(begin: 0.72, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
         curve: const Interval(0.0, 0.42, curve: Curves.easeOutBack),
       ),
     );
-
     _titleFade = CurvedAnimation(
       parent: _controller,
       curve: const Interval(0.20, 0.52, curve: Curves.easeOut),
     );
-
     _titleSlide = Tween<Offset>(
       begin: const Offset(0, 0.06),
       end: Offset.zero,
@@ -75,12 +82,10 @@ class _FindingYourVoiceScreenState extends State<FindingYourVoiceScreen>
         curve: const Interval(0.20, 0.56, curve: Curves.easeOutCubic),
       ),
     );
-
     _subtitleFade = CurvedAnimation(
       parent: _controller,
       curve: const Interval(0.36, 0.68, curve: Curves.easeOut),
     );
-
     _subtitleSlide = Tween<Offset>(
       begin: const Offset(0, 0.05),
       end: Offset.zero,
@@ -90,7 +95,6 @@ class _FindingYourVoiceScreenState extends State<FindingYourVoiceScreen>
         curve: const Interval(0.36, 0.72, curve: Curves.easeOutCubic),
       ),
     );
-
     _buttonFade = CurvedAnimation(
       parent: _controller,
       curve: const Interval(0.62, 1.0, curve: Curves.easeOut),
@@ -98,21 +102,56 @@ class _FindingYourVoiceScreenState extends State<FindingYourVoiceScreen>
 
     _formingFade = CurvedAnimation(
       parent: _formingController,
-      curve: const Interval(0.0, 0.55, curve: Curves.easeInOut),
+      curve: const Interval(0.0, 0.48, curve: Curves.easeInOut),
     );
-
-    _formingScale = Tween<double>(begin: 0.86, end: 1.18).animate(
+    _formingScale = Tween<double>(begin: 0.86, end: 1.10).animate(
       CurvedAnimation(
         parent: _formingController,
-        curve: const Interval(0.0, 0.72, curve: Curves.easeInOut),
+        curve: const Interval(0.0, 0.55, curve: Curves.easeInOut),
+      ),
+    );
+    _formingRotation = Tween<double>(begin: 0.0, end: 0.08).animate(
+      CurvedAnimation(
+        parent: _formingController,
+        curve: const Interval(0.0, 0.55, curve: Curves.easeInOut),
       ),
     );
 
-    _formingRotation = Tween<double>(begin: 0.0, end: 0.10).animate(
+    _revealFade = CurvedAnimation(
+      parent: _formingController,
+      curve: const Interval(0.35, 0.68, curve: Curves.easeOut),
+    );
+    _revealScale = Tween<double>(begin: 0.82, end: 1.0).animate(
       CurvedAnimation(
         parent: _formingController,
-        curve: Curves.easeInOut,
+        curve: const Interval(0.35, 0.72, curve: Curves.easeOutBack),
       ),
+    );
+    _revealSlide = Tween<Offset>(
+      begin: const Offset(0, 0.06),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _formingController,
+        curve: const Interval(0.35, 0.72, curve: Curves.easeOutCubic),
+      ),
+    );
+    _messageFade = CurvedAnimation(
+      parent: _formingController,
+      curve: const Interval(0.55, 0.80, curve: Curves.easeOut),
+    );
+    _messageSlide = Tween<Offset>(
+      begin: const Offset(0, 0.05),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _formingController,
+        curve: const Interval(0.55, 0.82, curve: Curves.easeOutCubic),
+      ),
+    );
+    _enterButtonFade = CurvedAnimation(
+      parent: _formingController,
+      curve: const Interval(0.72, 1.0, curve: Curves.easeOut),
     );
 
     _controller.forward();
@@ -125,8 +164,32 @@ class _FindingYourVoiceScreenState extends State<FindingYourVoiceScreen>
     super.dispose();
   }
 
-  Future<void> _continue() async {
-    if (_isForming) return;
+  voice_core.VentvoVoice get _foundation => _seed!.currentFoundation;
+
+  String get _voiceEssence {
+    switch (_foundation) {
+      case voice_core.VentvoVoice.vaelor:
+        return 'A voice that gives what is inside a place to exist.';
+      case voice_core.VentvoVoice.nyven:
+        return 'A voice that finds resonance in being heard.';
+      case voice_core.VentvoVoice.auren:
+        return 'A voice that grows and becomes through expression.';
+    }
+  }
+
+  Color get _voiceColor {
+    switch (_foundation) {
+      case voice_core.VentvoVoice.vaelor:
+        return VentvoColors.primary;
+      case voice_core.VentvoVoice.nyven:
+        return VentvoColors.secondary;
+      case voice_core.VentvoVoice.auren:
+        return VentvoColors.primary;
+    }
+  }
+
+  Future<void> _beginFormation() async {
+    if (_isForming || _isRevealed) return;
 
     const voiceSystem = VentvoVoiceSystem();
     final seed = voiceSystem.createInitialSeed();
@@ -140,23 +203,33 @@ class _FindingYourVoiceScreenState extends State<FindingYourVoiceScreen>
 
     if (!mounted) return;
 
-    Navigator.of(context).push(
-      PageRouteBuilder(
-        transitionDuration: const Duration(milliseconds: 700),
-        reverseTransitionDuration: const Duration(milliseconds: 450),
-        pageBuilder: (_, _, _) => VoiceRevealScreen(seed: seed),
-        transitionsBuilder: (_, animation, _, child) {
-          final curvedAnimation = CurvedAnimation(
-            parent: animation,
-            curve: Curves.easeOutCubic,
-          );
+    setState(() {
+      _isRevealed = true;
+    });
+  }
 
-          return FadeTransition(
-            opacity: curvedAnimation,
-            child: child,
-          );
-        },
+  Future<void> _enterVentvo() async {
+    final seed = _seed;
+    if (seed == null) return;
+
+    final voice = voice_model.VentvoVoice(
+      voiceId: DateTime.now().microsecondsSinceEpoch.toString(),
+      name: seed.name,
+      mark: seed.mark,
+      expression: _voiceEssence,
+      resonance: _foundation.principle,
+      createdAt: DateTime.now(),
+    );
+
+    await ref.read(ventvoVoiceProvider.notifier).setVoice(voice);
+
+    if (!mounted) return;
+
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (_) => const VoiceSpaceScreen(),
       ),
+      (route) => false,
     );
   }
 
@@ -170,15 +243,17 @@ class _FindingYourVoiceScreenState extends State<FindingYourVoiceScreen>
     return AnimatedBuilder(
       animation: _formingController,
       builder: (context, child) {
+        final revealStarted = _formingController.value >= 0.35;
         return Opacity(
-          opacity: _formingFade.value,
+          opacity: revealStarted ? 1 : _formingFade.value,
           child: Transform.rotate(
-            angle: _formingRotation.value,
+            angle: revealStarted ? 0 : _formingRotation.value,
             child: Transform.scale(
-              scale: _formingScale.value,
-              child: _FormingVoiceMark(
+              scale: revealStarted ? 1 : _formingScale.value,
+              child: _VoiceMark(
                 symbol: seed.mark,
-                color: VentvoColors.primary,
+                color: _voiceColor,
+                size: 126,
               ),
             ),
           ),
@@ -199,13 +274,21 @@ class _FindingYourVoiceScreenState extends State<FindingYourVoiceScreen>
             top: -190,
             right: -150,
             child: IgnorePointer(
-              child: Container(
-                width: 420,
-                height: 420,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: VentvoColors.primary.withValues(alpha: 0.045),
-                ),
+              child: AnimatedBuilder(
+                animation: _formingController,
+                builder: (context, child) {
+                  final color = _seed == null
+                      ? VentvoColors.primary
+                      : _voiceColor;
+                  return Container(
+                    width: 420,
+                    height: 420,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: color.withValues(alpha: 0.045),
+                    ),
+                  );
+                },
               ),
             ),
           ),
@@ -230,102 +313,215 @@ class _FindingYourVoiceScreenState extends State<FindingYourVoiceScreen>
                 children: [
                   const Spacer(flex: 2),
                   AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 380),
+                    duration: const Duration(milliseconds: 500),
                     switchInCurve: Curves.easeOutBack,
                     switchOutCurve: Curves.easeIn,
-                    child: Hero(
-                      key: ValueKey(_seed?.mark ?? 'ventvo-mark'),
-                      tag: 'ventvo-voice-reveal-mark',
-                      child: FadeTransition(
-                        opacity: _markFade,
-                        child: ScaleTransition(
-                          scale: _markScale,
-                          child: _buildMark(),
-                        ),
-                      ),
-                    ),
+                    child: _isForming
+                        ? FadeTransition(
+                            key: const ValueKey('formed-voice-mark'),
+                            opacity: _revealFade,
+                            child: ScaleTransition(
+                              scale: _revealScale,
+                              child: _buildMark(),
+                            ),
+                          )
+                        : FadeTransition(
+                            key: const ValueKey('finding-mark'),
+                            opacity: _markFade,
+                            child: ScaleTransition(
+                              scale: _markScale,
+                              child: const VentvoMark(size: 78),
+                            ),
+                          ),
                   ),
                   const SizedBox(height: 38),
-                  FadeTransition(
-                    opacity: _isForming
-                        ? const AlwaysStoppedAnimation<double>(0)
-                        : _titleFade,
-                    child: SlideTransition(
-                      position: _titleSlide,
-                      child: Text(
-                        'Finding your voice.',
-                        textAlign: TextAlign.center,
-                        style: textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: -0.3,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  FadeTransition(
-                    opacity: _isForming
-                        ? const AlwaysStoppedAnimation<double>(0)
-                        : _subtitleFade,
-                    child: SlideTransition(
-                      position: _subtitleSlide,
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 330),
-                        child: Text(
-                          'You don’t have to define yourself before you begin.',
-                          textAlign: TextAlign.center,
-                          style: textTheme.bodyLarge?.copyWith(
-                            color: VentvoColors.textSecondary,
-                            height: 1.6,
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 450),
+                    child: _isRevealed
+                        ? FadeTransition(
+                            key: const ValueKey('voice-identity'),
+                            opacity: _revealFade,
+                            child: SlideTransition(
+                              position: _revealSlide,
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'YOUR VOICE',
+                                    textAlign: TextAlign.center,
+                                    style: textTheme.labelLarge?.copyWith(
+                                      color: VentvoColors.textMuted,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 2.8,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 14),
+                                  Text(
+                                    _seed!.name,
+                                    textAlign: TextAlign.center,
+                                    style: textTheme.displaySmall?.copyWith(
+                                      color: _voiceColor,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 1.2,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        : FadeTransition(
+                            key: const ValueKey('finding-copy'),
+                            opacity: _isForming
+                                ? const AlwaysStoppedAnimation<double>(0)
+                                : _titleFade,
+                            child: SlideTransition(
+                              position: _titleSlide,
+                              child: Text(
+                                'Finding your voice.',
+                                textAlign: TextAlign.center,
+                                style: textTheme.headlineMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: -0.3,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
                   ),
-                  const SizedBox(height: 12),
-                  FadeTransition(
-                    opacity: _isForming
-                        ? const AlwaysStoppedAnimation<double>(0)
-                        : _subtitleFade,
-                    child: Text(
-                      'Your voice can grow with you.',
-                      textAlign: TextAlign.center,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: VentvoColors.textMuted,
-                        letterSpacing: 0.2,
-                      ),
-                    ),
+                  const SizedBox(height: 24),
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 450),
+                    child: _isRevealed
+                        ? FadeTransition(
+                            key: const ValueKey('voice-message'),
+                            opacity: _messageFade,
+                            child: SlideTransition(
+                              position: _messageSlide,
+                              child: Column(
+                                children: [
+                                  ConstrainedBox(
+                                    constraints:
+                                        const BoxConstraints(maxWidth: 330),
+                                    child: Text(
+                                      _voiceEssence,
+                                      textAlign: TextAlign.center,
+                                      style: textTheme.bodyLarge?.copyWith(
+                                        color: VentvoColors.textSecondary,
+                                        height: 1.6,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    'It can grow with you.',
+                                    textAlign: TextAlign.center,
+                                    style: textTheme.bodySmall?.copyWith(
+                                      color: VentvoColors.textMuted,
+                                      letterSpacing: 0.2,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        : FadeTransition(
+                            key: const ValueKey('finding-subtitle'),
+                            opacity: _isForming
+                                ? const AlwaysStoppedAnimation<double>(0)
+                                : _subtitleFade,
+                            child: SlideTransition(
+                              position: _subtitleSlide,
+                              child: ConstrainedBox(
+                                constraints:
+                                    const BoxConstraints(maxWidth: 330),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      'You don’t have to define yourself before you begin.',
+                                      textAlign: TextAlign.center,
+                                      style: textTheme.bodyLarge?.copyWith(
+                                        color: VentvoColors.textSecondary,
+                                        height: 1.6,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      'Your voice can grow with you.',
+                                      textAlign: TextAlign.center,
+                                      style: textTheme.bodySmall?.copyWith(
+                                        color: VentvoColors.textMuted,
+                                        letterSpacing: 0.2,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
                   ),
                   const Spacer(flex: 2),
-                  FadeTransition(
-                    opacity: _isForming
-                        ? const AlwaysStoppedAnimation<double>(0)
-                        : _buttonFade,
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: _isForming ? null : _continue,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: VentvoColors.buttonBlue,
-                          foregroundColor: Colors.white,
-                          disabledBackgroundColor: VentvoColors.buttonBlue,
-                          disabledForegroundColor: Colors.white70,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18),
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 400),
+                    child: _isRevealed
+                        ? FadeTransition(
+                            key: const ValueKey('enter-button'),
+                            opacity: _enterButtonFade,
+                            child: SizedBox(
+                              width: double.infinity,
+                              height: 56,
+                              child: ElevatedButton(
+                                onPressed: _enterVentvo,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: VentvoColors.buttonBlue,
+                                  foregroundColor: Colors.white,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Enter Ventvo',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: 0.1,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        : FadeTransition(
+                            key: const ValueKey('continue-button'),
+                            opacity: _isForming
+                                ? const AlwaysStoppedAnimation<double>(0)
+                                : _buttonFade,
+                            child: SizedBox(
+                              width: double.infinity,
+                              height: 56,
+                              child: ElevatedButton(
+                                onPressed: _isForming ? null : _beginFormation,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: VentvoColors.buttonBlue,
+                                  foregroundColor: Colors.white,
+                                  disabledBackgroundColor:
+                                      VentvoColors.buttonBlue,
+                                  disabledForegroundColor: Colors.white70,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                ),
+                                child: Text(
+                                  _isForming
+                                      ? 'Forming your voice…'
+                                      : 'Continue',
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: 0.1,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          _isForming ? 'Forming your voice…' : 'Continue',
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.1,
-                          ),
-                        ),
-                      ),
-                    ),
                   ),
                   const SizedBox(height: 34),
                 ],
@@ -338,31 +534,33 @@ class _FindingYourVoiceScreenState extends State<FindingYourVoiceScreen>
   }
 }
 
-class _FormingVoiceMark extends StatelessWidget {
-  const _FormingVoiceMark({
+class _VoiceMark extends StatelessWidget {
+  const _VoiceMark({
     required this.symbol,
     required this.color,
+    required this.size,
   });
 
   final String symbol;
   final Color color;
+  final double size;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 112,
-      height: 112,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
-          color: color.withValues(alpha: 0.38),
+          color: color.withValues(alpha: 0.35),
           width: 1.4,
         ),
         boxShadow: [
           BoxShadow(
-            color: color.withValues(alpha: 0.12),
-            blurRadius: 34,
-            spreadRadius: 5,
+            color: color.withValues(alpha: 0.10),
+            blurRadius: 30,
+            spreadRadius: 4,
           ),
         ],
       ),
@@ -371,7 +569,7 @@ class _FormingVoiceMark extends StatelessWidget {
         symbol,
         style: TextStyle(
           color: color,
-          fontSize: 48,
+          fontSize: size * 0.42,
           fontWeight: FontWeight.w300,
         ),
       ),
