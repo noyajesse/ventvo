@@ -17,14 +17,12 @@ class VoiceRevealScreen extends ConsumerStatefulWidget {
   final VentvoVoiceSeed seed;
 
   @override
-  ConsumerState<VoiceRevealScreen> createState() =>
-      _VoiceRevealScreenState();
+  ConsumerState<VoiceRevealScreen> createState() => _VoiceRevealScreenState();
 }
 
 class _VoiceRevealScreenState extends ConsumerState<VoiceRevealScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
-
   late final Animation<double> _ambientFade;
   late final Animation<double> _markFade;
   late final Animation<double> _markScale;
@@ -49,43 +47,43 @@ class _VoiceRevealScreenState extends ConsumerState<VoiceRevealScreen>
     );
     _markFade = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(0.08, 0.42, curve: Curves.easeOut),
+      curve: const Interval(0.0, 0.28, curve: Curves.easeOut),
     );
-    _markScale = Tween<double>(begin: 0.55, end: 1.0).animate(
+    _markScale = Tween<double>(begin: 0.86, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.05, 0.48, curve: Curves.easeOutBack),
+        curve: const Interval(0.0, 0.42, curve: Curves.easeOutBack),
       ),
     );
     _voiceFade = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(0.34, 0.68, curve: Curves.easeOut),
+      curve: const Interval(0.24, 0.62, curve: Curves.easeOut),
     );
     _voiceSlide = Tween<Offset>(
-      begin: const Offset(0, 0.08),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.34, 0.70, curve: Curves.easeOutCubic),
-      ),
-    );
-    _messageFade = CurvedAnimation(
-      parent: _controller,
-      curve: const Interval(0.52, 0.82, curve: Curves.easeOut),
-    );
-    _messageSlide = Tween<Offset>(
       begin: const Offset(0, 0.06),
       end: Offset.zero,
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.52, 0.84, curve: Curves.easeOutCubic),
+        curve: const Interval(0.24, 0.66, curve: Curves.easeOutCubic),
+      ),
+    );
+    _messageFade = CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.48, 0.78, curve: Curves.easeOut),
+    );
+    _messageSlide = Tween<Offset>(
+      begin: const Offset(0, 0.05),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.48, 0.80, curve: Curves.easeOutCubic),
       ),
     );
     _buttonFade = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(0.72, 1.0, curve: Curves.easeOut),
+      curve: const Interval(0.70, 1.0, curve: Curves.easeOut),
     );
 
     _controller.forward();
@@ -192,14 +190,17 @@ class _VoiceRevealScreenState extends ConsumerState<VoiceRevealScreen>
               child: Column(
                 children: [
                   const Spacer(flex: 2),
-                  FadeTransition(
-                    opacity: _markFade,
-                    child: ScaleTransition(
-                      scale: _markScale,
-                      child: _VoiceMark(
-                        symbol: widget.seed.mark,
-                        color: _voiceColor,
-                        size: 126,
+                  Hero(
+                    tag: 'ventvo-voice-reveal-mark',
+                    child: FadeTransition(
+                      opacity: _markFade,
+                      child: ScaleTransition(
+                        scale: _markScale,
+                        child: _VoiceMark(
+                          symbol: widget.seed.mark,
+                          color: _voiceColor,
+                          size: 126,
+                        ),
                       ),
                     ),
                   ),
