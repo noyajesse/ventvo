@@ -46,6 +46,7 @@ class VentStorage {
       'content': vent.content,
       'spaceType': vent.spaceType,
       'voiceMark': vent.voiceMark,
+      'voiceName': vent.voiceName,
       'createdAt': vent.createdAt.toIso8601String(),
     };
   }
@@ -55,12 +56,14 @@ class VentStorage {
     final content = map['content'];
     final spaceType = map['spaceType'];
     final voiceMark = map['voiceMark'];
+    final voiceName = map['voiceName'];
     final createdAt = map['createdAt'];
 
     if (id is! String ||
         content is! String ||
         spaceType is! String ||
         voiceMark is! String ||
+        (voiceName != null && voiceName is! String) ||
         createdAt is! String) {
       return null;
     }
@@ -73,6 +76,7 @@ class VentStorage {
       content: content,
       spaceType: spaceType,
       voiceMark: voiceMark,
+      voiceName: voiceName as String?,
       createdAt: parsedCreatedAt,
     );
   }
