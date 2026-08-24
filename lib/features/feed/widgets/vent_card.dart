@@ -41,6 +41,10 @@ class _VentCardState extends State<VentCard> {
   @override
   Widget build(BuildContext context) {
     final isJustListen = widget.vent.isJustListen;
+    final voiceName = widget.vent.voiceName?.trim();
+    final identity = voiceName == null || voiceName.isEmpty
+        ? 'Voice'
+        : voiceName;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
@@ -52,13 +56,25 @@ class _VentCardState extends State<VentCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            '◇ ${widget.vent.voiceMark}',
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+          Row(
+            children: [
+              Text(
+                widget.vent.voiceMark,
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 22,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                identity,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 18),
           Text(
@@ -118,9 +134,7 @@ class _VentCardState extends State<VentCard> {
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.white,
                   disabledForegroundColor: Colors.white54,
-                  side: BorderSide(
-                    color: heard ? Colors.white24 : Colors.white24,
-                  ),
+                  side: const BorderSide(color: Colors.white24),
                   padding: const EdgeInsets.symmetric(vertical: 13),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
