@@ -6,6 +6,7 @@ class Vent {
   final String content;
   final String spaceType;
   final String voiceMark;
+  final String? voiceName;
   final DateTime createdAt;
 
   const Vent({
@@ -13,6 +14,7 @@ class Vent {
     required this.content,
     required this.spaceType,
     required this.voiceMark,
+    this.voiceName,
     required this.createdAt,
   });
 
@@ -24,6 +26,7 @@ class Vent {
     String? content,
     String? spaceType,
     String? voiceMark,
+    String? voiceName,
     DateTime? createdAt,
   }) {
     return Vent(
@@ -31,6 +34,7 @@ class Vent {
       content: content ?? this.content,
       spaceType: spaceType ?? this.spaceType,
       voiceMark: voiceMark ?? this.voiceMark,
+      voiceName: voiceName ?? this.voiceName,
       createdAt: createdAt ?? this.createdAt,
     );
   }
