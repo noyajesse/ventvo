@@ -47,22 +47,24 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
     if (mounted) setState(() {});
   }
 
-  void _releaseVent() {
+  Future<void> _releaseVent() async {
     final content = controller.text.trim();
 
     if (selectedSpace == null || content.length < 3) return;
 
-    final voice = ref.read(ventvoVoiceProvider);
+    final voice = ref.read(ventvoVoiceProvider).valueOrNull;
 
     final vent = Vent(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       content: content,
       spaceType: selectedSpace!,
-      voiceMark: voice.mark ?? '◇',
+      voiceMark: voice?.mark ?? '◇',
       createdAt: DateTime.now(),
     );
 
-    ref.read(ventProvider.notifier).addVent(vent);
+    await ref.read(ventProvider.notifier).addVent(vent);
+
+    if (!mounted) return;
 
     if (widget.crashOutId != null) {
       ref.read(crashOutProvider.notifier).markConvertedToVent(widget.crashOutId!);
@@ -82,7 +84,7 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final voice = ref.watch(ventvoVoiceProvider);
+    final voice = ref.watch(ventvoVoiceProvider).valueOrNull;
     final canRelease =
         selectedSpace != null && controller.text.trim().length >= 3;
 
@@ -117,7 +119,7 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                '◇ ${voice.mark ?? "Voice"}',
+                '◇ ${voice?.mark ?? "Voice"}',
                 style: const TextStyle(color: Colors.white70, fontSize: 18),
               ),
               const SizedBox(height: 30),
