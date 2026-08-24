@@ -17,7 +17,7 @@ class FindingYourVoiceScreen extends StatefulWidget {
 }
 
 class _FindingYourVoiceScreenState extends State<FindingYourVoiceScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final AnimationController _controller;
   late final AnimationController _formingController;
 
