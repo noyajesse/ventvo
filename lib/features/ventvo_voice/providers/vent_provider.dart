@@ -18,14 +18,14 @@ class VentNotifier extends AsyncNotifier<List<Vent>> {
 
   Future<void> addVent(Vent vent) async {
     final vents = [
-      ...state.valueOrNull ?? const <Vent>[],
+      ...state.asData?.value ?? const <Vent>[],
       vent,
     ];
     await _persist(vents);
   }
 
   Future<void> updateVent(Vent vent) async {
-    final current = state.valueOrNull ?? const <Vent>[];
+    final current = state.asData?.value ?? const <Vent>[];
     final vents = [
       for (final existingVent in current)
         if (existingVent.id == vent.id) vent else existingVent,
@@ -34,7 +34,7 @@ class VentNotifier extends AsyncNotifier<List<Vent>> {
   }
 
   Future<void> removeVent(String ventId) async {
-    final current = state.valueOrNull ?? const <Vent>[];
+    final current = state.asData?.value ?? const <Vent>[];
     final vents = [
       for (final vent in current)
         if (vent.id != ventId) vent,
