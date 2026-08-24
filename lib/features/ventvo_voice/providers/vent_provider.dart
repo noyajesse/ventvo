@@ -1,36 +1,54 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/vent.dart';
+import '../services/vent_storage.dart';
 
-class VentNotifier extends Notifier<List<Vent>> {
+class VentNotifier extends AsyncNotifier<List<Vent>> {
+  final VentStorage _storage = VentStorage();
+
   @override
-  List<Vent> build() {
-    return const [];
+  Future<List<Vent>> build() async {
+    return _storage.load();
   }
 
-  void addVent(Vent vent) {
-    state = [
-      ...state,
+  Future<void> _persist(List<Vent> vents) async {
+    state = AsyncData(vents);
+    await _storage.save(vents);
+  }
+
+  Future<void> addVent(Vent vent) async {
+    final vents = [
+      ...state.valueOrNull ?? const <Vent>[],
       vent,
     ];
+    await _persist(vents);
   }
 
-  void updateVent(Vent vent) {
-    state = [
-      for (final existingVent in state)
+  Future<void> updateVent(Vent vent) async {
+    final current = state.valueOrNull ?? const <Vent>[];
+    final vents = [
+      for (final existingVent in current)
         if (existingVent.id == vent.id) vent else existingVent,
     ];
+    await _persist(vents);
   }
 
-  void removeVent(String ventId) {
-    state = [
-      for (final vent in state)
+  Future<void> removeVent(String ventId) async {
+    final current = state.valueOrNull ?? const <Vent>[];
+    final vents = [
+      for (final vent in current)
         if (vent.id != ventId) vent,
     ];
+    await _persist(vents);
+  }
+
+  Future<void> clearVents() async {
+    await _storage.clear();
+    state = const AsyncData([]);
   }
 }
 
 final ventProvider =
-    NotifierProvider<VentNotifier, List<Vent>>(
+    AsyncNotifierProvider<VentNotifier, List<Vent>>(
   VentNotifier.new,
 );
