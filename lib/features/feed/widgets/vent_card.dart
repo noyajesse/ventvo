@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../discussion/screen/discussion_screen.dart';
 import '../../spaces/providers/space_provider.dart';
+import '../../spaces/screens/space_screen.dart';
 import '../../ventvo_voice/models/vent.dart';
 
 class VentCard extends ConsumerStatefulWidget {
@@ -91,14 +91,23 @@ class _VentCardState extends ConsumerState<VentCard> {
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => DiscussionScreen(vent: widget.vent)),
-                  );
-                },
+                onPressed: space == null
+                    ? null
+                    : () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => SpaceScreen(space: space),
+                          ),
+                        );
+                      },
                 child: const Text('Enter Space'),
               ),
+            ),
+          ] else ...[
+            const Text(
+              'This Space is unavailable in the current session.',
+              style: TextStyle(color: Colors.white54, fontSize: 14),
             ),
           ],
         ],
