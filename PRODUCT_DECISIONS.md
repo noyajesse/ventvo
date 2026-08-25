@@ -123,6 +123,7 @@ Whenever a new feature is proposed, ask:
 3. Does this make Ventvo simpler?
 
 If the answer is "yes" to fewer than two questions, reconsider the feature.
+
 # Echo Notes
 
 Decision:
@@ -198,12 +199,64 @@ The creator has invited connection and conversation.
 
 ---
 
-## Philosophy
+# 8. Shared Space Clarification
 
-Instagram reposts say:
+Decision:
 
-"Look at this."
+A Space begins from an intentional Vent, but it is not limited to that Vent. A Space can become a shared experience where multiple Voices meet expressions that genuinely belong within that Space.
 
-Ventvo Echo Notes say:
+The first Vent establishes the initial context of the Space.
 
-"This reached me, and this is why."
+A later Voice does not "join a community" in the traditional social-media sense. They enter the Space to experience what is happening there and may contribute an expression when it genuinely belongs.
+
+The Space therefore exists to organize **how Voices meet expression**, not simply where content is stored.
+
+Current Space modes remain limited to:
+
+- 🌊 Just Listen
+- 💬 Discussion
+
+Just Listen protects the creator's request for presence and does not allow normal discussion or Echo Notes.
+
+Discussion allows perspectives and Echo Notes while remaining distinct from conventional comment threads.
+
+## Moments and Feed
+
+Space activity may produce meaningful **Moments**.
+
+The Feed is a discovery layer for those Moments rather than a separate social-media world outside Spaces.
+
+When a Voice encounters a Moment in the Feed and taps it, the intended destination is the Space from which that Moment came. The Voice should experience the surrounding Space context rather than being sent to a generic post/comment page.
+
+```text
+Voice
+  ↓
+Vent
+  ↓
+Space
+  ↓
+Space activity
+  ↓
+Moment
+  ↓
+Feed
+  ↓
+tap Moment
+  ↓
+its Space
+```
+
+## Guardrails
+
+Spaces must not become:
+
+- Subreddits
+- Facebook-style groups
+- Discord-style channels
+- Follower-based communities
+- Popularity feeds
+- Generic topic forums
+
+Future Resonance or AI-assisted discovery may suggest related Spaces or expressions, but the Voice remains in control of participation.
+
+This decision describes the intended product architecture. It does not claim that shared Spaces, persistent participation, Moments, or Feed-to-Space navigation are already implemented.
