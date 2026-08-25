@@ -29,9 +29,7 @@ All notable changes to Ventvo will be documented here.
 - Added the initial Vent system.
 - Added `Vent` model and state management.
 - Connected Vent creation to the user's Ventvo Voice.
-- Added `spaceType` to define how a Vent should be experienced.
-- Added Voice identity information to created Vents.
-- Added Feed foundation for displaying Vents.
+- Added the initial Feed foundation.
 - Added reusable Vent card structure.
 - Connected Voice Space with created Vents and Feed.
 
@@ -84,75 +82,66 @@ Release
 Fate
 ├── Let Go
 └── Keep Private
+```
+
 Product Decisions
+
 Crash Out is separate from the Vent system.
 A Crash Out is a private release, not a Vent type.
 A Crash Out does not appear in the normal Feed unless explicitly converted into a Vent.
 Private Crash Outs remain visible only to their owner.
-Current Crash Out Outcomes
+
+### Current Crash Out Outcomes
 
 Implemented:
 
-Let Go
-Keep Private
+- Let Go
+- Keep Private
 
 Future:
 
-Turn into a Vent
-Find People Who Understand
-Voice Crash Out
-Backend Direction
+- Turn into a Vent
+- Find People Who Understand
+- Voice Crash Out
+
+### Backend Direction
+
 Supabase has been selected as the planned backend platform.
 PostgreSQL will serve as the primary database.
 Supabase Auth will handle authentication.
 Supabase Storage will handle user-generated media.
 Supabase Realtime will support future real-time interactions.
 
+---
 
-### One important thing
+## Version 0.1.4 - Space Foundation
 
+### Added
 
-I **wouldn't add Resonance Maps, Resonance Threads, Echo Notes, or the other future systems as if they're already implemented**.
-
-
-They belong in the architecture/product documentation as **planned systems**, while the changelog should say only what we've actually built.
-
-## Version 0.1.2 - Crash Out & Vent Foundation Refinement
+- Added a dedicated `Space` domain model.
+- Added `SpaceMode` with only `Just Listen` and `Open Discussion`.
+- Added local Space persistence.
+- Added initial Space and Spaces screens.
+- Added Space card and Space Moment card foundations.
 
 ### Changed
 
-* Simplified the Crash Out status model.
-* Removed obsolete `letGo` status.
-* Removed obsolete `findingPeople` status.
-* Removed the previous `ConnectionNeed` model.
-* Kept Crash Out separate from the Vent model.
-* Maintained private Crash Out storage through `keptPrivate`.
-* Refined the Vent creation experience around the current Ventvo spaces:
+- Vent now stores `spaceId` rather than duplicating the Space interaction mode.
+- Vent creation now creates a Space alongside the Vent.
+- Feed expressions now enter their owning Space.
+- Just Listen and Open Discussion behavior is resolved from the Space model.
 
-  * Just Listen
-  * Open Discussion
-* Continued connecting Voice identity with Vent creation and Feed display.
+### Product Boundary
 
-### Product Direction
+This is the first Space domain foundation, not the final Space experience.
 
-Crash Out remains a separate private-release experience rather than becoming another Vent type.
+Moments, Resonance, Echo Notes, persistent discussions, Supabase persistence, and connection systems remain future work.
 
-The current implementation focuses on:
+No additional Space modes were introduced.
 
-* Releasing a thought privately.
-* Choosing to keep the release private.
-* Maintaining a clear path toward future Crash Out functionality without prematurely implementing matching or connection infrastructure.
-
-Future systems such as Resonance, Resonance Maps, Echo Notes, and deeper human-connection features will be developed separately when their underlying product and technical behavior is ready.
-
-### `CHANGELOG.md`
-
-And at the bottom:
-
-```markdown
 ---
 
-## [Unreleased] — Ventvo Voice Foundation
+## Unreleased - Ventvo Voice Foundation
 
 ### Added
 
