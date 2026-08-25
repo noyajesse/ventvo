@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../discussion/screen/discussion_screen.dart';
-import '../../spaces/models/space.dart';
 import '../../spaces/providers/space_provider.dart';
 import '../../ventvo_voice/models/vent.dart';
 
@@ -23,7 +22,8 @@ class _VentCardState extends ConsumerState<VentCard> {
 
   @override
   Widget build(BuildContext context) {
-    final space = ref.watch(spaceProvider.notifier).getById(widget.vent.spaceId);
+    final spaces = ref.watch(spaceProvider);
+    final space = spaces.where((item) => item.id == widget.vent.spaceId).firstOrNull;
     final isJustListen = space?.isJustListen ?? false;
     final isOpenDiscussion = space?.isOpenDiscussion ?? false;
     final voiceName = widget.vent.voiceName?.trim();
