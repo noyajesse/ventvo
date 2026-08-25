@@ -1,31 +1,37 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/space.dart';
+import '../services/space_storage.dart';
 
 final spaceProvider =
-    NotifierProvider<SpaceNotifier, List<Space>>(SpaceNotifier.new);
+    AsyncNotifierProvider<SpaceNotifier, List<Space>>(SpaceNotifier.new);
 
-class SpaceNotifier extends Notifier<List<Space>> {
+class SpaceNotifier extends AsyncNotifier<List<Space>> {
+  final SpaceStorage _storage = SpaceStorage();
+
   @override
-  List<Space> build() {
-    return [];
+  Future<List<Space>> build() async {
+    return _storage.load();
   }
 
-  Space? getById(String id) {
-    for (final space in state) {
-      if (space.id == id) {
-        return space;
-      }
-    }
-
-    return null;
+  Future<void> addSpace(Space space) async {
+    final spaces = [
+      ...state.asData?.value ?? const <Space>[],
+      space,
+    ];
+    state = AsyncData(spaces);
+    await _storage.save(spaces);
   }
 
-  void addSpace(Space space) {
-    state = [...state, space];
+  Future<void> removeSpace(String id) async {
+    final current = state.asData?.value ?? const <Space>[];
+    final spaces = current.where((space) => space.id != id).toList();
+    state = AsyncData(spaces);
+    await _storage.save(spaces);
   }
 
-  void removeSpace(String id) {
-    state = state.where((space) => space.id != id).toList();
+  Future<void> clearSpaces() async {
+    await _storage.clear();
+    state = const AsyncData([]);
   }
 }
