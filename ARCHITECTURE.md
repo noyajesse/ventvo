@@ -1,23 +1,16 @@
 # Ventvo Architecture
 
-
 ## Overview
-
 
 Ventvo is an anonymous community platform built around authentic expression, meaningful conversation, and human connection.
 
-
 Ventvo does not treat every expression as a traditional social-media post.
-
 
 The core idea is:
 
-
 > A person creates a moment, chooses how that moment should be experienced, and may eventually discover meaningful resonance with other people.
 
-
 The primary product architecture is:
-
 
 ```text
 Voice
@@ -39,7 +32,10 @@ Crash Out
 Private Release
   ↓
 Fate
+```
+
 1. Ventvo Voice
+
 Purpose
 
 Ventvo Voice is the anonymous public identity layer of Ventvo.
@@ -67,6 +63,7 @@ Authentication information
 Email/provider information
 Security information
 Moderation records
+
 Public Ventvo Voice
 
 The community interacts with:
@@ -94,15 +91,18 @@ Feed exploration
 
 Current relationship:
 
+```text
 Ventvo Voice
       ↓
 Voice Space
       ↓
 Vents / Crash Out / Feed
+```
 
 Voice Space is not intended to become a traditional profile page.
 
 3. Vent
+
 Definition
 
 A Vent is a thought, feeling, idea, experience, opinion, or moment intentionally released by a Voice into Ventvo.
@@ -124,11 +124,14 @@ createdAt
 The Vent also maintains its relationship with the Voice that created it through the creator's Voice Mark.
 
 Vent Relationship
+
+```text
 Voice
   ↓
 Vent
   ↓
 Space
+```
 
 This relationship is one of the central foundations of Ventvo.
 
@@ -139,6 +142,7 @@ A Space defines how other people should interact with a Vent.
 Ventvo currently has two core Spaces.
 
 4.1 Just Listen
+
 Purpose
 
 Just Listen exists for moments where the creator wants to be heard without receiving advice or solutions.
@@ -293,6 +297,7 @@ Future resonance or AI-assisted discovery may suggest that a Voice may resonate 
 Shared Spaces are a product direction being established by this architecture decision and are not yet fully implemented.
 
 5. Open Discussion
+
 Purpose
 
 Open Discussion exists for moments where the creator welcomes conversation and different perspectives.
@@ -309,6 +314,7 @@ Creation of an Open Discussion Vent
 Open Discussion Space identification
 Entering a dedicated Discussion screen
 Local discussion responses
+
 Future Development
 
 The discussion system will eventually require:
@@ -320,7 +326,9 @@ Echoes
 Echo Notes
 Resonance connections
 Safety and moderation controls
+
 6. Resonance
+
 Definition
 
 Resonance is one of Ventvo's central systems.
@@ -344,6 +352,7 @@ Resonance sits above individual interactions.
 
 The intended architecture is:
 
+```text
 Voice
   ↓
 Vent
@@ -353,6 +362,7 @@ Space
 Resonance
   ↓
 Connection
+```
 
 A person may encounter a Vent, experience resonance with it, and eventually discover another Voice through that resonance.
 
@@ -364,6 +374,7 @@ They represent connections between related moments and experiences.
 
 A Resonance Thread may eventually allow Ventvo to connect:
 
+```text
 Moment
   ↓
 Resonance
@@ -371,6 +382,7 @@ Resonance
 Related Moment
   ↓
 Another Voice
+```
 
 The purpose is not to create another comment feed.
 
@@ -386,6 +398,7 @@ A Resonance Map is intended to represent how moments and Voices connect through 
 
 Conceptually:
 
+```text
                  Voice
                    │
                  Vent
@@ -397,6 +410,7 @@ Conceptually:
               Resonance
                    │
                 Connection
+```
 
 The exact visual and technical implementation of Resonance Maps will be defined when the Resonance system is implemented.
 
@@ -412,11 +426,13 @@ Echo should not simply become another name for a comment.
 
 The intended distinction is:
 
+```text
 Vent
   ↓
 Echo
   ↓
 Possible deeper connection
+```
 
 Echo is not yet implemented as a complete system.
 
@@ -451,6 +467,8 @@ Crash Out provides a private release pathway.
 It allows a person to release something they are carrying before deciding what, if anything, should happen next.
 
 Crash Out Architecture
+
+```text
 Voice Space
      ↓
 Crash Out
@@ -458,6 +476,7 @@ Crash Out
 Release
      ↓
 Fate
+```
 
 The Crash Out remains separate from the normal Vent system unless the user explicitly chooses to move it into that system.
 
@@ -489,12 +508,14 @@ Let Go
 Keep Private
 Turn into a Vent
 Find People Who Understand
+
 13.1 Let Go
 
 Let Go removes the Crash Out from the user's private Crash Out storage.
 
 Current behavior:
 
+```text
 Crash Out
   ↓
 Let Go
@@ -502,29 +523,35 @@ Let Go
 Deleted
   ↓
 Voice Space
+```
+
 13.2 Keep Private
 
 Keep Private stores the Crash Out privately.
 
 Current behavior:
 
+```text
 Crash Out
   ↓
 Keep Private
   ↓
 Private Crash Outs
+```
 
 Private Crash Outs:
 
 Do not appear in the normal Feed
 Are not normal Vents
 Are accessible only through the user's private space
+
 13.3 Turn into a Vent
 
 This is a future pathway.
 
 Intended architecture:
 
+```text
 Crash Out
   ↓
 Turn into a Vent
@@ -536,6 +563,7 @@ Space
 Feed
   ↓
 Resonance
+```
 
 The conversion should only happen when the user explicitly chooses it.
 
@@ -553,6 +581,7 @@ Instead, it should feel like:
 
 The long-term direction is:
 
+```text
 Crash Out
   ↓
 Private Understanding
@@ -562,6 +591,7 @@ Resonance / Similarity
 Small Group
   ↓
 Connection
+```
 
 The earlier product direction allows this experience to eventually surface a small number of Voices rather than a large public audience.
 
@@ -573,6 +603,7 @@ Ventvo's connection system is intended to grow from Resonance rather than tradit
 
 The long-term direction is:
 
+```text
 Expression
     ↓
 Vent
@@ -586,6 +617,7 @@ Echo
 Deeper Understanding
     ↓
 Connection
+```
 
 The goal is meaningful connection rather than maximum engagement.
 
@@ -595,6 +627,7 @@ The Feed is the community discovery layer.
 
 Current prototype flow:
 
+```text
 Voice
   ↓
 Vent
@@ -602,6 +635,7 @@ Vent
 ventProvider
   ↓
 Feed
+```
 
 Feed cards currently prioritize:
 
@@ -620,11 +654,13 @@ Open Discussion currently has a dedicated discussion experience.
 
 Current prototype behavior:
 
+```text
 Open Discussion Vent
         ↓
 Discussion Screen
         ↓
 Local Responses
+```
 
 The current responses are demonstration data.
 
@@ -667,6 +703,7 @@ Navigation should follow feature boundaries rather than creating unnecessary dep
 
 Current structure:
 
+```text
 lib/
 ├── core/
 └── features/
@@ -687,8 +724,9 @@ lib/
         ├── models/
         ├── providers/
         └── screens/
-20. Backend Direction
+```
 
+20. Backend Direction
 
 Supabase will provide Ventvo's backend services.
 
@@ -705,6 +743,7 @@ Ventvo must protect the person behind the Voice.
 
 The system should enforce separation between:
 
+```text
 Private Account
       ↓
 Authentication / Security
@@ -712,6 +751,7 @@ Authentication / Security
 Ventvo Voice
       ↓
 Community Expression
+```
 
 Security priorities include:
 
@@ -742,6 +782,7 @@ Meaningful interaction over reaction farming
 
 Every major feature should strengthen the central architecture:
 
+```text
 Voice
   ↓
 Vent
@@ -751,7 +792,10 @@ Space
 Resonance
   ↓
 Connection
+```
+
 23. Current vs Future Systems
+
 Implemented Foundation
 
 Currently functional or prototyped:
@@ -772,6 +816,7 @@ Crash Out Fate
 Let Go
 Keep Private
 Private Crash Out storage
+
 Product Systems Not Yet Fully Implemented
 
 These are established product directions but require further development:
@@ -789,6 +834,7 @@ Small connection groups
 Voice Crash Outs
 Backend persistence
 AI-assisted similarity discovery
+
 24. AI Matching Direction
 
 AI may eventually assist Ventvo in discovering meaningful similarities between experiences.
@@ -834,6 +880,7 @@ This separation should be preserved as the project grows.
 
 Ventvo's long-term architecture is not simply:
 
+```text
 Post
 ↓
 Like
@@ -841,9 +888,11 @@ Like
 Comment
 ↓
 Follower
+```
 
 Instead, Ventvo is designed around:
 
+```text
 Voice
 ↓
 Moment
@@ -857,6 +906,7 @@ Resonance
 Understanding
 ↓
 Connection
+```
 
 That distinction is fundamental to the product.
 
@@ -864,6 +914,7 @@ That distinction is fundamental to the product.
 
 Ventvo documentation follows:
 
+```text
 PRODUCT_VISION.md
        ↓
 ARCHITECTURE.md
@@ -873,6 +924,8 @@ ENGINEERING_HANDBOOK.md
 SECURITY_HANDBOOK.md
        ↓
 Implementation
+```
+
 Product Vision
 
 Defines why Ventvo exists.
@@ -906,13 +959,8 @@ Does it require backend state?
 Does it introduce security or privacy risks?
 How does it affect the existing architecture?
 
-Ventvo should grow deliberately rather than accumulating unrelated social-media features
+Ventvo should grow deliberately rather than accumulating unrelated social-media features.
 
-### `ARCHITECTURE.md`
-
-At the bottom:
-
-```markdown
 ---
 
 # Latest Architecture Addition — Ventvo Voice Foundation
@@ -926,6 +974,8 @@ lib/core/voice/
 ├── ventvo_voice.dart
 ├── ventvo_voice_seed.dart
 └── ventvo_voice_system.dart
+```
+
 VentvoVoice
 
 VentvoVoice defines the current foundational Voice vocabulary:
@@ -942,14 +992,15 @@ Mark
 
 The current definitions are:
 
-Voice	Principle	Mark
-VAELOR	Give it somewhere to exist.	◇
-NYVEN	You are heard.	∿
-AUREN	You can become something different.	✦
+Voice | Principle | Mark
+--- | --- | ---
+VAELOR | Give it somewhere to exist. | ◇
+NYVEN | You are heard. | ∿
+AUREN | You can become something different. | ✦
 
 These foundations are part of Ventvo's internal language and should not be treated as ordinary selectable personality types.
 
-VentvoVoiceProfile
+## VentvoVoiceProfile
 
 VentvoVoiceProfile represents the balance between the three Voice foundations.
 
@@ -961,7 +1012,7 @@ aurenWeight
 
 This allows a Voice to eventually become more nuanced than a single permanent category.
 
-VentvoVoiceSeed
+## VentvoVoiceSeed
 
 VentvoVoiceSeed represents the initial state of a user's Voice.
 
@@ -975,10 +1026,11 @@ The Seed is deliberately incomplete.
 
 The architecture should allow the Voice to evolve as the user interacts with Ventvo rather than treating onboarding as the permanent definition of the person.
 
-Onboarding Architecture
+## Onboarding Architecture
 
 The current onboarding progression is:
 
+```text
 Welcome
    ↓
 Authentication
@@ -986,6 +1038,7 @@ Authentication
 Finding Your Voice
    ↓
 Voice Reveal
+```
 
 FindingYourVoiceScreen introduces the Voice concept without forcing the user through a long personality questionnaire.
 
@@ -993,10 +1046,11 @@ VoiceRevealScreen presents the resulting Voice foundation and Mark.
 
 The Voice Seed is passed into the reveal experience so that the Voice identity is represented by actual domain data rather than isolated UI text.
 
-Visual Architecture
+## Visual Architecture
 
 The following reusable core systems have been introduced:
 
+```text
 lib/core/
 ├── motion/
 │   └── ventvo_motion.dart
@@ -1012,17 +1066,163 @@ lib/core/
     ├── ventvo_voice.dart
     ├── ventvo_voice_seed.dart
     └── ventvo_voice_system.dart
+```
 
 This establishes a reusable foundation rather than placing visual and Voice logic directly inside individual screens.
 
-Design Constraint
+## Design Constraint
 
 Future Voice-related features must preserve the distinction between:
 
+```text
 Voice Foundation
         ↓
 Voice Seed
         ↓
 Voice Evolution
+```
 
 The system should not turn into a personality quiz or force users into a permanent identity.
+
+---
+
+# Latest Architecture Addition — Shared Space Architecture
+
+## Space Definition
+
+The existing Ventvo foundation remains:
+
+> A Vent creates a Space that communicates how the creator wants that expression to be experienced.
+
+This remains true.
+
+The architecture is now clarified so that a Space is not limited to the first Vent and is not a container for unrelated content.
+
+A Space can become a shared experience where multiple Voices meet expressions that genuinely belong within that Space.
+
+The core relationship is:
+
+```text
+Voice
+  ↓
+Vent
+  ↓
+Space
+  ↓
+Voices meet expressions
+  ↓
+Space activity
+  ↓
+Moments
+  ↓
+Feed
+  ↓
+tap Moment
+  ↓
+its Space
+```
+
+The first Vent establishes the initial context of the Space. A later Voice may enter the Space and contribute an expression when it genuinely belongs within that experience.
+
+Participation does not mean joining a traditional social-media community. A Voice enters a Space to meet what is happening there.
+
+## Space Is Not a Traditional Social Platform Structure
+
+Space must not become:
+
+- A subreddit
+- A Facebook-style group
+- A Discord-style channel
+- A follower-based community
+- A popularity feed
+- A generic topic forum
+
+A Space exists to organize **how Voices meet expression**, not simply where content is stored.
+
+The defining question is:
+
+> How should people meet this expression?
+
+not:
+
+> How can we organize more content?
+
+## Space Modes
+
+Ventvo currently has only two Space modes.
+
+### Just Listen
+
+Just Listen exists when the creator wants to be heard without advice, solutions, or open discussion.
+
+```text
+Expression
+  ↓
+Presence
+  ↓
+Heard
+```
+
+Just Listen protects the creator's intention. Normal comments, advice, Echo Notes, and open discussion do not belong in this experience.
+
+The meaningful interaction remains:
+
+> I heard you.
+
+### Open Discussion
+
+Open Discussion exists when the creator welcomes perspectives and conversation around the expression.
+
+```text
+Expression
+  ↓
+Perspective
+  ↓
+Echo / Echo Note
+  ↓
+Understanding
+```
+
+Open Discussion should not become a conventional comment thread. Responses should contribute perspective and preserve the intentional nature of the Space.
+
+## Space Participation
+
+A Space may contain expressions from multiple Voices.
+
+Ventvo must not automatically force a Vent into a Space merely because the subject matter appears similar.
+
+Future Resonance or AI-assisted discovery may suggest that a Voice may resonate with an existing Space, but the Voice remains in control of whether they enter or contribute.
+
+## Space Activity and Moments
+
+Space activity represents what happens when Voices express and meet one another inside a Space.
+
+A Moment is a meaningful glimpse of Space activity.
+
+The Feed surfaces Moments from Spaces.
+
+The Feed therefore does not replace the Space and is not a separate social-media destination for consuming generic posts.
+
+When a Voice encounters a Moment in the Feed and taps it, the intended destination is the Space from which that Moment came so the Voice can experience the surrounding context.
+
+```text
+Space
+  ↓
+Space activity
+  ↓
+Moment
+  ↓
+Feed
+  ↓
+tap Moment
+  ↓
+return to its Space
+```
+
+## Current Implementation Boundary
+
+This is an architecture and product decision. It does **not** claim that shared Spaces, persistent multi-Voice participation, Moments, or Feed-to-Space navigation are already implemented.
+
+The existing prototype remains the implementation baseline until these systems are deliberately built and validated.
+
+The existing Just Listen and Open Discussion semantics remain the foundation of the implementation and should not be replaced with generic social-media interactions.

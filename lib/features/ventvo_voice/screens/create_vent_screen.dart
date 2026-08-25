@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../crash_out/providers/crash_out_provider.dart';
+import '../../spaces/models/space.dart';
+import '../../spaces/providers/space_provider.dart';
 import '../models/vent.dart';
 import '../providers/vent_provider.dart';
 import '../providers/voice_provider.dart';
-
-import '../../crash_out/providers/crash_out_provider.dart';
 import 'voice_space_screen.dart';
 
 class CreateVentScreen extends ConsumerStatefulWidget {
@@ -20,7 +21,7 @@ class CreateVentScreen extends ConsumerStatefulWidget {
 
 class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
   late final TextEditingController controller;
-  String? selectedSpace;
+  SpaceMode? selectedMode;
 
   bool get isFromCrashOut => widget.crashOutId != null;
 
@@ -45,19 +46,33 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
 
   Future<void> _releaseVent() async {
     final content = controller.text.trim();
-    if (selectedSpace == null || content.length < 3) return;
+    final mode = selectedMode;
+    if (mode == null || content.length < 3) return;
 
     final voice = ref.read(ventvoVoiceProvider).asData?.value;
+    final now = DateTime.now();
+    final ventId = now.millisecondsSinceEpoch.toString();
+    final spaceId = 'space_$ventId';
+    final voiceMark = voice?.mark ?? '◇';
 
-    final vent = Vent(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      content: content,
-      spaceType: selectedSpace!,
-      voiceMark: voice?.mark ?? '◇',
-      voiceName: voice?.name,
-      createdAt: DateTime.now(),
+    final space = Space(
+      id: spaceId,
+      mode: mode,
+      originatingVentId: ventId,
+      creatorVoiceMark: voiceMark,
+      createdAt: now,
     );
 
+    final vent = Vent(
+      id: ventId,
+      content: content,
+      spaceId: spaceId,
+      voiceMark: voiceMark,
+      voiceName: voice?.name,
+      createdAt: now,
+    );
+
+    await ref.read(spaceProvider.notifier).addSpace(space);
     await ref.read(ventProvider.notifier).addVent(vent);
     if (!mounted) return;
 
@@ -77,7 +92,7 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
   @override
   Widget build(BuildContext context) {
     final voice = ref.watch(ventvoVoiceProvider).asData?.value;
-    final canRelease = selectedSpace != null && controller.text.trim().length >= 3;
+    final canRelease = selectedMode != null && controller.text.trim().length >= 3;
 
     return Scaffold(
       backgroundColor: const Color(0xFF111111),
@@ -122,9 +137,17 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
               const SizedBox(height: 8),
               const Text('Your choice determines how other Voices can respond.', style: TextStyle(color: Colors.white54, fontSize: 14, height: 1.4)),
               const SizedBox(height: 18),
-              _spaceOption(title: Vent.justListen, description: 'I want to be heard without needing answers.'),
+              _spaceOption(
+                mode: SpaceMode.justListen,
+                title: 'Just Listen',
+                description: 'I want to be heard without needing answers.',
+              ),
               const SizedBox(height: 15),
-              _spaceOption(title: Vent.openDiscussion, description: 'I want other Voices to share perspectives with me.'),
+              _spaceOption(
+                mode: SpaceMode.openDiscussion,
+                title: 'Open Discussion',
+                description: 'I want other Voices to share perspectives with me.',
+              ),
               const SizedBox(height: 40),
               SizedBox(
                 width: double.infinity,
@@ -141,8 +164,12 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
     );
   }
 
-  Widget _spaceOption({required String title, required String description}) {
-    final isSelected = selectedSpace == title;
+  Widget _spaceOption({
+    required SpaceMode mode,
+    required String title,
+    required String description,
+  }) {
+    final isSelected = selectedMode == mode;
 
     return Semantics(
       button: true,
@@ -150,7 +177,7 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
       label: '$title. $description',
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: () => setState(() => selectedSpace = title),
+        onTap: () => setState(() => selectedMode = mode),
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.all(18),

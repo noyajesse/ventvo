@@ -1,10 +1,7 @@
 class Vent {
-  static const String justListen = 'Just Listen';
-  static const String openDiscussion = 'Open Discussion';
-
   final String id;
   final String content;
-  final String spaceType;
+  final String spaceId;
   final String voiceMark;
   final String? voiceName;
   final DateTime createdAt;
@@ -12,19 +9,16 @@ class Vent {
   const Vent({
     required this.id,
     required this.content,
-    required this.spaceType,
+    required this.spaceId,
     required this.voiceMark,
     this.voiceName,
     required this.createdAt,
   });
 
-  bool get isJustListen => spaceType == justListen;
-  bool get isOpenDiscussion => spaceType == openDiscussion;
-
   Vent copyWith({
     String? id,
     String? content,
-    String? spaceType,
+    String? spaceId,
     String? voiceMark,
     String? voiceName,
     DateTime? createdAt,
@@ -32,7 +26,7 @@ class Vent {
     return Vent(
       id: id ?? this.id,
       content: content ?? this.content,
-      spaceType: spaceType ?? this.spaceType,
+      spaceId: spaceId ?? this.spaceId,
       voiceMark: voiceMark ?? this.voiceMark,
       voiceName: voiceName ?? this.voiceName,
       createdAt: createdAt ?? this.createdAt,

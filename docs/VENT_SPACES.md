@@ -14,37 +14,50 @@ Purpose: allow someone to express a moment without asking others to fix it.
 
 Current prototype behavior:
 
-- Feed identifies the Vent as a Listening Space.
-- A listener can acknowledge the Vent with `I'm listening`.
-- After acknowledgement, the action becomes `Heard` and is disabled.
-- No discussion composer is available from a Just Listen Vent.
+- Feed identifies the expression as belonging to a Just Listen Space.
+- A Voice can enter the Space.
+- Inside the Space, the Voice can acknowledge the moment with `I'm listening`.
+- After acknowledgement, the action becomes `Heard`.
+- No discussion composer is available.
 
-Production behavior is still future work and will require persistent interaction state.
+Production behavior will eventually require persistent interaction state and backend storage.
 
 ### Open Discussion
 
-Purpose: give Voices a space for deeper conversation and perspectives.
+Purpose: give Voices a Space for deeper conversation and perspectives.
 
 Current prototype behavior:
 
-- Feed identifies the Vent as an Open Discussion Space.
-- Users can enter the dedicated Discussion screen.
-- The Discussion screen allows local prototype responses.
-- The discussion composer is available only when the Vent is actually an Open Discussion Vent.
+- Feed identifies the expression as belonging to an Open Discussion Space.
+- A Voice can enter the Space.
+- The Space provides a discussion experience and local prototype responses.
 
 Persistent discussions, participant data, Echo Notes, and connection rules remain future work.
 
 ## Technical Model
 
-The `Vent` model stores the selected Space using:
+A Space is now a real domain object.
 
-- `spaceType`
-- `Vent.justListen`
-- `Vent.openDiscussion`
-- `Vent.isJustListen`
-- `Vent.isOpenDiscussion`
+The `Space` model contains:
 
-Create Vent records the selected Space in `spaceType`.
+- `id`
+- `mode`
+- `originatingVentId`
+- `creatorVoiceMark`
+- `createdAt`
+
+The only supported modes are:
+
+- `SpaceMode.justListen`
+- `SpaceMode.openDiscussion`
+
+The `Vent` model stores the relationship through:
+
+- `spaceId`
+
+The interaction mode is owned by `Space`, not duplicated on `Vent`.
+
+This prevents two sources of truth for the same interaction rules.
 
 ## Current Flow
 
@@ -56,18 +69,44 @@ Create Vent
 Choose Space
   ├── Just Listen
   │     ↓
-  │   Listening Space
+  │   Space
+  │     ↓
+  │   Enter Space
   │     ↓
   │   I'm listening → Heard
   │
   └── Open Discussion
         ↓
-      Discussion Space
+      Space
         ↓
-      Join Discussion
+      Enter Space
         ↓
       Discussion
 ```
+
+## Feed Relationship
+
+The Feed is a discovery layer for expressions and should lead a Voice into the Space that owns the experience.
+
+```text
+Vent
+ ↓
+Space
+ ↓
+Feed expression
+ ↓
+Tap / Enter
+ ↓
+Same Space
+```
+
+The current Feed still uses the existing Vent card as its presentation foundation. A later Moments layer can evolve the discovery presentation without changing the underlying Vent → Space relationship.
+
+## Persistence
+
+The current prototype persists Vents and Spaces locally using SharedPreferences.
+
+Supabase persistence remains future work.
 
 ## Product Boundaries
 
@@ -78,7 +117,6 @@ Do not add the following to the current Space implementation unless the roadmap 
 - Advice as a third Space
 - Echo Notes implementation
 - Resonance Maps
-- Backend persistence
 - AI matching
 
 These are separate future systems or deliberately rejected directions.

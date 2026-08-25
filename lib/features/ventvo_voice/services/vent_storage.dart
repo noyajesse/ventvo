@@ -44,7 +44,7 @@ class VentStorage {
     return {
       'id': vent.id,
       'content': vent.content,
-      'spaceType': vent.spaceType,
+      'spaceId': vent.spaceId,
       'voiceMark': vent.voiceMark,
       'voiceName': vent.voiceName,
       'createdAt': vent.createdAt.toIso8601String(),
@@ -54,14 +54,14 @@ class VentStorage {
   Vent? _fromMap(Map<String, dynamic> map) {
     final id = map['id'];
     final content = map['content'];
-    final spaceType = map['spaceType'];
+    final spaceId = map['spaceId'];
     final voiceMark = map['voiceMark'];
     final voiceName = map['voiceName'];
     final createdAt = map['createdAt'];
 
     if (id is! String ||
         content is! String ||
-        spaceType is! String ||
+        spaceId is! String ||
         voiceMark is! String ||
         (voiceName != null && voiceName is! String) ||
         createdAt is! String) {
@@ -74,7 +74,7 @@ class VentStorage {
     return Vent(
       id: id,
       content: content,
-      spaceType: spaceType,
+      spaceId: spaceId,
       voiceMark: voiceMark,
       voiceName: voiceName as String?,
       createdAt: parsedCreatedAt,
