@@ -214,11 +214,11 @@ The Space therefore exists to organize **how Voices meet expression**, not simpl
 Current Space modes remain limited to:
 
 - 🌊 Just Listen
-- 💬 Discussion
+- 💬 Open Discussion
 
 Just Listen protects the creator's request for presence and does not allow normal discussion or Echo Notes.
 
-Discussion allows perspectives and Echo Notes while remaining distinct from conventional comment threads.
+Open Discussion allows perspectives and Echo Notes while remaining distinct from conventional comment threads.
 
 ## Moments and Feed
 
