@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../spaces/models/space.dart';
 import '../../spaces/providers/space_provider.dart';
 import '../../spaces/screens/space_screen.dart';
 import '../../ventvo_voice/models/vent.dart';
@@ -29,7 +30,7 @@ class VentCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildCard(BuildContext context, dynamic space, String identity) {
+  Widget _buildCard(BuildContext context, Space? space, String identity) {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(22),
