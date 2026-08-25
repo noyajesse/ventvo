@@ -172,6 +172,125 @@ Open discussion
 The purpose is simply to acknowledge:
 
 "I heard you."
+### Space as a Shared Experience
+
+The original Space architecture establishes that a Vent creates a Space that communicates how the creator wants that expression to be experienced.
+
+This remains the foundation.
+
+However, a Space is not limited to the original Vent or intended to function as a container for unrelated content.
+
+A Space is a shared experience that can grow as other Voices enter and contribute expressions that genuinely belong within that experience.
+
+The relationship is:
+
+Voice
+  ↓
+Vent
+  ↓
+Space
+  ↓
+Voices meet expressions
+  ↓
+Space activity
+  ↓
+Moments
+  ↓
+Feed
+  ↓
+Moment
+  ↓
+its Space
+
+The first Vent establishes the initial context of the Space.
+
+Other Voices may participate in that Space, but participation does not mean joining a traditional social-media community. A Voice enters a Space to meet what is happening there.
+
+The Space should therefore not become:
+
+- A subreddit
+- A Facebook-style group
+- A Discord-style channel
+- A generic topic forum
+- A popularity-based community
+
+The defining question for a Space is:
+
+> How should people meet this expression?
+
+rather than:
+
+> How should we organize more content?
+
+### Space Modes
+
+Ventvo currently has only two Space modes.
+
+#### Just Listen
+
+Just Listen exists when the creator wants to be heard without advice, solutions, or open discussion.
+
+The intended interaction is:
+
+Expression
+  ↓
+Presence
+  ↓
+Heard
+
+Just Listen protects the creator's intention. Normal comments, advice, Echo Notes, and open discussion do not belong in this experience.
+
+#### Open Discussion
+
+Open Discussion exists when the creator welcomes perspectives and conversation around the expression.
+
+The intended interaction is:
+
+Expression
+  ↓
+Perspective
+  ↓
+Echo / Echo Note
+  ↓
+Understanding
+
+Open Discussion should not become a conventional comment thread. Responses should contribute perspective and preserve the intentional nature of the Space.
+
+### Space Activity and Moments
+
+Space activity represents what happens when Voices express and meet one another inside a Space.
+
+A Moment is a meaningful glimpse of that Space activity.
+
+The Feed surfaces Moments from Spaces.
+
+The Feed therefore does not replace the Space.
+
+When a Voice encounters a Moment in the Feed and chooses to explore it, the intended destination is the Space from which that Moment came.
+
+This allows the Voice to move from:
+
+Moment
+  ↓
+Space
+  ↓
+Context
+  ↓
+Expression
+  ↓
+Connection
+
+The Feed is therefore a discovery layer for Spaces rather than a separate destination for consuming generic posts.
+
+### Space Participation
+
+A Space may contain expressions from multiple Voices.
+
+However, Ventvo must not automatically force an expression into a Space merely because the subject matter appears similar.
+
+Future resonance or AI-assisted discovery may suggest that a Voice may resonate with an existing Space, but the Voice remains in control of whether they enter or contribute.
+
+Shared Spaces are a product direction being established by this architecture decision and are not yet fully implemented.
 
 5. Open Discussion
 Purpose
