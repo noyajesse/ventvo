@@ -72,7 +72,7 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
       createdAt: now,
     );
 
-    ref.read(spaceProvider.notifier).addSpace(space);
+    await ref.read(spaceProvider.notifier).addSpace(space);
     await ref.read(ventProvider.notifier).addVent(vent);
     if (!mounted) return;
 
