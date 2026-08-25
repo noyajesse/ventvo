@@ -10,7 +10,7 @@ class SpacesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final spaces = ref.watch(spaceProvider);
+    final spacesAsync = ref.watch(spaceProvider);
 
     return Scaffold(
       backgroundColor: const Color(0xFF111111),
@@ -23,31 +23,36 @@ class SpacesScreen extends ConsumerWidget {
         ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: spaces.isEmpty
-          ? const Center(
-              child: Text(
-                'No Spaces yet.',
-                style: TextStyle(color: Colors.white54, fontSize: 17),
-              ),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.all(20),
-              itemCount: spaces.length,
-              itemBuilder: (context, index) {
-                final space = spaces[index];
-                return SpaceCard(
-                  space: space,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => SpaceScreen(space: space),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
+      body: spacesAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (_, __) => const Center(
+          child: Text('Unable to load Spaces.', style: TextStyle(color: Colors.white70)),
+        ),
+        data: (spaces) {
+          if (spaces.isEmpty) {
+            return const Center(
+              child: Text('No Spaces yet.', style: TextStyle(color: Colors.white54, fontSize: 17)),
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(20),
+            itemCount: spaces.length,
+            itemBuilder: (context, index) {
+              final space = spaces[index];
+              return SpaceCard(
+                space: space,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => SpaceScreen(space: space)),
+                  );
+                },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }
