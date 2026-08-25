@@ -1,3 +1,29 @@
+## Space Foundation Implementation
+
+Date: 2026-08-25
+
+Completed:
+- Added a dedicated `Space` domain model.
+- Limited Space modes to `Just Listen` and `Open Discussion`.
+- Changed `Vent` to reference a `spaceId` instead of storing the interaction mode itself.
+- Added local Space persistence alongside existing Vent persistence.
+- Updated Vent creation so a Space is created with the Vent.
+- Added the initial Space screen and Spaces screen.
+- Added Space and Space Moment presentation widgets.
+- Updated Feed expressions to enter their owning Space instead of routing directly to a generic discussion screen.
+- Kept Just Listen and Open Discussion behavior distinct inside the Space experience.
+
+Product boundary:
+- This establishes the first real Space domain foundation.
+- It does not claim that the final visual Space experience is complete.
+- Moments, Resonance, Echo Notes, persistent discussions, backend persistence, and connection systems remain future work.
+- No additional Space modes were introduced.
+
+Development principle:
+- Space owns the interaction mode so Vent and Space do not maintain duplicate sources of truth.
+
+---
+
 ## Voice Space Hierarchy Refinement
 
 Date: 2026-08-23
