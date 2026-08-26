@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/motion/ventvo_motion.dart';
+import '../../../core/theme/ventvo_colors.dart';
+import '../../ventvo_voice/models/vent.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
 import '../models/space.dart';
 
@@ -16,7 +19,8 @@ class SpaceScreen extends ConsumerStatefulWidget {
   ConsumerState<SpaceScreen> createState() => _SpaceScreenState();
 }
 
-class _SpaceScreenState extends ConsumerState<SpaceScreen> {
+class _SpaceScreenState extends ConsumerState<SpaceScreen>
+    with SingleTickerProviderStateMixin {
   final TextEditingController controller = TextEditingController();
 
   final List<String> responses = [
@@ -24,30 +28,47 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     "You don't have to figure everything out at once.",
   ];
 
-  bool isListening = false;
+  late final AnimationController _entranceController;
+
+  bool heard = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _entranceController = AnimationController(
+      vsync: this,
+      duration: VentvoMotion.immersive,
+    )..forward();
+  }
 
   @override
   void dispose() {
     controller.dispose();
+    _entranceController.dispose();
     super.dispose();
   }
 
-  void startListening() {
-    if (isListening) return;
-
-    setState(() {
-      isListening = true;
-    });
-  }
-
-  void addEcho() {
+  void addResponse() {
     final text = controller.text.trim();
 
-    if (text.isEmpty) return;
+    if (text.isEmpty) {
+      return;
+    }
 
     setState(() {
       responses.add(text);
       controller.clear();
+    });
+  }
+
+  void markHeard() {
+    if (heard) {
+      return;
+    }
+
+    setState(() {
+      heard = true;
     });
   }
 
@@ -56,387 +77,490 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     final ventsAsync = ref.watch(ventProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF111111),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF111111),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.white70,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: Text(
-          widget.space.modeLabel,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: ventsAsync.when(
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
-        error: (_, _) => const Center(
-          child: Text(
-            'Unable to load this Space.',
-            style: TextStyle(
-              color: Colors.white70,
-            ),
-          ),
-        ),
-        data: (vents) {
-          final vent = vents
-              .where(
-                (item) => item.id == widget.space.originatingVentId,
-              )
-              .firstOrNull;
+      backgroundColor: VentvoColors.background,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            _buildBackground(),
 
-          if (vent == null) {
-            return const Center(
-              child: Text(
-                'This Space is empty.',
-                style: TextStyle(
-                  color: Colors.white54,
-                  fontSize: 16,
+            Positioned.fill(
+              child: ventsAsync.when(
+                loading: () => const Center(
+                  child: CircularProgressIndicator(
+                    color: VentvoColors.primary,
+                  ),
                 ),
-              ),
-            );
-          }
+                error: (_, _) => const Center(
+                  child: Text(
+                    'This moment could not be opened.',
+                    style: TextStyle(
+                      color: VentvoColors.textSecondary,
+                    ),
+                  ),
+                ),
+                data: (vents) {
+                  final matchingVents = vents.where(
+                    (item) =>
+                        item.id == widget.space.originatingVentId,
+                  );
 
-          return widget.space.isJustListen
-              ? _buildJustListenSpace(context, vent)
-              : _buildDiscussionSpace(context, vent);
+                  if (matchingVents.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        'This Space is empty.',
+                        style: TextStyle(
+                          color: VentvoColors.textMuted,
+                        ),
+                      ),
+                    );
+                  }
+
+                  final vent = matchingVents.first;
+
+                  return _buildAnimatedRoom(vent);
+                },
+              ),
+            ),
+
+            _buildCloseButton(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBackground() {
+    return Positioned.fill(
+      child: AnimatedBuilder(
+        animation: _entranceController,
+        builder: (context, child) {
+          final value = Curves.easeOut.transform(
+            _entranceController.value,
+          );
+
+          return DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: RadialGradient(
+                center: const Alignment(0, -0.35),
+                radius: 1.25,
+                colors: [
+                  VentvoColors.surfaceElevated.withValues(
+                    alpha: 0.95 * value,
+                  ),
+                  VentvoColors.background,
+                ],
+              ),
+            ),
+          );
         },
       ),
     );
   }
 
-  Widget _buildJustListenSpace(
-    BuildContext context,
-    dynamic vent,
-  ) {
-    return SafeArea(
-      child: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(
-                28,
-                30,
-                28,
-                24,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildVoiceHeader(vent.voiceMark),
-                  const SizedBox(height: 42),
-                  _buildVentContent(vent.content),
-                  const SizedBox(height: 52),
-                  _buildSpaceLabel(
-                    title: 'JUST LISTEN',
-                    description:
-                        'No advice. No fixing. Just presence.',
-                  ),
-                ],
-              ),
-            ),
-          ),
-          _buildListeningAction(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDiscussionSpace(
-    BuildContext context,
-    dynamic vent,
-  ) {
-    return SafeArea(
-      child: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(
-                28,
-                30,
-                28,
-                24,
-              ),
-              children: [
-                _buildVoiceHeader(vent.voiceMark),
-                const SizedBox(height: 42),
-                _buildVentContent(vent.content),
-                const SizedBox(height: 52),
-                _buildSpaceLabel(
-                  title: 'OPEN DISCUSSION',
-                  description:
-                      'Share what this moment brings up for you.',
-                ),
-                const SizedBox(height: 38),
-                _buildEchoes(),
-              ],
-            ),
-          ),
-          _buildEchoComposer(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildVoiceHeader(String voiceMark) {
-    return Row(
-      children: [
-        Text(
-          '◇',
-          style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.55),
-            fontSize: 20,
-          ),
-        ),
-        const SizedBox(width: 10),
-        Text(
-          voiceMark,
-          style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.8,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildVentContent(String content) {
-    return Text(
-      '“$content”',
-      style: const TextStyle(
-        color: Colors.white,
-        fontSize: 25,
-        height: 1.55,
-        fontWeight: FontWeight.w400,
-      ),
-    );
-  }
-
-  Widget _buildSpaceLabel({
-    required String title,
-    required String description,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 2,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          description,
-          style: const TextStyle(
-            color: Colors.white54,
-            fontSize: 15,
-            height: 1.5,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildListeningAction() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        28,
-        12,
-        28,
-        28,
-      ),
-      child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 250),
-        child: isListening
-            ? _buildListeningConfirmation()
-            : _buildListeningButton(),
-      ),
-    );
-  }
-
-  Widget _buildListeningButton() {
-    return SizedBox(
-      key: const ValueKey('listen-button'),
-      width: double.infinity,
-      height: 56,
-      child: OutlinedButton.icon(
-        onPressed: startListening,
+  Widget _buildCloseButton() {
+    return Positioned(
+      top: 4,
+      left: 6,
+      child: IconButton(
+        tooltip: 'Leave Space',
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
         icon: const Icon(
-          Icons.headphones_outlined,
-          size: 20,
-        ),
-        label: const Text(
-          "I'm listening",
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        style: OutlinedButton.styleFrom(
-          foregroundColor: Colors.white,
-          side: BorderSide(
-            color: Colors.white.withValues(alpha: 0.18),
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(28),
-          ),
+          Icons.close,
+          color: VentvoColors.textSecondary,
+          size: 22,
         ),
       ),
     );
   }
 
-  Widget _buildListeningConfirmation() {
-    return Container(
-      key: const ValueKey('listening-confirmation'),
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(
-        vertical: 18,
-        horizontal: 24,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.06),
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.10),
-        ),
-      ),
-      child: const Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.check_circle_outline,
-            color: Colors.white70,
-            size: 21,
+  Widget _buildAnimatedRoom(Vent vent) {
+    return AnimatedBuilder(
+      animation: _entranceController,
+      builder: (context, child) {
+        final value = Curves.easeOutCubic.transform(
+          _entranceController.value,
+        );
+
+        return Opacity(
+          opacity: value,
+          child: Transform.translate(
+            offset: Offset(
+              0,
+              32 * (1 - value),
+            ),
+            child: child,
           ),
-          SizedBox(width: 10),
-          Text(
-            "You're here.",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
+        );
+      },
+      child: _buildRoom(vent),
+    );
+  }
+
+  Widget _buildRoom(Vent vent) {
+    return Column(
+      children: [
+        Expanded(
+          child: ListView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(
+              28,
+              82,
+              28,
+              40,
+            ),
+            children: [
+              _buildRoomHeader(),
+              const SizedBox(height: 62),
+              _buildVentMoment(vent),
+              const SizedBox(height: 58),
+              _buildRoomDivider(),
+              const SizedBox(height: 32),
+              _buildRoomMessage(),
+              if (widget.space.isOpenDiscussion) ...[
+                const SizedBox(height: 48),
+                _buildConversation(),
+              ],
+            ],
+          ),
+        ),
+        _buildInteraction(),
+      ],
+    );
+  }
+
+  Widget _buildRoomHeader() {
+    final isListening = widget.space.isJustListen;
+
+    return Column(
+      children: [
+        Text(
+          isListening ? 'JUST LISTEN' : 'OPEN DISCUSSION',
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: VentvoColors.textMuted,
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 3,
+          ),
+        ),
+        const SizedBox(height: 20),
+        Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: VentvoColors.surface,
+            border: Border.all(
+              color: VentvoColors.border,
             ),
           ),
-        ],
+          alignment: Alignment.center,
+          child: Text(
+            isListening ? '🌊' : '💬',
+            style: const TextStyle(
+              fontSize: 20,
+            ),
+          ),
+        ),
+        const SizedBox(height: 14),
+        Text(
+          isListening
+              ? 'A quiet place to be heard'
+              : 'A place to talk about this moment',
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: VentvoColors.textSecondary,
+            fontSize: 13,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVentMoment(Vent vent) {
+    return Column(
+      children: [
+        Text(
+          vent.voiceMark,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: VentvoColors.textSecondary,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 1.8,
+          ),
+        ),
+        const SizedBox(height: 26),
+        Text(
+          vent.content,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: VentvoColors.textPrimary,
+            fontSize: 27,
+            height: 1.48,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRoomDivider() {
+    return Center(
+      child: Container(
+        width: 48,
+        height: 1,
+        color: VentvoColors.border,
       ),
     );
   }
 
-  Widget _buildEchoes() {
-    if (responses.isEmpty) {
-      return const Text(
-        'No Echoes yet.',
-        style: TextStyle(
-          color: Colors.white38,
-          fontSize: 14,
-        ),
-      );
-    }
+  Widget _buildRoomMessage() {
+    final isListening = widget.space.isJustListen;
 
+    return Column(
+      children: [
+        Text(
+          isListening
+              ? 'You don’t have to say anything.'
+              : 'This moment is open to your perspective.',
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: VentvoColors.textPrimary,
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
+            height: 1.4,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          isListening
+              ? 'No advice. No fixing.\\nJust presence.'
+              : 'Listen first. Then say what this moment brings up for you.',
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: VentvoColors.textSecondary,
+            fontSize: 14,
+            height: 1.55,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildConversation() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'ECHOES',
+          'THE CONVERSATION',
           style: TextStyle(
-            color: Colors.white38,
-            fontSize: 11,
+            color: VentvoColors.textMuted,
+            fontSize: 10,
             fontWeight: FontWeight.w700,
-            letterSpacing: 1.8,
+            letterSpacing: 2,
           ),
         ),
         const SizedBox(height: 18),
         ...responses.map(
-          (response) => Padding(
-            padding: const EdgeInsets.only(bottom: 14),
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.045),
-                borderRadius: BorderRadius.circular(18),
-              ),
-              child: Text(
-                response,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 15,
-                  height: 1.5,
-                ),
-              ),
-            ),
-          ),
+          (response) => _buildResponse(response),
         ),
       ],
     );
   }
 
-  Widget _buildEchoComposer() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        18,
-        10,
-        18,
-        18,
+  Widget _buildResponse(String response) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 18,
+        vertical: 17,
+      ),
+      decoration: BoxDecoration(
+        color: VentvoColors.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: VentvoColors.border,
+        ),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: TextField(
-              controller: controller,
-              minLines: 1,
-              maxLines: 4,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 15,
-              ),
-              decoration: InputDecoration(
-                hintText: 'Share what this brings up...',
-                hintStyle: const TextStyle(
-                  color: Colors.white38,
-                  fontSize: 14,
-                ),
-                filled: true,
-                fillColor: Colors.white.withValues(alpha: 0.06),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 15,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
-                  borderSide: BorderSide.none,
-                ),
+          const Padding(
+            padding: EdgeInsets.only(top: 3),
+            child: Text(
+              '◇',
+              style: TextStyle(
+                color: VentvoColors.textMuted,
+                fontSize: 13,
               ),
             ),
           ),
-          const SizedBox(width: 8),
-          IconButton(
-            onPressed: addEcho,
-            tooltip: 'Send Echo',
-            icon: const Icon(
-              Icons.arrow_upward_rounded,
-              color: Colors.white70,
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              response,
+              style: const TextStyle(
+                color: VentvoColors.textPrimary,
+                fontSize: 15,
+                height: 1.45,
+              ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildInteraction() {
+    if (widget.space.isJustListen) {
+      return _buildListeningInteraction();
+    }
+
+    return _buildDiscussionInteraction();
+  }
+
+  Widget _buildListeningInteraction() {
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          28,
+          8,
+          28,
+          18,
+        ),
+        child: GestureDetector(
+          onTap: markHeard,
+          child: AnimatedContainer(
+            duration: VentvoMotion.micro,
+            curve: VentvoMotion.standard,
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(
+              vertical: 17,
+            ),
+            decoration: BoxDecoration(
+              color: heard
+                  ? VentvoColors.surfaceElevated
+                  : VentvoColors.surface,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: heard
+                    ? VentvoColors.success.withValues(
+                        alpha: 0.45,
+                      )
+                    : VentvoColors.border,
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  heard
+                      ? Icons.check_circle_outline
+                      : Icons.headphones_outlined,
+                  color: heard
+                      ? VentvoColors.success
+                      : VentvoColors.textSecondary,
+                  size: 19,
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  heard
+                      ? 'You stayed. That’s enough.'
+                      : 'I’m here',
+                  style: TextStyle(
+                    color: heard
+                        ? VentvoColors.textPrimary
+                        : VentvoColors.textSecondary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDiscussionInteraction() {
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          18,
+          8,
+          18,
+          16,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: controller,
+                minLines: 1,
+                maxLines: 4,
+                style: const TextStyle(
+                  color: VentvoColors.textPrimary,
+                ),
+                decoration: InputDecoration(
+                  hintText:
+                      'What does this moment bring up for you?',
+                  hintStyle: const TextStyle(
+                    color: VentvoColors.textMuted,
+                    fontSize: 13,
+                  ),
+                  filled: true,
+                  fillColor: VentvoColors.surface,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 14,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: const BorderSide(
+                      color: VentvoColors.border,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: const BorderSide(
+                      color: VentvoColors.border,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: const BorderSide(
+                      color: VentvoColors.primary,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            GestureDetector(
+              onTap: addResponse,
+              child: Container(
+                width: 48,
+                height: 48,
+                decoration: const BoxDecoration(
+                  color: VentvoColors.primary,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.arrow_upward,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
