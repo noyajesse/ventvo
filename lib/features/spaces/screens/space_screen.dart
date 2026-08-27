@@ -11,41 +11,33 @@ import '../services/space_response_storage.dart';
 
 class SpaceScreen extends ConsumerStatefulWidget {
   final Space space;
-
   const SpaceScreen({super.key, required this.space});
 
-  static Route<void> route(Space space) {
-    return PageRouteBuilder<void>(
-      transitionDuration: VentvoMotion.immersive,
-      reverseTransitionDuration: VentvoMotion.immersive,
-      pageBuilder: (_, animation, __) => SpaceScreen(space: space),
-      transitionsBuilder: (_, animation, secondaryAnimation, child) {
-        final curved = CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeOutCubic,
-          reverseCurve: Curves.easeInCubic,
-        );
-
-        return FadeTransition(
-          opacity: curved,
-          child: ScaleTransition(
-            scale: Tween<double>(begin: 0.965, end: 1).animate(curved),
+  static Route<void> route(Space space) => PageRouteBuilder<void>(
+        transitionDuration: VentvoMotion.immersive,
+        reverseTransitionDuration: VentvoMotion.immersive,
+        pageBuilder: (_, __, ___) => SpaceScreen(space: space),
+        transitionsBuilder: (_, animation, __, child) {
+          final curve = CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOutCubic,
+            reverseCurve: Curves.easeInCubic,
+          );
+          return FadeTransition(
+            opacity: curve,
             child: SlideTransition(
               position: Tween<Offset>(
-                begin: const Offset(0, 0.035),
+                begin: const Offset(0, .025),
                 end: Offset.zero,
-              ).animate(curved),
+              ).animate(curve),
               child: child,
             ),
-          ),
-        );
-      },
-    );
-  }
+          );
+        },
+      );
 
-  static Future<void> open(BuildContext context, Space space) {
-    return Navigator.of(context).push(route(space));
-  }
+  static Future<void> open(BuildContext context, Space space) =>
+      Navigator.of(context).push(route(space));
 
   @override
   ConsumerState<SpaceScreen> createState() => _SpaceScreenState();
@@ -53,13 +45,13 @@ class SpaceScreen extends ConsumerStatefulWidget {
 
 class _SpaceScreenState extends ConsumerState<SpaceScreen>
     with SingleTickerProviderStateMixin {
-  final controller = TextEditingController();
   final responseStorage = SpaceResponseStorage();
+  final responseController = TextEditingController();
   late final AnimationController entrance;
 
   List<SpaceResponse> responses = [];
   bool loadingResponses = true;
-  bool heard = false;
+  bool isHere = false;
 
   @override
   void initState() {
@@ -68,25 +60,26 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
       vsync: this,
       duration: VentvoMotion.immersive,
     )..forward();
-    loadResponses();
+    _loadResponses();
   }
 
-  Future<void> loadResponses() async {
-    final value = await responseStorage.loadForSpace(widget.space.id);
+  Future<void> _loadResponses() async {
+    final loaded = await responseStorage.loadForSpace(widget.space.id);
     if (!mounted) return;
     setState(() {
-      responses = value;
+      responses = loaded;
       loadingResponses = false;
     });
   }
 
-  Future<void> addResponse() async {
-    final text = controller.text.trim();
+  Future<void> _addResponse() async {
+    final text = responseController.text.trim();
     if (text.isEmpty) return;
 
     final response = SpaceResponse(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       spaceId: widget.space.id,
+      ventId: widget.space.originatingVentId,
       voiceMark: '◇ Voice',
       content: text,
       createdAt: DateTime.now(),
@@ -94,14 +87,14 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
 
     setState(() {
       responses = [...responses, response];
-      controller.clear();
+      responseController.clear();
     });
     await responseStorage.add(response);
   }
 
   @override
   void dispose() {
-    controller.dispose();
+    responseController.dispose();
     entrance.dispose();
     super.dispose();
   }
@@ -109,19 +102,16 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
   @override
   Widget build(BuildContext context) {
     final ventsAsync = ref.watch(ventProvider);
-
     return Scaffold(
       backgroundColor: VentvoColors.background,
       body: SafeArea(
         child: Stack(
           children: [
-            const _SpaceAtmosphere(),
+            const _SpaceBackdrop(),
             Positioned.fill(
               child: ventsAsync.when(
                 loading: () => const Center(
-                  child: CircularProgressIndicator(
-                    color: VentvoColors.primary,
-                  ),
+                  child: CircularProgressIndicator(color: VentvoColors.primary),
                 ),
                 error: (_, _) => const Center(
                   child: Text(
@@ -129,16 +119,16 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
                     style: TextStyle(color: VentvoColors.textSecondary),
                   ),
                 ),
-                data: (vents) => _buildSpace(vents),
+                data: _buildSpace,
               ),
             ),
             Positioned(
-              top: 2,
-              left: 4,
+              top: 4,
+              left: 8,
               child: IconButton(
                 onPressed: () => Navigator.of(context).pop(),
                 icon: const Icon(
-                  Icons.close,
+                  Icons.arrow_back_rounded,
                   color: VentvoColors.textSecondary,
                 ),
               ),
@@ -149,30 +139,29 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
     );
   }
 
-  Widget _buildSpace(List<Vent> vents) {
+  Widget _buildSpace(List<Vent> allVents) {
     final ids = widget.space.allVentIds.toSet();
-    final spaceVents = vents.where((vent) {
+    final moments = allVents.where((vent) {
       return ids.contains(vent.id) || vent.spaceId == widget.space.id;
     }).toList()
       ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
-    if (spaceVents.isEmpty) {
-      return const Center(
-        child: Text(
-          'This Space is empty.',
-          style: TextStyle(color: VentvoColors.textMuted),
-        ),
-      );
+    final originIndex = moments.indexWhere(
+      (vent) => vent.id == widget.space.originatingVentId,
+    );
+    if (originIndex > 0) {
+      final origin = moments.removeAt(originIndex);
+      moments.insert(0, origin);
     }
 
     return AnimatedBuilder(
       animation: entrance,
       builder: (context, child) {
-        final value = Curves.easeOutCubic.transform(entrance.value);
+        final progress = Curves.easeOutCubic.transform(entrance.value);
         return Opacity(
-          opacity: value,
+          opacity: progress,
           child: Transform.translate(
-            offset: Offset(0, 18 * (1 - value)),
+            offset: Offset(0, 14 * (1 - progress)),
             child: child,
           ),
         );
@@ -182,90 +171,108 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
           Expanded(
             child: ListView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(22, 70, 22, 30),
+              padding: const EdgeInsets.fromLTRB(24, 78, 24, 34),
               children: [
-                _buildHeader(spaceVents.length),
-                const SizedBox(height: 40),
-                ..._buildMoments(spaceVents),
+                _buildIdentity(moments.length),
+                const SizedBox(height: 48),
+                if (moments.isEmpty)
+                  _buildEmptyOrigin()
+                else
+                  _buildOriginMoment(moments.first),
+                if (moments.length > 1) ...[
+                  const SizedBox(height: 36),
+                  _buildGrowingLabel(),
+                  const SizedBox(height: 22),
+                  ...moments.skip(1).map(_buildMoment),
+                ],
+                const SizedBox(height: 38),
+                _buildVoices(),
               ],
             ),
           ),
-          _buildInteraction(),
+          _buildContribution(),
         ],
       ),
     );
   }
 
-  Widget _buildHeader(int count) {
+  Widget _buildIdentity(int count) {
     final listening = widget.space.isJustListen;
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          listening ? Icons.headphones_outlined : Icons.forum_outlined,
-          color: VentvoColors.textMuted,
-          size: 22,
+        Row(
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: listening ? VentvoColors.textMuted : VentvoColors.primary,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              listening ? 'A QUIET SPACE' : 'A SPACE TO UNFOLD',
+              style: const TextStyle(
+                color: VentvoColors.textMuted,
+                fontSize: 9,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 2.1,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Text(
+          listening
+              ? 'Nothing needs to be solved here.'
+              : 'This thought has somewhere to go.',
+          style: const TextStyle(
+            color: VentvoColors.textPrimary,
+            fontSize: 27,
+            height: 1.18,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         const SizedBox(height: 12),
         Text(
-          listening ? 'JUST LISTEN' : 'OPEN DISCUSSION',
-          style: const TextStyle(
-            color: VentvoColors.textPrimary,
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 2.4,
-          ),
-        ),
-        const SizedBox(height: 9),
-        Text(
-          listening ? 'A space to simply be heard.' : 'A space for this moment.',
-          textAlign: TextAlign.center,
+          '$count ${count == 1 ? 'moment' : 'moments'} connected here',
           style: const TextStyle(
             color: VentvoColors.textSecondary,
-            fontSize: 14,
-          ),
-        ),
-        const SizedBox(height: 7),
-        Text(
-          '$count ${count == 1 ? 'moment' : 'moments'}',
-          style: const TextStyle(
-            color: VentvoColors.textMuted,
-            fontSize: 10,
+            fontSize: 13,
           ),
         ),
       ],
     );
   }
 
-  List<Widget> _buildMoments(List<Vent> vents) {
-    final result = <Widget>[];
-    for (var i = 0; i < vents.length; i++) {
-      result.add(_buildMoment(vents[i], i == 0));
-      if (i < vents.length - 1) result.add(_buildConnection());
-    }
-
-    result.add(const SizedBox(height: 34));
-    result.add(
-      widget.space.isJustListen ? _buildListeningNote() : _buildResponses(),
-    );
-    return result;
-  }
-
-  Widget _buildMoment(Vent vent, bool origin) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(21, 20, 21, 24),
-      decoration: BoxDecoration(
-        color: origin ? VentvoColors.surfaceElevated : VentvoColors.surface,
-        borderRadius: BorderRadius.circular(26),
-        border: Border.all(
-          color: origin
-              ? VentvoColors.primary.withValues(alpha: 0.28)
-              : VentvoColors.border,
+  Widget _buildOriginMoment(Vent vent) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'WHERE IT STARTED',
+          style: TextStyle(
+            color: VentvoColors.textMuted,
+            fontSize: 9,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 1.8,
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+        const SizedBox(height: 15),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(22, 21, 22, 26),
+          decoration: BoxDecoration(
+            color: VentvoColors.surfaceElevated,
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(
+              color: VentvoColors.primary.withValues(alpha: .24),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 vent.voiceMark,
@@ -274,65 +281,130 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
                   fontSize: 12,
                 ),
               ),
-              const Spacer(),
-              if (origin)
-                const Text(
-                  'FIRST MOMENT',
-                  style: TextStyle(
-                    color: VentvoColors.textMuted,
-                    fontSize: 8,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1.4,
-                  ),
+              const SizedBox(height: 17),
+              Text(
+                vent.content,
+                style: const TextStyle(
+                  color: VentvoColors.textPrimary,
+                  fontSize: 23,
+                  height: 1.5,
+                  fontWeight: FontWeight.w500,
                 ),
+              ),
             ],
           ),
-          const SizedBox(height: 16),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEmptyOrigin() => const Text(
+        'The moment that opened this Space is no longer here.',
+        style: TextStyle(
+          color: VentvoColors.textSecondary,
+          fontSize: 16,
+          height: 1.5,
+        ),
+      );
+
+  Widget _buildGrowingLabel() => const Row(
+        children: [
+          Expanded(child: Divider(color: VentvoColors.border, height: 1)),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 13),
+            child: Text(
+              'THEN IT GREW',
+              style: TextStyle(
+                color: VentvoColors.textMuted,
+                fontSize: 8,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.5,
+              ),
+            ),
+          ),
+          Expanded(child: Divider(color: VentvoColors.border, height: 1)),
+        ],
+      );
+
+  Widget _buildMoment(Vent vent) => Padding(
+        padding: const EdgeInsets.only(bottom: 18),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(top: 8),
+              child: SizedBox(
+                width: 7,
+                height: 7,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: VentvoColors.textMuted,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(18, 16, 18, 19),
+                decoration: BoxDecoration(
+                  color: VentvoColors.surface,
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(color: VentvoColors.border),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      vent.voiceMark,
+                      style: const TextStyle(
+                        color: VentvoColors.textMuted,
+                        fontSize: 10,
+                      ),
+                    ),
+                    const SizedBox(height: 9),
+                    Text(
+                      vent.content,
+                      style: const TextStyle(
+                        color: VentvoColors.textPrimary,
+                        fontSize: 17,
+                        height: 1.48,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+
+  Widget _buildVoices() {
+    if (widget.space.isJustListen) {
+      return const Column(
+        children: [
+          Icon(Icons.headphones_outlined, color: VentvoColors.textMuted, size: 25),
+          SizedBox(height: 14),
           Text(
-            vent.content,
+            'You don’t have to add anything.',
+            textAlign: TextAlign.center,
             style: TextStyle(
               color: VentvoColors.textPrimary,
-              fontSize: origin ? 23 : 18,
-              height: 1.48,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
             ),
+          ),
+          SizedBox(height: 7),
+          Text(
+            'Being here is the response.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: VentvoColors.textSecondary, fontSize: 13),
           ),
         ],
-      ),
-    );
-  }
+      );
+    }
 
-  Widget _buildConnection() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 15),
-      child: Row(
-        children: [
-          const SizedBox(width: 12),
-          Container(
-            width: 6,
-            height: 6,
-            decoration: const BoxDecoration(
-              color: VentvoColors.textMuted,
-              shape: BoxShape.circle,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(child: Container(height: 1, color: VentvoColors.border)),
-          const SizedBox(width: 10),
-          const Text(
-            'CONTINUING',
-            style: TextStyle(
-              color: VentvoColors.textMuted,
-              fontSize: 8,
-              letterSpacing: 1.4,
-            ),
-          ),
-          const SizedBox(width: 12),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildResponses() {
     if (loadingResponses) {
       return const Center(
         child: CircularProgressIndicator(color: VentvoColors.primary),
@@ -348,140 +420,87 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
             color: VentvoColors.textMuted,
             fontSize: 9,
             fontWeight: FontWeight.w700,
-            letterSpacing: 2,
+            letterSpacing: 1.7,
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 17),
         if (responses.isEmpty)
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: VentvoColors.surface,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: VentvoColors.border),
-            ),
-            child: const Text(
-              'The Space is quiet.\nYou can be the first Voice to enter.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: VentvoColors.textSecondary,
-                fontSize: 14,
-                height: 1.5,
-              ),
+          const Text(
+            'No one has added their voice yet. There is room for yours.',
+            style: TextStyle(
+              color: VentvoColors.textSecondary,
+              fontSize: 14,
+              height: 1.55,
             ),
           )
         else
-          ...responses.map(
-            (response) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.fromLTRB(17, 15, 17, 17),
-                decoration: BoxDecoration(
-                  color: VentvoColors.surface,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: VentvoColors.border),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      response.voiceMark,
-                      style: const TextStyle(
-                        color: VentvoColors.textMuted,
-                        fontSize: 10,
-                      ),
+          ...responses.map(_buildVoice),
+      ],
+    );
+  }
+
+  Widget _buildVoice(SpaceResponse response) => Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              '◇',
+              style: TextStyle(color: VentvoColors.textMuted, fontSize: 17),
+            ),
+            const SizedBox(width: 11),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    response.voiceMark,
+                    style: const TextStyle(
+                      color: VentvoColors.textMuted,
+                      fontSize: 10,
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      response.content,
-                      style: const TextStyle(
-                        color: VentvoColors.textPrimary,
-                        fontSize: 15,
-                        height: 1.5,
-                      ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    response.content,
+                    style: const TextStyle(
+                      color: VentvoColors.textPrimary,
+                      fontSize: 15,
+                      height: 1.5,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          ),
-      ],
-    );
-  }
+          ],
+        ),
+      );
 
-  Widget _buildListeningNote() {
-    return const Column(
-      children: [
-        Icon(
-          Icons.graphic_eq_rounded,
-          color: VentvoColors.textMuted,
-          size: 27,
-        ),
-        SizedBox(height: 15),
-        Text(
-          'Nothing is expected from you.',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: VentvoColors.textPrimary,
-            fontSize: 17,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        SizedBox(height: 8),
-        Text(
-          'You can stay here without fixing, advising,\nor finding the right words.',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: VentvoColors.textSecondary,
-            fontSize: 13,
-            height: 1.5,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildInteraction() {
+  Widget _buildContribution() {
     if (widget.space.isJustListen) {
       return SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 18),
+          padding: const EdgeInsets.fromLTRB(24, 7, 24, 17),
           child: GestureDetector(
-            onTap: () => setState(() => heard = true),
+            onTap: () => setState(() => isHere = true),
             child: AnimatedContainer(
               duration: VentvoMotion.micro,
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 17),
+              padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
                 color: VentvoColors.surface,
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(19),
                 border: Border.all(color: VentvoColors.border),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    heard
-                        ? Icons.check_circle_outline
-                        : Icons.headphones_outlined,
-                    color: heard
-                        ? VentvoColors.success
-                        : VentvoColors.textSecondary,
-                    size: 19,
-                  ),
-                  const SizedBox(width: 9),
-                  Text(
-                    heard ? 'You stayed. That’s enough.' : 'I’m here',
-                    style: const TextStyle(
-                      color: VentvoColors.textSecondary,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
+              child: Text(
+                isHere ? 'You’re here. That’s enough.' : 'I’m here',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: VentvoColors.textSecondary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
@@ -492,12 +511,12 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
     return SafeArea(
       top: false,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(18, 8, 18, 16),
+        padding: const EdgeInsets.fromLTRB(18, 7, 18, 15),
         child: Row(
           children: [
             Expanded(
               child: TextField(
-                controller: controller,
+                controller: responseController,
                 minLines: 1,
                 maxLines: 4,
                 style: const TextStyle(
@@ -505,7 +524,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
                   fontSize: 14,
                 ),
                 decoration: InputDecoration(
-                  hintText: 'What did this bring up for you?',
+                  hintText: 'What did this moment bring up?',
                   hintStyle: const TextStyle(
                     color: VentvoColors.textMuted,
                     fontSize: 13,
@@ -533,7 +552,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
             ),
             const SizedBox(width: 10),
             GestureDetector(
-              onTap: addResponse,
+              onTap: _addResponse,
               child: Container(
                 width: 48,
                 height: 48,
@@ -542,7 +561,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
-                  Icons.arrow_upward,
+                  Icons.arrow_upward_rounded,
                   color: Colors.white,
                   size: 20,
                 ),
@@ -555,21 +574,19 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
   }
 }
 
-class _SpaceAtmosphere extends StatelessWidget {
-  const _SpaceAtmosphere();
+class _SpaceBackdrop extends StatelessWidget {
+  const _SpaceBackdrop();
 
   @override
-  Widget build(BuildContext context) {
-    return const Positioned.fill(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: RadialGradient(
-            center: Alignment(0, -0.7),
-            radius: 1.25,
-            colors: [VentvoColors.surfaceElevated, VentvoColors.background],
+  Widget build(BuildContext context) => const Positioned.fill(
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: RadialGradient(
+              center: Alignment(0, -.75),
+              radius: 1.25,
+              colors: [VentvoColors.surfaceElevated, VentvoColors.background],
+            ),
           ),
         ),
-      ),
-    );
-  }
+      );
 }
