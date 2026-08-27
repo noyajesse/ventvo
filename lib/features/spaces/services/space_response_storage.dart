@@ -11,9 +11,7 @@ class SpaceResponseStorage {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(_responsesKey);
 
-    if (raw == null || raw.isEmpty) {
-      return const [];
-    }
+    if (raw == null || raw.isEmpty) return const [];
 
     try {
       final decoded = jsonDecode(raw);
@@ -52,6 +50,7 @@ class SpaceResponseStorage {
     return {
       'id': response.id,
       'spaceId': response.spaceId,
+      'ventId': response.ventId,
       'voiceMark': response.voiceMark,
       'content': response.content,
       'createdAt': response.createdAt.toIso8601String(),
@@ -61,12 +60,14 @@ class SpaceResponseStorage {
   SpaceResponse? _fromMap(Map<String, dynamic> map) {
     final id = map['id'];
     final spaceId = map['spaceId'];
+    final ventId = map['ventId'];
     final voiceMark = map['voiceMark'];
     final content = map['content'];
     final createdAt = map['createdAt'];
 
     if (id is! String ||
         spaceId is! String ||
+        (ventId != null && ventId is! String) ||
         voiceMark is! String ||
         content is! String ||
         createdAt is! String) {
@@ -79,6 +80,7 @@ class SpaceResponseStorage {
     return SpaceResponse(
       id: id,
       spaceId: spaceId,
+      ventId: ventId as String?,
       voiceMark: voiceMark,
       content: content,
       createdAt: parsedCreatedAt,
