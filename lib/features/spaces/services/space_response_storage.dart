@@ -29,21 +29,43 @@ class SpaceResponseStorage {
   }
 
   Future<void> add(SpaceResponse response) async {
+    final responses = await _loadAll();
+    responses.add(response);
+    await _saveAll(responses);
+  }
+
+  Future<void> update(SpaceResponse response) async {
+    final responses = await _loadAll();
+    final index = responses.indexWhere((item) => item.id == response.id);
+    if (index == -1) return;
+    responses[index] = response;
+    await _saveAll(responses);
+  }
+
+  Future<List<SpaceResponse>> _loadAll() async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(_responsesKey);
+    if (raw == null || raw.isEmpty) return [];
 
-    List<dynamic> decoded = [];
-    if (raw != null && raw.isNotEmpty) {
-      try {
-        final value = jsonDecode(raw);
-        if (value is List) decoded = value;
-      } catch (_) {
-        decoded = [];
-      }
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) return [];
+      return decoded
+          .whereType<Map<String, dynamic>>()
+          .map(_fromMap)
+          .whereType<SpaceResponse>()
+          .toList();
+    } catch (_) {
+      return [];
     }
+  }
 
-    decoded.add(_toMap(response));
-    await prefs.setString(_responsesKey, jsonEncode(decoded));
+  Future<void> _saveAll(List<SpaceResponse> responses) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      _responsesKey,
+      jsonEncode(responses.map(_toMap).toList()),
+    );
   }
 
   Map<String, dynamic> _toMap(SpaceResponse response) {
