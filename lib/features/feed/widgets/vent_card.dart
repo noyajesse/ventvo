@@ -27,11 +27,12 @@ class VentCard extends ConsumerWidget {
 
   Widget _moment(BuildContext context, Space? space) {
     final compact = vent.content.trim().length < 90;
+    final hasDepth = vent.content.trim().length > 130 && space != null;
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(22),
         onTap: space == null ? null : () => SpaceScreen.open(context, space),
         child: Padding(
           padding: EdgeInsets.fromLTRB(6, compact ? 22 : 28, 6, compact ? 30 : 38),
@@ -56,21 +57,32 @@ class VentCard extends ConsumerWidget {
                 ],
               ),
               SizedBox(height: compact ? 13 : 18),
-              Text(
-                vent.content,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: compact ? 21 : 25,
-                  height: 1.42,
-                  fontWeight: FontWeight.w400,
-                  letterSpacing: -.15,
+              Hero(
+                tag: 'moment-${vent.id}',
+                child: Material(
+                  color: Colors.transparent,
+                  child: Text(
+                    vent.content,
+                    maxLines: hasDepth ? 3 : null,
+                    overflow: hasDepth ? TextOverflow.fade : TextOverflow.clip,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: compact ? 21 : 25,
+                      height: 1.42,
+                      fontWeight: FontWeight.w400,
+                      letterSpacing: -.15,
+                    ),
+                  ),
                 ),
               ),
-              if (space != null) ...[
-                const SizedBox(height: 15),
-                const Text(
-                  'there’s more here',
-                  style: TextStyle(color: Colors.white30, fontSize: 10),
+              if (hasDepth) ...[
+                const SizedBox(height: 12),
+                const Row(
+                  children: [
+                    Expanded(child: Divider(color: Colors.white12, height: 1)),
+                    SizedBox(width: 10),
+                    Icon(Icons.arrow_downward_rounded, size: 13, color: Colors.white30),
+                  ],
                 ),
               ],
               const SizedBox(height: 23),
