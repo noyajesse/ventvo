@@ -109,6 +109,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.reply_rounded, color: VentvoColors.textSecondary),
                 title: const Text('Respond', style: TextStyle(color: VentvoColors.textPrimary)),
+                subtitle: const Text('Let your words stay with this Moment', style: TextStyle(color: VentvoColors.textMuted)),
                 onTap: () => Navigator.pop(context, 'response'),
               ),
               ListTile(
@@ -125,7 +126,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     );
     if (!mounted || choice == null) return;
     if (choice == 'response') {
-      await _respond();
+      FocusScope.of(context).requestFocus(FocusNode());
     } else {
       await _createMoment();
     }
@@ -179,7 +180,9 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
       children: [
         if (moments.isNotEmpty) _origin(moments.first),
         if (ordinary.isNotEmpty) ...[
-          const SizedBox(height: 30),
+          const SizedBox(height: 26),
+          _responseHeader(ordinary.length),
+          const SizedBox(height: 14),
           ...ordinary.map(_response),
         ],
         if (moments.length > 1) ...[
@@ -204,11 +207,37 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(vent.voiceMark, style: const TextStyle(color: VentvoColors.textMuted, fontSize: 11)),
+            Row(
+              children: [
+                Text(vent.voiceMark, style: const TextStyle(color: VentvoColors.textMuted, fontSize: 11)),
+                const Spacer(),
+                const Text('ORIGIN', style: TextStyle(color: VentvoColors.textMuted, fontSize: 8, fontWeight: FontWeight.w700, letterSpacing: 1.4)),
+              ],
+            ),
             const SizedBox(height: 18),
-            Text(vent.content, style: const TextStyle(color: VentvoColors.textPrimary, fontSize: 30, height: 1.42, fontWeight: FontWeight.w500)),
+            Hero(
+              tag: 'moment-${vent.id}',
+              child: Material(
+                color: Colors.transparent,
+                child: Text(vent.content, style: const TextStyle(color: VentvoColors.textPrimary, fontSize: 30, height: 1.42, fontWeight: FontWeight.w500)),
+              ),
+            ),
             const SizedBox(height: 28),
             Container(height: 1, color: VentvoColors.border.withValues(alpha: .45)),
+          ],
+        ),
+      );
+
+  Widget _responseHeader(int count) => Padding(
+        padding: const EdgeInsets.only(left: 22),
+        child: Row(
+          children: [
+            Container(width: 1, height: 18, color: VentvoColors.border),
+            const SizedBox(width: 10),
+            Text(
+              count == 1 ? 'ONE THING SAID BACK' : '$count THINGS SAID BACK',
+              style: const TextStyle(color: VentvoColors.textMuted, fontSize: 8, fontWeight: FontWeight.w700, letterSpacing: 1.25),
+            ),
           ],
         ),
       );
@@ -225,14 +254,28 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
       );
 
   Widget _response(SpaceResponse response) => Padding(
-        padding: const EdgeInsets.only(bottom: 14, left: 2),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(response.voiceMark, style: const TextStyle(color: VentvoColors.textMuted, fontSize: 10)),
-            const SizedBox(width: 11),
-            Expanded(child: Text(response.content, style: const TextStyle(color: VentvoColors.textSecondary, fontSize: 14, height: 1.55))),
-          ],
+        padding: const EdgeInsets.only(left: 22, bottom: 17),
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(width: 1, color: VentvoColors.border.withValues(alpha: .55)),
+              const SizedBox(width: 13),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 1),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(response.voiceMark, style: const TextStyle(color: VentvoColors.textMuted, fontSize: 10)),
+                      const SizedBox(height: 5),
+                      Text(response.content, style: const TextStyle(color: VentvoColors.textSecondary, fontSize: 14, height: 1.55)),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       );
 
@@ -248,7 +291,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                 children: [
                   const Icon(Icons.auto_awesome_rounded, size: 13, color: VentvoColors.textMuted),
                   const SizedBox(width: 8),
-                  const Text('MOMENT', style: TextStyle(color: VentvoColors.textMuted, fontSize: 8, fontWeight: FontWeight.w700, letterSpacing: 1.3)),
+                  const Text('EMERGED', style: TextStyle(color: VentvoColors.textMuted, fontSize: 8, fontWeight: FontWeight.w700, letterSpacing: 1.3)),
                   const Spacer(),
                   Text(vent.voiceMark, style: const TextStyle(color: VentvoColors.textMuted, fontSize: 10)),
                 ],
@@ -263,28 +306,34 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
   Widget _composer() => SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(18, 7, 18, 15),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: controller,
-                  minLines: 1,
-                  maxLines: 4,
-                  style: const TextStyle(color: VentvoColors.textPrimary, fontSize: 14),
-                  decoration: InputDecoration(
-                    hintText: 'Say what came up for you…',
-                    hintStyle: const TextStyle(color: VentvoColors.textMuted, fontSize: 13),
-                    filled: true,
-                    fillColor: VentvoColors.surface,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
+          padding: const EdgeInsets.fromLTRB(18, 8, 18, 15),
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(14, 8, 8, 8),
+            decoration: BoxDecoration(
+              color: VentvoColors.surface,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: VentvoColors.border.withValues(alpha: .5)),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: controller,
+                    minLines: 1,
+                    maxLines: 4,
+                    style: const TextStyle(color: VentvoColors.textPrimary, fontSize: 14),
+                    decoration: const InputDecoration(
+                      hintText: 'What came up for you?',
+                      hintStyle: TextStyle(color: VentvoColors.textMuted, fontSize: 13),
+                      border: InputBorder.none,
+                      isDense: true,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 4),
-              IconButton(onPressed: expressingMoment ? null : _chooseExpression, icon: const Icon(Icons.add_circle_outline_rounded), color: VentvoColors.textMuted),
-              IconButton(onPressed: expressingMoment ? null : _respond, icon: const Icon(Icons.arrow_upward_rounded), color: VentvoColors.primary),
-            ],
+                IconButton(onPressed: expressingMoment ? null : _chooseExpression, icon: const Icon(Icons.add_rounded), color: VentvoColors.textMuted),
+                IconButton(onPressed: expressingMoment ? null : _respond, icon: const Icon(Icons.arrow_upward_rounded), color: VentvoColors.primary),
+              ],
+            ),
           ),
         ),
       );
