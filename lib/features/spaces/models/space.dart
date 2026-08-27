@@ -9,6 +9,7 @@ class Space {
   final String originatingVentId;
   final String creatorVoiceMark;
   final DateTime createdAt;
+  final List<String> ventIds;
 
   const Space({
     required this.id,
@@ -16,11 +17,17 @@ class Space {
     required this.originatingVentId,
     required this.creatorVoiceMark,
     required this.createdAt,
+    this.ventIds = const [],
   });
 
   bool get isJustListen => mode == SpaceMode.justListen;
 
   bool get isOpenDiscussion => mode == SpaceMode.openDiscussion;
+
+  List<String> get allVentIds {
+    if (ventIds.contains(originatingVentId)) return ventIds;
+    return [originatingVentId, ...ventIds];
+  }
 
   String get modeLabel {
     switch (mode) {
