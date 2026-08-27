@@ -6,6 +6,7 @@ class SpaceResponse {
   final String content;
   final DateTime createdAt;
   final bool isMoment;
+  final bool isHeard;
 
   const SpaceResponse({
     required this.id,
@@ -15,5 +16,6 @@ class SpaceResponse {
     required this.content,
     required this.createdAt,
     this.isMoment = false,
+    this.isHeard = false,
   });
 }
