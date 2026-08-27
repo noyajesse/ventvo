@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -26,16 +25,12 @@ class VentCard extends ConsumerWidget {
         final space = spaces
             .where((item) => item.id == vent.spaceId)
             .firstOrNull;
-
         return _buildCard(context, space);
       },
     );
   }
 
-  Widget _buildCard(
-    BuildContext context,
-    Space? space,
-  ) {
+  Widget _buildCard(BuildContext context, Space? space) {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(22),
@@ -50,14 +45,10 @@ class VentCard extends ConsumerWidget {
             children: [
               Text(
                 vent.voiceMark,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 22,
-                ),
+                style: const TextStyle(color: Colors.white70, fontSize: 22),
               ),
               const SizedBox(width: 10),
-              if (vent.voiceName != null &&
-                  vent.voiceName!.trim().isNotEmpty)
+              if (vent.voiceName != null && vent.voiceName!.trim().isNotEmpty)
                 Text(
                   vent.voiceName!,
                   style: const TextStyle(
@@ -83,14 +74,7 @@ class VentCard extends ConsumerWidget {
               color: Colors.transparent,
               child: InkWell(
                 borderRadius: BorderRadius.circular(20),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => SpaceScreen(space: space),
-                    ),
-                  );
-                },
+                onTap: () => SpaceScreen.open(context, space),
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
@@ -143,4 +127,3 @@ class VentCard extends ConsumerWidget {
     );
   }
 }
-
