@@ -32,7 +32,6 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
   final storage = SpaceResponseStorage();
   final controller = TextEditingController();
   List<SpaceResponse> responses = const [];
-  bool loading = true;
 
   @override
   void initState() {
@@ -43,10 +42,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
   Future<void> _load() async {
     final value = await storage.loadForSpace(widget.space.id);
     if (!mounted) return;
-    setState(() {
-      responses = value;
-      loading = false;
-    });
+    setState(() => responses = value);
   }
 
   Future<void> _respond() async {
@@ -85,9 +81,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     await ref.read(ventProvider.notifier).addVent(moment);
     await ref.read(spaceProvider.notifier).addMoment(widget.space.id, moment.id);
     if (!mounted) return;
-
     controller.clear();
-    await _load();
   }
 
   @override
@@ -144,29 +138,41 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     final ids = widget.space.allVentIds.toSet();
     final moments = allVents.where((v) => ids.contains(v.id)).toList()
       ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
-
     final ordinaryResponses = responses.where((response) => !response.isMoment).toList();
 
     return ListView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(24, 24, 24, 36),
       children: [
-        _label('WHERE IT STARTED'),
-        const SizedBox(height: 13),
+        const Text(
+          'THIS MOMENT',
+          style: TextStyle(color: VentvoColors.textMuted, fontSize: 9, fontWeight: FontWeight.w700, letterSpacing: 1.8),
+        ),
+        const SizedBox(height: 14),
         if (moments.isNotEmpty) _origin(moments.first),
         if (moments.length > 1) ...[
-          const SizedBox(height: 38),
-          _label('WHAT EMERGED'),
-          const SizedBox(height: 18),
+          const SizedBox(height: 40),
+          const Text(
+            'MOMENTS THAT FOLLOWED',
+            style: TextStyle(color: VentvoColors.textMuted, fontSize: 9, fontWeight: FontWeight.w700, letterSpacing: 1.8),
+          ),
+          const SizedBox(height: 16),
           ...moments.skip(1).map(_moment),
         ],
-        const SizedBox(height: 34),
         if (ordinaryResponses.isNotEmpty) ...[
-          _label('PEOPLE HERE'),
+          const SizedBox(height: 30),
+          const Text(
+            'AROUND THIS MOMENT',
+            style: TextStyle(color: VentvoColors.textMuted, fontSize: 9, fontWeight: FontWeight.w700, letterSpacing: 1.8),
+          ),
           const SizedBox(height: 14),
           ...ordinaryResponses.map(_response),
         ] else if (widget.space.isJustListen) ...[
-          _label('PEOPLE HERE'),
+          const SizedBox(height: 30),
+          const Text(
+            'HERE WITH YOU',
+            style: TextStyle(color: VentvoColors.textMuted, fontSize: 9, fontWeight: FontWeight.w700, letterSpacing: 1.8),
+          ),
           const SizedBox(height: 14),
           const Text(
             'People can be here without needing to say anything.',
@@ -177,18 +183,8 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     );
   }
 
-  Widget _label(String text) => Text(
-        text,
-        style: const TextStyle(
-          color: VentvoColors.textMuted,
-          fontSize: 9,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 1.8,
-        ),
-      );
-
   Widget _origin(Vent vent) => Container(
-        padding: const EdgeInsets.fromLTRB(22, 22, 22, 27),
+        padding: const EdgeInsets.fromLTRB(22, 24, 22, 28),
         decoration: BoxDecoration(
           color: VentvoColors.surfaceElevated,
           borderRadius: BorderRadius.circular(30),
@@ -197,24 +193,19 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(vent.voiceMark, style: const TextStyle(color: VentvoColors.textMuted)),
-            const SizedBox(height: 17),
+            const SizedBox(height: 18),
             Text(
               vent.content,
-              style: const TextStyle(
-                color: VentvoColors.textPrimary,
-                fontSize: 25,
-                height: 1.45,
-                fontWeight: FontWeight.w500,
-              ),
+              style: const TextStyle(color: VentvoColors.textPrimary, fontSize: 25, height: 1.45, fontWeight: FontWeight.w500),
             ),
           ],
         ),
       );
 
   Widget _moment(Vent vent) => Padding(
-        padding: const EdgeInsets.only(bottom: 22),
+        padding: const EdgeInsets.only(bottom: 20),
         child: Container(
-          padding: const EdgeInsets.fromLTRB(18, 17, 18, 19),
+          padding: const EdgeInsets.fromLTRB(18, 18, 18, 20),
           decoration: BoxDecoration(
             color: VentvoColors.surfaceElevated,
             borderRadius: BorderRadius.circular(24),
@@ -226,24 +217,13 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                 children: [
                   const Icon(Icons.auto_awesome_rounded, size: 13, color: VentvoColors.textMuted),
                   const SizedBox(width: 8),
-                  const Text(
-                    'MOMENT',
-                    style: TextStyle(
-                      color: VentvoColors.textMuted,
-                      fontSize: 8,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.3,
-                    ),
-                  ),
+                  const Text('MOMENT', style: TextStyle(color: VentvoColors.textMuted, fontSize: 8, fontWeight: FontWeight.w700, letterSpacing: 1.3)),
                   const Spacer(),
                   Text(vent.voiceMark, style: const TextStyle(color: VentvoColors.textMuted, fontSize: 10)),
                 ],
               ),
               const SizedBox(height: 12),
-              Text(
-                vent.content,
-                style: const TextStyle(color: VentvoColors.textPrimary, fontSize: 18, height: 1.5),
-              ),
+              Text(vent.content, style: const TextStyle(color: VentvoColors.textPrimary, fontSize: 18, height: 1.5)),
             ],
           ),
         ),
@@ -284,10 +264,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                     hintStyle: const TextStyle(color: VentvoColors.textMuted, fontSize: 13),
                     filled: true,
                     fillColor: VentvoColors.surface,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: BorderSide.none,
-                    ),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
                   ),
                 ),
               ),
@@ -303,10 +280,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                   if (value == 'moment') _createMoment();
                 },
                 itemBuilder: (_) => const [
-                  PopupMenuItem(
-                    value: 'moment',
-                    child: Text('Share as a Moment'),
-                  ),
+                  PopupMenuItem(value: 'moment', child: Text('Share a Moment')),
                 ],
               ),
             ],
