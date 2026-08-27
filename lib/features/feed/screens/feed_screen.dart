@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../ventvo_voice/providers/vent_provider.dart';
+import '../providers/feed_provider.dart';
 import '../widgets/vent_card.dart';
 
 class FeedScreen extends ConsumerWidget {
@@ -9,7 +9,7 @@ class FeedScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ventsAsync = ref.watch(ventProvider);
+    final moments = ref.watch(feedProvider);
 
     return Scaffold(
       backgroundColor: const Color(0xFF111111),
@@ -19,43 +19,23 @@ class FeedScreen extends ConsumerWidget {
         titleSpacing: 20,
         title: const Text(
           'Moments',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 21,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(color: Colors.white, fontSize: 21, fontWeight: FontWeight.w600),
         ),
       ),
-      body: ventsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) => const Center(
-          child: Text(
-            'Unable to load your Moments right now.',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white54, fontSize: 16),
-          ),
-        ),
-        data: (vents) {
-          if (vents.isEmpty) {
-            return const Center(
+      body: moments.isEmpty
+          ? const Center(
               child: Text(
-                'Nothing here yet.\nBe the first to express.',
+                'Nothing here yet.\nMoments will find their way here.',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.white54, fontSize: 17, height: 1.5),
               ),
-            );
-          }
-
-          final moments = [...vents]..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-          return ListView.builder(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(18, 10, 18, 30),
-            itemCount: moments.length,
-            itemBuilder: (context, index) => VentCard(vent: moments[index]),
-          );
-        },
-      ),
+            )
+          : ListView.builder(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(18, 10, 18, 30),
+              itemCount: moments.length,
+              itemBuilder: (context, index) => VentCard(vent: moments[index]),
+            ),
     );
   }
 }
