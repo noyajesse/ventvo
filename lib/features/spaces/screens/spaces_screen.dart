@@ -19,25 +19,16 @@ class SpacesScreen extends ConsumerWidget {
         elevation: 0,
         title: const Text(
           'Spaces',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        iconTheme: const IconThemeData(
-          color: Colors.white,
-        ),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: spacesAsync.when(
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, _) => const Center(
           child: Text(
             'Unable to load Spaces.',
-            style: TextStyle(
-              color: Colors.white70,
-            ),
+            style: TextStyle(color: Colors.white70),
           ),
         ),
         data: (spaces) {
@@ -45,10 +36,7 @@ class SpacesScreen extends ConsumerWidget {
             return const Center(
               child: Text(
                 'No Spaces yet.',
-                style: TextStyle(
-                  color: Colors.white54,
-                  fontSize: 17,
-                ),
+                style: TextStyle(color: Colors.white54, fontSize: 17),
               ),
             );
           }
@@ -58,19 +46,9 @@ class SpacesScreen extends ConsumerWidget {
             itemCount: spaces.length,
             itemBuilder: (context, index) {
               final space = spaces[index];
-
               return SpaceCard(
                 space: space,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => SpaceScreen(
-                        space: space,
-                      ),
-                    ),
-                  );
-                },
+                onTap: () => SpaceScreen.open(context, space),
               );
             },
           );
