@@ -47,6 +47,7 @@ class SpaceStorage {
       'originatingVentId': space.originatingVentId,
       'creatorVoiceMark': space.creatorVoiceMark,
       'createdAt': space.createdAt.toIso8601String(),
+      'ventIds': space.allVentIds,
     };
   }
 
@@ -56,6 +57,7 @@ class SpaceStorage {
     final originatingVentId = map['originatingVentId'];
     final creatorVoiceMark = map['creatorVoiceMark'];
     final createdAt = map['createdAt'];
+    final savedVentIds = map['ventIds'];
 
     if (id is! String ||
         mode is! String ||
@@ -65,10 +67,16 @@ class SpaceStorage {
       return null;
     }
 
-    final parsedMode = SpaceMode.values.where((item) => item.name == mode).firstOrNull;
+    final parsedMode = SpaceMode.values
+        .where((item) => item.name == mode)
+        .firstOrNull;
     final parsedCreatedAt = DateTime.tryParse(createdAt);
 
     if (parsedMode == null || parsedCreatedAt == null) return null;
+
+    final ventIds = savedVentIds is List
+        ? savedVentIds.whereType<String>().toList()
+        : <String>[];
 
     return Space(
       id: id,
@@ -76,6 +84,7 @@ class SpaceStorage {
       originatingVentId: originatingVentId,
       creatorVoiceMark: creatorVoiceMark,
       createdAt: parsedCreatedAt,
+      ventIds: ventIds,
     );
   }
 }
