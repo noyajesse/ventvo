@@ -82,6 +82,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     await ref.read(spaceProvider.notifier).addMoment(widget.space.id, moment.id);
     if (!mounted) return;
     controller.clear();
+    setState(() {});
   }
 
   @override
@@ -113,7 +114,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
   }
 
   Widget _header() => Padding(
-        padding: const EdgeInsets.fromLTRB(10, 4, 20, 4),
+        padding: const EdgeInsets.fromLTRB(10, 4, 16, 4),
         child: Row(
           children: [
             IconButton(
@@ -121,15 +122,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
               icon: const Icon(Icons.close_rounded, color: VentvoColors.textSecondary),
             ),
             const Spacer(),
-            Text(
-              widget.space.isJustListen ? 'JUST LISTEN' : 'OPEN DISCUSSION',
-              style: const TextStyle(
-                color: VentvoColors.textMuted,
-                fontSize: 9,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1.8,
-              ),
-            ),
+            const Icon(Icons.more_horiz_rounded, color: VentvoColors.textMuted),
           ],
         ),
       );
@@ -142,49 +135,27 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
 
     return ListView(
       physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 36),
+      padding: const EdgeInsets.fromLTRB(24, 10, 24, 42),
       children: [
-        const Text(
-          'THIS MOMENT',
-          style: TextStyle(color: VentvoColors.textMuted, fontSize: 9, fontWeight: FontWeight.w700, letterSpacing: 1.8),
-        ),
-        const SizedBox(height: 14),
         if (moments.isNotEmpty) _origin(moments.first),
+        if (ordinaryResponses.isNotEmpty) ...[
+          const SizedBox(height: 34),
+          ...ordinaryResponses.map(_response),
+        ],
         if (moments.length > 1) ...[
-          const SizedBox(height: 40),
-          const Text(
-            'MOMENTS THAT FOLLOWED',
-            style: TextStyle(color: VentvoColors.textMuted, fontSize: 9, fontWeight: FontWeight.w700, letterSpacing: 1.8),
-          ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 34),
           ...moments.skip(1).map(_moment),
         ],
-        if (ordinaryResponses.isNotEmpty) ...[
-          const SizedBox(height: 30),
-          const Text(
-            'AROUND THIS MOMENT',
-            style: TextStyle(color: VentvoColors.textMuted, fontSize: 9, fontWeight: FontWeight.w700, letterSpacing: 1.8),
-          ),
-          const SizedBox(height: 14),
-          ...ordinaryResponses.map(_response),
-        ] else if (widget.space.isJustListen) ...[
-          const SizedBox(height: 30),
-          const Text(
-            'HERE WITH YOU',
-            style: TextStyle(color: VentvoColors.textMuted, fontSize: 9, fontWeight: FontWeight.w700, letterSpacing: 1.8),
-          ),
-          const SizedBox(height: 14),
-          const Text(
-            'People can be here without needing to say anything.',
-            style: TextStyle(color: VentvoColors.textSecondary, height: 1.5),
-          ),
+        if (widget.space.isJustListen && ordinaryResponses.isEmpty) ...[
+          const SizedBox(height: 34),
+          _quietPresence(),
         ],
       ],
     );
   }
 
   Widget _origin(Vent vent) => Container(
-        padding: const EdgeInsets.fromLTRB(22, 24, 22, 28),
+        padding: const EdgeInsets.fromLTRB(22, 25, 22, 30),
         decoration: BoxDecoration(
           color: VentvoColors.surfaceElevated,
           borderRadius: BorderRadius.circular(30),
@@ -205,10 +176,10 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
   Widget _moment(Vent vent) => Padding(
         padding: const EdgeInsets.only(bottom: 20),
         child: Container(
-          padding: const EdgeInsets.fromLTRB(18, 18, 18, 20),
+          padding: const EdgeInsets.fromLTRB(19, 19, 19, 21),
           decoration: BoxDecoration(
             color: VentvoColors.surfaceElevated,
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(25),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -229,21 +200,31 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
         ),
       );
 
-  Widget _response(SpaceResponse response) => Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.fromLTRB(17, 15, 17, 15),
-        decoration: BoxDecoration(
-          color: VentvoColors.surface,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: VentvoColors.border),
-        ),
-        child: Column(
+  Widget _response(SpaceResponse response) => Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(response.voiceMark, style: const TextStyle(color: VentvoColors.textMuted, fontSize: 10)),
-            const SizedBox(height: 7),
-            Text(response.content, style: const TextStyle(color: VentvoColors.textPrimary, fontSize: 14, height: 1.5)),
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Text(response.voiceMark, style: const TextStyle(color: VentvoColors.textMuted, fontSize: 10)),
+            ),
+            const SizedBox(width: 11),
+            Expanded(
+              child: Text(
+                response.content,
+                style: const TextStyle(color: VentvoColors.textSecondary, fontSize: 14, height: 1.55),
+              ),
+            ),
           ],
+        ),
+      );
+
+  Widget _quietPresence() => const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8),
+        child: Text(
+          'You can stay here without saying anything.',
+          style: TextStyle(color: VentvoColors.textMuted, fontSize: 13, height: 1.5),
         ),
       );
 
@@ -260,7 +241,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                   maxLines: 4,
                   style: const TextStyle(color: VentvoColors.textPrimary, fontSize: 14),
                   decoration: InputDecoration(
-                    hintText: 'Share what this moment brought up.',
+                    hintText: 'Say what came up for you…',
                     hintStyle: const TextStyle(color: VentvoColors.textMuted, fontSize: 13),
                     filled: true,
                     fillColor: VentvoColors.surface,
@@ -268,20 +249,20 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
-              IconButton(
-                onPressed: _respond,
-                icon: const Icon(Icons.arrow_upward_rounded),
-                color: VentvoColors.primary,
-              ),
+              const SizedBox(width: 5),
               PopupMenuButton<String>(
                 icon: const Icon(Icons.add_circle_outline_rounded, color: VentvoColors.textMuted),
                 onSelected: (value) {
                   if (value == 'moment') _createMoment();
                 },
                 itemBuilder: (_) => const [
-                  PopupMenuItem(value: 'moment', child: Text('Share a Moment')),
+                  PopupMenuItem(value: 'moment', child: Text('Share as a Moment')),
                 ],
+              ),
+              IconButton(
+                onPressed: _respond,
+                icon: const Icon(Icons.arrow_upward_rounded),
+                color: VentvoColors.primary,
               ),
             ],
           ),
