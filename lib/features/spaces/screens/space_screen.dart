@@ -14,6 +14,39 @@ class SpaceScreen extends ConsumerStatefulWidget {
 
   const SpaceScreen({super.key, required this.space});
 
+  static Route<void> route(Space space) {
+    return PageRouteBuilder<void>(
+      transitionDuration: VentvoMotion.immersive,
+      reverseTransitionDuration: VentvoMotion.immersive,
+      pageBuilder: (_, animation, __) => SpaceScreen(space: space),
+      transitionsBuilder: (_, animation, secondaryAnimation, child) {
+        final curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
+          reverseCurve: Curves.easeInCubic,
+        );
+
+        return FadeTransition(
+          opacity: curved,
+          child: ScaleTransition(
+            scale: Tween<double>(begin: 0.965, end: 1).animate(curved),
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0, 0.035),
+                end: Offset.zero,
+              ).animate(curved),
+              child: child,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  static Future<void> open(BuildContext context, Space space) {
+    return Navigator.of(context).push(route(space));
+  }
+
   @override
   ConsumerState<SpaceScreen> createState() => _SpaceScreenState();
 }
@@ -86,7 +119,9 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
             Positioned.fill(
               child: ventsAsync.when(
                 loading: () => const Center(
-                  child: CircularProgressIndicator(color: VentvoColors.primary),
+                  child: CircularProgressIndicator(
+                    color: VentvoColors.primary,
+                  ),
                 ),
                 error: (_, _) => const Center(
                   child: Text(
@@ -102,7 +137,10 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
               left: 4,
               child: IconButton(
                 onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(Icons.close, color: VentvoColors.textSecondary),
+                icon: const Icon(
+                  Icons.close,
+                  color: VentvoColors.textSecondary,
+                ),
               ),
             ),
           ],
@@ -120,7 +158,10 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
 
     if (spaceVents.isEmpty) {
       return const Center(
-        child: Text('This Space is empty.', style: TextStyle(color: VentvoColors.textMuted)),
+        child: Text(
+          'This Space is empty.',
+          style: TextStyle(color: VentvoColors.textMuted),
+        ),
       );
     }
 
@@ -178,12 +219,18 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
         Text(
           listening ? 'A space to simply be heard.' : 'A space for this moment.',
           textAlign: TextAlign.center,
-          style: const TextStyle(color: VentvoColors.textSecondary, fontSize: 14),
+          style: const TextStyle(
+            color: VentvoColors.textSecondary,
+            fontSize: 14,
+          ),
         ),
         const SizedBox(height: 7),
         Text(
           '$count ${count == 1 ? 'moment' : 'moments'}',
-          style: const TextStyle(color: VentvoColors.textMuted, fontSize: 10),
+          style: const TextStyle(
+            color: VentvoColors.textMuted,
+            fontSize: 10,
+          ),
         ),
       ],
     );
@@ -210,7 +257,9 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
         color: origin ? VentvoColors.surfaceElevated : VentvoColors.surface,
         borderRadius: BorderRadius.circular(26),
         border: Border.all(
-          color: origin ? VentvoColors.primary.withValues(alpha: 0.28) : VentvoColors.border,
+          color: origin
+              ? VentvoColors.primary.withValues(alpha: 0.28)
+              : VentvoColors.border,
         ),
       ),
       child: Column(
@@ -220,7 +269,10 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
             children: [
               Text(
                 vent.voiceMark,
-                style: const TextStyle(color: VentvoColors.textSecondary, fontSize: 12),
+                style: const TextStyle(
+                  color: VentvoColors.textSecondary,
+                  fontSize: 12,
+                ),
               ),
               const Spacer(),
               if (origin)
@@ -268,7 +320,11 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
           const SizedBox(width: 10),
           const Text(
             'CONTINUING',
-            style: TextStyle(color: VentvoColors.textMuted, fontSize: 8, letterSpacing: 1.4),
+            style: TextStyle(
+              color: VentvoColors.textMuted,
+              fontSize: 8,
+              letterSpacing: 1.4,
+            ),
           ),
           const SizedBox(width: 12),
         ],
@@ -278,7 +334,9 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
 
   Widget _buildResponses() {
     if (loadingResponses) {
-      return const Center(child: CircularProgressIndicator(color: VentvoColors.primary));
+      return const Center(
+        child: CircularProgressIndicator(color: VentvoColors.primary),
+      );
     }
 
     return Column(
@@ -306,7 +364,11 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
             child: const Text(
               'The Space is quiet.\nYou can be the first Voice to enter.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: VentvoColors.textSecondary, fontSize: 14, height: 1.5),
+              style: TextStyle(
+                color: VentvoColors.textSecondary,
+                fontSize: 14,
+                height: 1.5,
+              ),
             ),
           )
         else
@@ -326,12 +388,19 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
                   children: [
                     Text(
                       response.voiceMark,
-                      style: const TextStyle(color: VentvoColors.textMuted, fontSize: 10),
+                      style: const TextStyle(
+                        color: VentvoColors.textMuted,
+                        fontSize: 10,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       response.content,
-                      style: const TextStyle(color: VentvoColors.textPrimary, fontSize: 15, height: 1.5),
+                      style: const TextStyle(
+                        color: VentvoColors.textPrimary,
+                        fontSize: 15,
+                        height: 1.5,
+                      ),
                     ),
                   ],
                 ),
@@ -345,18 +414,30 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
   Widget _buildListeningNote() {
     return const Column(
       children: [
-        Icon(Icons.graphic_eq_rounded, color: VentvoColors.textMuted, size: 27),
+        Icon(
+          Icons.graphic_eq_rounded,
+          color: VentvoColors.textMuted,
+          size: 27,
+        ),
         SizedBox(height: 15),
         Text(
           'Nothing is expected from you.',
           textAlign: TextAlign.center,
-          style: TextStyle(color: VentvoColors.textPrimary, fontSize: 17, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            color: VentvoColors.textPrimary,
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         SizedBox(height: 8),
         Text(
           'You can stay here without fixing, advising,\nor finding the right words.',
           textAlign: TextAlign.center,
-          style: TextStyle(color: VentvoColors.textSecondary, fontSize: 13, height: 1.5),
+          style: TextStyle(
+            color: VentvoColors.textSecondary,
+            fontSize: 13,
+            height: 1.5,
+          ),
         ),
       ],
     );
@@ -383,14 +464,22 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    heard ? Icons.check_circle_outline : Icons.headphones_outlined,
-                    color: heard ? VentvoColors.success : VentvoColors.textSecondary,
+                    heard
+                        ? Icons.check_circle_outline
+                        : Icons.headphones_outlined,
+                    color: heard
+                        ? VentvoColors.success
+                        : VentvoColors.textSecondary,
                     size: 19,
                   ),
                   const SizedBox(width: 9),
                   Text(
                     heard ? 'You stayed. That’s enough.' : 'I’m here',
-                    style: const TextStyle(color: VentvoColors.textSecondary, fontSize: 14, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                      color: VentvoColors.textSecondary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
@@ -411,13 +500,22 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
                 controller: controller,
                 minLines: 1,
                 maxLines: 4,
-                style: const TextStyle(color: VentvoColors.textPrimary, fontSize: 14),
+                style: const TextStyle(
+                  color: VentvoColors.textPrimary,
+                  fontSize: 14,
+                ),
                 decoration: InputDecoration(
-                  hintText: 'Bring something into the room...',
-                  hintStyle: const TextStyle(color: VentvoColors.textMuted, fontSize: 13),
+                  hintText: 'What did this bring up for you?',
+                  hintStyle: const TextStyle(
+                    color: VentvoColors.textMuted,
+                    fontSize: 13,
+                  ),
                   filled: true,
                   fillColor: VentvoColors.surface,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 14,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
                     borderSide: const BorderSide(color: VentvoColors.border),
@@ -443,7 +541,11 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen>
                   color: VentvoColors.primary,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.arrow_upward, color: Colors.white, size: 20),
+                child: const Icon(
+                  Icons.arrow_upward,
+                  color: Colors.white,
+                  size: 20,
+                ),
               ),
             ),
           ],
