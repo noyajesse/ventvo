@@ -18,6 +18,7 @@ class SpaceScreen extends ConsumerStatefulWidget {
   static Future<void> open(BuildContext context, Space space) {
     return Navigator.of(context).push(PageRouteBuilder<void>(
       transitionDuration: VentvoMotion.immersive,
+      reverseTransitionDuration: VentvoMotion.immersive,
       pageBuilder: (_, animation, _) => FadeTransition(
         opacity: CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
         child: SpaceScreen(space: space),
@@ -32,8 +33,12 @@ class SpaceScreen extends ConsumerStatefulWidget {
 class _SpaceScreenState extends ConsumerState<SpaceScreen> {
   final storage = SpaceResponseStorage();
   final controller = TextEditingController();
+  final focusNode = FocusNode();
   List<SpaceResponse> responses = const [];
   bool expressingMoment = false;
+  bool composerOpen = false;
+  bool pendingMoment = false;
+  bool hasHeard = false;
 
   @override
   void initState() {
@@ -44,7 +49,29 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
   Future<void> _load() async {
     final value = await storage.loadForSpace(widget.space.id);
     if (!mounted) return;
-    setState(() => responses = value);
+    setState(() {
+      responses = value;
+      hasHeard = value.any((response) => response.isHeard && response.voiceMark == '◇ You');
+    });
+  }
+
+  Future<void> _markHeard() async {
+    if (hasHeard) return;
+    final heard = SpaceResponse(
+      id: 'heard_${DateTime.now().microsecondsSinceEpoch}',
+      spaceId: widget.space.id,
+      ventId: widget.space.originatingVentId,
+      voiceMark: '◇ You',
+      content: 'Heard',
+      createdAt: DateTime.now(),
+      isHeard: true,
+    );
+    await storage.add(heard);
+    if (!mounted) return;
+    setState(() {
+      responses = [...responses, heard];
+      hasHeard = true;
+    });
   }
 
   Future<void> _respond() async {
@@ -54,7 +81,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       spaceId: widget.space.id,
       ventId: widget.space.originatingVentId,
-      voiceMark: '◇ Voice',
+      voiceMark: '◇ You',
       content: text,
       createdAt: DateTime.now(),
     );
@@ -63,7 +90,9 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     setState(() {
       responses = [...responses, response];
       controller.clear();
+      composerOpen = false;
     });
+    focusNode.unfocus();
   }
 
   Future<void> _createMoment() async {
@@ -74,7 +103,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
       id: 'moment_${DateTime.now().microsecondsSinceEpoch}',
       content: text,
       spaceId: widget.space.id,
-      voiceMark: '◇ Voice',
+      voiceMark: '◇ You',
       createdAt: DateTime.now(),
     );
     await ref.read(ventProvider.notifier).addVent(moment);
@@ -82,7 +111,22 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     ref.read(feedProvider.notifier).addDiscoveredMoment(moment);
     if (!mounted) return;
     controller.clear();
-    setState(() => expressingMoment = false);
+    focusNode.unfocus();
+    setState(() {
+      expressingMoment = false;
+      composerOpen = false;
+      pendingMoment = false;
+    });
+  }
+
+  void _openComposer({required bool moment}) {
+    setState(() {
+      composerOpen = true;
+      pendingMoment = moment;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) focusNode.requestFocus();
+    });
   }
 
   Future<void> _chooseExpression() async {
@@ -101,14 +145,21 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
             children: [
               Center(child: Container(width: 34, height: 4, decoration: BoxDecoration(color: VentvoColors.border, borderRadius: BorderRadius.circular(4)))),
               const SizedBox(height: 24),
-              const Text('How do you want to leave something here?', style: TextStyle(color: VentvoColors.textPrimary, fontSize: 20, fontWeight: FontWeight.w600)),
+              const Text('What came up for you?', style: TextStyle(color: VentvoColors.textPrimary, fontSize: 20, fontWeight: FontWeight.w600)),
               const SizedBox(height: 8),
-              const Text('Respond to what is here, or leave a thought of your own.', style: TextStyle(color: VentvoColors.textSecondary, height: 1.5)),
+              const Text('You can simply be here, say something back, or let your own thought emerge.', style: TextStyle(color: VentvoColors.textSecondary, height: 1.5)),
               const SizedBox(height: 18),
               ListTile(
                 contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.headphones_rounded, color: VentvoColors.textSecondary),
+                title: const Text('Just Listen', style: TextStyle(color: VentvoColors.textPrimary)),
+                subtitle: const Text('Let them know you received it', style: TextStyle(color: VentvoColors.textMuted)),
+                onTap: () => Navigator.pop(context, 'heard'),
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.reply_rounded, color: VentvoColors.textSecondary),
-                title: const Text('Respond', style: TextStyle(color: VentvoColors.textPrimary)),
+                title: const Text('Say something back', style: TextStyle(color: VentvoColors.textPrimary)),
                 subtitle: const Text('Let your words stay with this Moment', style: TextStyle(color: VentvoColors.textMuted)),
                 onTap: () => Navigator.pop(context, 'response'),
               ),
@@ -125,16 +176,27 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
       ),
     );
     if (!mounted || choice == null) return;
-    if (choice == 'response') {
-      FocusScope.of(context).requestFocus(FocusNode());
+    if (choice == 'heard') {
+      await _markHeard();
+    } else if (choice == 'response') {
+      _openComposer(moment: false);
     } else {
+      _openComposer(moment: true);
+    }
+  }
+
+  Future<void> _send() async {
+    if (pendingMoment) {
       await _createMoment();
+    } else {
+      await _respond();
     }
   }
 
   @override
   void dispose() {
     controller.dispose();
+    focusNode.dispose();
     super.dispose();
   }
 
@@ -172,17 +234,19 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
   Widget _content(List<Vent> allVents) {
     final ids = widget.space.allVentIds.toSet();
     final moments = allVents.where((v) => ids.contains(v.id)).toList()..sort((a, b) => a.createdAt.compareTo(b.createdAt));
-    final ordinary = responses.where((r) => !r.isMoment).toList();
+    final ordinary = responses.where((r) => !r.isMoment && !r.isHeard).toList();
+    final heard = responses.where((r) => r.isHeard).toList();
 
     return ListView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(22, 8, 22, 48),
       children: [
         if (moments.isNotEmpty) _origin(moments.first),
-        if (ordinary.isNotEmpty) ...[
-          const SizedBox(height: 26),
-          _responseHeader(ordinary.length),
+        if (heard.isNotEmpty || ordinary.isNotEmpty) ...[
+          const SizedBox(height: 28),
+          _responseHeader(heard.length + ordinary.length),
           const SizedBox(height: 14),
+          ...heard.map(_heard),
           ...ordinary.map(_response),
         ],
         if (moments.length > 1) ...[
@@ -191,7 +255,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
           const SizedBox(height: 16),
           ...moments.skip(1).map(_moment),
         ],
-        if (widget.space.isJustListen && ordinary.isEmpty && moments.length <= 1) ...[
+        if (ordinary.isEmpty && heard.isEmpty && moments.length <= 1) ...[
           const SizedBox(height: 34),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 6),
@@ -234,10 +298,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
           children: [
             Container(width: 1, height: 18, color: VentvoColors.border),
             const SizedBox(width: 10),
-            Text(
-              count == 1 ? 'ONE THING SAID BACK' : '$count THINGS SAID BACK',
-              style: const TextStyle(color: VentvoColors.textMuted, fontSize: 8, fontWeight: FontWeight.w700, letterSpacing: 1.25),
-            ),
+            Text(count == 1 ? 'ONE THING SAID BACK' : '$count THINGS SAID BACK', style: const TextStyle(color: VentvoColors.textMuted, fontSize: 8, fontWeight: FontWeight.w700, letterSpacing: 1.25)),
           ],
         ),
       );
@@ -249,6 +310,17 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
             Icon(Icons.auto_awesome_rounded, size: 12, color: VentvoColors.textMuted),
             SizedBox(width: 8),
             Text('WHAT EMERGED HERE', style: TextStyle(color: VentvoColors.textMuted, fontSize: 8, fontWeight: FontWeight.w700, letterSpacing: 1.4)),
+          ],
+        ),
+      );
+
+  Widget _heard(SpaceResponse response) => Padding(
+        padding: const EdgeInsets.only(left: 22, bottom: 15),
+        child: Row(
+          children: [
+            const Icon(Icons.headphones_rounded, size: 14, color: VentvoColors.textMuted),
+            const SizedBox(width: 10),
+            Text('${response.voiceMark} · Heard', style: const TextStyle(color: VentvoColors.textMuted, fontSize: 11)),
           ],
         ),
       );
@@ -303,38 +375,63 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
         ),
       );
 
-  Widget _composer() => SafeArea(
+  Widget _composer() {
+    if (!composerOpen) {
+      return SafeArea(
         top: false,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(18, 8, 18, 15),
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(14, 8, 8, 8),
-            decoration: BoxDecoration(
-              color: VentvoColors.surface,
+          child: Material(
+            color: VentvoColors.surface,
+            borderRadius: BorderRadius.circular(24),
+            child: InkWell(
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: VentvoColors.border.withValues(alpha: .5)),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: controller,
-                    minLines: 1,
-                    maxLines: 4,
-                    style: const TextStyle(color: VentvoColors.textPrimary, fontSize: 14),
-                    decoration: const InputDecoration(
-                      hintText: 'What came up for you?',
-                      hintStyle: TextStyle(color: VentvoColors.textMuted, fontSize: 13),
-                      border: InputBorder.none,
-                      isDense: true,
-                    ),
-                  ),
+              onTap: _chooseExpression,
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 18, vertical: 15),
+                child: Row(
+                  children: [
+                    Expanded(child: Text('What came up for you?', style: TextStyle(color: VentvoColors.textMuted, fontSize: 13))),
+                    Icon(Icons.add_rounded, color: VentvoColors.textMuted, size: 20),
+                  ],
                 ),
-                IconButton(onPressed: expressingMoment ? null : _chooseExpression, icon: const Icon(Icons.add_rounded), color: VentvoColors.textMuted),
-                IconButton(onPressed: expressingMoment ? null : _respond, icon: const Icon(Icons.arrow_upward_rounded), color: VentvoColors.primary),
-              ],
+              ),
             ),
           ),
         ),
       );
+    }
+
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(18, 8, 18, 15),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(14, 8, 8, 8),
+          decoration: BoxDecoration(color: VentvoColors.surface, borderRadius: BorderRadius.circular(24), border: Border.all(color: VentvoColors.border.withValues(alpha: .5))),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: controller,
+                  focusNode: focusNode,
+                  minLines: 1,
+                  maxLines: 4,
+                  style: const TextStyle(color: VentvoColors.textPrimary, fontSize: 14),
+                  decoration: InputDecoration(
+                    hintText: pendingMoment ? 'Leave what came up…' : 'Say something back…',
+                    hintStyle: const TextStyle(color: VentvoColors.textMuted, fontSize: 13),
+                    border: InputBorder.none,
+                    isDense: true,
+                  ),
+                ),
+              ),
+              IconButton(onPressed: expressingMoment ? null : () => setState(() { composerOpen = false; pendingMoment = false; focusNode.unfocus(); }), icon: const Icon(Icons.close_rounded), color: VentvoColors.textMuted),
+              IconButton(onPressed: expressingMoment ? null : _send, icon: const Icon(Icons.arrow_upward_rounded), color: VentvoColors.primary),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
