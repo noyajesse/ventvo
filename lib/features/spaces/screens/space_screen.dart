@@ -17,7 +17,7 @@ class SpaceScreen extends ConsumerStatefulWidget {
   static Future<void> open(BuildContext context, Space space) {
     return Navigator.of(context).push(PageRouteBuilder<void>(
       transitionDuration: VentvoMotion.immersive,
-      pageBuilder: (_, animation, __) => FadeTransition(
+      pageBuilder: (_, animation, _) => FadeTransition(
         opacity: CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
         child: SpaceScreen(space: space),
       ),
