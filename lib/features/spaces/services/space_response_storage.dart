@@ -77,6 +77,7 @@ class SpaceResponseStorage {
       'content': response.content,
       'createdAt': response.createdAt.toIso8601String(),
       'isMoment': response.isMoment,
+      'isHeard': response.isHeard,
     };
   }
 
@@ -88,6 +89,7 @@ class SpaceResponseStorage {
     final content = map['content'];
     final createdAt = map['createdAt'];
     final isMoment = map['isMoment'];
+    final isHeard = map['isHeard'];
 
     if (id is! String ||
         spaceId is! String ||
@@ -95,7 +97,8 @@ class SpaceResponseStorage {
         voiceMark is! String ||
         content is! String ||
         createdAt is! String ||
-        (isMoment != null && isMoment is! bool)) {
+        (isMoment != null && isMoment is! bool) ||
+        (isHeard != null && isHeard is! bool)) {
       return null;
     }
 
@@ -110,6 +113,7 @@ class SpaceResponseStorage {
       content: content,
       createdAt: parsedCreatedAt,
       isMoment: isMoment as bool? ?? false,
+      isHeard: isHeard as bool? ?? false,
     );
   }
 }
