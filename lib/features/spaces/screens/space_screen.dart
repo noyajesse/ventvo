@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/motion/ventvo_motion.dart';
 import '../../../core/theme/ventvo_colors.dart';
+import '../../feed/providers/feed_provider.dart';
 import '../../ventvo_voice/models/vent.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
 import '../models/space.dart';
@@ -78,6 +79,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     );
     await ref.read(ventProvider.notifier).addVent(moment);
     await ref.read(spaceProvider.notifier).addMoment(widget.space.id, moment.id);
+    ref.read(feedProvider.notifier).addDiscoveredMoment(moment);
     if (!mounted) return;
     controller.clear();
     setState(() => expressingMoment = false);
@@ -122,7 +124,11 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
       ),
     );
     if (!mounted || choice == null) return;
-    if (choice == 'moment') await _createMoment();
+    if (choice == 'response') {
+      await _respond();
+    } else {
+      await _createMoment();
+    }
   }
 
   @override
@@ -173,14 +179,16 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
       children: [
         if (moments.isNotEmpty) _origin(moments.first),
         if (ordinary.isNotEmpty) ...[
-          const SizedBox(height: 34),
+          const SizedBox(height: 30),
           ...ordinary.map(_response),
         ],
         if (moments.length > 1) ...[
-          const SizedBox(height: 26),
+          const SizedBox(height: 34),
+          _emergenceLabel(),
+          const SizedBox(height: 16),
           ...moments.skip(1).map(_moment),
         ],
-        if (widget.space.isJustListen && ordinary.isEmpty) ...[
+        if (widget.space.isJustListen && ordinary.isEmpty && moments.length <= 1) ...[
           const SizedBox(height: 34),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 6),
@@ -201,6 +209,17 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
             Text(vent.content, style: const TextStyle(color: VentvoColors.textPrimary, fontSize: 30, height: 1.42, fontWeight: FontWeight.w500)),
             const SizedBox(height: 28),
             Container(height: 1, color: VentvoColors.border.withValues(alpha: .45)),
+          ],
+        ),
+      );
+
+  Widget _emergenceLabel() => const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 3),
+        child: Row(
+          children: [
+            Icon(Icons.auto_awesome_rounded, size: 12, color: VentvoColors.textMuted),
+            SizedBox(width: 8),
+            Text('WHAT EMERGED HERE', style: TextStyle(color: VentvoColors.textMuted, fontSize: 8, fontWeight: FontWeight.w700, letterSpacing: 1.4)),
           ],
         ),
       );
