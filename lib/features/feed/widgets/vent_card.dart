@@ -16,95 +16,77 @@ class VentCard extends ConsumerWidget {
     final spacesAsync = ref.watch(spaceProvider);
 
     return spacesAsync.when(
-      loading: () => _buildCard(context, null),
-      error: (_, _) => _buildCard(context, null),
+      loading: () => _moment(context, null),
+      error: (_, _) => _moment(context, null),
       data: (spaces) {
         final space = spaces.where((item) => item.id == vent.spaceId).firstOrNull;
-        return _buildCard(context, space);
+        return _moment(context, space);
       },
     );
   }
 
-  Widget _buildCard(BuildContext context, Space? space) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 18),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(26),
-          onTap: space == null ? null : () => SpaceScreen.open(context, space),
-          child: Ink(
-            padding: const EdgeInsets.fromLTRB(22, 22, 22, 22),
-            decoration: BoxDecoration(
-              color: Colors.white10,
-              borderRadius: BorderRadius.circular(26),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      vent.voiceMark,
-                      style: const TextStyle(color: Colors.white70, fontSize: 21),
+  Widget _moment(BuildContext context, Space? space) {
+    final compact = vent.content.trim().length < 90;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: space == null ? null : () => SpaceScreen.open(context, space),
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(6, compact ? 22 : 28, 6, compact ? 30 : 38),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    vent.voiceMark,
+                    style: const TextStyle(
+                      color: Colors.white54,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
                     ),
-                    const SizedBox(width: 10),
-                    if (vent.voiceName != null && vent.voiceName!.trim().isNotEmpty)
-                      Text(
-                        vent.voiceName!,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 18),
-                Text(
-                  vent.content,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 19,
-                    height: 1.45,
-                    fontWeight: FontWeight.w400,
                   ),
-                ),
-                if (space != null) ...[
-                  const SizedBox(height: 18),
-                  Row(
-                    children: [
-                      Container(
-                        width: 6,
-                        height: 6,
-                        decoration: const BoxDecoration(
-                          color: Colors.white54,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 9),
-                      const Text(
-                        'Enter',
-                        style: TextStyle(
-                          color: Colors.white54,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const Spacer(),
-                      const Icon(
-                        Icons.arrow_forward_rounded,
-                        color: Colors.white38,
-                        size: 17,
-                      ),
-                    ],
+                  const Spacer(),
+                  Text(
+                    _timeAgo(vent.createdAt),
+                    style: const TextStyle(color: Colors.white30, fontSize: 10),
                   ),
                 ],
+              ),
+              SizedBox(height: compact ? 13 : 18),
+              Text(
+                vent.content,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: compact ? 21 : 25,
+                  height: 1.42,
+                  fontWeight: FontWeight.w400,
+                  letterSpacing: -.15,
+                ),
+              ),
+              if (space != null) ...[
+                const SizedBox(height: 15),
+                const Text(
+                  'there’s more here',
+                  style: TextStyle(color: Colors.white30, fontSize: 10),
+                ),
               ],
-            ),
+              const SizedBox(height: 23),
+              Container(height: 1, color: Colors.white10),
+            ],
           ),
         ),
       ),
     );
+  }
+
+  String _timeAgo(DateTime time) {
+    final difference = DateTime.now().difference(time);
+    if (difference.inMinutes < 1) return 'now';
+    if (difference.inMinutes < 60) return '${difference.inMinutes}m';
+    if (difference.inHours < 24) return '${difference.inHours}h';
+    return '${difference.inDays}d';
   }
 }
