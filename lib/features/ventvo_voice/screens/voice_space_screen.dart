@@ -1,6 +1,8 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/theme/ventvo_colors.dart';
 import '../providers/voice_provider.dart';
 import '../providers/vent_provider.dart';
 import '../../feed/screens/feed_screen.dart';
@@ -27,22 +29,34 @@ class VoiceSpaceScreen extends ConsumerWidget {
         .toList();
 
     return Scaffold(
-      backgroundColor: const Color(0xFF111111),
+      backgroundColor: VentvoColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF111111),
+        backgroundColor: VentvoColors.background,
         elevation: 0,
-        centerTitle: true,
+        titleSpacing: 22,
         title: const Text(
           'Your Voice',
           style: TextStyle(
-            color: Colors.white,
+            color: VentvoColors.textPrimary,
+            fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
         ),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.more_horiz_rounded,
+              color: VentvoColors.textMuted,
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(24, 20, 24, 36),
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(22, 10, 22, 40),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -53,139 +67,101 @@ class VoiceSpaceScreen extends ConsumerWidget {
                     voice?.expression ?? 'Your Voice is waiting.',
               ),
 
-              const SizedBox(height: 28),
+              const SizedBox(height: 34),
 
               const _SectionLabel(
-                title: 'Your Vents',
-                subtitle: 'Expressions you have chosen to release.',
+                title: 'Your expression',
+                subtitle: 'Things you chose to let exist outside of you.',
               ),
 
-              const SizedBox(height: 14),
+              const SizedBox(height: 16),
 
-              Row(
-                children: [
-                  Expanded(
-                    child: _StatCard(
-                      value: '${vents.length}',
-                      label: 'Vents',
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  const Expanded(
-                    child: _StatCard(
-                      value: '0',
-                      label: 'Moments',
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  const Expanded(
-                    child: _StatCard(
-                      value: '0',
-                      label: 'Arcs',
-                    ),
-                  ),
-                ],
+              _StatsRow(
+                vents: vents.length,
+                moments: 0,
+                arcs: 0,
               ),
 
-              const SizedBox(height: 28),
+              const SizedBox(height: 30),
 
               if (vents.isNotEmpty) ...[
-                ...vents.map(
-                  (vent) => VentCard(vent: vent),
+                ...vents.asMap().entries.map(
+                  (entry) => VentCard(
+                    vent: entry.value,
+                    index: entry.key,
+                  ),
                 ),
-                const SizedBox(height: 14),
               ] else
                 const _EmptyVentsCard(),
 
               if (privateCrashOuts.isNotEmpty) ...[
-                const SizedBox(height: 12),
+                const SizedBox(height: 30),
+
                 const _SectionLabel(
-                  title: 'Private',
-                  subtitle: 'Things you chose to keep for yourself.',
+                  title: 'Kept close',
+                  subtitle: 'Things you chose not to release.',
                 ),
-                const SizedBox(height: 14),
+
+                const SizedBox(height: 16),
+
                 _PrivateCrashOutCard(
                   count: privateCrashOuts.length,
                 ),
               ],
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 34),
 
               const _SectionLabel(
                 title: 'Express',
-                subtitle: 'Choose what you need right now.',
+                subtitle: 'You decide what needs to happen next.',
               ),
 
-              const SizedBox(height: 14),
+              const SizedBox(height: 16),
 
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const CreateVentScreen(),
-                      ),
-                    );
-                  },
-                  child: const Text('Create a Vent'),
-                ),
+              _PrimaryAction(
+                icon: Icons.edit_rounded,
+                label: 'Create a Vent',
+                subtitle: 'Say what is on your mind.',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const CreateVentScreen(),
+                    ),
+                  );
+                },
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
 
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: OutlinedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const CrashOutScreen(),
-                      ),
-                    );
-                  },
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: const BorderSide(
-                      color: Colors.white24,
+              _SecondaryAction(
+                icon: Icons.waves_rounded,
+                label: 'Crash Out',
+                subtitle: 'Let it out without deciding what it means.',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const CrashOutScreen(),
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                  ),
-                  child: const Text('Crash Out'),
-                ),
+                  );
+                },
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
 
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: OutlinedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const FeedScreen(),
-                      ),
-                    );
-                  },
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: const BorderSide(
-                      color: Colors.white24,
+              _SecondaryAction(
+                icon: Icons.explore_outlined,
+                label: 'Explore',
+                subtitle: 'Find thoughts waiting to be understood.',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const FeedScreen(),
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                  ),
-                  child: const Text('Explore Feed'),
-                ),
+                  );
+                },
               ),
             ],
           ),
@@ -210,57 +186,146 @@ class _VoiceIdentity extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(26),
+      padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
       decoration: BoxDecoration(
-        color: Colors.white10,
-        borderRadius: BorderRadius.circular(28),
+        color: VentvoColors.surface,
+        borderRadius: BorderRadius.circular(30),
         border: Border.all(
-          color: Colors.white12,
+          color: VentvoColors.border.withValues(alpha: .55),
         ),
       ),
       child: Column(
         children: [
           Container(
-            width: 104,
-            height: 104,
+            width: 86,
+            height: 86,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: Colors.white24,
-                width: 1.5,
+                color: VentvoColors.border,
+                width: 1,
               ),
             ),
             alignment: Alignment.center,
             child: Text(
               mark,
               style: const TextStyle(
-                color: Colors.white,
-                fontSize: 48,
+                color: VentvoColors.textPrimary,
+                fontSize: 38,
+                fontWeight: FontWeight.w300,
               ),
             ),
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 18),
 
           Text(
             name,
             textAlign: TextAlign.center,
             style: const TextStyle(
-              color: Colors.white,
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
+              color: VentvoColors.textPrimary,
+              fontSize: 28,
+              fontWeight: FontWeight.w600,
+              letterSpacing: -.4,
             ),
           ),
 
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
 
           Text(
             expression,
             textAlign: TextAlign.center,
             style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 16,
-              height: 1.45,
+              color: VentvoColors.textSecondary,
+              fontSize: 14,
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatsRow extends StatelessWidget {
+  const _StatsRow({
+    required this.vents,
+    required this.moments,
+    required this.arcs,
+  });
+
+  final int vents;
+  final int moments;
+  final int arcs;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _Stat(
+            value: '$vents',
+            label: 'Vents',
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _Stat(
+            value: '$moments',
+            label: 'Moments',
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _Stat(
+            value: '$arcs',
+            label: 'Arcs',
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _Stat extends StatelessWidget {
+  const _Stat({
+    required this.value,
+    required this.label,
+  });
+
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        vertical: 15,
+        horizontal: 10,
+      ),
+      decoration: BoxDecoration(
+        color: VentvoColors.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: VentvoColors.border.withValues(alpha: .4),
+        ),
+      ),
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: const TextStyle(
+              color: VentvoColors.textPrimary,
+              fontSize: 21,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 3),
+          Text(
+            label,
+            style: const TextStyle(
+              color: VentvoColors.textMuted,
+              fontSize: 11,
             ),
           ),
         ],
@@ -286,63 +351,22 @@ class _SectionLabel extends StatelessWidget {
         Text(
           title,
           style: const TextStyle(
-            color: Colors.white,
-            fontSize: 21,
-            fontWeight: FontWeight.bold,
+            color: VentvoColors.textPrimary,
+            fontSize: 19,
+            fontWeight: FontWeight.w600,
+            letterSpacing: -.2,
           ),
         ),
         const SizedBox(height: 4),
         Text(
           subtitle,
           style: const TextStyle(
-            color: Colors.white38,
-            fontSize: 13,
+            color: VentvoColors.textMuted,
+            fontSize: 12,
+            height: 1.4,
           ),
         ),
       ],
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  const _StatCard({
-    required this.value,
-    required this.label,
-  });
-
-  final String value;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        vertical: 16,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.white10,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Column(
-        children: [
-          Text(
-            value,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 3),
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white38,
-              fontSize: 12,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -354,31 +378,32 @@ class _EmptyVentsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(22),
+      padding: const EdgeInsets.fromLTRB(20, 22, 20, 22),
       decoration: BoxDecoration(
-        color: Colors.white10,
+        color: VentvoColors.surface,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: Colors.white12,
+          color: VentvoColors.border.withValues(alpha: .4),
         ),
       ),
       child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Nothing here yet.',
+            'Nothing released yet.',
             style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
+              color: VentvoColors.textPrimary,
+              fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
           ),
-          SizedBox(height: 7),
+          SizedBox(height: 6),
           Text(
-            'Your first Vent will live here.',
+            'Your first Vent will find its place here.',
             style: TextStyle(
-              color: Colors.white54,
-              fontSize: 14,
+              color: VentvoColors.textMuted,
+              fontSize: 13,
+              height: 1.45,
             ),
           ),
         ],
@@ -396,77 +421,220 @@ class _PrivateCrashOutCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white10,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(
-          color: Colors.white12,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const PrivateCrashOutsScreen(),
+            ),
+          );
+        },
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(20, 20, 18, 20),
+          decoration: BoxDecoration(
+            color: VentvoColors.surface,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(
+              color: VentvoColors.border.withValues(alpha: .4),
+            ),
+          ),
+          child: Row(
             children: [
-              Icon(
-                Icons.lock_outline,
-                color: Colors.white70,
-                size: 20,
-              ),
-              SizedBox(width: 10),
-              Text(
-                'Private Crash Outs',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: VentvoColors.surfaceElevated,
+                  borderRadius: BorderRadius.circular(14),
                 ),
+                child: const Icon(
+                  Icons.lock_outline_rounded,
+                  color: VentvoColors.textSecondary,
+                  size: 19,
+                ),
+              ),
+
+              const SizedBox(width: 14),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Private Crash Outs',
+                      style: TextStyle(
+                        color: VentvoColors.textPrimary,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '$count ${count == 1 ? 'thing' : 'things'} kept close.',
+                      style: const TextStyle(
+                        color: VentvoColors.textMuted,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: VentvoColors.textMuted,
+                size: 14,
               ),
             ],
           ),
-
-          const SizedBox(height: 9),
-
-          Text(
-            '$count ${count == 1 ? 'Crash Out' : 'Crash Outs'} kept for you.',
-            style: const TextStyle(
-              color: Colors.white54,
-              fontSize: 14,
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const PrivateCrashOutsScreen(),
-                  ),
-                );
-              },
-              style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.white,
-                side: const BorderSide(
-                  color: Colors.white24,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-              child: const Text(
-                'View Private Crash Outs',
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 }
+
+class _PrimaryAction extends StatelessWidget {
+  const _PrimaryAction({
+    required this.icon,
+    required this.label,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: VentvoColors.primary,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 16, 16, 16),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                color: VentvoColors.background,
+                size: 20,
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: const TextStyle(
+                        color: VentvoColors.background,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        color: VentvoColors.background.withValues(alpha: .65),
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_rounded,
+                color: VentvoColors.background.withValues(alpha: .7),
+                size: 18,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SecondaryAction extends StatelessWidget {
+  const _SecondaryAction({
+    required this.icon,
+    required this.label,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: VentvoColors.surface,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(18, 15, 16, 15),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: VentvoColors.border.withValues(alpha: .4),
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                color: VentvoColors.textSecondary,
+                size: 20,
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: const TextStyle(
+                        color: VentvoColors.textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        color: VentvoColors.textMuted,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.arrow_forward_rounded,
+                color: VentvoColors.textMuted,
+                size: 17,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
