@@ -6,87 +6,119 @@ import '../../spaces/providers/space_provider.dart';
 import '../../spaces/screens/space_screen.dart';
 import '../../ventvo_voice/models/vent.dart';
 
-class VentCard extends ConsumerWidget {
+class VentCard extends ConsumerStatefulWidget {
   final Vent vent;
+  final int index;
 
-  const VentCard({super.key, required this.vent});
+  const VentCard({
+    super.key,
+    required this.vent,
+    required this.index,
+  });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<VentCard> createState() => _VentCardState();
+}
+
+class _VentCardState extends ConsumerState<VentCard> {
+  bool pressed = false;
+
+  @override
+  Widget build(BuildContext context) {
     final spacesAsync = ref.watch(spaceProvider);
 
     return spacesAsync.when(
-      loading: () => _moment(context, null),
-      error: (_, _) => _moment(context, null),
+      loading: () => _buildMoment(context, null),
+      error: (_, _) => _buildMoment(context, null),
       data: (spaces) {
-        final space = spaces.where((item) => item.id == vent.spaceId).firstOrNull;
-        return _moment(context, space);
+        final space = spaces
+            .where((item) => item.id == widget.vent.spaceId)
+            .firstOrNull;
+
+        return _buildMoment(context, space);
       },
     );
   }
 
-  Widget _moment(BuildContext context, Space? space) {
-    final compact = vent.content.trim().length < 90;
-    final hasDepth = vent.content.trim().length > 130 && space != null;
+  Widget _buildMoment(BuildContext context, Space? space) {
+    final text = widget.vent.content.trim();
+    final short = text.length < 75;
+    final medium = text.length >= 75 && text.length < 150;
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(22),
-        onTap: space == null ? null : () => SpaceScreen.open(context, space),
+    final topSpacing = widget.index == 0
+        ? 20.0
+        : short
+            ? 42.0
+            : 52.0;
+
+    final bottomSpacing = short
+        ? 30.0
+        : medium
+            ? 42.0
+            : 54.0;
+
+    return AnimatedScale(
+      scale: pressed ? 0.985 : 1,
+      duration: const Duration(milliseconds: 120),
+      curve: Curves.easeOut,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTapDown: space == null
+            ? null
+            : (_) => setState(() => pressed = true),
+        onTapCancel: space == null
+            ? null
+            : () => setState(() => pressed = false),
+        onTapUp: space == null
+            ? null
+            : (_) async {
+                setState(() => pressed = false);
+                await SpaceScreen.open(context, space);
+              },
         child: Padding(
-          padding: EdgeInsets.fromLTRB(6, compact ? 22 : 28, 6, compact ? 30 : 38),
+          padding: EdgeInsets.fromLTRB(
+            8,
+            topSpacing,
+            8,
+            bottomSpacing,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Text(
-                    vent.voiceMark,
-                    style: const TextStyle(
-                      color: Colors.white54,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    _timeAgo(vent.createdAt),
-                    style: const TextStyle(color: Colors.white30, fontSize: 10),
-                  ),
-                ],
-              ),
-              SizedBox(height: compact ? 13 : 18),
+              _voiceLine(),
+
+              SizedBox(height: short ? 14 : 18),
+
               Hero(
-                tag: 'moment-${vent.id}',
+                tag: 'moment-${widget.vent.id}',
                 child: Material(
                   color: Colors.transparent,
                   child: Text(
-                    vent.content,
-                    maxLines: hasDepth ? 3 : null,
-                    overflow: hasDepth ? TextOverflow.fade : TextOverflow.clip,
+                    text,
+                    maxLines: medium || !short ? 5 : 4,
+                    overflow: TextOverflow.fade,
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: compact ? 21 : 25,
-                      height: 1.42,
+                      fontSize: short ? 22 : 25,
+                      height: 1.43,
                       fontWeight: FontWeight.w400,
-                      letterSpacing: -.15,
+                      letterSpacing: -0.2,
                     ),
                   ),
                 ),
               ),
-              if (hasDepth) ...[
-                const SizedBox(height: 12),
-                const Row(
-                  children: [
-                    Expanded(child: Divider(color: Colors.white12, height: 1)),
-                    SizedBox(width: 10),
-                    Icon(Icons.arrow_downward_rounded, size: 13, color: Colors.white30),
-                  ],
-                ),
+
+              if (space != null) ...[
+                const SizedBox(height: 22),
+                _continuationCue(),
               ],
-              const SizedBox(height: 23),
-              Container(height: 1, color: Colors.white10),
+
+              const SizedBox(height: 24),
+
+              Container(
+                height: 1,
+                color: Colors.white.withValues(alpha: 0.07),
+              ),
             ],
           ),
         ),
@@ -94,11 +126,74 @@ class VentCard extends ConsumerWidget {
     );
   }
 
+  Widget _voiceLine() {
+    return Row(
+      children: [
+        Text(
+          widget.vent.voiceMark,
+          style: const TextStyle(
+            color: Colors.white54,
+            fontSize: 11,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const Spacer(),
+        Text(
+          _timeAgo(widget.vent.createdAt),
+          style: const TextStyle(
+            color: Colors.white24,
+            fontSize: 10,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _continuationCue() {
+    return Row(
+      children: [
+        Container(
+          width: 28,
+          height: 1,
+          color: Colors.white.withValues(alpha: 0.16),
+        ),
+        const SizedBox(width: 9),
+        Container(
+          width: 5,
+          height: 5,
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.25),
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: 9),
+        const Text(
+          'there is more here',
+          style: TextStyle(
+            color: Colors.white30,
+            fontSize: 10,
+            letterSpacing: 0.25,
+          ),
+        ),
+      ],
+    );
+  }
+
   String _timeAgo(DateTime time) {
     final difference = DateTime.now().difference(time);
-    if (difference.inMinutes < 1) return 'now';
-    if (difference.inMinutes < 60) return '${difference.inMinutes}m';
-    if (difference.inHours < 24) return '${difference.inHours}h';
+
+    if (difference.inMinutes < 1) {
+      return 'now';
+    }
+
+    if (difference.inMinutes < 60) {
+      return '${difference.inMinutes}m';
+    }
+
+    if (difference.inHours < 24) {
+      return '${difference.inHours}h';
+    }
+
     return '${difference.inDays}d';
   }
 }
