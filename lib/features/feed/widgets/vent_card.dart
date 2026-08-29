@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/theme/ventvo_colors.dart';
 import '../../spaces/models/space.dart';
 import '../../spaces/providers/space_provider.dart';
 import '../../spaces/screens/space_screen.dart';
@@ -40,54 +41,67 @@ class _VentCardState extends ConsumerState<VentCard> {
     );
   }
 
-  Widget _buildMoment(BuildContext context, Space? space) {
+  Widget _buildMoment(
+    BuildContext context,
+    Space? space,
+  ) {
     final text = widget.vent.content.trim();
-    final short = text.length < 75;
-    final medium = text.length >= 75 && text.length < 150;
 
-    final topSpacing = widget.index == 0
-        ? 20.0
-        : short
-            ? 42.0
-            : 52.0;
-
-    final bottomSpacing = short
-        ? 30.0
-        : medium
-            ? 42.0
-            : 54.0;
+    final isFirst = widget.index == 0;
+    final isShort = text.length < 90;
+    final isLong = text.length > 180;
 
     return AnimatedScale(
       scale: pressed ? 0.985 : 1,
-      duration: const Duration(milliseconds: 120),
-      curve: Curves.easeOut,
+      duration: const Duration(milliseconds: 140),
+      curve: Curves.easeOutCubic,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTapDown: space == null
             ? null
-            : (_) => setState(() => pressed = true),
+            : (_) {
+                setState(() {
+                  pressed = true;
+                });
+              },
         onTapCancel: space == null
             ? null
-            : () => setState(() => pressed = false),
+            : () {
+                setState(() {
+                  pressed = false;
+                });
+              },
         onTapUp: space == null
             ? null
             : (_) async {
-                setState(() => pressed = false);
-                await SpaceScreen.open(context, space);
+                setState(() {
+                  pressed = false;
+                });
+
+                await SpaceScreen.open(
+                  context,
+                  space,
+                );
               },
         child: Padding(
           padding: EdgeInsets.fromLTRB(
             8,
-            topSpacing,
+            isFirst ? 22 : 34,
             8,
-            bottomSpacing,
+            isShort
+                ? 34
+                : isLong
+                    ? 48
+                    : 40,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _voiceLine(),
+              _header(),
 
-              SizedBox(height: short ? 14 : 18),
+              SizedBox(
+                height: isFirst ? 18 : 16,
+              ),
 
               Hero(
                 tag: 'moment-${widget.vent.id}',
@@ -95,30 +109,33 @@ class _VentCardState extends ConsumerState<VentCard> {
                   color: Colors.transparent,
                   child: Text(
                     text,
-                    maxLines: medium || !short ? 5 : 4,
+                    maxLines: isShort ? 4 : 6,
                     overflow: TextOverflow.fade,
                     style: TextStyle(
-                      color: Colors.white,
-                      fontSize: short ? 22 : 25,
-                      height: 1.43,
-                      fontWeight: FontWeight.w400,
-                      letterSpacing: -0.2,
+                      color: VentvoColors.textPrimary,
+                      fontSize: isFirst
+                          ? 27
+                          : isShort
+                              ? 22
+                              : 24,
+                      height: 1.45,
+                      fontWeight: isFirst
+                          ? FontWeight.w500
+                          : FontWeight.w400,
+                      letterSpacing: -0.25,
                     ),
                   ),
                 ),
               ),
 
               if (space != null) ...[
-                const SizedBox(height: 22),
-                _continuationCue(),
+                const SizedBox(height: 20),
+                _spaceHint(),
               ],
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
 
-              Container(
-                height: 1,
-                color: Colors.white.withValues(alpha: 0.07),
-              ),
+              if (!isFirst) _subtleDivider(),
             ],
           ),
         ),
@@ -126,13 +143,13 @@ class _VentCardState extends ConsumerState<VentCard> {
     );
   }
 
-  Widget _voiceLine() {
+  Widget _header() {
     return Row(
       children: [
         Text(
           widget.vent.voiceMark,
           style: const TextStyle(
-            color: Colors.white54,
+            color: VentvoColors.textMuted,
             fontSize: 11,
             fontWeight: FontWeight.w500,
           ),
@@ -141,7 +158,7 @@ class _VentCardState extends ConsumerState<VentCard> {
         Text(
           _timeAgo(widget.vent.createdAt),
           style: const TextStyle(
-            color: Colors.white24,
+            color: VentvoColors.textMuted,
             fontSize: 10,
           ),
         ),
@@ -149,38 +166,48 @@ class _VentCardState extends ConsumerState<VentCard> {
     );
   }
 
-  Widget _continuationCue() {
+  Widget _spaceHint() {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          width: 28,
-          height: 1,
-          color: Colors.white.withValues(alpha: 0.16),
-        ),
-        const SizedBox(width: 9),
         Container(
           width: 5,
           height: 5,
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.25),
+          decoration: const BoxDecoration(
+            color: VentvoColors.textMuted,
             shape: BoxShape.circle,
           ),
         ),
         const SizedBox(width: 9),
         const Text(
-          'there is more here',
+          'Space',
           style: TextStyle(
-            color: Colors.white30,
+            color: VentvoColors.textMuted,
             fontSize: 10,
-            letterSpacing: 0.25,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 0.3,
           ),
         ),
       ],
     );
   }
 
+  Widget _subtleDivider() {
+    return Container(
+      height: 1,
+      width: double.infinity,
+      color: VentvoColors.border.withValues(
+        alpha: 0.32,
+      ),
+    );
+  }
+
   String _timeAgo(DateTime time) {
     final difference = DateTime.now().difference(time);
+
+    if (difference.isNegative) {
+      return 'now';
+    }
 
     if (difference.inMinutes < 1) {
       return 'now';
@@ -194,6 +221,14 @@ class _VentCardState extends ConsumerState<VentCard> {
       return '${difference.inHours}h';
     }
 
-    return '${difference.inDays}d';
+    if (difference.inDays < 7) {
+      return '${difference.inDays}d';
+    }
+
+    if (difference.inDays < 30) {
+      return '${difference.inDays ~/ 7}w';
+    }
+
+    return '${difference.inDays ~/ 30}mo';
   }
 }
