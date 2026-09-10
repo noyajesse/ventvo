@@ -6,6 +6,8 @@ This document defines the ownership and boundaries of Ventvo's core domain objec
 
 The goal is to prevent product logic from becoming scattered across screens, providers, and feature folders.
 
+**Product source of truth:** this model reflects the current Ventvo direction. Earlier idea-stage interaction options are not part of the current product model.
+
 ## Core model
 
 ```text
@@ -31,7 +33,7 @@ Ventvo Voice
                     Turn into Vent ─────► Vent
 ```
 
-Resonance is a system that connects experiences. It is not a property of Crash Out, Feed, or the three-person experience.
+Resonance is a system that connects experiences. It is not a property of Crash Out, Feed, or the three-Voice experience.
 
 ## 1. Private Account
 
@@ -78,14 +80,23 @@ A Voice can create many Vents and participate in many Spaces without becoming a 
 
 A Vent is an expression intentionally released into Ventvo. It can represent a thought, feeling, experience, idea, opinion, or moment.
 
+### Current interaction model
+
+A Vent has exactly one creator-selected interaction mode:
+
+- **Just Listen** — the creator wants the experience to be held without opening a discussion.
+- **Open Discussion** — the creator is open to other Voices sharing perspectives around the experience.
+
+These are interaction modes, not a catalog of response types. Ventvo does not currently model separate Vent intents such as Advice, Similar Experiences, Encouragement, or Celebrating.
+
 ### Owns
 - Vent ID
 - Creator Voice reference
 - Content or expression payload
 - Creation timestamp
+- Interaction mode
 - Publication/visibility state
 - Safety/moderation state
-- The creator's requested interaction intent
 - Resonance input signals derived from the experience
 
 ### References
@@ -99,7 +110,7 @@ A Vent is an expression intentionally released into Ventvo. It can represent a t
 - Connection state between unrelated people
 - Authentication information
 
-The current prototype Vent model is intentionally smaller than this final boundary; fields should be added deliberately as each system is implemented.
+The current implementation may still contain prototype-only fields while the surrounding systems are being stabilized. New fields should be added deliberately and only when their ownership is clear.
 
 ## 4. Space
 
@@ -174,7 +185,7 @@ It is not a like system, popularity score, follower system, or single matching f
 
 ### Resonance consumes
 - Experience signals
-- User intent
+- Interaction mode and other relevant context
 - Context
 - Privacy/safety constraints
 - Diversity constraints
@@ -203,7 +214,7 @@ Signals describe useful characteristics of an experience for connection discover
 Examples include:
 - Semantic relationship
 - Shared experience
-- Intent
+- Interaction mode
 - Context
 - Relationship state
 - Diversity
@@ -271,7 +282,7 @@ No feature should depend on another feature's private matching implementation.
 The current prototype is allowed to use local storage and simplified models. It must not be mistaken for the final architecture.
 
 Current prototype limitations include:
-- Vent is missing several future domain fields.
+- Vent persistence is local and simplified.
 - Space is currently represented largely through Vent IDs.
 - Crash Out storage is in-memory.
 - Authentication is a temporary development flow.
@@ -287,7 +298,7 @@ These are implementation gaps, not reasons to collapse the domain boundaries.
 2. Stabilize domain models.
 3. Stabilize repository contracts.
 4. Complete deterministic Resonance engine and tests.
-5. Add meaningful Vent intent/signal generation.
+5. Add meaningful Vent signal generation around the current interaction model.
 6. Refactor Space around shared-experience semantics.
 7. Formalize Crash Out lifecycle and conversion.
 8. Connect Feed, Space, and Crash Out to Resonance.
