@@ -1,9 +1,6 @@
-enum VentIntent {
+enum VentInteractionMode {
   justListen,
-  advice,
-  similarExperiences,
-  encouragement,
-  celebrating,
+  openDiscussion,
 }
 
 enum VentVisibility {
@@ -24,7 +21,7 @@ class Vent {
   final String voiceMark;
   final String? voiceName;
   final DateTime createdAt;
-  final VentIntent intent;
+  final VentInteractionMode interactionMode;
   final VentVisibility visibility;
   final VentSafetyState safetyState;
   final String? originatingCrashOutId;
@@ -36,7 +33,7 @@ class Vent {
     required this.voiceMark,
     this.voiceName,
     required this.createdAt,
-    this.intent = VentIntent.justListen,
+    this.interactionMode = VentInteractionMode.justListen,
     this.visibility = VentVisibility.public,
     this.safetyState = VentSafetyState.approved,
     this.originatingCrashOutId,
@@ -53,7 +50,7 @@ class Vent {
     String? voiceMark,
     String? voiceName,
     DateTime? createdAt,
-    VentIntent? intent,
+    VentInteractionMode? interactionMode,
     VentVisibility? visibility,
     VentSafetyState? safetyState,
     String? originatingCrashOutId,
@@ -65,7 +62,7 @@ class Vent {
       voiceMark: voiceMark ?? this.voiceMark,
       voiceName: voiceName ?? this.voiceName,
       createdAt: createdAt ?? this.createdAt,
-      intent: intent ?? this.intent,
+      interactionMode: interactionMode ?? this.interactionMode,
       visibility: visibility ?? this.visibility,
       safetyState: safetyState ?? this.safetyState,
       originatingCrashOutId:
