@@ -28,12 +28,8 @@ class LocalResonanceEngine implements ResonanceEngine {
   });
 
   @override
-  Future<void> indexCandidate(ResonanceCandidate candidate) async {
-    if (repository is LocalResonanceRepository) {
-      (repository as LocalResonanceRepository).upsertCandidate(candidate);
-      return;
-    }
-    throw UnsupportedError('Candidate indexing is not available for this repository yet.');
+  Future<void> indexCandidate(ResonanceCandidate candidate) {
+    return repository.saveCandidate(candidate);
   }
 
   @override
