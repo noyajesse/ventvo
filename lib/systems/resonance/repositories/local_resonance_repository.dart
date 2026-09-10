@@ -13,12 +13,9 @@ class LocalResonanceRepository implements ResonanceRepository {
   final Map<String, ResonanceCandidate> _candidates = {};
   final List<ResonanceConnection> _connections = [];
 
-  void upsertCandidate(ResonanceCandidate candidate) {
+  @override
+  Future<void> saveCandidate(ResonanceCandidate candidate) async {
     _candidates[candidate.id] = candidate;
-  }
-
-  void removeCandidate(String candidateId) {
-    _candidates.remove(candidateId);
   }
 
   @override
