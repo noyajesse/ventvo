@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
-import '../ventvo_voice/models/vent.dart';
+import '../spaces/models/space.dart';
 import '../ventvo_voice/screens/create_vent_screen.dart';
 
 class VentsIntentScreen extends StatelessWidget {
   const VentsIntentScreen({super.key});
 
-  void _selectMode(BuildContext context, VentInteractionMode mode) {
+  void _selectMode(BuildContext context, SpaceMode mode) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => CreateVentScreen(interactionMode: mode),
+        builder: (_) => CreateVentScreen(initialSpaceMode: mode),
       ),
     );
   }
@@ -40,19 +40,13 @@ class VentsIntentScreen extends StatelessWidget {
               _ModeCard(
                 title: 'Just Listen',
                 description: 'I want to be heard without opening a discussion.',
-                onTap: () => _selectMode(
-                  context,
-                  VentInteractionMode.justListen,
-                ),
+                onTap: () => _selectMode(context, SpaceMode.justListen),
               ),
               const SizedBox(height: 14),
               _ModeCard(
                 title: 'Open Discussion',
-                description: 'I am open to other Voices sharing their perspectives.',
-                onTap: () => _selectMode(
-                  context,
-                  VentInteractionMode.openDiscussion,
-                ),
+                description: 'I am open to other Voices sharing perspectives.',
+                onTap: () => _selectMode(context, SpaceMode.openDiscussion),
               ),
             ],
           ),
