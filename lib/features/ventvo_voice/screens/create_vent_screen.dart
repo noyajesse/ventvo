@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../crash_out/providers/crash_out_provider.dart';
 import '../../spaces/models/space.dart';
 import '../../spaces/providers/space_provider.dart';
+import '../models/vent.dart';
 import '../providers/vent_provider.dart';
 import '../providers/voice_provider.dart';
 import 'voice_space_screen.dart';
