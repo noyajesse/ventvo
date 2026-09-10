@@ -1,6 +1,7 @@
 import '../models/resonance_candidate.dart';
 import '../models/resonance_connection.dart';
 import '../models/resonance_query.dart';
+import '../models/resonance_signal.dart';
 import 'resonance_repository.dart';
 
 /// In-memory Resonance repository for the local prototype.
