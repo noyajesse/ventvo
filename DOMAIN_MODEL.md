@@ -1,0 +1,296 @@
+# Ventvo Domain Model
+
+## Purpose
+
+This document defines the ownership and boundaries of Ventvo's core domain objects before deeper implementation begins.
+
+The goal is to prevent product logic from becoming scattered across screens, providers, and feature folders.
+
+## Core model
+
+```text
+Private Account
+      │
+      │ owns privately
+      ▼
+Ventvo Voice
+      │
+      ├──────────────► Vent
+      │                  │
+      │                  ▼
+      │                Space
+      │                  │
+      │                  ▼
+      │              Resonance
+      │
+      └──────────────► Crash Out
+                           │
+                           ▼
+                         Fate
+                           │
+                    Turn into Vent ─────► Vent
+```
+
+Resonance is a system that connects experiences. It is not a property of Crash Out, Feed, or the three-person experience.
+
+## 1. Private Account
+
+### Owns
+- Authentication identity
+- Account ID
+- Security state
+- Authorization state
+- Moderation/restriction state
+- Private account settings
+
+### Must never own
+- Public Voice identity as a substitute for authentication
+- Public Vent content as a private-account profile
+- Matching logic
+
+The private account is the security boundary. It is deliberately separated from the public Voice.
+
+## 2. Ventvo Voice
+
+### Purpose
+
+The Ventvo Voice is the user's anonymous public presence in Ventvo.
+
+### Owns
+- Voice ID
+- Voice Name
+- Voice Mark
+- Voice expression/essence
+- Voice resonance profile when that concept is finalized
+
+### Does not own
+- Authentication credentials
+- Email/provider identity
+- Moderation records directly
+- Matching algorithms
+- Individual Vent content
+
+A Voice can create many Vents and participate in many Spaces without becoming a conventional social profile.
+
+## 3. Vent
+
+### Definition
+
+A Vent is an expression intentionally released into Ventvo. It can represent a thought, feeling, experience, idea, opinion, or moment.
+
+### Owns
+- Vent ID
+- Creator Voice reference
+- Content or expression payload
+- Creation timestamp
+- Publication/visibility state
+- Safety/moderation state
+- The creator's requested interaction intent
+- Resonance input signals derived from the experience
+
+### References
+- Its creator Voice
+- A Space, when the product flow creates one
+- Its originating Crash Out, when converted from Crash Out
+
+### Does not own
+- Matching algorithms
+- Feed ranking
+- Connection state between unrelated people
+- Authentication information
+
+The current prototype Vent model is intentionally smaller than this final boundary; fields should be added deliberately as each system is implemented.
+
+## 4. Space
+
+### Definition
+
+A Space is the interaction context around an experience. It describes how a Vent may be encountered and responded to.
+
+A Space is a shared experience, not a traditional group, subreddit, profile, or chat room.
+
+### Owns
+- Space ID
+- Originating experience reference
+- Interaction mode/rules
+- Space lifecycle/state
+- Participation/response relationships
+- Safety constraints for interaction
+
+### May contain/refer to
+- The originating Vent
+- Subsequent Vents or responses that belong to the experience
+- Resonance connections generated from the experience
+
+### Does not own
+- Global matching logic
+- User authentication
+- Feed ranking
+- Voice identity generation
+
+## 5. Crash Out
+
+### Definition
+
+Crash Out is a private-release pathway for expressing something before deciding what, if anything, should happen to it.
+
+### Owns
+- Crash Out ID
+- Private expression payload
+- Creation timestamp
+- Lifecycle state
+- Release type
+- Fate decision
+
+### Possible fate outcomes
+- Let Go
+- Keep Private
+- Turn into Vent
+- Future connection/discovery pathways when designed
+
+### Critical boundary
+
+Crash Out must NOT contain Resonance matching logic.
+
+If a Crash Out is eligible to discover people who may understand it, Crash Out asks the Resonance system for that experience. The matching engine remains reusable by Feed, Space, Crash Out, and future systems.
+
+## 6. Resonance
+
+### Definition
+
+Resonance is Ventvo's central human-connection system. It identifies meaningful relationships between experiences, perspectives, Voices, and Spaces.
+
+It is not a like system, popularity score, follower system, or single matching feature.
+
+### Resonance owns
+- Resonance signals
+- Candidate discovery
+- Connection creation
+- Connection lifecycle
+- Resonance Threads
+- Resonance Maps
+- Safety/privacy constraints for discovery
+- Deterministic scoring and future ranking strategy
+
+### Resonance consumes
+- Experience signals
+- User intent
+- Context
+- Privacy/safety constraints
+- Diversity constraints
+
+### Resonance produces
+- Candidates
+- Connections
+- Threads
+- Maps
+- Discovery results
+
+### Consumers
+- Feed
+- Space
+- Crash Out
+- Future Echo systems
+- Future Threads and Maps experiences
+- Small-group experiences, including three-Voice experiences
+
+The three-Voice experience is a presentation/interaction pattern powered by Resonance. It is not the architecture of Resonance itself.
+
+## 7. Resonance Signal boundary
+
+Signals describe useful characteristics of an experience for connection discovery.
+
+Examples include:
+- Semantic relationship
+- Shared experience
+- Intent
+- Context
+- Relationship state
+- Diversity
+- Privacy constraints
+- Safety constraints
+- Repetition/overexposure signals
+
+Signals are inputs to Resonance. A product surface should not independently invent its own matching algorithm.
+
+## 8. Ownership rules
+
+### Rule 1 — Screens do not own domain logic
+Screens collect input and render state. They should not calculate matching, connection scores, or persistence rules.
+
+### Rule 2 — Providers coordinate; services decide
+Riverpod providers expose state and coordinate application flows. Domain services contain business rules.
+
+### Rule 3 — Repositories persist; they do not define product behavior
+Repositories provide storage contracts. They should not decide what a Vent means or who resonates with whom.
+
+### Rule 4 — Resonance is reusable
+Any product surface that needs meaningful human discovery calls Resonance rather than implementing matching locally.
+
+### Rule 5 — Crash Out remains private by default
+Nothing in Crash Out should become public or discoverable until the user explicitly chooses a pathway that permits it.
+
+### Rule 6 — Public identity remains Voice-based
+Public experiences reference a Ventvo Voice, never the private authentication identity.
+
+### Rule 7 — Safety is cross-cutting
+Safety and privacy checks must be enforceable before content becomes discoverable or connections become active.
+
+## 9. Target dependency direction
+
+```text
+UI
+ ↓
+Riverpod providers
+ ↓
+Application/domain services
+ ↓
+Repositories
+ ↓
+Local storage / backend
+```
+
+For Resonance:
+
+```text
+Feed / Space / Crash Out / future surfaces
+                     ↓
+             Resonance service
+                     ↓
+              Resonance engine
+                     ↓
+            Resonance repository
+                     ↓
+             Local / backend data
+```
+
+No feature should depend on another feature's private matching implementation.
+
+## 10. Current prototype vs target
+
+The current prototype is allowed to use local storage and simplified models. It must not be mistaken for the final architecture.
+
+Current prototype limitations include:
+- Vent is missing several future domain fields.
+- Space is currently represented largely through Vent IDs.
+- Crash Out storage is in-memory.
+- Authentication is a temporary development flow.
+- Feed discovery still contains hard-coded sample content.
+- Discussion responses are local widget state.
+- Resonance has domain models and deterministic scoring foundations, but real Vent signal generation and production persistence are not yet connected.
+
+These are implementation gaps, not reasons to collapse the domain boundaries.
+
+## 11. Implementation order
+
+1. Finalize domain boundaries.
+2. Stabilize domain models.
+3. Stabilize repository contracts.
+4. Complete deterministic Resonance engine and tests.
+5. Add meaningful Vent intent/signal generation.
+6. Refactor Space around shared-experience semantics.
+7. Formalize Crash Out lifecycle and conversion.
+8. Connect Feed, Space, and Crash Out to Resonance.
+9. Replace prototype local persistence with secure backend persistence.
+10. Add authentication, authorization, moderation, reporting, and privacy enforcement.
+11. Add advanced semantic/AI discovery only after the core system is proven.
