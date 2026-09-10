@@ -128,4 +128,32 @@ void main() {
     expect(vent.visibility, VentVisibility.private);
     expect(vent.safetyState, VentSafetyState.pending);
   });
+
+  test('does not match keywords inside larger words', () {
+    final vent = Vent(
+      id: 'vent-5',
+      content: 'My homework is finished, and I feel fine.',
+      spaceId: 'space-5',
+      voiceMark: '◇',
+      createdAt: DateTime(2026, 1, 1),
+    );
+    const space = Space(
+      id: 'space-5',
+      mode: SpaceMode.justListen,
+      originatingVentId: 'vent-5',
+      creatorVoiceMark: '◇',
+      createdAt: DateTime(2026, 1, 1),
+    );
+
+    final signals = generator.generate(vent: vent, space: space);
+
+    expect(
+      signals.any(
+        (signal) =>
+            signal.type == ResonanceSignalType.semantic &&
+            signal.key == 'work',
+      ),
+      isFalse,
+    );
+  });
 }
