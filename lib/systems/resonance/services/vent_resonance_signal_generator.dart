@@ -22,7 +22,11 @@ class VentResonanceSignalGenerator {
       double strength = 1,
     }) {
       signals.add(
-        ResonanceSignal(type: type, key: key, strength: strength.clamp(0, 1).toDouble()),
+        ResonanceSignal(
+          type: type,
+          key: key,
+          strength: strength.clamp(0, 1).toDouble(),
+        ),
       );
     }
 
@@ -60,8 +64,11 @@ class VentResonanceSignalGenerator {
     return List.unmodifiable(signals);
   }
 
-  bool _containsAny(String content, List<String> patterns) =>
-      patterns.any(content.contains);
+  bool _containsAny(String content, List<String> patterns) => patterns.any(
+        (pattern) => RegExp(
+          r'(^|[^a-z0-9])' + RegExp.escape(pattern) + r'([^a-z0-9]|$)',
+        ).hasMatch(content),
+      );
 
   static const _experientialPatterns = <String, List<String>>{
     'starting_over': ['starting over', 'start over', 'new beginning'],
