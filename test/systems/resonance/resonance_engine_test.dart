@@ -56,11 +56,9 @@ void main() {
         ],
       ),
     ]);
+    final ResonanceEngine engine = LocalResonanceEngine(repository: repository);
 
-    const engine = LocalResonanceEngine(repository: null as dynamic);
-    final localEngine = LocalResonanceEngine(repository: repository);
-
-    final results = await localEngine.discover(
+    final results = await engine.discover(
       const ResonanceQuery(
         sourceId: 'source',
         sourceType: ResonanceCandidateType.vent,
@@ -78,8 +76,6 @@ void main() {
     expect(results, hasLength(1));
     expect(results.single.id, 'more');
     expect(results.single.score, 1);
-    // Keep the abstract contract exercised without coupling the test to storage.
-    expect(engine, isA<ResonanceEngine>());
   });
 
   test('excludes source and explicitly excluded candidates', () async {
