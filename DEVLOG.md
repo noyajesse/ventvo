@@ -1,3 +1,37 @@
+## Current Vent Interaction Model Alignment
+
+Date: 2026-09-10
+Branch: development
+
+Completed:
+- Replaced the legacy five-option Vent intent model with the current two-mode model.
+- Vent now uses `VentInteractionMode` with only:
+  - `Just Listen`
+  - `Open Discussion`
+- Updated local Vent persistence to store `interactionMode`.
+- Reworked the Vent mode selection screen so it presents only the current two interaction modes.
+- Wired the selected interaction mode into Vent creation.
+- Preserved Crash Out → Turn into Vent and carried the selected/current interaction mode through the conversion flow.
+- Updated `DOMAIN_MODEL.md` so the documented Vent boundary matches the current product direction.
+
+Product boundary:
+- Advice, Similar Experiences, Encouragement, and Celebrating are legacy idea-stage/prototype concepts and are not part of the current Vent interaction model.
+- Resonance remains the central human-connection system; interaction mode is an input to that system, not a matching algorithm owned by the Vent feature.
+- Crash Out does not own matching logic.
+
+Verification:
+- Repository structure and affected source files were inspected on the `development` branch.
+- The Resonance engine test currently contains the corrected repository-backed engine construction; no invalid `null as dynamic` construction remains.
+- No GitHub Actions workflow was found under `.github/workflows` on `development`.
+- Flutter commands cannot be executed through the connected GitHub repository tooling, so this change is statically verified but not claimed as locally test-passed.
+
+Next engineering focus:
+- Stabilize the current Vent/Space domain relationship.
+- Add deterministic Vent signal generation for Resonance.
+- Then connect Resonance to Feed, Space, and Crash Out without moving matching logic into individual features.
+
+---
+
 ## Space Foundation Implementation
 
 Date: 2026-08-25
@@ -65,6 +99,8 @@ Key decisions:
 
 Development principle:
 - Build only what supports Ventvo's core philosophy and avoid premature complexity.
+
+---
 
 # Ventvo Development Milestone — Crash Out to Vent
 
