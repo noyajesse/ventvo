@@ -48,7 +48,7 @@ class VentStorage {
       'voiceMark': vent.voiceMark,
       'voiceName': vent.voiceName,
       'createdAt': vent.createdAt.toIso8601String(),
-      'intent': vent.intent.name,
+      'interactionMode': vent.interactionMode.name,
       'visibility': vent.visibility.name,
       'safetyState': vent.safetyState.name,
       'originatingCrashOutId': vent.originatingCrashOutId,
@@ -82,17 +82,17 @@ class VentStorage {
       voiceMark: voiceMark,
       voiceName: voiceName as String?,
       createdAt: parsedCreatedAt,
-      intent: _parseIntent(map['intent']),
+      interactionMode: _parseInteractionMode(map['interactionMode']),
       visibility: _parseVisibility(map['visibility']),
       safetyState: _parseSafetyState(map['safetyState']),
       originatingCrashOutId: map['originatingCrashOutId'] as String?,
     );
   }
 
-  VentIntent _parseIntent(Object? value) {
-    return VentIntent.values.firstWhere(
+  VentInteractionMode _parseInteractionMode(Object? value) {
+    return VentInteractionMode.values.firstWhere(
       (item) => item.name == value,
-      orElse: () => VentIntent.justListen,
+      orElse: () => VentInteractionMode.justListen,
     );
   }
 
