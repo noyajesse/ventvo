@@ -1,3 +1,4 @@
+import '../algorithms/deterministic_resonance_scorer.dart';
 import '../models/resonance_candidate.dart';
 import '../models/resonance_connection.dart';
 import '../models/resonance_query.dart';
@@ -17,8 +18,12 @@ abstract class ResonanceEngine {
 
 class LocalResonanceEngine implements ResonanceEngine {
   final ResonanceRepository repository;
+  final DeterministicResonanceScorer scorer;
 
-  const LocalResonanceEngine({required this.repository});
+  const LocalResonanceEngine({
+    required this.repository,
+    this.scorer = const DeterministicResonanceScorer(),
+  });
 
   @override
   Future<List<ResonanceCandidate>> discover(ResonanceQuery query) async {
@@ -28,6 +33,15 @@ class LocalResonanceEngine implements ResonanceEngine {
         .where((candidate) =>
             candidate.id != query.sourceId &&
             !query.excludedIds.contains(candidate.id))
+        .map(
+          (candidate) => candidate.copyWith(
+            score: scorer.score(
+              sourceSignals: query.signals,
+              candidate: candidate,
+            ),
+          ),
+        )
+        .where((candidate) => candidate.score > 0)
         .toList()
       ..sort((a, b) => b.score.compareTo(a.score));
 
