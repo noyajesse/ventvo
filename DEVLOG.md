@@ -1,40 +1,66 @@
-## Current Vent Interaction Model Alignment
+## Resonance Signal Generation Foundation
 
 Date: 2026-09-10
 Branch: development
 
 Completed:
-- Replaced the legacy five-option Vent intent model with the current two-mode model.
-- Vent now uses `VentInteractionMode` with only:
-  - `Just Listen`
-  - `Open Discussion`
-- Updated local Vent persistence to store `interactionMode`.
-- Reworked the Vent mode selection screen so it presents only the current two interaction modes.
-- Wired the selected interaction mode into Vent creation.
-- Preserved Crash Out → Turn into Vent and carried the selected/current interaction mode through the conversion flow.
-- Updated `DOMAIN_MODEL.md` so the documented Vent boundary matches the current product direction.
+- Added `VentResonanceSignalGenerator` under the shared Resonance system.
+- Converts a Vent plus its owning Space into deterministic, explainable Resonance signals.
+- Added experiential signals such as starting over, loneliness, burnout, overthinking, uncertainty, loss, pressure, rejection, and change.
+- Added semantic/context signals for common experience domains and Crash Out-originated Vents.
+- Added the current Space interaction mode as an intent signal: `Just Listen` or `Open Discussion`.
+- Added privacy and safety signals without mutating the underlying Vent.
+- Added unit coverage for experiential/semantic extraction, interaction mode, Crash Out context, and privacy/safety metadata.
 
-Product boundary:
-- Advice, Similar Experiences, Encouragement, and Celebrating are legacy idea-stage/prototype concepts and are not part of the current Vent interaction model.
-- Resonance remains the central human-connection system; interaction mode is an input to that system, not a matching algorithm owned by the Vent feature.
-- Crash Out does not own matching logic.
+Architecture boundary:
+- Signal generation lives in Resonance, not Feed, Space, Discussion, or Crash Out.
+- The first implementation is deterministic and rule-based; AI/embeddings remain deferred until the core model is proven.
+- This generator is designed to be reused by Feed, Space, and Crash Out through the shared Resonance system.
 
 Verification:
-- Repository structure and affected source files were inspected on the `development` branch.
-- The Resonance engine test currently contains the corrected repository-backed engine construction; no invalid `null as dynamic` construction remains.
-- No GitHub Actions workflow was found under `.github/workflows` on `development`.
-- Flutter commands cannot be executed through the connected GitHub repository tooling, so this change is statically verified but not claimed as locally test-passed.
+- Source and test files were inspected on the `development` branch after creation.
+- GitHub tooling does not execute local Flutter commands, so tests are added but are not claimed as locally executed.
 
 Next engineering focus:
-- Stabilize the current Vent/Space domain relationship.
-- Add deterministic Vent signal generation for Resonance.
-- Then connect Resonance to Feed, Space, and Crash Out without moving matching logic into individual features.
+- Connect generated Vent signals to the existing Resonance repository/engine boundary.
+- Then begin Resonance-powered discovery for Feed and Space.
+
+---
+
+## Current Vent Interaction Model — Correction
+
+Date: 2026-09-10
+Branch: development
+
+Important product/architecture correction:
+- The current Vent model has exactly two interaction modes: `Just Listen` and `Open Discussion`.
+- These modes are owned by `Space`, because Space defines the interaction context and rules.
+- `Vent` does not store a second interaction-mode field.
+- The previous `VentInteractionMode` wording in this historical section is obsolete implementation documentation and must not be treated as the current model.
+- Legacy five-option concepts such as Advice, Similar Experiences, Encouragement, and Celebrating are not part of the current product model.
+
+Current flow:
+
+```text
+Vent creation
+↓
+Choose Space mode
+↓
+Space owns interaction context
+↓
+Vent is created inside that Space
+↓
+Vent → Resonance signal generation
+```
+
+Resonance remains the central human-connection system. Matching/discovery logic does not belong inside individual features.
 
 ---
 
 ## Space Foundation Implementation
 
 Date: 2026-08-25
+Branch: development
 
 Completed:
 - Added a dedicated `Space` domain model.
@@ -149,10 +175,8 @@ Conversion is an explicit user decision rather than an automatic transformation.
 
 ## Documentation Note
 
-The existing `DEVLOG.md` on `development` contains historical entries plus an older malformed/truncated documentation section. It was intentionally not rewritten during this milestone because replacing the entire file without a complete current copy could destroy historical development records.
-
-This milestone file preserves the current decision and implementation record safely.
+The existing `DEVLOG.md` on `development` contains historical entries plus an older malformed/truncated documentation section. This update preserves the historical record while adding a correction at the top for the current Space-owned interaction model.
 
 ## Next Step
 
-Continue with the next roadmap item after reviewing the current `development` implementation. Do not add unrelated features or prematurely implement future matching/AI systems.
+Continue with Resonance integration by connecting generated Vent signals to the existing repository/engine boundary. Do not add unrelated features or prematurely implement AI systems.
