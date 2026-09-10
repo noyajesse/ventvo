@@ -12,8 +12,14 @@ import 'voice_space_screen.dart';
 class CreateVentScreen extends ConsumerStatefulWidget {
   final String? initialContent;
   final String? crashOutId;
+  final VentInteractionMode? interactionMode;
 
-  const CreateVentScreen({super.key, this.initialContent, this.crashOutId});
+  const CreateVentScreen({
+    super.key,
+    this.initialContent,
+    this.crashOutId,
+    this.interactionMode,
+  });
 
   @override
   ConsumerState<CreateVentScreen> createState() => _CreateVentScreenState();
@@ -22,6 +28,7 @@ class CreateVentScreen extends ConsumerStatefulWidget {
 class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
   late final TextEditingController controller;
   SpaceMode? selectedMode;
+  VentInteractionMode? selectedInteractionMode;
 
   bool get isFromCrashOut => widget.crashOutId != null;
 
@@ -29,6 +36,7 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
   void initState() {
     super.initState();
     controller = TextEditingController(text: widget.initialContent ?? '');
+    selectedInteractionMode = widget.interactionMode;
     controller.addListener(_onTextChanged);
   }
 
@@ -46,7 +54,7 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
 
   Future<void> _releaseVent() async {
     final content = controller.text.trim();
-    final mode = selectedMode;
+    final mode = selectedInteractionMode;
     if (mode == null || content.length < 3) return;
 
     final voice = ref.read(ventvoVoiceProvider).asData?.value;
@@ -55,9 +63,13 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
     final spaceId = 'space_$ventId';
     final voiceMark = voice?.mark ?? '◇';
 
+    final spaceMode = mode == VentInteractionMode.justListen
+        ? SpaceMode.justListen
+        : SpaceMode.openDiscussion;
+
     final space = Space(
       id: spaceId,
-      mode: mode,
+      mode: spaceMode,
       originatingVentId: ventId,
       creatorVoiceMark: voiceMark,
       createdAt: now,
@@ -70,6 +82,8 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
       voiceMark: voiceMark,
       voiceName: voice?.name,
       createdAt: now,
+      interactionMode: mode,
+      originatingCrashOutId: widget.crashOutId,
     );
 
     await ref.read(spaceProvider.notifier).addSpace(space);
@@ -92,7 +106,8 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
   @override
   Widget build(BuildContext context) {
     final voice = ref.watch(ventvoVoiceProvider).asData?.value;
-    final canRelease = selectedMode != null && controller.text.trim().length >= 3;
+    final canRelease =
+        selectedInteractionMode != null && controller.text.trim().length >= 3;
 
     return Scaffold(
       backgroundColor: const Color(0xFF111111),
@@ -111,16 +126,29 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                isFromCrashOut ? 'Let this moment become a Vent.' : 'Release a Moment',
-                style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+                isFromCrashOut
+                    ? 'Let this moment become a Vent.'
+                    : 'Release a Moment',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 12),
-              Text('◇ ${voice?.mark ?? "Voice"}', style: const TextStyle(color: Colors.white70, fontSize: 18)),
+              Text(
+                '◇ ${voice?.mark ?? "Voice"}',
+                style: const TextStyle(color: Colors.white70, fontSize: 18),
+              ),
               const SizedBox(height: 30),
               TextField(
                 controller: controller,
                 maxLines: 7,
-                style: const TextStyle(color: Colors.white, fontSize: 17, height: 1.5),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 17,
+                  height: 1.5,
+                ),
                 decoration: InputDecoration(
                   hintText: 'What wants to be heard?',
                   hintStyle: const TextStyle(color: Colors.white38),
@@ -133,20 +161,30 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
                 ),
               ),
               const SizedBox(height: 35),
-              const Text('Choose the Space', style: TextStyle(color: Colors.white, fontSize: 19, fontWeight: FontWeight.bold)),
+              const Text(
+                'Choose how this Vent can be held',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 19,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 8),
-              const Text('Your choice determines how other Voices can respond.', style: TextStyle(color: Colors.white54, fontSize: 14, height: 1.4)),
+              const Text(
+                'You can choose between being heard or opening the experience to discussion.',
+                style: TextStyle(color: Colors.white54, fontSize: 14, height: 1.4),
+              ),
               const SizedBox(height: 18),
-              _spaceOption(
-                mode: SpaceMode.justListen,
+              _interactionOption(
+                mode: VentInteractionMode.justListen,
                 title: 'Just Listen',
-                description: 'I want to be heard without needing answers.',
+                description: 'I want to be heard without opening a discussion.',
               ),
               const SizedBox(height: 15),
-              _spaceOption(
-                mode: SpaceMode.openDiscussion,
+              _interactionOption(
+                mode: VentInteractionMode.openDiscussion,
                 title: 'Open Discussion',
-                description: 'I want other Voices to share perspectives with me.',
+                description: 'I am open to other Voices sharing perspectives.',
               ),
               const SizedBox(height: 40),
               SizedBox(
@@ -164,12 +202,12 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
     );
   }
 
-  Widget _spaceOption({
-    required SpaceMode mode,
+  Widget _interactionOption({
+    required VentInteractionMode mode,
     required String title,
     required String description,
   }) {
-    final isSelected = selectedMode == mode;
+    final isSelected = selectedInteractionMode == mode;
 
     return Semantics(
       button: true,
@@ -177,21 +215,37 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
       label: '$title. $description',
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: () => setState(() => selectedMode = mode),
+        onTap: () => setState(() => selectedInteractionMode = mode),
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
             color: isSelected ? Colors.white24 : Colors.transparent,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: isSelected ? Colors.white : Colors.white24),
+            border: Border.all(
+              color: isSelected ? Colors.white : Colors.white24,
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 6),
-              Text(description, style: const TextStyle(color: Colors.white70, fontSize: 14, height: 1.4)),
+              Text(
+                description,
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 14,
+                  height: 1.4,
+                ),
+              ),
             ],
           ),
         ),
