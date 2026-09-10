@@ -6,6 +6,8 @@ import '../repositories/resonance_repository.dart';
 
 /// Shared Resonance service consumed by product features.
 abstract class ResonanceEngine {
+  Future<void> indexCandidate(ResonanceCandidate candidate);
+
   Future<List<ResonanceCandidate>> discover(ResonanceQuery query);
 
   Future<ResonanceConnection> createConnection({
@@ -24,6 +26,15 @@ class LocalResonanceEngine implements ResonanceEngine {
     required this.repository,
     this.scorer = const DeterministicResonanceScorer(),
   });
+
+  @override
+  Future<void> indexCandidate(ResonanceCandidate candidate) async {
+    if (repository is LocalResonanceRepository) {
+      (repository as LocalResonanceRepository).upsertCandidate(candidate);
+      return;
+    }
+    throw UnsupportedError('Candidate indexing is not available for this repository yet.');
+  }
 
   @override
   Future<List<ResonanceCandidate>> discover(ResonanceQuery query) async {
