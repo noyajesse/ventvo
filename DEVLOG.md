@@ -1,3 +1,34 @@
+## Resonance Discovery Bridge
+
+Date: 2026-09-10
+Branch: development
+
+Completed:
+- Added `LocalResonanceRepository` behind the existing `ResonanceRepository` contract.
+- Added candidate upsert/removal and connection persistence for the local prototype.
+- Added a discovery boundary that excludes candidates carrying privacy or safety signals.
+- Added `VentResonanceDiscoveryService` to convert a discoverable Vent plus its Space into a `ResonanceQuery`.
+- Kept matching inside the shared Resonance system rather than inside Feed, Space, or Crash Out.
+- Added unit coverage for repository filtering/persistence and the Vent-to-Resonance discovery bridge.
+
+Architecture boundary:
+- Vent signal generation interprets the experience.
+- The discovery service builds the Resonance query.
+- The Resonance Engine ranks candidates.
+- The repository controls which candidates are available to discovery.
+- Private or unsafe content is blocked before it can become a discovery result.
+- This remains a local deterministic foundation; backend persistence and semantic/AI matching are deferred.
+
+Verification:
+- Source and test files were inspected on the `development` branch.
+- Local Flutter execution is still reserved for the upcoming milestone test pass.
+
+Next engineering focus:
+- Build the first Resonance provider/application boundary so product features can consume Resonance without constructing engines or repositories directly.
+- Then integrate Resonance discovery into Feed and Space.
+
+---
+
 ## Resonance Signal Generation Foundation
 
 Date: 2026-09-10
