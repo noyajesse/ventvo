@@ -1,3 +1,43 @@
+## Resonance Provider/Application Boundary
+
+Date: 2026-09-10
+Branch: development
+
+Completed:
+- Added the shared `resonanceRepositoryProvider`.
+- Added the shared `resonanceEngineProvider`.
+- Added the application-facing `ventResonanceDiscoveryServiceProvider`.
+- Kept product features dependent on interfaces/application services rather than constructing Resonance infrastructure directly.
+- Added provider wiring tests.
+
+Architecture boundary:
+
+```text
+UI / Feature
+    ↓
+Application Provider
+    ↓
+VentResonanceDiscoveryService
+    ↓
+ResonanceEngine
+    ↓
+ResonanceRepository
+    ↓
+Local / Backend implementation
+```
+
+The current providers use the local deterministic implementation. Riverpod allows the repository to be overridden later when backend persistence is introduced without forcing Feed, Space, or Crash Out to change their application-facing dependency.
+
+Verification:
+- Provider and test files were inspected on the `development` branch.
+- Local Flutter execution is reserved for the Resonance milestone test pass.
+
+Next engineering focus:
+- Integrate Resonance discovery into Feed first, while keeping the existing Feed presentation simple.
+- Then reuse the same application boundary in Space.
+
+---
+
 ## Resonance Discovery Bridge
 
 Date: 2026-09-10
