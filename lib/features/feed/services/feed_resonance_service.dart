@@ -5,10 +5,10 @@ import '../../../systems/resonance/services/vent_resonance_signal_generator.dart
 import '../../spaces/models/space.dart';
 import '../../ventvo_voice/models/vent.dart';
 
-/// Application service that prepares local Vent experiences for Resonance and
-/// returns the experiences discovered for the Feed.
+/// Application service that prepares Vent experiences for Resonance and returns
+/// experiences discovered for the Feed.
 ///
-/// The Feed provider owns state; this service owns the Feed-specific orchestration.
+/// The Feed provider owns state; this service owns Feed-specific orchestration.
 /// Matching remains entirely inside the shared Resonance system.
 class FeedResonanceService {
   final ResonanceRepository repository;
@@ -27,11 +27,10 @@ class FeedResonanceService {
     required List<Vent> candidateVents,
     int limitPerSource = 10,
   }) async {
-    final allSpaces = {for (final space in spaces) space.id: space};
-    final candidateSpaces = {for (final space in spaces) space.id: space};
+    final spacesById = {for (final space in spaces) space.id: space};
 
     for (final vent in candidateVents.where((item) => item.isDiscoverable)) {
-      final space = allSpaces[vent.spaceId] ?? candidateSpaces[vent.spaceId];
+      final space = spacesById[vent.spaceId];
       if (space == null) continue;
 
       await repository.saveCandidate(
@@ -49,7 +48,7 @@ class FeedResonanceService {
     final excludedIds = sources.map((vent) => vent.id).toSet();
 
     for (final source in sources.where((item) => item.isDiscoverable)) {
-      final sourceSpace = allSpaces[source.spaceId];
+      final sourceSpace = spacesById[source.spaceId];
       if (sourceSpace == null) continue;
 
       final candidates = await discoveryService.discoverForVent(
