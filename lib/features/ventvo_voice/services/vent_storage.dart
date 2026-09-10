@@ -11,9 +11,7 @@ class VentStorage {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(_ventsKey);
 
-    if (raw == null || raw.isEmpty) {
-      return const [];
-    }
+    if (raw == null || raw.isEmpty) return const [];
 
     try {
       final decoded = jsonDecode(raw);
@@ -31,8 +29,10 @@ class VentStorage {
 
   Future<void> save(List<Vent> vents) async {
     final prefs = await SharedPreferences.getInstance();
-    final raw = jsonEncode(vents.map(_toMap).toList());
-    await prefs.setString(_ventsKey, raw);
+    await prefs.setString(
+      _ventsKey,
+      jsonEncode(vents.map(_toMap).toList()),
+    );
   }
 
   Future<void> clear() async {
@@ -48,7 +48,6 @@ class VentStorage {
       'voiceMark': vent.voiceMark,
       'voiceName': vent.voiceName,
       'createdAt': vent.createdAt.toIso8601String(),
-      'interactionMode': vent.interactionMode.name,
       'visibility': vent.visibility.name,
       'safetyState': vent.safetyState.name,
       'originatingCrashOutId': vent.originatingCrashOutId,
@@ -82,17 +81,9 @@ class VentStorage {
       voiceMark: voiceMark,
       voiceName: voiceName as String?,
       createdAt: parsedCreatedAt,
-      interactionMode: _parseInteractionMode(map['interactionMode']),
       visibility: _parseVisibility(map['visibility']),
       safetyState: _parseSafetyState(map['safetyState']),
       originatingCrashOutId: map['originatingCrashOutId'] as String?,
-    );
-  }
-
-  VentInteractionMode _parseInteractionMode(Object? value) {
-    return VentInteractionMode.values.firstWhere(
-      (item) => item.name == value,
-      orElse: () => VentInteractionMode.justListen,
     );
   }
 
