@@ -48,6 +48,10 @@ class VentStorage {
       'voiceMark': vent.voiceMark,
       'voiceName': vent.voiceName,
       'createdAt': vent.createdAt.toIso8601String(),
+      'intent': vent.intent.name,
+      'visibility': vent.visibility.name,
+      'safetyState': vent.safetyState.name,
+      'originatingCrashOutId': vent.originatingCrashOutId,
     };
   }
 
@@ -78,6 +82,31 @@ class VentStorage {
       voiceMark: voiceMark,
       voiceName: voiceName as String?,
       createdAt: parsedCreatedAt,
+      intent: _parseIntent(map['intent']),
+      visibility: _parseVisibility(map['visibility']),
+      safetyState: _parseSafetyState(map['safetyState']),
+      originatingCrashOutId: map['originatingCrashOutId'] as String?,
+    );
+  }
+
+  VentIntent _parseIntent(Object? value) {
+    return VentIntent.values.firstWhere(
+      (item) => item.name == value,
+      orElse: () => VentIntent.justListen,
+    );
+  }
+
+  VentVisibility _parseVisibility(Object? value) {
+    return VentVisibility.values.firstWhere(
+      (item) => item.name == value,
+      orElse: () => VentVisibility.public,
+    );
+  }
+
+  VentSafetyState _parseSafetyState(Object? value) {
+    return VentSafetyState.values.firstWhere(
+      (item) => item.name == value,
+      orElse: () => VentSafetyState.approved,
     );
   }
 }
