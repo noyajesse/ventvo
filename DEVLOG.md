@@ -1,3 +1,42 @@
+## Resonance-Powered Feed Foundation
+
+Date: 2026-09-10
+Branch: development
+
+Completed:
+- Replaced the Feed's previous hard-coded discovery selection with a Feed-specific application service that consumes the shared Resonance discovery boundary.
+- Added candidate indexing through the `ResonanceRepository` contract.
+- Feed now prepares discoverable Vent experiences as Resonance candidates and asks Resonance to rank candidates instead of implementing matching inside Feed.
+- Added temporary local discovery fixtures solely to exercise the real Resonance path before backend discovery exists.
+- Kept private and unsafe Vents outside discovery through the shared Resonance repository boundary.
+- Added unit coverage for Feed Resonance orchestration and privacy filtering.
+
+Architecture:
+
+```text
+Feed Provider
+    ↓
+FeedResonanceService
+    ↓
+VentResonanceDiscoveryService
+    ↓
+Resonance Engine
+    ↓
+Resonance Repository
+```
+
+The temporary fixtures are development scaffolding, not the final content source. They can be removed when backend discovery provides real candidate Vents.
+
+Important product boundary:
+- Feed does not own matching logic.
+- Resonance remains the central human-connection system.
+- No likes, popularity ranking, streaks, or engagement scoring were introduced.
+- The current Vent interaction model remains exactly `Just Listen` and `Open Discussion`.
+
+Verification:
+- Source and test files were inspected on the `development` branch.
+- Flutter commands have not been claimed as executed through GitHub tooling.
+
 ## Resonance Provider/Application Boundary
 
 Date: 2026-09-10
