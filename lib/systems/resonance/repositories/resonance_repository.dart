@@ -7,6 +7,8 @@ import '../models/resonance_query.dart';
 /// Feed, Space, and Crash Out should depend on this contract rather than on a
 /// concrete storage implementation or matching algorithm.
 abstract class ResonanceRepository {
+  Future<void> saveCandidate(ResonanceCandidate candidate);
+
   Future<List<ResonanceCandidate>> findCandidates(ResonanceQuery query);
 
   Future<void> saveConnection(ResonanceConnection connection);
