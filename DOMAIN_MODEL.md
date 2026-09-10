@@ -2,11 +2,9 @@
 
 ## Purpose
 
-This document defines the ownership and boundaries of Ventvo's core domain objects before deeper implementation begins.
+This document defines the ownership and boundaries of Ventvo's core domain objects.
 
-The goal is to prevent product logic from becoming scattered across screens, providers, and feature folders.
-
-**Product source of truth:** this model reflects the current Ventvo direction. Earlier idea-stage interaction options are not part of the current product model.
+The current product model is the source of truth. Prototype code and historical idea-stage concepts must not override these decisions.
 
 ## Core model
 
@@ -33,7 +31,7 @@ Ventvo Voice
                     Turn into Vent ─────► Vent
 ```
 
-Resonance is a system that connects experiences. It is not a property of Crash Out, Feed, or the three-Voice experience.
+Resonance is the central human-connection system. It is not a property of Crash Out, Feed, Space, or any single matching experience.
 
 ## 1. Private Account
 
@@ -50,7 +48,7 @@ Resonance is a system that connects experiences. It is not a property of Crash O
 - Public Vent content as a private-account profile
 - Matching logic
 
-The private account is the security boundary. It is deliberately separated from the public Voice.
+The private account is the security boundary and remains separate from the public Voice.
 
 ## 2. Ventvo Voice
 
@@ -80,37 +78,37 @@ A Voice can create many Vents and participate in many Spaces without becoming a 
 
 A Vent is an expression intentionally released into Ventvo. It can represent a thought, feeling, experience, idea, opinion, or moment.
 
-### Current interaction model
-
-A Vent has exactly one creator-selected interaction mode:
-
-- **Just Listen** — the creator wants the experience to be held without opening a discussion.
-- **Open Discussion** — the creator is open to other Voices sharing perspectives around the experience.
-
-These are interaction modes, not a catalog of response types. Ventvo does not currently model separate Vent intents such as Advice, Similar Experiences, Encouragement, or Celebrating.
-
 ### Owns
 - Vent ID
 - Creator Voice reference
 - Content or expression payload
 - Creation timestamp
-- Interaction mode
 - Publication/visibility state
 - Safety/moderation state
-- Resonance input signals derived from the experience
+- Originating Crash Out reference when converted from Crash Out
 
 ### References
 - Its creator Voice
-- A Space, when the product flow creates one
-- Its originating Crash Out, when converted from Crash Out
+- A Space
+- Its originating Crash Out when applicable
+
+### Interaction boundary
+
+A Vent does not own a separate response-intent system.
+
+The current Vent experience has exactly two interaction modes:
+
+1. **Just Listen** — the creator wants the experience to be held without opening a discussion.
+2. **Open Discussion** — the creator is open to other Voices sharing perspectives around the experience.
+
+The interaction mode belongs to the Space. The Space is the single source of truth for how the experience may be held and interacted with.
 
 ### Does not own
 - Matching algorithms
 - Feed ranking
 - Connection state between unrelated people
 - Authentication information
-
-The current implementation may still contain prototype-only fields while the surrounding systems are being stabilized. New fields should be added deliberately and only when their ownership is clear.
+- A duplicate interaction-mode source of truth
 
 ## 4. Space
 
@@ -122,11 +120,23 @@ A Space is a shared experience, not a traditional group, subreddit, profile, or 
 
 ### Owns
 - Space ID
-- Originating experience reference
-- Interaction mode/rules
+- Originating Vent reference
+- Interaction mode
 - Space lifecycle/state
 - Participation/response relationships
 - Safety constraints for interaction
+
+### Current interaction modes
+
+```text
+Space
+ │
+ ├── Just Listen
+ │
+ └── Open Discussion
+```
+
+No additional response modes are part of the current product model.
 
 ### May contain/refer to
 - The originating Vent
@@ -205,7 +215,7 @@ It is not a like system, popularity score, follower system, or single matching f
 - Future Threads and Maps experiences
 - Small-group experiences, including three-Voice experiences
 
-The three-Voice experience is a presentation/interaction pattern powered by Resonance. It is not the architecture of Resonance itself.
+A three-Voice experience is a product presentation powered by Resonance. It is not the architecture of Resonance itself.
 
 ## 7. Resonance Signal boundary
 
@@ -222,7 +232,7 @@ Examples include:
 - Safety constraints
 - Repetition/overexposure signals
 
-Signals are inputs to Resonance. A product surface should not independently invent its own matching algorithm.
+Signals are inputs to Resonance. Product surfaces must not independently invent matching algorithms.
 
 ## 8. Ownership rules
 
@@ -246,6 +256,9 @@ Public experiences reference a Ventvo Voice, never the private authentication id
 
 ### Rule 7 — Safety is cross-cutting
 Safety and privacy checks must be enforceable before content becomes discoverable or connections become active.
+
+### Rule 8 — Space owns interaction mode
+Vent creation selects a Space mode. Vent does not duplicate that mode as a second source of truth.
 
 ## 9. Target dependency direction
 
@@ -282,26 +295,24 @@ No feature should depend on another feature's private matching implementation.
 The current prototype is allowed to use local storage and simplified models. It must not be mistaken for the final architecture.
 
 Current prototype limitations include:
-- Vent persistence is local and simplified.
-- Space is currently represented largely through Vent IDs.
+- Vent and Space use local persistence.
 - Crash Out storage is in-memory.
 - Authentication is a temporary development flow.
 - Feed discovery still contains hard-coded sample content.
 - Discussion responses are local widget state.
 - Resonance has domain models and deterministic scoring foundations, but real Vent signal generation and production persistence are not yet connected.
 
-These are implementation gaps, not reasons to collapse the domain boundaries.
+These are implementation gaps, not reasons to change the domain boundaries.
 
 ## 11. Implementation order
 
-1. Finalize domain boundaries.
-2. Stabilize domain models.
-3. Stabilize repository contracts.
-4. Complete deterministic Resonance engine and tests.
-5. Add meaningful Vent signal generation around the current interaction model.
-6. Refactor Space around shared-experience semantics.
-7. Formalize Crash Out lifecycle and conversion.
-8. Connect Feed, Space, and Crash Out to Resonance.
-9. Replace prototype local persistence with secure backend persistence.
-10. Add authentication, authorization, moderation, reporting, and privacy enforcement.
-11. Add advanced semantic/AI discovery only after the core system is proven.
+1. Stabilize domain models.
+2. Stabilize repository contracts.
+3. Complete deterministic Resonance engine and tests.
+4. Refactor Space around shared-experience semantics.
+5. Formalize Crash Out lifecycle and conversion.
+6. Build Vent experience signal generation.
+7. Connect Feed, Space, and Crash Out to Resonance.
+8. Replace prototype local persistence with secure backend persistence.
+9. Add authentication, authorization, moderation, reporting, and privacy enforcement.
+10. Add advanced semantic/AI discovery only after the core system is proven.
