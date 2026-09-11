@@ -72,11 +72,32 @@ class VentResonanceSignalGenerator {
     return List.unmodifiable(signals);
   }
 
-  bool _containsAny(String content, List<String> patterns) => patterns.any(
-        (pattern) => RegExp(
-          r'(^|[^a-z0-9])' + RegExp.escape(pattern) + r'([^a-z0-9]|$)',
-        ).hasMatch(content),
+  bool _containsAny(String content, List<String> patterns) {
+    for (final pattern in patterns) {
+      final regex = RegExp(
+        r'(^|[^a-z0-9])' + RegExp.escape(pattern) + r'([^a-z0-9]|$)',
       );
+
+      for (final match in regex.allMatches(content)) {
+        if (!_isNegated(content, match.start)) return true;
+      }
+    }
+
+    return false;
+  }
+
+  /// Checks a small window before a matched phrase for common negation forms.
+  ///
+  /// This is intentionally conservative and deterministic. It prevents clear
+  /// cases such as "I don't feel alone" from being treated as the same
+  /// experience as "I feel alone", without attempting full NLP parsing.
+  bool _isNegated(String content, int matchStart) {
+    final prefix = content.substring(0, matchStart).trimRight();
+
+    return RegExp(
+      r'(?:\b(?:not|never|don\'t|do not|isn\'t|is not|aren\'t|are not|no longer)\b)(?:\W+\w+){0,2}\W*$',
+    ).hasMatch(prefix);
+  }
 
   static const _experientialPatterns = <_SignalPattern>[
     _SignalPattern('starting_over', [
