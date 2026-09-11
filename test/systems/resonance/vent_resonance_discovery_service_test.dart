@@ -35,7 +35,7 @@ void main() {
       voiceMark: '◌',
       createdAt: DateTime(2026, 1, 1),
     );
-    const space = Space(
+    final space = Space(
       id: 'space-1',
       mode: SpaceMode.justListen,
       originatingVentId: 'vent-1',
@@ -82,7 +82,7 @@ void main() {
       createdAt: DateTime(2026, 1, 1),
       visibility: VentVisibility.private,
     );
-    const space = Space(
+    final space = Space(
       id: 'space-1',
       mode: SpaceMode.justListen,
       originatingVentId: 'vent-1',
