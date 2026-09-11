@@ -117,7 +117,7 @@ void main() {
 
   test('replaces an existing connection between the same pair', () async {
     final repository = LocalResonanceRepository();
-    const first = ResonanceConnection(
+    final first = ResonanceConnection(
       id: 'old',
       sourceId: 'vent-1',
       targetId: 'vent-2',
@@ -125,7 +125,7 @@ void main() {
       strength: 0.4,
       createdAt: DateTime(2026, 1, 1),
     );
-    const second = ResonanceConnection(
+    final second = ResonanceConnection(
       id: 'new',
       sourceId: 'vent-1',
       targetId: 'vent-2',
