@@ -12,10 +12,7 @@ void main() {
     final discovery = VentResonanceDiscoveryService(
       engine: LocalResonanceEngine(repository: repository),
     );
-    final service = FeedResonanceService(
-      repository: repository,
-      discoveryService: discovery,
-    );
+    final service = FeedResonanceService(discoveryService: discovery);
 
     final source = Vent(
       id: 'source',
@@ -63,10 +60,7 @@ void main() {
     final discovery = VentResonanceDiscoveryService(
       engine: LocalResonanceEngine(repository: repository),
     );
-    final service = FeedResonanceService(
-      repository: repository,
-      discoveryService: discovery,
-    );
+    final service = FeedResonanceService(discoveryService: discovery);
 
     final source = Vent(
       id: 'source',
