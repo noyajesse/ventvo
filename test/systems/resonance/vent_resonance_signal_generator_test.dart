@@ -184,4 +184,84 @@ void main() {
       isFalse,
     );
   });
+
+  test('does not treat an explicitly negated experience as present', () {
+    final vent = Vent(
+      id: 'vent-7',
+      content: "I don't feel alone anymore. I don't feel stuck either.",
+      spaceId: 'space-7',
+      voiceMark: '◇',
+      createdAt: DateTime(2026, 1, 1),
+    );
+    final space = Space(
+      id: 'space-7',
+      mode: SpaceMode.justListen,
+      originatingVentId: 'vent-7',
+      creatorVoiceMark: '◇',
+      createdAt: DateTime(2026, 1, 1),
+    );
+
+    final signals = generator.generate(vent: vent, space: space);
+
+    expect(
+      signals.any((signal) => signal.key == 'feeling_alone'),
+      isFalse,
+    );
+    expect(
+      signals.any((signal) => signal.key == 'being_stuck'),
+      isFalse,
+    );
+  });
+
+  test('keeps a real experience when another clause is negated', () {
+    final vent = Vent(
+      id: 'vent-8',
+      content: "I don't want advice because I feel alone right now.",
+      spaceId: 'space-8',
+      voiceMark: '◇',
+      createdAt: DateTime(2026, 1, 1),
+    );
+    final space = Space(
+      id: 'space-8',
+      mode: SpaceMode.openDiscussion,
+      originatingVentId: 'vent-8',
+      creatorVoiceMark: '◇',
+      createdAt: DateTime(2026, 1, 1),
+    );
+
+    final signals = generator.generate(vent: vent, space: space);
+
+    expect(
+      signals.any((signal) => signal.key == 'feeling_alone'),
+      isTrue,
+    );
+  });
+
+  test('recognizes a positive experience after a negated earlier clause', () {
+    final vent = Vent(
+      id: 'vent-9',
+      content: "I don't feel alone anymore, but I still feel stuck.",
+      spaceId: 'space-9',
+      voiceMark: '◇',
+      createdAt: DateTime(2026, 1, 1),
+    );
+    final space = Space(
+      id: 'space-9',
+      mode: SpaceMode.justListen,
+      originatingVentId: 'vent-9',
+      creatorVoiceMark: '◇',
+      createdAt: DateTime(2026, 1, 1),
+    );
+
+    final signals = generator.generate(vent: vent, space: space);
+
+    expect(
+      signals.any((signal) => signal.key == 'feeling_alone'),
+      isFalse,
+    );
+    expect(
+      signals.any((signal) => signal.key == 'being_stuck'),
+      isTrue,
+    );
+  });
 }
