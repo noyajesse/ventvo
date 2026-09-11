@@ -9,7 +9,6 @@ import '../services/feed_resonance_service.dart';
 
 final feedResonanceServiceProvider = Provider<FeedResonanceService>((ref) {
   return FeedResonanceService(
-    repository: ref.watch(resonanceRepositoryProvider),
     discoveryService: ref.watch(ventResonanceDiscoveryServiceProvider),
   );
 });
