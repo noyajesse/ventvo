@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../repositories/local_resonance_repository.dart';
 import '../repositories/resonance_repository.dart';
 import '../services/resonance_engine.dart';
+import '../services/space_resonance_discovery_service.dart';
 import '../services/vent_resonance_discovery_service.dart';
 
 /// Shared local Resonance repository.
@@ -27,6 +28,17 @@ final resonanceEngineProvider = Provider<ResonanceEngine>((ref) {
 final ventResonanceDiscoveryServiceProvider =
     Provider<VentResonanceDiscoveryService>((ref) {
   return VentResonanceDiscoveryService(
+    engine: ref.watch(resonanceEngineProvider),
+  );
+});
+
+/// Application-facing discovery service for Space experiences.
+///
+/// Space uses the same Resonance engine as every other product surface. It
+/// does not perform candidate matching or repository access itself.
+final spaceResonanceDiscoveryServiceProvider =
+    Provider<SpaceResonanceDiscoveryService>((ref) {
+  return SpaceResonanceDiscoveryService(
     engine: ref.watch(resonanceEngineProvider),
   );
 });
