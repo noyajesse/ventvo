@@ -15,7 +15,7 @@ void main() {
       voiceMark: '◌',
       createdAt: DateTime(2026, 1, 1),
     );
-    const space = Space(
+    final space = Space(
       id: 'space-1',
       mode: SpaceMode.justListen,
       originatingVentId: 'vent-1',
@@ -40,7 +40,7 @@ void main() {
       voiceMark: '◇',
       createdAt: DateTime(2026, 1, 1),
     );
-    const space = Space(
+    final space = Space(
       id: 'space-2',
       mode: SpaceMode.openDiscussion,
       originatingVentId: 'vent-2',
@@ -77,7 +77,7 @@ void main() {
       createdAt: DateTime(2026, 1, 1),
       originatingCrashOutId: 'crash-1',
     );
-    const space = Space(
+    final space = Space(
       id: 'space-3',
       mode: SpaceMode.justListen,
       originatingVentId: 'vent-3',
@@ -107,7 +107,7 @@ void main() {
       visibility: VentVisibility.private,
       safetyState: VentSafetyState.pending,
     );
-    const space = Space(
+    final space = Space(
       id: 'space-4',
       mode: SpaceMode.justListen,
       originatingVentId: 'vent-4',
@@ -137,7 +137,7 @@ void main() {
       voiceMark: '◇',
       createdAt: DateTime(2026, 1, 1),
     );
-    const space = Space(
+    final space = Space(
       id: 'space-5',
       mode: SpaceMode.justListen,
       originatingVentId: 'vent-5',
