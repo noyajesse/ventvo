@@ -33,11 +33,11 @@ void main() {
     );
   });
 
-  test('ignores unrelated signals', () {
+  test('does not match the same key when signal types differ', () {
     const sourceSignals = [
       ResonanceSignal(
-        type: ResonanceSignalType.semantic,
-        key: 'university',
+        type: ResonanceSignalType.experiential,
+        key: 'work',
         strength: 1,
       ),
     ];
@@ -57,6 +57,43 @@ void main() {
     expect(scorer.score(sourceSignals: sourceSignals, candidate: candidate), 0);
   });
 
+  test('rewards resonance across multiple signal dimensions', () {
+    const sourceSignals = [
+      const ResonanceSignal(
+        type: ResonanceSignalType.experiential,
+        key: 'burnout',
+        strength: 1,
+      ),
+      const ResonanceSignal(
+        type: ResonanceSignalType.semantic,
+        key: 'university',
+        strength: 1,
+      ),
+    ];
+    const candidate = ResonanceCandidate(
+      id: 'vent-4',
+      type: ResonanceCandidateType.vent,
+      score: 0,
+      signals: const [
+        ResonanceSignal(
+          type: ResonanceSignalType.experiential,
+          key: 'burnout',
+          strength: 1,
+        ),
+        ResonanceSignal(
+          type: ResonanceSignalType.semantic,
+          key: 'university',
+          strength: 1,
+        ),
+      ],
+    );
+
+    expect(
+      scorer.score(sourceSignals: sourceSignals, candidate: candidate),
+      greaterThan(1),
+    );
+  });
+
   test('safety signal reduces resonance score', () {
     final sourceSignals = [
       ResonanceSignal(
@@ -66,7 +103,7 @@ void main() {
       ),
     ];
     final candidate = ResonanceCandidate(
-      id: 'vent-4',
+      id: 'vent-5',
       type: ResonanceCandidateType.vent,
       score: 0,
       signals: [
