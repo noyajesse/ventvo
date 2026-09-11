@@ -62,12 +62,12 @@ void main() {
       const ResonanceSignal(
         type: ResonanceSignalType.experiential,
         key: 'burnout',
-        strength: 1,
+        strength: 0.4,
       ),
       const ResonanceSignal(
         type: ResonanceSignalType.semantic,
         key: 'university',
-        strength: 1,
+        strength: 0.4,
       ),
     ];
     const candidate = ResonanceCandidate(
@@ -78,20 +78,43 @@ void main() {
         ResonanceSignal(
           type: ResonanceSignalType.experiential,
           key: 'burnout',
-          strength: 1,
+          strength: 0.4,
         ),
         ResonanceSignal(
           type: ResonanceSignalType.semantic,
           key: 'university',
-          strength: 1,
+          strength: 0.4,
         ),
       ],
     );
 
-    expect(
-      scorer.score(sourceSignals: sourceSignals, candidate: candidate),
-      greaterThan(1),
+    final multiDimensionScore = scorer.score(
+      sourceSignals: sourceSignals,
+      candidate: candidate,
     );
+    final singleDimensionScore = scorer.score(
+      sourceSignals: const [
+        ResonanceSignal(
+          type: ResonanceSignalType.experiential,
+          key: 'burnout',
+          strength: 0.4,
+        ),
+      ],
+      candidate: const ResonanceCandidate(
+        id: 'vent-5',
+        type: ResonanceCandidateType.vent,
+        score: 0,
+        signals: [
+          ResonanceSignal(
+            type: ResonanceSignalType.experiential,
+            key: 'burnout',
+            strength: 0.4,
+          ),
+        ],
+      ),
+    );
+
+    expect(multiDimensionScore, greaterThan(singleDimensionScore));
   });
 
   test('safety signal reduces resonance score', () {
@@ -103,7 +126,7 @@ void main() {
       ),
     ];
     final candidate = ResonanceCandidate(
-      id: 'vent-5',
+      id: 'vent-6',
       type: ResonanceCandidateType.vent,
       score: 0,
       signals: [
