@@ -37,8 +37,7 @@ void main() {
 
     expect(
       find.text(
-        'Your real identity stays private.\n'
-        'Your voice is what people know.',
+        "You don't have to carry everything alone.",
       ),
       findsOneWidget,
     );
