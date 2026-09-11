@@ -10,6 +10,7 @@ import '../models/space.dart';
 import '../models/space_response.dart';
 import '../providers/space_provider.dart';
 import '../services/space_response_storage.dart';
+import '../widgets/space_resonance_section.dart';
 
 class SpaceScreen extends ConsumerStatefulWidget {
   final Space space;
@@ -41,8 +42,7 @@ class SpaceScreen extends ConsumerStatefulWidget {
   }
 
   @override
-  ConsumerState<SpaceScreen> createState() =>
-      _SpaceScreenState();
+  ConsumerState<SpaceScreen> createState() => _SpaceScreenState();
 }
 
 class _SpaceScreenState extends ConsumerState<SpaceScreen> {
@@ -64,18 +64,14 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
   }
 
   Future<void> _load() async {
-    final value = await storage.loadForSpace(
-      widget.space.id,
-    );
+    final value = await storage.loadForSpace(widget.space.id);
 
     if (!mounted) return;
 
     setState(() {
       responses = value;
       hasHeard = value.any(
-        (response) =>
-            response.isHeard &&
-            response.voiceMark == '◇ You',
+        (response) => response.isHeard && response.voiceMark == '◇ You',
       );
     });
   }
@@ -148,20 +144,14 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
       createdAt: DateTime.now(),
     );
 
-    await ref
-        .read(ventProvider.notifier)
-        .addVent(moment);
+    await ref.read(ventProvider.notifier).addVent(moment);
 
-    await ref
-        .read(spaceProvider.notifier)
-        .addMoment(
-          widget.space.id,
-          moment.id,
-        );
+    await ref.read(spaceProvider.notifier).addMoment(
+      widget.space.id,
+      moment.id,
+    );
 
-    ref
-        .read(feedProvider.notifier)
-        .addDiscoveredMoment(moment);
+    ref.read(feedProvider.notifier).addDiscoveredMoment(moment);
 
     if (!mounted) return;
 
@@ -175,9 +165,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     });
   }
 
-  void _openComposer({
-    required bool moment,
-  }) {
+  void _openComposer({required bool moment}) {
     setState(() {
       composerOpen = true;
       pendingMoment = moment;
@@ -197,23 +185,15 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
       elevation: 0,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(30),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
       ),
       builder: (context) {
         return SafeArea(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-              22,
-              10,
-              22,
-              26,
-            ),
+            padding: const EdgeInsets.fromLTRB(22, 10, 22, 26),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment:
-                  CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Center(
                   child: Container(
@@ -221,14 +201,11 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                     height: 4,
                     decoration: BoxDecoration(
                       color: VentvoColors.border,
-                      borderRadius:
-                          BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 28),
-
                 const Text(
                   'What came up for you?',
                   style: TextStyle(
@@ -238,9 +215,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                     letterSpacing: -0.2,
                   ),
                 ),
-
                 const SizedBox(height: 7),
-
                 const Text(
                   'You can listen, respond, or let the thought take you somewhere else.',
                   style: TextStyle(
@@ -249,38 +224,26 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                     height: 1.5,
                   ),
                 ),
-
                 const SizedBox(height: 22),
-
                 _expressionTile(
                   icon: Icons.headphones_rounded,
                   title: 'Just listen',
-                  subtitle:
-                      'Let them know you received it.',
-                  onTap: () =>
-                      Navigator.pop(context, 'heard'),
+                  subtitle: 'Let them know you received it.',
+                  onTap: () => Navigator.pop(context, 'heard'),
                 ),
-
                 const SizedBox(height: 6),
-
                 _expressionTile(
                   icon: Icons.reply_rounded,
                   title: 'Say something back',
-                  subtitle:
-                      'Leave a response with this thought.',
-                  onTap: () =>
-                      Navigator.pop(context, 'response'),
+                  subtitle: 'Leave a response with this thought.',
+                  onTap: () => Navigator.pop(context, 'response'),
                 ),
-
                 const SizedBox(height: 6),
-
                 _expressionTile(
                   icon: Icons.auto_awesome_rounded,
                   title: 'Let something emerge',
-                  subtitle:
-                      'Share a thought of your own.',
-                  onTap: () =>
-                      Navigator.pop(context, 'moment'),
+                  subtitle: 'Share a thought of your own.',
+                  onTap: () => Navigator.pop(context, 'moment'),
                 ),
               ],
             ),
@@ -313,10 +276,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
         borderRadius: BorderRadius.circular(20),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 14,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
           child: Row(
             children: [
               Container(
@@ -324,11 +284,8 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                 height: 42,
                 decoration: BoxDecoration(
                   color: VentvoColors.surface,
-                  borderRadius:
-                      BorderRadius.circular(14),
-                  border: Border.all(
-                    color: VentvoColors.border,
-                  ),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: VentvoColors.border),
                 ),
                 child: Icon(
                   icon,
@@ -339,14 +296,12 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
                       style: const TextStyle(
-                        color:
-                            VentvoColors.textPrimary,
+                        color: VentvoColors.textPrimary,
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
                       ),
@@ -406,23 +361,18 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                         height: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 1.5,
-                          color:
-                              VentvoColors.textMuted,
+                          color: VentvoColors.textMuted,
                         ),
                       ),
                     ),
                     error: (_, _) => const Center(
                       child: Padding(
-                        padding:
-                            EdgeInsets.symmetric(
-                          horizontal: 32,
-                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 32),
                         child: Text(
                           'This Space could not be opened.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            color:
-                                VentvoColors.textMuted,
+                            color: VentvoColors.textMuted,
                             fontSize: 14,
                           ),
                         ),
@@ -431,8 +381,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                     data: _content,
                   ),
             ),
-            if (widget.space.isOpenDiscussion)
-              _composer(),
+            if (widget.space.isOpenDiscussion) _composer(),
           ],
         ),
       ),
@@ -441,26 +390,16 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
 
   Widget _topBar() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        10,
-        8,
-        18,
-        8,
-      ),
+      padding: const EdgeInsets.fromLTRB(10, 8, 18, 8),
       child: Row(
         children: [
           IconButton(
-            onPressed: () =>
-                Navigator.pop(context),
-            icon: const Icon(
-              Icons.arrow_back_rounded,
-            ),
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back_rounded),
             color: VentvoColors.textSecondary,
             tooltip: 'Back',
           ),
-
           const SizedBox(width: 4),
-
           const Text(
             'Space',
             style: TextStyle(
@@ -470,9 +409,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
               letterSpacing: 0.3,
             ),
           ),
-
           const Spacer(),
-
           Container(
             width: 6,
             height: 6,
@@ -490,41 +427,31 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     final ids = widget.space.allVentIds.toSet();
 
     final moments = allVents
-        .where(
-          (vent) => ids.contains(vent.id),
-        )
+        .where((vent) => ids.contains(vent.id))
         .toList()
-      ..sort(
-        (a, b) => a.createdAt.compareTo(
-          b.createdAt,
-        ),
-      );
+      ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
     final ordinary = responses
-        .where(
-          (response) =>
-              !response.isMoment &&
-              !response.isHeard,
-        )
+        .where((response) => !response.isMoment && !response.isHeard)
         .toList();
 
     final heard = responses
-        .where(
-          (response) => response.isHeard,
-        )
+        .where((response) => response.isHeard)
         .toList();
 
     return ListView(
       physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(
-        24,
-        12,
-        24,
-        70,
-      ),
+      padding: const EdgeInsets.fromLTRB(24, 12, 24, 70),
       children: [
-        if (moments.isNotEmpty)
-          _origin(moments.first),
+        if (moments.isNotEmpty) _origin(moments.first),
+
+        if (moments.isNotEmpty) ...[
+          const SizedBox(height: 42),
+          SpaceResonanceSection(
+            space: widget.space,
+            excludedIds: widget.space.allVentIds,
+          ),
+        ],
 
         if (heard.isNotEmpty) ...[
           const SizedBox(height: 42),
@@ -538,14 +465,10 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
 
         if (moments.length > 1) ...[
           const SizedBox(height: 42),
-          _momentSection(
-            moments.skip(1).toList(),
-          ),
+          _momentSection(moments.skip(1).toList()),
         ],
 
-        if (ordinary.isEmpty &&
-            heard.isEmpty &&
-            moments.length <= 1)
+        if (ordinary.isEmpty && heard.isEmpty && moments.length <= 1)
           _quietSpace(),
       ],
     );
@@ -577,9 +500,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
             ),
           ],
         ),
-
         const SizedBox(height: 25),
-
         Hero(
           tag: 'moment-${vent.id}',
           child: Material(
@@ -596,9 +517,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
             ),
           ),
         ),
-
         const SizedBox(height: 30),
-
         Container(
           width: 34,
           height: 1,
@@ -608,9 +527,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     );
   }
 
-  Widget _heardSection(
-    List<SpaceResponse> heard,
-  ) {
+  Widget _heardSection(List<SpaceResponse> heard) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -624,9 +541,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     );
   }
 
-  Widget _responseSection(
-    List<SpaceResponse> ordinary,
-  ) {
+  Widget _responseSection(List<SpaceResponse> ordinary) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -640,9 +555,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     );
   }
 
-  Widget _momentSection(
-    List<Vent> moments,
-  ) {
+  Widget _momentSection(List<Vent> moments) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -656,10 +569,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     );
   }
 
-  Widget _sectionCaption(
-    String title,
-    String subtitle,
-  ) {
+  Widget _sectionCaption(String title, String subtitle) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -686,9 +596,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
 
   Widget _heard(SpaceResponse response) {
     return Padding(
-      padding: const EdgeInsets.only(
-        bottom: 15,
-      ),
+      padding: const EdgeInsets.only(bottom: 15),
       child: Row(
         children: [
           Container(
@@ -697,9 +605,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
             decoration: BoxDecoration(
               color: VentvoColors.surface,
               shape: BoxShape.circle,
-              border: Border.all(
-                color: VentvoColors.border,
-              ),
+              border: Border.all(color: VentvoColors.border),
             ),
             child: const Icon(
               Icons.headphones_rounded,
@@ -730,17 +636,12 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
 
   Widget _response(SpaceResponse response) {
     return Padding(
-      padding: const EdgeInsets.only(
-        bottom: 25,
-      ),
+      padding: const EdgeInsets.only(bottom: 25),
       child: Row(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            margin: const EdgeInsets.only(
-              top: 7,
-            ),
+            margin: const EdgeInsets.only(top: 7),
             width: 5,
             height: 5,
             decoration: const BoxDecoration(
@@ -751,14 +652,12 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
           const SizedBox(width: 14),
           Expanded(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   response.voiceMark,
                   style: const TextStyle(
-                    color:
-                        VentvoColors.textMuted,
+                    color: VentvoColors.textMuted,
                     fontSize: 10,
                   ),
                 ),
@@ -766,8 +665,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                 Text(
                   response.content,
                   style: const TextStyle(
-                    color:
-                        VentvoColors.textSecondary,
+                    color: VentvoColors.textSecondary,
                     fontSize: 15,
                     height: 1.58,
                   ),
@@ -782,27 +680,16 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
 
   Widget _moment(Vent vent) {
     return Padding(
-      padding: const EdgeInsets.only(
-        bottom: 16,
-      ),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Container(
-        padding: const EdgeInsets.fromLTRB(
-          19,
-          18,
-          19,
-          20,
-        ),
+        padding: const EdgeInsets.fromLTRB(19, 18, 19, 20),
         decoration: BoxDecoration(
           color: VentvoColors.surface,
-          borderRadius:
-              BorderRadius.circular(22),
-          border: Border.all(
-            color: VentvoColors.border,
-          ),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: VentvoColors.border),
         ),
         child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
@@ -815,8 +702,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                 const Text(
                   'A THOUGHT GREW',
                   style: TextStyle(
-                    color:
-                        VentvoColors.textMuted,
+                    color: VentvoColors.textMuted,
                     fontSize: 8,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 1.2,
@@ -826,8 +712,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                 Text(
                   vent.voiceMark,
                   style: const TextStyle(
-                    color:
-                        VentvoColors.textMuted,
+                    color: VentvoColors.textMuted,
                     fontSize: 10,
                   ),
                 ),
@@ -850,13 +735,9 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
 
   Widget _quietSpace() {
     return Padding(
-      padding: const EdgeInsets.only(
-        top: 52,
-        left: 2,
-      ),
+      padding: const EdgeInsets.only(top: 52, left: 2),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: 24,
@@ -891,23 +772,15 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
       return SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            18,
-            8,
-            18,
-            15,
-          ),
+          padding: const EdgeInsets.fromLTRB(18, 8, 18, 15),
           child: Material(
             color: VentvoColors.surface,
-            borderRadius:
-                BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(24),
             child: InkWell(
-              borderRadius:
-                  BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(24),
               onTap: _chooseExpression,
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(
+                padding: const EdgeInsets.symmetric(
                   horizontal: 18,
                   vertical: 15,
                 ),
@@ -917,8 +790,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                       child: Text(
                         'Something came up?',
                         style: TextStyle(
-                          color:
-                              VentvoColors.textMuted,
+                          color: VentvoColors.textMuted,
                           fontSize: 13,
                         ),
                       ),
@@ -927,18 +799,13 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                       width: 30,
                       height: 30,
                       decoration: BoxDecoration(
-                        color:
-                            VentvoColors.surfaceElevated,
+                        color: VentvoColors.surfaceElevated,
                         shape: BoxShape.circle,
-                        border: Border.all(
-                          color:
-                              VentvoColors.border,
-                        ),
+                        border: Border.all(color: VentvoColors.border),
                       ),
                       child: const Icon(
                         Icons.add_rounded,
-                        color:
-                            VentvoColors.textSecondary,
+                        color: VentvoColors.textSecondary,
                         size: 17,
                       ),
                     ),
@@ -954,30 +821,16 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          18,
-          8,
-          18,
-          15,
-        ),
+        padding: const EdgeInsets.fromLTRB(18, 8, 18, 15),
         child: Container(
-          padding: const EdgeInsets.fromLTRB(
-            15,
-            8,
-            7,
-            8,
-          ),
+          padding: const EdgeInsets.fromLTRB(15, 8, 7, 8),
           decoration: BoxDecoration(
             color: VentvoColors.surface,
-            borderRadius:
-                BorderRadius.circular(25),
-            border: Border.all(
-              color: VentvoColors.border,
-            ),
+            borderRadius: BorderRadius.circular(25),
+            border: Border.all(color: VentvoColors.border),
           ),
           child: Row(
-            crossAxisAlignment:
-                CrossAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Expanded(
                 child: TextField(
@@ -985,38 +838,27 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                   focusNode: focusNode,
                   minLines: 1,
                   maxLines: 5,
-                  textInputAction:
-                      TextInputAction.newline,
+                  textInputAction: TextInputAction.newline,
                   style: const TextStyle(
-                    color:
-                        VentvoColors.textPrimary,
+                    color: VentvoColors.textPrimary,
                     fontSize: 14,
                     height: 1.4,
                   ),
-                  decoration:
-                      InputDecoration(
+                  decoration: InputDecoration(
                     hintText: pendingMoment
                         ? 'Let it emerge…'
                         : 'Say something back…',
-                    hintStyle:
-                        const TextStyle(
-                      color:
-                          VentvoColors.textMuted,
+                    hintStyle: const TextStyle(
+                      color: VentvoColors.textMuted,
                       fontSize: 13,
                     ),
-                    border:
-                        InputBorder.none,
+                    border: InputBorder.none,
                     isDense: true,
-                    contentPadding:
-                        const EdgeInsets.symmetric(
-                      vertical: 8,
-                    ),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 8),
                   ),
                 ),
               ),
-
               const SizedBox(width: 4),
-
               IconButton(
                 onPressed: expressingMoment
                     ? null
@@ -1028,37 +870,24 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                         });
                         focusNode.unfocus();
                       },
-                icon: const Icon(
-                  Icons.close_rounded,
-                ),
-                color:
-                    VentvoColors.textMuted,
+                icon: const Icon(Icons.close_rounded),
+                color: VentvoColors.textMuted,
                 iconSize: 19,
                 tooltip: 'Close',
               ),
-
               Container(
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color:
-                      VentvoColors.surfaceElevated,
+                  color: VentvoColors.surfaceElevated,
                   shape: BoxShape.circle,
-                  border: Border.all(
-                    color:
-                        VentvoColors.border,
-                  ),
+                  border: Border.all(color: VentvoColors.border),
                 ),
                 child: IconButton(
                   padding: EdgeInsets.zero,
-                  onPressed: expressingMoment
-                      ? null
-                      : _send,
-                  icon: const Icon(
-                    Icons.arrow_upward_rounded,
-                  ),
-                  color:
-                      VentvoColors.textPrimary,
+                  onPressed: expressingMoment ? null : _send,
+                  icon: const Icon(Icons.arrow_upward_rounded),
+                  color: VentvoColors.textPrimary,
                   iconSize: 19,
                   tooltip: 'Send',
                 ),
