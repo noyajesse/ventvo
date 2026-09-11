@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/ventvo_colors.dart';
 import '../../../systems/resonance/models/resonance_candidate.dart';
+import '../../ventvo_voice/models/vent.dart';
+import '../../ventvo_voice/providers/vent_provider.dart';
 import '../models/space.dart';
 import '../providers/space_provider.dart';
 import '../providers/space_resonance_provider.dart';
@@ -36,6 +38,7 @@ class SpaceResonanceSection extends ConsumerWidget {
         if (visible.isEmpty) return const SizedBox.shrink();
 
         final spaces = ref.watch(spaceProvider).asData?.value ?? const [];
+        final vents = ref.watch(ventProvider).asData?.value ?? const [];
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,26 +55,39 @@ class SpaceResonanceSection extends ConsumerWidget {
             ),
             const SizedBox(height: 18),
             ...visible.map(
-              (candidate) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: _ResonanceCard(
-                  candidate: candidate,
-                  onTap: () {
-                    final targetSpace = _spaceForCandidate(
-                      candidate,
-                      spaces,
-                    );
-                    if (targetSpace != null) {
-                      SpaceScreen.open(context, targetSpace);
-                    }
-                  },
-                ),
-              ),
+              (candidate) {
+                final vent = _ventForCandidate(candidate, vents);
+                final targetSpace = _spaceForCandidate(candidate, spaces);
+
+                if (vent == null || targetSpace == null) {
+                  return const SizedBox.shrink();
+                }
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: _ResonanceCard(
+                    candidate: candidate,
+                    vent: vent,
+                    onTap: () =>
+                        SpaceScreen.open(context, targetSpace),
+                  ),
+                );
+              },
             ),
           ],
         );
       },
     );
+  }
+
+  Vent? _ventForCandidate(
+    ResonanceCandidate candidate,
+    List<Vent> vents,
+  ) {
+    for (final vent in vents) {
+      if (vent.id == candidate.id) return vent;
+    }
+    return null;
   }
 
   Space? _spaceForCandidate(
@@ -106,10 +122,12 @@ class _SectionCaption extends StatelessWidget {
 
 class _ResonanceCard extends StatelessWidget {
   final ResonanceCandidate candidate;
+  final Vent vent;
   final VoidCallback onTap;
 
   const _ResonanceCard({
     required this.candidate,
+    required this.vent,
     required this.onTap,
   });
 
@@ -130,19 +148,19 @@ class _ResonanceCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (candidate.voiceMark != null) ...[
-                      Text(
-                        candidate.voiceMark!,
-                        style: const TextStyle(
-                          color: VentvoColors.textMuted,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                    ],
                     Text(
-                      'Another experience that may resonate with this.',
+                      vent.voiceMark,
+                      style: const TextStyle(
+                        color: VentvoColors.textMuted,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      vent.content,
+                      maxLines: 4,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         color: VentvoColors.textPrimary,
                         fontSize: 14,
