@@ -2,8 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ventvo/features/spaces/models/space.dart';
 import 'package:ventvo/features/ventvo_voice/models/vent.dart';
 import 'package:ventvo/systems/resonance/models/resonance_candidate.dart';
-import 'package:ventvo/systems/resonance/models/resonance_connection.dart';
-import 'package:ventvo/systems/resonance/models/resonance_query.dart';
 import 'package:ventvo/systems/resonance/models/resonance_signal.dart';
 import 'package:ventvo/systems/resonance/repositories/local_resonance_repository.dart';
 import 'package:ventvo/systems/resonance/services/resonance_engine.dart';
@@ -12,7 +10,7 @@ import 'package:ventvo/systems/resonance/services/vent_resonance_discovery_servi
 void main() {
   test('converts a discoverable Vent into a Resonance discovery request', () async {
     final repository = LocalResonanceRepository();
-    repository.upsertCandidate(
+    await repository.saveCandidate(
       const ResonanceCandidate(
         id: 'vent-2',
         type: ResonanceCandidateType.vent,
@@ -58,7 +56,7 @@ void main() {
 
   test('does not discover from a private or unsafe Vent', () async {
     final repository = LocalResonanceRepository();
-    repository.upsertCandidate(
+    await repository.saveCandidate(
       const ResonanceCandidate(
         id: 'vent-2',
         type: ResonanceCandidateType.vent,
