@@ -53,6 +53,50 @@ void main() {
     );
   });
 
+  test('indexes discoverable Vents using their Space context', () async {
+    final engine = _RecordingEngine();
+    final service = SpaceResonanceDiscoveryService(engine: engine);
+
+    final space = Space(
+      id: 'space_1',
+      mode: SpaceMode.justListen,
+      originatingVentId: 'vent_1',
+      creatorVoiceMark: '◇ Nera',
+      createdAt: DateTime(2026, 1, 1),
+    );
+
+    final vent = Vent(
+      id: 'vent_1',
+      content: 'I keep thinking about university and the future.',
+      spaceId: space.id,
+      voiceMark: '◇ Nera',
+      createdAt: DateTime(2026, 1, 1),
+    );
+
+    final privateVent = Vent(
+      id: 'vent_private',
+      content: 'This should never be indexed.',
+      spaceId: space.id,
+      voiceMark: '◇ Nera',
+      createdAt: DateTime(2026, 1, 1),
+      visibility: VentVisibility.private,
+    );
+
+    await service.indexVents(
+      vents: [vent, privateVent],
+      spaces: [space],
+    );
+
+    expect(engine.indexedCandidates, hasLength(1));
+    expect(engine.indexedCandidates.single.id, 'vent_1');
+    expect(
+      engine.indexedCandidates.single.signals.any(
+        (signal) => signal.key == 'just_listen',
+      ),
+      isTrue,
+    );
+  });
+
   test('does not discover from a non-discoverable originating Vent', () async {
     final engine = _RecordingEngine();
     final service = SpaceResonanceDiscoveryService(engine: engine);
@@ -86,9 +130,12 @@ void main() {
 
 class _RecordingEngine implements ResonanceEngine {
   ResonanceQuery? lastQuery;
+  final List<ResonanceCandidate> indexedCandidates = [];
 
   @override
-  Future<void> indexCandidate(ResonanceCandidate candidate) async {}
+  Future<void> indexCandidate(ResonanceCandidate candidate) async {
+    indexedCandidates.add(candidate);
+  }
 
   @override
   Future<List<ResonanceCandidate>> discover(
