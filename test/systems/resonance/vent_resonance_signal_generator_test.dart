@@ -32,18 +32,46 @@ void main() {
     expect(keys, contains('just_listen'));
   });
 
-  test('uses Open Discussion as the Vent intent signal', () {
+  test('recognizes additional human-experience patterns', () {
     final vent = Vent(
       id: 'vent-2',
-      content: 'I need to talk about starting over.',
+      content: 'I keep comparing myself because everyone is ahead. I feel stuck.',
       spaceId: 'space-2',
       voiceMark: '◇',
       createdAt: DateTime(2026, 1, 1),
     );
     final space = Space(
       id: 'space-2',
-      mode: SpaceMode.openDiscussion,
+      mode: SpaceMode.justListen,
       originatingVentId: 'vent-2',
+      creatorVoiceMark: '◇',
+      createdAt: DateTime(2026, 1, 1),
+    );
+
+    final signals = generator.generate(vent: vent, space: space);
+
+    expect(
+      signals.any((signal) => signal.key == 'comparison'),
+      isTrue,
+    );
+    expect(
+      signals.any((signal) => signal.key == 'being_stuck'),
+      isTrue,
+    );
+  });
+
+  test('uses Open Discussion as the Vent intent signal', () {
+    final vent = Vent(
+      id: 'vent-3',
+      content: 'I need to talk about starting over.',
+      spaceId: 'space-3',
+      voiceMark: '◇',
+      createdAt: DateTime(2026, 1, 1),
+    );
+    final space = Space(
+      id: 'space-3',
+      mode: SpaceMode.openDiscussion,
+      originatingVentId: 'vent-3',
       creatorVoiceMark: '◇',
       createdAt: DateTime(2026, 1, 1),
     );
@@ -70,17 +98,17 @@ void main() {
 
   test('marks Crash Out-originated Vents with context', () {
     final vent = Vent(
-      id: 'vent-3',
+      id: 'vent-4',
       content: 'I need to let this out.',
-      spaceId: 'space-3',
+      spaceId: 'space-4',
       voiceMark: '△',
       createdAt: DateTime(2026, 1, 1),
       originatingCrashOutId: 'crash-1',
     );
     final space = Space(
-      id: 'space-3',
+      id: 'space-4',
       mode: SpaceMode.justListen,
-      originatingVentId: 'vent-3',
+      originatingVentId: 'vent-4',
       creatorVoiceMark: '△',
       createdAt: DateTime(2026, 1, 1),
     );
@@ -99,18 +127,18 @@ void main() {
 
   test('adds safety and privacy signals without changing Vent state', () {
     final vent = Vent(
-      id: 'vent-4',
+      id: 'vent-5',
       content: 'I feel uncertain about my future.',
-      spaceId: 'space-4',
+      spaceId: 'space-5',
       voiceMark: '□',
       createdAt: DateTime(2026, 1, 1),
       visibility: VentVisibility.private,
       safetyState: VentSafetyState.pending,
     );
     final space = Space(
-      id: 'space-4',
+      id: 'space-5',
       mode: SpaceMode.justListen,
-      originatingVentId: 'vent-4',
+      originatingVentId: 'vent-5',
       creatorVoiceMark: '□',
       createdAt: DateTime(2026, 1, 1),
     );
@@ -131,16 +159,16 @@ void main() {
 
   test('does not match keywords inside larger words', () {
     final vent = Vent(
-      id: 'vent-5',
+      id: 'vent-6',
       content: 'My homework is finished, and I feel fine.',
-      spaceId: 'space-5',
+      spaceId: 'space-6',
       voiceMark: '◇',
       createdAt: DateTime(2026, 1, 1),
     );
     final space = Space(
-      id: 'space-5',
+      id: 'space-6',
       mode: SpaceMode.justListen,
-      originatingVentId: 'vent-5',
+      originatingVentId: 'vent-6',
       creatorVoiceMark: '◇',
       createdAt: DateTime(2026, 1, 1),
     );
