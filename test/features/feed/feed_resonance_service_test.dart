@@ -29,14 +29,14 @@ void main() {
       createdAt: DateTime(2026, 1, 2),
     );
     final spaces = [
-      const Space(
+      Space(
         id: 'source-space',
         mode: SpaceMode.justListen,
         originatingVentId: 'source',
         creatorVoiceMark: '◌ Source',
         createdAt: DateTime(2026, 1, 1),
       ),
-      const Space(
+      Space(
         id: 'candidate-space',
         mode: SpaceMode.justListen,
         originatingVentId: 'candidate',
@@ -81,14 +81,14 @@ void main() {
     final results = await service.discover(
       sources: [source],
       spaces: [
-        const Space(
+        Space(
           id: 'source-space',
           mode: SpaceMode.justListen,
           originatingVentId: 'source',
           creatorVoiceMark: '◌ Source',
           createdAt: DateTime(2026, 1, 1),
         ),
-        const Space(
+        Space(
           id: 'private-space',
           mode: SpaceMode.justListen,
           originatingVentId: 'private',
