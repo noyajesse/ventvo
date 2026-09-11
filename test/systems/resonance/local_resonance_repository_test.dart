@@ -8,14 +8,14 @@ import 'package:ventvo/systems/resonance/repositories/local_resonance_repository
 void main() {
   test('returns only candidates of the requested source type', () async {
     final repository = LocalResonanceRepository();
-    repository.upsertCandidate(
+    await repository.saveCandidate(
       const ResonanceCandidate(
         id: 'vent-1',
         type: ResonanceCandidateType.vent,
         score: 0,
       ),
     );
-    repository.upsertCandidate(
+    await repository.saveCandidate(
       const ResonanceCandidate(
         id: 'voice-1',
         type: ResonanceCandidateType.voice,
@@ -35,7 +35,7 @@ void main() {
 
   test('does not expose private or unsafe candidates for discovery', () async {
     final repository = LocalResonanceRepository();
-    repository.upsertCandidate(
+    await repository.saveCandidate(
       const ResonanceCandidate(
         id: 'private',
         type: ResonanceCandidateType.vent,
@@ -49,7 +49,7 @@ void main() {
         ],
       ),
     );
-    repository.upsertCandidate(
+    await repository.saveCandidate(
       const ResonanceCandidate(
         id: 'unsafe',
         type: ResonanceCandidateType.vent,
@@ -63,7 +63,7 @@ void main() {
         ],
       ),
     );
-    repository.upsertCandidate(
+    await repository.saveCandidate(
       const ResonanceCandidate(
         id: 'safe',
         type: ResonanceCandidateType.vent,
@@ -81,16 +81,16 @@ void main() {
     expect(results.map((candidate) => candidate.id), ['safe']);
   });
 
-  test('upsert replaces an existing candidate', () async {
+  test('saveCandidate replaces an existing candidate', () async {
     final repository = LocalResonanceRepository();
-    repository.upsertCandidate(
+    await repository.saveCandidate(
       const ResonanceCandidate(
         id: 'vent-1',
         type: ResonanceCandidateType.vent,
         score: 0,
       ),
     );
-    repository.upsertCandidate(
+    await repository.saveCandidate(
       const ResonanceCandidate(
         id: 'vent-1',
         type: ResonanceCandidateType.vent,
