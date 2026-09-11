@@ -42,8 +42,10 @@ void main() {
       findsOneWidget,
     );
 
+    // The current authentication screen uses a separate email CTA rather
+    // than the old "Create an Account" label.
     expect(
-      find.text('Create an Account'),
+      find.text('Continue with Email'),
       findsOneWidget,
     );
   });
