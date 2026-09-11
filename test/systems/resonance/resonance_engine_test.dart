@@ -13,6 +13,16 @@ class FakeResonanceRepository implements ResonanceRepository {
   FakeResonanceRepository(this.candidates);
 
   @override
+  Future<void> saveCandidate(ResonanceCandidate candidate) async {
+    final index = candidates.indexWhere((item) => item.id == candidate.id);
+    if (index == -1) {
+      candidates.add(candidate);
+    } else {
+      candidates[index] = candidate;
+    }
+  }
+
+  @override
   Future<List<ResonanceCandidate>> findCandidates(ResonanceQuery query) async {
     return candidates;
   }
@@ -138,7 +148,7 @@ void main() {
   });
 
   test('persists a created connection through the repository', () async {
-    final repository = FakeResonanceRepository(const []);
+    final repository = FakeResonanceRepository([]);
     final engine = LocalResonanceEngine(repository: repository);
 
     final connection = await engine.createConnection(
