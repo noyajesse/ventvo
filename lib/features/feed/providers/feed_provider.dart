@@ -41,7 +41,7 @@ class FeedNotifier extends AsyncNotifier<List<Vent>> {
   }
 }
 
-const _localDiscoveryFixtures = <Vent>[
+final _localDiscoveryFixtures = <Vent>[
   Vent(
     id: 'sample_moment_01',
     content: 'I keep thinking about how strange it is that you can miss a version of yourself that you were never really happy being.',
@@ -68,7 +68,7 @@ const _localDiscoveryFixtures = <Vent>[
   ),
 ];
 
-const _localFixtureSpaces = <Space>[
+final _localFixtureSpaces = <Space>[
   Space(
     id: 'sample_space_01',
     mode: SpaceMode.justListen,
