@@ -30,15 +30,23 @@ class VentResonanceSignalGenerator {
       );
     }
 
-    for (final entry in _experientialPatterns.entries) {
-      if (_containsAny(normalized, entry.value)) {
-        add(ResonanceSignalType.experiential, entry.key);
+    for (final pattern in _experientialPatterns) {
+      if (_containsAny(normalized, pattern.phrases)) {
+        add(
+          ResonanceSignalType.experiential,
+          pattern.key,
+          strength: pattern.strength,
+        );
       }
     }
 
-    for (final entry in _semanticPatterns.entries) {
-      if (_containsAny(normalized, entry.value)) {
-        add(ResonanceSignalType.semantic, entry.key, strength: 0.8);
+    for (final pattern in _semanticPatterns) {
+      if (_containsAny(normalized, pattern.phrases)) {
+        add(
+          ResonanceSignalType.semantic,
+          pattern.key,
+          strength: pattern.strength,
+        );
       }
     }
 
@@ -70,25 +78,158 @@ class VentResonanceSignalGenerator {
         ).hasMatch(content),
       );
 
-  static const _experientialPatterns = <String, List<String>>{
-    'starting_over': ['starting over', 'start over', 'new beginning'],
-    'feeling_alone': ['feel alone', 'feeling alone', 'lonely', 'no one understands'],
-    'burnout': ['burned out', 'burnt out', 'burnout', 'exhausted'],
-    'overthinking': ['overthinking', 'overthink', 'mind won\'t stop'],
-    'uncertainty': ['uncertain', 'don\'t know what to do', 'not sure what to do'],
-    'loss': ['lost someone', 'lost a friend', 'lost my', 'grief'],
-    'pressure': ['under pressure', 'so much pressure', 'pressured'],
-    'rejection': ['rejected', 'rejection', 'turned me down'],
-    'change': ['everything changed', 'things changed', 'big change'],
-  };
+  static const _experientialPatterns = <_SignalPattern>[
+    _SignalPattern('starting_over', [
+      'starting over',
+      'start over',
+      'new beginning',
+      'begin again',
+    ]),
+    _SignalPattern('feeling_alone', [
+      'no one understands',
+      'feel alone',
+      'feeling alone',
+      'feel lonely',
+      'feeling lonely',
+      'lonely',
+      'alone',
+    ], strength: 0.9),
+    _SignalPattern('burnout', [
+      'burned out',
+      'burnt out',
+      'burnout',
+      'completely exhausted',
+      'mentally exhausted',
+      'exhausted',
+    ]),
+    _SignalPattern('overthinking', [
+      'mind won\'t stop',
+      'can\'t stop thinking',
+      'overthinking',
+      'overthink',
+      'thinking about it constantly',
+    ]),
+    _SignalPattern('uncertainty', [
+      'don\'t know what to do',
+      'not sure what to do',
+      'have no idea what to do',
+      'uncertain',
+      'unsure',
+    ]),
+    _SignalPattern('loss', [
+      'lost someone',
+      'lost a friend',
+      'grieving',
+      'grief',
+    ]),
+    _SignalPattern('pressure', [
+      'under pressure',
+      'so much pressure',
+      'too much pressure',
+      'pressured',
+    ]),
+    _SignalPattern('rejection', [
+      'turned me down',
+      'got rejected',
+      'rejected',
+      'rejection',
+    ]),
+    _SignalPattern('change', [
+      'everything changed',
+      'things changed',
+      'big change',
+      'life changed',
+    ]),
+    _SignalPattern('being_stuck', [
+      'feel stuck',
+      'feeling stuck',
+      'stuck in my life',
+      'going nowhere',
+    ]),
+    _SignalPattern('comparison', [
+      'compare myself',
+      'comparing myself',
+      'everyone is ahead',
+      'feel behind',
+      'feeling behind',
+    ]),
+    _SignalPattern('belonging', [
+      'where i belong',
+      'fit in',
+      'feel like i belong',
+      'don\'t belong',
+    ]),
+  ];
 
-  static const _semanticPatterns = <String, List<String>>{
-    'university': ['university', 'campus', 'lecture', 'assignment', 'course'],
-    'work': ['work', 'job', 'boss', 'coworker', 'office'],
-    'family': ['family', 'mum', 'mom', 'dad', 'parent', 'brother', 'sister'],
-    'friendship': ['friend', 'friendship', 'bestie'],
-    'relationship': ['relationship', 'partner', 'boyfriend', 'girlfriend'],
-    'money': ['money', 'rent', 'bills', 'debt', 'salary'],
-    'future': ['future', 'career', 'what next', 'my life'],
-  };
+  static const _semanticPatterns = <_SignalPattern>[
+    _SignalPattern('university', [
+      'university',
+      'campus',
+      'lecture',
+      'assignment',
+      'course',
+    ], strength: 0.8),
+    _SignalPattern('work', [
+      'workplace',
+      'job',
+      'boss',
+      'coworker',
+      'office',
+      'work',
+    ], strength: 0.8),
+    _SignalPattern('family', [
+      'family',
+      'mum',
+      'mom',
+      'dad',
+      'parent',
+      'brother',
+      'sister',
+    ], strength: 0.8),
+    _SignalPattern('friendship', [
+      'friendship',
+      'bestie',
+      'friend',
+    ], strength: 0.8),
+    _SignalPattern('relationship', [
+      'relationship',
+      'partner',
+      'boyfriend',
+      'girlfriend',
+      'dating',
+    ], strength: 0.8),
+    _SignalPattern('money', [
+      'money',
+      'rent',
+      'bills',
+      'debt',
+      'salary',
+      'financial',
+    ], strength: 0.8),
+    _SignalPattern('future', [
+      'future',
+      'career',
+      'what next',
+      'my life',
+    ], strength: 0.8),
+    _SignalPattern('health', [
+      'health',
+      'sick',
+      'illness',
+      'hospital',
+      'doctor',
+    ], strength: 0.8),
+  ];
+}
+
+class _SignalPattern {
+  final String key;
+  final List<String> phrases;
+  final double strength;
+
+  const _SignalPattern(
+    this.key,
+    this.phrases, {
+    this.strength = 1,
+  });
 }
