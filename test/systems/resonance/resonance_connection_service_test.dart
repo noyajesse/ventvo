@@ -1,9 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ventvo/systems/resonance/models/resonance_candidate.dart';
 import 'package:ventvo/systems/resonance/models/resonance_connection.dart';
-import 'package:ventvo/systems/resonance/models/resonance_profile.dart';
 import 'package:ventvo/systems/resonance/models/resonance_signal.dart';
-import 'package:ventvo/systems/resonance/repositories/resonance_repository.dart';
 import 'package:ventvo/systems/resonance/models/resonance_query.dart';
 import 'package:ventvo/systems/resonance/services/resonance_connection_service.dart';
 import 'package:ventvo/systems/resonance/services/resonance_engine.dart';
