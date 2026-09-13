@@ -18,6 +18,11 @@ abstract class ResonanceEngine {
     required double strength,
   });
 
+  Future<ResonanceConnection?> getConnectionBetween(
+    String sourceId,
+    String targetId,
+  );
+
   Future<void> updateConnection(ResonanceConnection connection);
 }
 
@@ -77,6 +82,11 @@ class LocalResonanceEngine implements ResonanceEngine {
     required ResonanceConnectionType type,
     required double strength,
   }) async {
+    final existing = await repository.getConnectionBetween(sourceId, targetId);
+    if (existing != null) {
+      return existing;
+    }
+
     final connection = ResonanceConnection(
       id: '${sourceId}_$targetId',
       sourceId: sourceId,
@@ -88,6 +98,14 @@ class LocalResonanceEngine implements ResonanceEngine {
 
     await repository.saveConnection(connection);
     return connection;
+  }
+
+  @override
+  Future<ResonanceConnection?> getConnectionBetween(
+    String sourceId,
+    String targetId,
+  ) {
+    return repository.getConnectionBetween(sourceId, targetId);
   }
 
   @override
