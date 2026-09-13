@@ -8,6 +8,7 @@ import 'package:ventvo/systems/resonance/services/resonance_engine.dart';
 
 class FakeResonanceEngine implements ResonanceEngine {
   ResonanceConnection? createdConnection;
+  ResonanceConnection? updatedConnection;
 
   @override
   Future<ResonanceConnection> createConnection({
@@ -29,11 +30,30 @@ class FakeResonanceEngine implements ResonanceEngine {
   }
 
   @override
+  Future<void> updateConnection(ResonanceConnection connection) async {
+    updatedConnection = connection;
+  }
+
+  @override
   Future<void> indexCandidate(ResonanceCandidate candidate) async {}
 
   @override
   Future<List<ResonanceCandidate>> discover(ResonanceQuery query) async =>
       const [];
+}
+
+ResonanceConnection _connection({
+  ResonanceConnectionState state = ResonanceConnectionState.suggested,
+}) {
+  return ResonanceConnection(
+    id: 'vent-1_vent-2',
+    sourceId: 'vent-1',
+    targetId: 'vent-2',
+    type: ResonanceConnectionType.sharedExperience,
+    strength: 0.82,
+    state: state,
+    createdAt: DateTime(2026, 1, 1),
+  );
 }
 
 void main() {
@@ -105,5 +125,58 @@ void main() {
     );
 
     expect(connection, isNull);
+  });
+
+  test('accepts a suggested connection', () async {
+    final engine = FakeResonanceEngine();
+    final service = ResonanceConnectionService(engine: engine);
+
+    final updated = await service.accept(_connection());
+
+    expect(updated!.state, ResonanceConnectionState.accepted);
+    expect(engine.updatedConnection, updated);
+  });
+
+  test('activates an accepted connection', () async {
+    final engine = FakeResonanceEngine();
+    final service = ResonanceConnectionService(engine: engine);
+
+    final updated = await service.activate(
+      _connection(state: ResonanceConnectionState.accepted),
+    );
+
+    expect(updated!.state, ResonanceConnectionState.active);
+  });
+
+  test('closes an active connection', () async {
+    final engine = FakeResonanceEngine();
+    final service = ResonanceConnectionService(engine: engine);
+
+    final updated = await service.close(
+      _connection(state: ResonanceConnectionState.active),
+    );
+
+    expect(updated!.state, ResonanceConnectionState.closed);
+  });
+
+  test('blocks an active connection', () async {
+    final engine = FakeResonanceEngine();
+    final service = ResonanceConnectionService(engine: engine);
+
+    final updated = await service.block(
+      _connection(state: ResonanceConnectionState.active),
+    );
+
+    expect(updated!.state, ResonanceConnectionState.blocked);
+  });
+
+  test('rejects invalid lifecycle transitions', () async {
+    final engine = FakeResonanceEngine();
+    final service = ResonanceConnectionService(engine: engine);
+
+    final updated = await service.activate(_connection());
+
+    expect(updated, isNull);
+    expect(engine.updatedConnection, isNull);
   });
 }
