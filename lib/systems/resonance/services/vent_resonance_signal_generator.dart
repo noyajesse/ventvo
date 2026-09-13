@@ -95,7 +95,7 @@ class VentResonanceSignalGenerator {
     final prefix = content.substring(0, matchStart).trimRight();
 
     return RegExp(
-      r'(?:\b(?:not|never|don\'t|do not|isn\'t|is not|aren\'t|are not|no longer)\b)(?:\W+\w+){0,2}\W*$',
+      r"(?:\b(?:not|never|don't|do not|isn't|is not|aren't|are not|no longer)\b)(?:\W+\w+){0,2}\W*$",
     ).hasMatch(prefix);
   }
 
