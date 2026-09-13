@@ -1,5 +1,6 @@
 import '../models/resonance_candidate.dart';
 import '../models/resonance_connection.dart';
+import '../models/resonance_map.dart';
 import '../models/resonance_query.dart';
 import '../models/resonance_thread.dart';
 
@@ -32,4 +33,12 @@ abstract class ResonanceRepository {
   Future<List<ResonanceThread>> getThreadsForExperience(String experienceId);
 
   Future<List<ResonanceThread>> getThreads();
+
+  Future<void> saveMap(ResonanceMap map);
+
+  Future<ResonanceMap?> getMap(String mapId);
+
+  Future<List<ResonanceMap>> getMapsForExperience(String experienceId);
+
+  Future<List<ResonanceMap>> getMaps();
 }
