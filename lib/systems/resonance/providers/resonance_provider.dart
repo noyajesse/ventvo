@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../repositories/local_resonance_repository.dart';
 import '../repositories/resonance_repository.dart';
+import '../services/resonance_connection_service.dart';
 import '../services/resonance_engine.dart';
 import '../services/space_resonance_discovery_service.dart';
 import '../services/vent_resonance_discovery_service.dart';
@@ -18,6 +19,14 @@ final resonanceRepositoryProvider = Provider<ResonanceRepository>((ref) {
 final resonanceEngineProvider = Provider<ResonanceEngine>((ref) {
   return LocalResonanceEngine(
     repository: ref.watch(resonanceRepositoryProvider),
+  );
+});
+
+/// Application-facing connection service for Resonance relationships.
+final resonanceConnectionServiceProvider =
+    Provider<ResonanceConnectionService>((ref) {
+  return ResonanceConnectionService(
+    engine: ref.watch(resonanceEngineProvider),
   );
 });
 
