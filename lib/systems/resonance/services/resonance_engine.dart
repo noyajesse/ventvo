@@ -1,6 +1,7 @@
 import '../algorithms/deterministic_resonance_scorer.dart';
 import '../models/resonance_candidate.dart';
 import '../models/resonance_connection.dart';
+import '../models/resonance_map.dart';
 import '../models/resonance_query.dart';
 import '../models/resonance_thread.dart';
 import '../repositories/resonance_repository.dart';
@@ -35,6 +36,14 @@ abstract class ResonanceEngine {
   Future<List<ResonanceThread>> getThreadsForExperience(String experienceId);
 
   Future<List<ResonanceThread>> getThreads();
+
+  Future<void> saveMap(ResonanceMap map);
+
+  Future<ResonanceMap?> getMap(String mapId);
+
+  Future<List<ResonanceMap>> getMapsForExperience(String experienceId);
+
+  Future<List<ResonanceMap>> getMaps();
 }
 
 class LocalResonanceEngine implements ResonanceEngine {
@@ -147,5 +156,25 @@ class LocalResonanceEngine implements ResonanceEngine {
   @override
   Future<List<ResonanceThread>> getThreads() {
     return repository.getThreads();
+  }
+
+  @override
+  Future<void> saveMap(ResonanceMap map) {
+    return repository.saveMap(map);
+  }
+
+  @override
+  Future<ResonanceMap?> getMap(String mapId) {
+    return repository.getMap(mapId);
+  }
+
+  @override
+  Future<List<ResonanceMap>> getMapsForExperience(String experienceId) {
+    return repository.getMapsForExperience(experienceId);
+  }
+
+  @override
+  Future<List<ResonanceMap>> getMaps() {
+    return repository.getMaps();
   }
 }
