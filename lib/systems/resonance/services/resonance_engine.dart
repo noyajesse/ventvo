@@ -4,6 +4,8 @@ import '../models/resonance_connection.dart';
 import '../models/resonance_map.dart';
 import '../models/resonance_query.dart';
 import '../models/resonance_thread.dart';
+import '../repositories/local_resonance_repository.dart';
+import '../repositories/resonance_map_repository.dart';
 import '../repositories/resonance_repository.dart';
 import 'resonance_signal_composer.dart';
 
@@ -36,7 +38,13 @@ abstract class ResonanceEngine {
   Future<List<ResonanceThread>> getThreadsForExperience(String experienceId);
 
   Future<List<ResonanceThread>> getThreads();
+}
 
+/// Map-specific engine capability.
+///
+/// Kept separate from [ResonanceEngine] so existing Resonance consumers and
+/// their test doubles do not need to implement Map operations they never use.
+abstract class ResonanceMapEngine {
   Future<void> saveMap(ResonanceMap map);
 
   Future<ResonanceMap?> getMap(String mapId);
@@ -46,16 +54,29 @@ abstract class ResonanceEngine {
   Future<List<ResonanceMap>> getMaps();
 }
 
-class LocalResonanceEngine implements ResonanceEngine {
+class LocalResonanceEngine implements ResonanceEngine, ResonanceMapEngine {
   final ResonanceRepository repository;
+  final ResonanceMapRepository mapRepository;
   final DeterministicResonanceScorer scorer;
   final ResonanceSignalComposer composer;
 
-  const LocalResonanceEngine({
+  LocalResonanceEngine({
     required this.repository,
+    ResonanceMapRepository? mapRepository,
     this.scorer = const DeterministicResonanceScorer(),
     this.composer = const ResonanceSignalComposer(),
-  });
+  }) : mapRepository = mapRepository ?? _mapRepositoryFrom(repository);
+
+  static ResonanceMapRepository _mapRepositoryFrom(
+    ResonanceRepository repository,
+  ) {
+    if (repository is ResonanceMapRepository) {
+      return repository;
+    }
+    throw ArgumentError(
+      'The supplied repository does not support Resonance Maps.',
+    );
+  }
 
   @override
   Future<void> indexCandidate(ResonanceCandidate candidate) {
@@ -160,21 +181,42 @@ class LocalResonanceEngine implements ResonanceEngine {
 
   @override
   Future<void> saveMap(ResonanceMap map) {
-    return repository.saveMap(map);
+    return mapRepository.saveMap(map);
   }
 
   @override
   Future<ResonanceMap?> getMap(String mapId) {
-    return repository.getMap(mapId);
+    return mapRepository.getMap(mapId);
   }
 
   @override
   Future<List<ResonanceMap>> getMapsForExperience(String experienceId) {
-    return repository.getMapsForExperience(experienceId);
+    return mapRepository.getMapsForExperience(experienceId);
   }
 
   @override
   Future<List<ResonanceMap>> getMaps() {
-    return repository.getMaps();
+    return mapRepository.getMaps();
   }
+}
+
+/// Adapter retained for the local implementation so Map support can be added
+/// without making every core repository a Map repository.
+class LocalResonanceMapRepository implements ResonanceMapRepository {
+  final LocalResonanceRepository repository;
+
+  const LocalResonanceMapRepository(this.repository);
+
+  @override
+  Future<void> saveMap(ResonanceMap map) => repository.saveMap(map);
+
+  @override
+  Future<ResonanceMap?> getMap(String mapId) => repository.getMap(mapId);
+
+  @override
+  Future<List<ResonanceMap>> getMapsForExperience(String experienceId) =>
+      repository.getMapsForExperience(experienceId);
+
+  @override
+  Future<List<ResonanceMap>> getMaps() => repository.getMaps();
 }
