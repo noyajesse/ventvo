@@ -20,7 +20,7 @@ ResonanceConnection _connection({
   ResonanceConnectionState state = ResonanceConnectionState.active,
 }) {
   return ResonanceConnection(
-    id: '$sourceId\_$targetId',
+    id: '${sourceId}_$targetId',
     sourceId: sourceId,
     targetId: targetId,
     type: ResonanceConnectionType.sharedExperience,
@@ -111,7 +111,6 @@ void main() {
     );
 
     expect(decision.allowed, isFalse);
-    expect(decision.reason,
-        ResonanceThreadEvolutionReason.insufficientResonance);
+    expect(decision.reason, ResonanceThreadEvolutionReason.insufficientResonance);
   });
 }
