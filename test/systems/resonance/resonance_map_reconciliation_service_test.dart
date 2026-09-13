@@ -37,7 +37,7 @@ class FakeResonanceMapEngine implements ResonanceMapEngine {
   }
 }
 
-const createdAt = DateTime(2026, 1, 1);
+final createdAt = DateTime(2026, 1, 1);
 
 ResonanceConnection connection({
   required String id,
