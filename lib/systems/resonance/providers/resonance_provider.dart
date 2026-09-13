@@ -27,6 +27,15 @@ final resonanceEngineProvider = Provider<ResonanceEngine>((ref) {
   );
 });
 
+/// Shared Map capability exposed by the same Resonance engine instance.
+final resonanceMapEngineProvider = Provider<ResonanceMapEngine>((ref) {
+  final engine = ref.watch(resonanceEngineProvider);
+  if (engine is ResonanceMapEngine) {
+    return engine;
+  }
+  throw StateError('The configured Resonance engine does not support Maps.');
+});
+
 /// Shared Thread reconciliation boundary.
 final resonanceThreadReconciliationServiceProvider =
     Provider<ResonanceThreadReconciliationService>((ref) {
@@ -39,7 +48,7 @@ final resonanceThreadReconciliationServiceProvider =
 final resonanceMapReconciliationServiceProvider =
     Provider<ResonanceMapReconciliationService>((ref) {
   return ResonanceMapReconciliationService(
-    engine: ref.watch(resonanceEngineProvider),
+    engine: ref.watch(resonanceMapEngineProvider),
   );
 });
 
