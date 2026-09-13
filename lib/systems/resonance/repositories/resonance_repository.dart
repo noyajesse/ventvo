@@ -15,5 +15,10 @@ abstract class ResonanceRepository {
 
   Future<void> updateConnection(ResonanceConnection connection);
 
+  Future<ResonanceConnection?> getConnectionBetween(
+    String sourceId,
+    String targetId,
+  );
+
   Future<List<ResonanceConnection>> getConnectionsFor(String sourceId);
 }
