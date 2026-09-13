@@ -37,6 +37,15 @@ class LocalResonanceRepository implements ResonanceRepository {
   }
 
   @override
+  Future<void> updateConnection(ResonanceConnection connection) async {
+    final index = _connections.indexWhere(
+      (item) => item.id == connection.id,
+    );
+    if (index == -1) return;
+    _connections[index] = connection;
+  }
+
+  @override
   Future<List<ResonanceConnection>> getConnectionsFor(String sourceId) async {
     return _connections
         .where((connection) => connection.sourceId == sourceId)
