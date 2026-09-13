@@ -1,6 +1,7 @@
 import '../models/resonance_candidate.dart';
 import '../models/resonance_connection.dart';
 import '../models/resonance_query.dart';
+import '../models/resonance_thread.dart';
 
 /// Storage/discovery boundary for Resonance.
 ///
@@ -23,4 +24,12 @@ abstract class ResonanceRepository {
   Future<List<ResonanceConnection>> getConnectionsFor(String sourceId);
 
   Future<List<ResonanceConnection>> getConnectionsInvolving(String id);
+
+  Future<void> saveThread(ResonanceThread thread);
+
+  Future<ResonanceThread?> getThread(String threadId);
+
+  Future<List<ResonanceThread>> getThreadsForExperience(String experienceId);
+
+  Future<List<ResonanceThread>> getThreads();
 }
