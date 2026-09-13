@@ -1,10 +1,9 @@
 import '../models/resonance_candidate.dart';
 import '../models/resonance_connection.dart';
-import '../models/resonance_map.dart';
 import '../models/resonance_query.dart';
 import '../models/resonance_thread.dart';
 
-/// Storage/discovery boundary for Resonance.
+/// Storage/discovery boundary for core Resonance data.
 ///
 /// Feed, Space, and Crash Out should depend on this contract rather than on a
 /// concrete storage implementation or matching algorithm.
@@ -33,12 +32,4 @@ abstract class ResonanceRepository {
   Future<List<ResonanceThread>> getThreadsForExperience(String experienceId);
 
   Future<List<ResonanceThread>> getThreads();
-
-  Future<void> saveMap(ResonanceMap map);
-
-  Future<ResonanceMap?> getMap(String mapId);
-
-  Future<List<ResonanceMap>> getMapsForExperience(String experienceId);
-
-  Future<List<ResonanceMap>> getMaps();
 }
