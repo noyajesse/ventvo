@@ -4,6 +4,7 @@ import '../repositories/local_resonance_repository.dart';
 import '../repositories/resonance_repository.dart';
 import '../services/resonance_connection_service.dart';
 import '../services/resonance_engine.dart';
+import '../services/resonance_map_discovery_service.dart';
 import '../services/resonance_map_reconciliation_service.dart';
 import '../services/resonance_thread_discovery_service.dart';
 import '../services/resonance_thread_formation_service.dart';
@@ -54,6 +55,17 @@ final resonanceMapReconciliationServiceProvider =
     Provider<ResonanceMapReconciliationService>((ref) {
   return ResonanceMapReconciliationService(
     engine: ref.watch(resonanceMapEngineProvider),
+  );
+});
+
+/// Shared Map discovery/query boundary.
+final resonanceMapDiscoveryServiceProvider =
+    Provider<ResonanceMapDiscoveryService>((ref) {
+  return ResonanceMapDiscoveryService(
+    engine: ref.watch(resonanceMapEngineProvider),
+    reconciliationService: ref.watch(
+      resonanceMapReconciliationServiceProvider,
+    ),
   );
 });
 
