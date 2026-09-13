@@ -66,6 +66,16 @@ class LocalResonanceRepository implements ResonanceRepository {
         .toList(growable: false);
   }
 
+  @override
+  Future<List<ResonanceConnection>> getConnectionsInvolving(String id) async {
+    return _connections
+        .where(
+          (connection) =>
+              connection.sourceId == id || connection.targetId == id,
+        )
+        .toList(growable: false);
+  }
+
   bool _isDiscoverable(ResonanceCandidate candidate) {
     return !candidate.signals.any(
       (signal) =>
