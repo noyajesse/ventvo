@@ -5,6 +5,7 @@ import '../repositories/resonance_repository.dart';
 import '../services/resonance_connection_service.dart';
 import '../services/resonance_engine.dart';
 import '../services/resonance_thread_formation_service.dart';
+import '../services/resonance_thread_reconciliation_service.dart';
 import '../services/resonance_thread_service.dart';
 import '../services/space_resonance_discovery_service.dart';
 import '../services/vent_resonance_discovery_service.dart';
@@ -24,11 +25,21 @@ final resonanceEngineProvider = Provider<ResonanceEngine>((ref) {
   );
 });
 
+/// Application-facing Thread reconciliation service for Resonance.
+final resonanceThreadReconciliationServiceProvider =
+    Provider<ResonanceThreadReconciliationService>((ref) {
+  return ResonanceThreadReconciliationService(
+    engine: ref.watch(resonanceEngineProvider),
+  );
+});
+
 /// Application-facing connection service for Resonance relationships.
 final resonanceConnectionServiceProvider =
     Provider<ResonanceConnectionService>((ref) {
   return ResonanceConnectionService(
     engine: ref.watch(resonanceEngineProvider),
+    threadReconciliationService:
+        ref.watch(resonanceThreadReconciliationServiceProvider),
   );
 });
 
