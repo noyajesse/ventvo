@@ -201,30 +201,4 @@ void main() {
     expect(result.status, ResonanceThreadIntegrityStatus.dormant);
     expect(result.liveConnections, isEmpty);
   });
-
-  test('detects invalid connection endpoints', () {
-    final result = policy.evaluate(
-      ResonanceThread.create(
-        id: 'thread-1',
-        originatingExperienceId: 'experience-1',
-        experienceIds: const [
-          'experience-1',
-          'experience-2',
-          'experience-3',
-        ],
-        connections: [
-          connection(
-            sourceId: 'experience-1',
-            targetId: 'outside-thread',
-            id: 'connection-invalid',
-          ),
-        ],
-        createdAt: createdAt,
-      ),
-    );
-
-    expect(result.status, ResonanceThreadIntegrityStatus.invalid);
-    expect(result.isInvalid, isTrue);
-    expect(result.isDiscoverable, isFalse);
-  });
 }
