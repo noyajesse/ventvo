@@ -1,3 +1,4 @@
+import 'resonance_profile.dart';
 import 'resonance_signal.dart';
 
 enum ResonanceCandidateType {
@@ -12,6 +13,7 @@ class ResonanceCandidate {
   final String? voiceMark;
   final double score;
   final List<ResonanceSignal> signals;
+  final ResonanceProfile? profile;
 
   const ResonanceCandidate({
     required this.id,
@@ -19,6 +21,7 @@ class ResonanceCandidate {
     this.voiceMark,
     required this.score,
     this.signals = const [],
+    this.profile,
   });
 
   ResonanceCandidate copyWith({
@@ -27,6 +30,7 @@ class ResonanceCandidate {
     String? voiceMark,
     double? score,
     List<ResonanceSignal>? signals,
+    ResonanceProfile? profile,
   }) {
     return ResonanceCandidate(
       id: id ?? this.id,
@@ -34,6 +38,7 @@ class ResonanceCandidate {
       voiceMark: voiceMark ?? this.voiceMark,
       score: score ?? this.score,
       signals: signals ?? this.signals,
+      profile: profile ?? this.profile,
     );
   }
 }
