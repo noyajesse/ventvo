@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../lib/systems/resonance/models/resonance_connection.dart';
-import '../../../lib/systems/resonance/models/resonance_thread.dart';
-import '../../../lib/systems/resonance/services/resonance_thread_integrity_policy.dart';
+import 'package:ventvo/systems/resonance/models/resonance_connection.dart';
+import 'package:ventvo/systems/resonance/models/resonance_thread.dart';
+import 'package:ventvo/systems/resonance/services/resonance_thread_integrity_policy.dart';
 
 void main() {
   const policy = ResonanceThreadIntegrityPolicy();
