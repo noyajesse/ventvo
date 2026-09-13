@@ -2,6 +2,7 @@ import '../models/resonance_candidate.dart';
 import '../models/resonance_connection.dart';
 import '../models/resonance_query.dart';
 import '../models/resonance_signal.dart';
+import '../models/resonance_thread.dart';
 import 'resonance_repository.dart';
 
 /// In-memory Resonance repository for the local prototype.
@@ -12,6 +13,7 @@ import 'resonance_repository.dart';
 class LocalResonanceRepository implements ResonanceRepository {
   final Map<String, ResonanceCandidate> _candidates = {};
   final List<ResonanceConnection> _connections = [];
+  final Map<String, ResonanceThread> _threads = {};
 
   @override
   Future<void> saveCandidate(ResonanceCandidate candidate) async {
@@ -74,6 +76,30 @@ class LocalResonanceRepository implements ResonanceRepository {
               connection.sourceId == id || connection.targetId == id,
         )
         .toList(growable: false);
+  }
+
+  @override
+  Future<void> saveThread(ResonanceThread thread) async {
+    _threads[thread.id] = thread;
+  }
+
+  @override
+  Future<ResonanceThread?> getThread(String threadId) async {
+    return _threads[threadId];
+  }
+
+  @override
+  Future<List<ResonanceThread>> getThreadsForExperience(
+    String experienceId,
+  ) async {
+    return _threads.values
+        .where((thread) => thread.containsExperience(experienceId))
+        .toList(growable: false);
+  }
+
+  @override
+  Future<List<ResonanceThread>> getThreads() async {
+    return _threads.values.toList(growable: false);
   }
 
   bool _isDiscoverable(ResonanceCandidate candidate) {
