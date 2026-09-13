@@ -58,23 +58,23 @@ void main() {
   });
 
   test('rewards resonance across multiple signal dimensions', () {
-    const sourceSignals = [
-      const ResonanceSignal(
+    final sourceSignals = [
+      ResonanceSignal(
         type: ResonanceSignalType.experiential,
         key: 'burnout',
         strength: 0.4,
       ),
-      const ResonanceSignal(
+      ResonanceSignal(
         type: ResonanceSignalType.semantic,
         key: 'university',
         strength: 0.4,
       ),
     ];
-    const candidate = ResonanceCandidate(
+    final candidate = ResonanceCandidate(
       id: 'vent-4',
       type: ResonanceCandidateType.vent,
       score: 0,
-      signals: const [
+      signals: [
         ResonanceSignal(
           type: ResonanceSignalType.experiential,
           key: 'burnout',
