@@ -19,7 +19,7 @@ class ResonanceMapReconciliationResult {
 /// returned by Resonance, keeps historical links that are no longer active,
 /// and derives the Map's current integrity through the Map integrity policy.
 class ResonanceMapReconciliationService {
-  final ResonanceEngine engine;
+  final ResonanceMapEngine engine;
   final ResonanceMapIntegrityPolicy integrityPolicy;
 
   const ResonanceMapReconciliationService({
