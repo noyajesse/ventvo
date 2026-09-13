@@ -1,6 +1,7 @@
 import '../models/resonance_connection.dart';
 import '../models/resonance_thread.dart';
 import 'resonance_engine.dart';
+import 'resonance_thread_evolution_policy.dart';
 
 /// Governs creation and extension of Resonance Threads.
 ///
@@ -9,8 +10,12 @@ import 'resonance_engine.dart';
 /// Resonance persistence and discovery operations.
 class ResonanceThreadService {
   final ResonanceEngine engine;
+  final ResonanceThreadEvolutionPolicy evolutionPolicy;
 
-  const ResonanceThreadService({required this.engine});
+  const ResonanceThreadService({
+    required this.engine,
+    this.evolutionPolicy = const ResonanceThreadEvolutionPolicy(),
+  });
 
   Future<ResonanceThread> createThread({
     required String threadId,
@@ -171,27 +176,25 @@ class ResonanceThreadService {
     return thread;
   }
 
+  /// Extends a Thread only when the supplied connection satisfies the shared
+  /// evolution policy. This keeps Thread growth deterministic and prevents
+  /// feature code from bypassing connection-state or strength rules.
   Future<ResonanceThread?> extendThread({
     required ResonanceThread thread,
     required String experienceId,
     String? voiceMark,
     required ResonanceConnection connection,
   }) async {
-    if (experienceId.trim().isEmpty) {
-      return null;
-    }
+    final decision = evolutionPolicy.evaluate(
+      thread: thread,
+      experienceId: experienceId,
+      connection: connection,
+    );
 
-    if (thread.containsExperience(experienceId)) {
-      return thread;
-    }
-
-    final connectsToThread =
-        thread.containsExperience(connection.sourceId) &&
-                connection.targetId == experienceId ||
-            thread.containsExperience(connection.targetId) &&
-                connection.sourceId == experienceId;
-
-    if (!connectsToThread) {
+    if (!decision.allowed) {
+      if (decision.reason == ResonanceThreadEvolutionReason.alreadyInThread) {
+        return thread;
+      }
       return null;
     }
 
