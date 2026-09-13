@@ -40,6 +40,20 @@ class FakeResonanceRepository implements ResonanceRepository {
   }
 
   @override
+  Future<ResonanceConnection?> getConnectionBetween(
+    String sourceId,
+    String targetId,
+  ) async {
+    for (final connection in connections) {
+      if (connection.sourceId == sourceId &&
+          connection.targetId == targetId) {
+        return connection;
+      }
+    }
+    return null;
+  }
+
+  @override
   Future<List<ResonanceConnection>> getConnectionsFor(String sourceId) async {
     return connections.where((item) => item.sourceId == sourceId).toList();
   }
@@ -168,5 +182,50 @@ void main() {
     expect(repository.connections, hasLength(1));
     expect(repository.connections.single.id, connection.id);
     expect(connection.strength, 0.8);
+  });
+
+  test('returns the existing connection instead of creating a duplicate',
+      () async {
+    final repository = FakeResonanceRepository([]);
+    final engine = LocalResonanceEngine(repository: repository);
+
+    final first = await engine.createConnection(
+      sourceId: 'vent-1',
+      targetId: 'vent-2',
+      type: ResonanceConnectionType.similarity,
+      strength: 0.6,
+    );
+    final second = await engine.createConnection(
+      sourceId: 'vent-1',
+      targetId: 'vent-2',
+      type: ResonanceConnectionType.sharedExperience,
+      strength: 0.9,
+    );
+
+    expect(repository.connections, hasLength(1));
+    expect(second.id, first.id);
+    expect(second.type, first.type);
+    expect(second.strength, first.strength);
+  });
+
+  test('can look up a connection by its exact direction', () async {
+    final repository = FakeResonanceRepository([]);
+    final engine = LocalResonanceEngine(repository: repository);
+
+    await engine.createConnection(
+      sourceId: 'vent-1',
+      targetId: 'vent-2',
+      type: ResonanceConnectionType.discovery,
+      strength: 0.7,
+    );
+
+    expect(
+      await engine.getConnectionBetween('vent-1', 'vent-2'),
+      isNotNull,
+    );
+    expect(
+      await engine.getConnectionBetween('vent-2', 'vent-1'),
+      isNull,
+    );
   });
 }
