@@ -30,6 +30,14 @@ class FakeResonanceEngine implements ResonanceEngine {
   }
 
   @override
+  Future<ResonanceConnection?> getConnectionBetween(
+    String sourceId,
+    String targetId,
+  ) async {
+    return null;
+  }
+
+  @override
   Future<void> updateConnection(ResonanceConnection connection) async {
     updatedConnection = connection;
   }
