@@ -17,6 +17,8 @@ abstract class ResonanceEngine {
     required ResonanceConnectionType type,
     required double strength,
   });
+
+  Future<void> updateConnection(ResonanceConnection connection);
 }
 
 class LocalResonanceEngine implements ResonanceEngine {
@@ -86,5 +88,10 @@ class LocalResonanceEngine implements ResonanceEngine {
 
     await repository.saveConnection(connection);
     return connection;
+  }
+
+  @override
+  Future<void> updateConnection(ResonanceConnection connection) {
+    return repository.updateConnection(connection);
   }
 }
