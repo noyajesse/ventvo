@@ -156,15 +156,20 @@ class _RecordingEngine implements ResonanceEngine {
   }
 
   @override
-  Future<void> updateConnection(ResonanceConnection connection) {
-    throw UnimplementedError();
-  }
-
-  @override
   Future<ResonanceConnection?> getConnectionBetween(
     String sourceId,
     String targetId,
   ) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<ResonanceConnection>> getConnectionsInvolving(String id) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> updateConnection(ResonanceConnection connection) {
     throw UnimplementedError();
   }
 }
