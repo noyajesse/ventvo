@@ -33,6 +33,13 @@ class FakeResonanceRepository implements ResonanceRepository {
   }
 
   @override
+  Future<void> updateConnection(ResonanceConnection connection) async {
+    final index = connections.indexWhere((item) => item.id == connection.id);
+    if (index == -1) return;
+    connections[index] = connection;
+  }
+
+  @override
   Future<List<ResonanceConnection>> getConnectionsFor(String sourceId) async {
     return connections.where((item) => item.sourceId == sourceId).toList();
   }
