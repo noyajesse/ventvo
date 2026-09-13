@@ -1,5 +1,6 @@
 import '../models/resonance_candidate.dart';
 import '../models/resonance_connection.dart';
+import '../models/resonance_map.dart';
 import '../models/resonance_query.dart';
 import '../models/resonance_signal.dart';
 import '../models/resonance_thread.dart';
@@ -14,6 +15,7 @@ class LocalResonanceRepository implements ResonanceRepository {
   final Map<String, ResonanceCandidate> _candidates = {};
   final List<ResonanceConnection> _connections = [];
   final Map<String, ResonanceThread> _threads = {};
+  final Map<String, ResonanceMap> _maps = {};
 
   @override
   Future<void> saveCandidate(ResonanceCandidate candidate) async {
@@ -73,7 +75,8 @@ class LocalResonanceRepository implements ResonanceRepository {
     return _connections
         .where(
           (connection) =>
-              connection.sourceId == id || connection.targetId == id,
+              connection.sourceId == id ||
+              connection.targetId == id,
         )
         .toList(growable: false);
   }
@@ -100,6 +103,30 @@ class LocalResonanceRepository implements ResonanceRepository {
   @override
   Future<List<ResonanceThread>> getThreads() async {
     return _threads.values.toList(growable: false);
+  }
+
+  @override
+  Future<void> saveMap(ResonanceMap map) async {
+    _maps[map.id] = map;
+  }
+
+  @override
+  Future<ResonanceMap?> getMap(String mapId) async {
+    return _maps[mapId];
+  }
+
+  @override
+  Future<List<ResonanceMap>> getMapsForExperience(
+    String experienceId,
+  ) async {
+    return _maps.values
+        .where((map) => map.containsExperience(experienceId))
+        .toList(growable: false);
+  }
+
+  @override
+  Future<List<ResonanceMap>> getMaps() async {
+    return _maps.values.toList(growable: false);
   }
 
   bool _isDiscoverable(ResonanceCandidate candidate) {
