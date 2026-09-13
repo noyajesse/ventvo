@@ -4,6 +4,7 @@ import '../models/resonance_map.dart';
 import '../models/resonance_query.dart';
 import '../models/resonance_signal.dart';
 import '../models/resonance_thread.dart';
+import 'resonance_map_repository.dart';
 import 'resonance_repository.dart';
 
 /// In-memory Resonance repository for the local prototype.
@@ -11,7 +12,8 @@ import 'resonance_repository.dart';
 /// It deliberately sits behind [ResonanceRepository] so the engine and product
 /// features do not depend on local storage. A backend repository can replace it
 /// later without changing the Resonance engine contract.
-class LocalResonanceRepository implements ResonanceRepository {
+class LocalResonanceRepository
+    implements ResonanceRepository, ResonanceMapRepository {
   final Map<String, ResonanceCandidate> _candidates = {};
   final List<ResonanceConnection> _connections = [];
   final Map<String, ResonanceThread> _threads = {};
