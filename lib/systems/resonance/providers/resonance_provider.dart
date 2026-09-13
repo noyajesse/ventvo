@@ -4,6 +4,7 @@ import '../repositories/local_resonance_repository.dart';
 import '../repositories/resonance_repository.dart';
 import '../services/resonance_connection_service.dart';
 import '../services/resonance_engine.dart';
+import '../services/resonance_thread_discovery_service.dart';
 import '../services/resonance_thread_formation_service.dart';
 import '../services/resonance_thread_reconciliation_service.dart';
 import '../services/resonance_thread_service.dart';
@@ -25,7 +26,7 @@ final resonanceEngineProvider = Provider<ResonanceEngine>((ref) {
   );
 });
 
-/// Application-facing Thread reconciliation service for Resonance.
+/// Shared Thread reconciliation boundary.
 final resonanceThreadReconciliationServiceProvider =
     Provider<ResonanceThreadReconciliationService>((ref) {
   return ResonanceThreadReconciliationService(
@@ -38,8 +39,9 @@ final resonanceConnectionServiceProvider =
     Provider<ResonanceConnectionService>((ref) {
   return ResonanceConnectionService(
     engine: ref.watch(resonanceEngineProvider),
-    threadReconciliationService:
-        ref.watch(resonanceThreadReconciliationServiceProvider),
+    threadReconciliationService: ref.watch(
+      resonanceThreadReconciliationServiceProvider,
+    ),
   );
 });
 
@@ -64,6 +66,20 @@ final resonanceThreadFormationServiceProvider =
   return ResonanceThreadFormationService(
     engine: engine,
     threadService: ref.watch(resonanceThreadServiceProvider),
+  );
+});
+
+/// Application-facing Thread discovery/query boundary.
+///
+/// Product surfaces should use this provider when they need discoverable
+/// Threads. They should not implement Thread-state filtering themselves.
+final resonanceThreadDiscoveryServiceProvider =
+    Provider<ResonanceThreadDiscoveryService>((ref) {
+  return ResonanceThreadDiscoveryService(
+    engine: ref.watch(resonanceEngineProvider),
+    reconciliationService: ref.watch(
+      resonanceThreadReconciliationServiceProvider,
+    ),
   );
 });
 
