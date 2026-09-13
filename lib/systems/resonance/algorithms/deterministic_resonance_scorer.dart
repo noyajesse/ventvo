@@ -24,14 +24,14 @@ class DeterministicResonanceScorer {
   }) {
     return scoreProfiles(
       source: composer.compose(sourceSignals),
-      candidate: composer.compose(candidate.signals),
+      candidateProfile: composer.compose(candidate.signals),
       candidate: candidate,
     );
   }
 
   double scoreProfiles({
     required ResonanceProfile source,
-    required ResonanceProfile candidate,
+    required ResonanceProfile candidateProfile,
     required ResonanceCandidate candidate,
   }) {
     final sourceSignals = <String, double>{
@@ -41,7 +41,7 @@ class DeterministicResonanceScorer {
     var score = 0.0;
     final matchedTypes = <ResonanceSignalType>{};
 
-    for (final signal in candidate.signals) {
+    for (final signal in candidateProfile.signals) {
       final weight = _weightFor(signal.type);
 
       if (signal.type == ResonanceSignalType.privacy ||
@@ -62,7 +62,7 @@ class DeterministicResonanceScorer {
         composition.key: composition.strength,
     };
 
-    for (final composition in candidate.compositions) {
+    for (final composition in candidateProfile.compositions) {
       final sourceStrength = sourceCompositions[composition.key];
       if (sourceStrength == null) continue;
 
