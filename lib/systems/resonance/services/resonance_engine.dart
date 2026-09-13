@@ -2,6 +2,7 @@ import '../algorithms/deterministic_resonance_scorer.dart';
 import '../models/resonance_candidate.dart';
 import '../models/resonance_connection.dart';
 import '../models/resonance_query.dart';
+import '../models/resonance_thread.dart';
 import '../repositories/resonance_repository.dart';
 import 'resonance_signal_composer.dart';
 
@@ -26,6 +27,14 @@ abstract class ResonanceEngine {
   Future<List<ResonanceConnection>> getConnectionsInvolving(String id);
 
   Future<void> updateConnection(ResonanceConnection connection);
+
+  Future<void> saveThread(ResonanceThread thread);
+
+  Future<ResonanceThread?> getThread(String threadId);
+
+  Future<List<ResonanceThread>> getThreadsForExperience(String experienceId);
+
+  Future<List<ResonanceThread>> getThreads();
 }
 
 class LocalResonanceEngine implements ResonanceEngine {
@@ -118,5 +127,25 @@ class LocalResonanceEngine implements ResonanceEngine {
   @override
   Future<void> updateConnection(ResonanceConnection connection) {
     return repository.updateConnection(connection);
+  }
+
+  @override
+  Future<void> saveThread(ResonanceThread thread) {
+    return repository.saveThread(thread);
+  }
+
+  @override
+  Future<ResonanceThread?> getThread(String threadId) {
+    return repository.getThread(threadId);
+  }
+
+  @override
+  Future<List<ResonanceThread>> getThreadsForExperience(String experienceId) {
+    return repository.getThreadsForExperience(experienceId);
+  }
+
+  @override
+  Future<List<ResonanceThread>> getThreads() {
+    return repository.getThreads();
   }
 }
