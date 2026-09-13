@@ -1,6 +1,7 @@
 import '../models/resonance_candidate.dart';
 import '../models/resonance_profile.dart';
 import '../models/resonance_signal.dart';
+import '../services/resonance_signal_composer.dart';
 
 /// Explainable scoring rules for the first local Resonance engine.
 ///
@@ -11,15 +12,19 @@ import '../models/resonance_signal.dart';
 /// AI/embeddings can later provide richer signals without changing the engine
 /// boundary.
 class DeterministicResonanceScorer {
-  const DeterministicResonanceScorer();
+  const DeterministicResonanceScorer({
+    this.composer = const ResonanceSignalComposer(),
+  });
+
+  final ResonanceSignalComposer composer;
 
   double score({
     required List<ResonanceSignal> sourceSignals,
     required ResonanceCandidate candidate,
   }) {
     return scoreProfiles(
-      source: _profileFrom(sourceSignals),
-      candidate: _profileFrom(candidate.signals),
+      source: composer.compose(sourceSignals),
+      candidate: composer.compose(candidate.signals),
       candidate: candidate,
     );
   }
@@ -73,95 +78,6 @@ class DeterministicResonanceScorer {
     }
 
     return score.clamp(0.0, 1.0).toDouble();
-  }
-
-  ResonanceProfile _profileFrom(List<ResonanceSignal> signals) {
-    final immutableSignals = List<ResonanceSignal>.unmodifiable(signals);
-    final experiences = _byType(
-      immutableSignals,
-      ResonanceSignalType.experiential,
-    );
-    final contexts = _byType(
-      immutableSignals,
-      ResonanceSignalType.semantic,
-    );
-    final intents = _byType(
-      immutableSignals,
-      ResonanceSignalType.intent,
-    );
-
-    return ResonanceProfile(
-      signals: immutableSignals,
-      experiences: experiences,
-      contexts: contexts,
-      intents: intents,
-      relationships: _byType(
-        immutableSignals,
-        ResonanceSignalType.relationship,
-      ),
-      constraints: immutableSignals
-          .where(
-            (signal) =>
-                signal.type == ResonanceSignalType.privacy ||
-                signal.type == ResonanceSignalType.safety,
-          )
-          .toList(growable: false),
-      compositions: _composeDimensions(
-        experiences: experiences,
-        contexts: contexts,
-        intents: intents,
-      ),
-    );
-  }
-
-  List<ResonanceSignal> _byType(
-    List<ResonanceSignal> signals,
-    ResonanceSignalType type,
-  ) {
-    return List.unmodifiable(
-      signals.where((signal) => signal.type == type),
-    );
-  }
-
-  List<ResonanceComposition> _composeDimensions({
-    required List<ResonanceSignal> experiences,
-    required List<ResonanceSignal> contexts,
-    required List<ResonanceSignal> intents,
-  }) {
-    final compositions = <ResonanceComposition>[];
-
-    for (final experience in experiences) {
-      for (final context in contexts) {
-        compositions.add(
-          ResonanceComposition(
-            key: '${experience.key}_in_${context.key}',
-            signalKeys: [experience.key, context.key],
-            strength: _combinedStrength(experience, context),
-          ),
-        );
-      }
-    }
-
-    for (final experience in experiences) {
-      for (final intent in intents) {
-        compositions.add(
-          ResonanceComposition(
-            key: '${experience.key}_with_${intent.key}',
-            signalKeys: [experience.key, intent.key],
-            strength: _combinedStrength(experience, intent),
-          ),
-        );
-      }
-    }
-
-    return List.unmodifiable(compositions);
-  }
-
-  double _combinedStrength(
-    ResonanceSignal first,
-    ResonanceSignal second,
-  ) {
-    return ((first.strength + second.strength) / 2).clamp(0, 1).toDouble();
   }
 
   String _signalKey(ResonanceSignal signal) => '${signal.type}:${signal.key}';
