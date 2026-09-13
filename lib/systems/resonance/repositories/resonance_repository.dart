@@ -3,10 +3,12 @@ import '../models/resonance_connection.dart';
 import '../models/resonance_query.dart';
 import '../models/resonance_thread.dart';
 
-/// Storage/discovery boundary for core Resonance data.
+/// Storage/discovery boundary for core Resonance capabilities.
 ///
-/// Feed, Space, and Crash Out should depend on this contract rather than on a
-/// concrete storage implementation or matching algorithm.
+/// Feed, Space, Crash Out, Threads, and connection features depend on this
+/// contract rather than on a concrete storage implementation or matching
+/// algorithm. Map persistence lives behind [ResonanceMapRepository] so core
+/// test doubles do not need to implement Map operations.
 abstract class ResonanceRepository {
   Future<void> saveCandidate(ResonanceCandidate candidate);
 
