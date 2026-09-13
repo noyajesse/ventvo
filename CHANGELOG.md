@@ -4,6 +4,63 @@ All notable changes to Ventvo will be documented here.
 
 ---
 
+## Unreleased - Resonance Connection Lifecycle
+
+### Added
+
+- Added the `ResonanceConnectionLifecycle` finite-state policy.
+- Added controlled Resonance connection states: `suggested`, `accepted`, `active`, `closed`, and `blocked`.
+- Added `updateConnection()` to the Resonance repository and engine contracts.
+- Added local persistence/update behavior for Resonance connections.
+- Added lifecycle orchestration through `ResonanceConnectionService`.
+- Added automated coverage for valid and invalid lifecycle transitions.
+
+### Architecture
+
+```text
+UI
+ ↓
+Riverpod
+ ↓
+ResonanceConnectionService
+ ↓
+ResonanceEngine
+ ↓
+ResonanceRepository
+ ↓
+Local / Backend implementation
+```
+
+Connection state is now controlled by the Resonance domain rather than directly by UI code.
+
+### Current Connection Lifecycle
+
+```text
+SUGGESTED
+   ├── ACCEPTED
+   ├── CLOSED
+   └── BLOCKED
+
+ACCEPTED
+   ├── ACTIVE
+   ├── CLOSED
+   └── BLOCKED
+
+ACTIVE
+   ├── CLOSED
+   └── BLOCKED
+
+CLOSED  → terminal
+BLOCKED → terminal
+```
+
+### Validation
+
+- `flutter analyze` passes with no issues.
+- `flutter test` passes all tests.
+
+---
+
 ## Version 0.1.1 - Ventvo Voice Experience
 
 ### Added
@@ -84,7 +141,7 @@ Fate
 └── Keep Private
 ```
 
-Product Decisions
+### Product Decisions
 
 Crash Out is separate from the Vent system.
 A Crash Out is a private release, not a Vent type.
