@@ -303,4 +303,187 @@ void main() {
 
     expect(result, isNull);
   });
+
+  test('creates a new Thread when formation policy approves', () async {
+    final repository = FakeResonanceRepository();
+    final service = _service(repository);
+    repository.connections.addAll([
+      _connection(
+        id: 'vent-new_vent-1',
+        sourceId: 'vent-new',
+        targetId: 'vent-1',
+        type: ResonanceConnectionType.sharedExperience,
+        strength: 0.8,
+      ),
+      _connection(
+        id: 'vent-new_vent-2',
+        sourceId: 'vent-new',
+        targetId: 'vent-2',
+        type: ResonanceConnectionType.perspective,
+        strength: 0.8,
+      ),
+    ]);
+
+    final result = await service.formThreadForExperience(
+      experienceId: 'vent-new',
+      threadId: 'thread-new',
+      voiceMark: 'Nera',
+      voiceMarks: const ['Aven', 'Sol'],
+      createdAt: DateTime(2026, 2, 1),
+    );
+
+    expect(result, isNotNull);
+    expect(result!.id, 'thread-new');
+    expect(result.experienceIds, ['vent-new', 'vent-1', 'vent-2']);
+    expect(result.voiceMarks, ['Nera', 'Aven', 'Sol']);
+    expect(result.connections.map((connection) => connection.id), [
+      'vent-new_vent-1',
+      'vent-new_vent-2',
+    ]);
+  });
+
+  test('does not create a new Thread when formation policy rejects weak evidence', () async {
+    final repository = FakeResonanceRepository();
+    final service = _service(repository);
+    repository.connections.addAll([
+      _connection(
+        id: 'vent-new_vent-1',
+        sourceId: 'vent-new',
+        targetId: 'vent-1',
+        strength: 0.4,
+      ),
+      _connection(
+        id: 'vent-new_vent-2',
+        sourceId: 'vent-new',
+        targetId: 'vent-2',
+        strength: 0.4,
+      ),
+    ]);
+
+    final result = await service.formThreadForExperience(
+      experienceId: 'vent-new',
+      threadId: 'thread-new',
+      createdAt: DateTime(2026, 2, 1),
+    );
+
+    expect(result, isNull);
+    expect(repository.threads, isEmpty);
+  });
+
+  test('does not create a new Thread from blocked or closed connections', () async {
+    final repository = FakeResonanceRepository();
+    final service = _service(repository);
+    repository.connections.addAll([
+      _connection(
+        id: 'vent-new_vent-1',
+        sourceId: 'vent-new',
+        targetId: 'vent-1',
+        state: ResonanceConnectionState.blocked,
+      ),
+      _connection(
+        id: 'vent-new_vent-2',
+        sourceId: 'vent-new',
+        targetId: 'vent-2',
+        state: ResonanceConnectionState.closed,
+      ),
+    ]);
+
+    final result = await service.formThreadForExperience(
+      experienceId: 'vent-new',
+      threadId: 'thread-new',
+      createdAt: DateTime(2026, 2, 1),
+    );
+
+    expect(result, isNull);
+    expect(repository.threads, isEmpty);
+  });
+
+  test('privacy and safety restrictions veto Thread formation', () async {
+    for (final restriction in ['privacy', 'safety']) {
+      final repository = FakeResonanceRepository();
+      final service = _service(repository);
+      repository.connections.addAll([
+        _connection(
+          id: 'vent-new_vent-1',
+          sourceId: 'vent-new',
+          targetId: 'vent-1',
+        ),
+        _connection(
+          id: 'vent-new_vent-2',
+          sourceId: 'vent-new',
+          targetId: 'vent-2',
+        ),
+      ]);
+
+      final result = await service.formThreadForExperience(
+        experienceId: 'vent-new',
+        threadId: 'thread-new',
+        createdAt: DateTime(2026, 2, 1),
+        isPrivacyRestricted: restriction == 'privacy',
+        isSafetyRestricted: restriction == 'safety',
+      );
+
+      expect(result, isNull);
+      expect(repository.threads, isEmpty);
+    }
+  });
+
+  test('multiple Voices can participate in a formed Thread', () async {
+    final repository = FakeResonanceRepository();
+    final service = _service(repository);
+    repository.connections.addAll([
+      _connection(
+        id: 'vent-new_vent-1',
+        sourceId: 'vent-new',
+        targetId: 'vent-1',
+      ),
+      _connection(
+        id: 'vent-new_vent-2',
+        sourceId: 'vent-new',
+        targetId: 'vent-2',
+      ),
+    ]);
+
+    final result = await service.formThreadForExperience(
+      experienceId: 'vent-new',
+      threadId: 'thread-new',
+      voiceMark: 'Nera',
+      voiceMarks: const ['Aven', 'Sol'],
+      createdAt: DateTime(2026, 2, 1),
+    );
+
+    expect(result!.voiceMarks, ['Nera', 'Aven', 'Sol']);
+  });
+
+  test('repeated formation attempt does not create a duplicate Thread', () async {
+    final repository = FakeResonanceRepository();
+    final service = _service(repository);
+    repository.connections.addAll([
+      _connection(
+        id: 'vent-new_vent-1',
+        sourceId: 'vent-new',
+        targetId: 'vent-1',
+      ),
+      _connection(
+        id: 'vent-new_vent-2',
+        sourceId: 'vent-new',
+        targetId: 'vent-2',
+      ),
+    ]);
+
+    final first = await service.formThreadForExperience(
+      experienceId: 'vent-new',
+      threadId: 'thread-new',
+      createdAt: DateTime(2026, 2, 1),
+    );
+    final second = await service.formThreadForExperience(
+      experienceId: 'vent-new',
+      threadId: 'thread-new',
+      createdAt: DateTime(2026, 3, 1),
+    );
+
+    expect(first?.id, 'thread-new');
+    expect(second?.id, 'thread-new');
+    expect(repository.threads.length, 1);
+  });
 }
