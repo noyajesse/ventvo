@@ -51,6 +51,8 @@ abstract class ResonanceMapEngine {
   Future<List<ResonanceMap>> getMapsForExperience(String experienceId);
 
   Future<List<ResonanceMap>> getMaps();
+
+  Future<List<ResonanceConnection>> getConnectionsInvolving(String id);
 }
 
 class LocalResonanceEngine implements ResonanceEngine, ResonanceMapEngine {
@@ -72,7 +74,9 @@ class LocalResonanceEngine implements ResonanceEngine, ResonanceMapEngine {
   ResonanceMapRepository _requireMapRepository() {
     final repository = mapRepository;
     if (repository == null) {
-      throw StateError('The configured Resonance repository does not support Maps.');
+      throw StateError(
+        'The configured Resonance repository does not support Maps.',
+      );
     }
     return repository;
   }
