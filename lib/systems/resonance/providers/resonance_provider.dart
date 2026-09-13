@@ -4,6 +4,7 @@ import '../repositories/local_resonance_repository.dart';
 import '../repositories/resonance_repository.dart';
 import '../services/resonance_connection_service.dart';
 import '../services/resonance_engine.dart';
+import '../services/resonance_thread_service.dart';
 import '../services/space_resonance_discovery_service.dart';
 import '../services/vent_resonance_discovery_service.dart';
 
@@ -26,6 +27,16 @@ final resonanceEngineProvider = Provider<ResonanceEngine>((ref) {
 final resonanceConnectionServiceProvider =
     Provider<ResonanceConnectionService>((ref) {
   return ResonanceConnectionService(
+    engine: ref.watch(resonanceEngineProvider),
+  );
+});
+
+/// Application-facing Thread service for Resonance Threads.
+///
+/// Product features should use this boundary for Thread creation and
+/// extension rather than mutating Thread models directly.
+final resonanceThreadServiceProvider = Provider<ResonanceThreadService>((ref) {
+  return ResonanceThreadService(
     engine: ref.watch(resonanceEngineProvider),
   );
 });
