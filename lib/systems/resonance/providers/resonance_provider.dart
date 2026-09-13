@@ -20,20 +20,25 @@ final resonanceRepositoryProvider = Provider<ResonanceRepository>((ref) {
   return LocalResonanceRepository();
 });
 
-/// Shared Resonance engine for the current local deterministic implementation.
-final resonanceEngineProvider = Provider<ResonanceEngine>((ref) {
+/// Concrete local engine instance shared by all Resonance capabilities.
+///
+/// This provider is intentionally private to the provider layer. Product
+/// features continue to consume the abstract [ResonanceEngine] and
+/// [ResonanceMapEngine] contracts below.
+final localResonanceEngineProvider = Provider<LocalResonanceEngine>((ref) {
   return LocalResonanceEngine(
     repository: ref.watch(resonanceRepositoryProvider),
   );
 });
 
-/// Shared Map capability exposed by the same Resonance engine instance.
+/// Shared Resonance engine exposed through the core capability contract.
+final resonanceEngineProvider = Provider<ResonanceEngine>((ref) {
+  return ref.watch(localResonanceEngineProvider);
+});
+
+/// Shared Map capability exposed from the same concrete engine instance.
 final resonanceMapEngineProvider = Provider<ResonanceMapEngine>((ref) {
-  final engine = ref.watch(resonanceEngineProvider);
-  if (engine is ResonanceMapEngine) {
-    return engine;
-  }
-  throw StateError('The configured Resonance engine does not support Maps.');
+  return ref.watch(localResonanceEngineProvider);
 });
 
 /// Shared Thread reconciliation boundary.
