@@ -1,3 +1,75 @@
+## Resonance Connection Lifecycle
+
+Date: 2026-09-13
+Branch: development
+
+Completed:
+- Added a reusable `ResonanceConnectionLifecycle` finite-state policy.
+- Defined controlled connection states: `suggested`, `accepted`, `active`, `closed`, and `blocked`.
+- Defined valid transitions and rejected arbitrary state changes.
+- Added `updateConnection()` to the Resonance repository and engine contracts.
+- Implemented local connection updates through `LocalResonanceRepository`.
+- Added lifecycle orchestration to `ResonanceConnectionService`.
+- Added connection lifecycle tests covering valid and invalid transitions.
+- Updated test fakes to satisfy the expanded repository and engine contracts.
+
+Current lifecycle:
+
+```text
+SUGGESTED
+   ├── ACCEPTED
+   ├── CLOSED
+   └── BLOCKED
+
+ACCEPTED
+   ├── ACTIVE
+   ├── CLOSED
+   └── BLOCKED
+
+ACTIVE
+   ├── CLOSED
+   └── BLOCKED
+
+CLOSED  → terminal
+BLOCKED → terminal
+```
+
+Architecture:
+
+```text
+UI
+ ↓
+Riverpod
+ ↓
+ResonanceConnectionService
+ ↓
+ResonanceEngine
+ ↓
+ResonanceRepository
+ ↓
+Local / Backend implementation
+```
+
+Engineering principle:
+- Connection state is a domain concern, not a UI concern.
+- The lifecycle behaves as a finite state machine so future Threads, Maps, safety controls, and backend persistence can reuse the same rules.
+- Feed, Space, and Crash Out do not receive their own connection/matching logic. They consume the shared Resonance system.
+
+Product boundary:
+- `Just Listen` and `Open Discussion` remain the only current Vent interaction modes.
+- Resonance is the central connection system; the small-group/three-person experience remains only one possible product presentation powered by Resonance.
+- Crash Out matching remains outside Crash Out itself and will use the shared Resonance system when that pathway is implemented.
+
+Verification:
+- `flutter analyze` passed with no issues.
+- `flutter test` passed all tests.
+
+Next engineering focus:
+- Continue building the Resonance connection foundation without prematurely introducing backend or AI matching.
+- Next work should build on the lifecycle rather than creating parallel connection state or matching systems.
+
+---
+
 ## Resonance-Powered Feed Foundation
 
 Date: 2026-09-10
