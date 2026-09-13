@@ -38,6 +38,11 @@ class FakeResonanceEngine implements ResonanceEngine {
   }
 
   @override
+  Future<List<ResonanceConnection>> getConnectionsInvolving(String id) async {
+    return const [];
+  }
+
+  @override
   Future<void> updateConnection(ResonanceConnection connection) async {
     updatedConnection = connection;
   }
