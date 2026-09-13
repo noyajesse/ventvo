@@ -21,4 +21,6 @@ abstract class ResonanceRepository {
   );
 
   Future<List<ResonanceConnection>> getConnectionsFor(String sourceId);
+
+  Future<List<ResonanceConnection>> getConnectionsInvolving(String id);
 }
