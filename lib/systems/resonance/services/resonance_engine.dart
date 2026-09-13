@@ -55,7 +55,7 @@ abstract class ResonanceMapEngine {
 
 class LocalResonanceEngine implements ResonanceEngine, ResonanceMapEngine {
   final ResonanceRepository repository;
-  final ResonanceMapRepository mapRepository;
+  final ResonanceMapRepository? mapRepository;
   final DeterministicResonanceScorer scorer;
   final ResonanceSignalComposer composer;
 
@@ -67,9 +67,15 @@ class LocalResonanceEngine implements ResonanceEngine, ResonanceMapEngine {
   }) : mapRepository = mapRepository ??
             (repository is ResonanceMapRepository
                 ? repository as ResonanceMapRepository
-                : throw ArgumentError(
-                    'The supplied repository does not support Resonance Maps.',
-                  ));
+                : null);
+
+  ResonanceMapRepository _requireMapRepository() {
+    final repository = mapRepository;
+    if (repository == null) {
+      throw StateError('The configured Resonance repository does not support Maps.');
+    }
+    return repository;
+  }
 
   @override
   Future<void> indexCandidate(ResonanceCandidate candidate) {
@@ -174,21 +180,21 @@ class LocalResonanceEngine implements ResonanceEngine, ResonanceMapEngine {
 
   @override
   Future<void> saveMap(ResonanceMap map) {
-    return mapRepository.saveMap(map);
+    return _requireMapRepository().saveMap(map);
   }
 
   @override
   Future<ResonanceMap?> getMap(String mapId) {
-    return mapRepository.getMap(mapId);
+    return _requireMapRepository().getMap(mapId);
   }
 
   @override
   Future<List<ResonanceMap>> getMapsForExperience(String experienceId) {
-    return mapRepository.getMapsForExperience(experienceId);
+    return _requireMapRepository().getMapsForExperience(experienceId);
   }
 
   @override
   Future<List<ResonanceMap>> getMaps() {
-    return mapRepository.getMaps();
+    return _requireMapRepository().getMaps();
   }
 }
