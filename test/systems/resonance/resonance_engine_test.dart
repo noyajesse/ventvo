@@ -57,6 +57,15 @@ class FakeResonanceRepository implements ResonanceRepository {
   Future<List<ResonanceConnection>> getConnectionsFor(String sourceId) async {
     return connections.where((item) => item.sourceId == sourceId).toList();
   }
+
+  @override
+  Future<List<ResonanceConnection>> getConnectionsInvolving(String id) async {
+    return connections
+        .where(
+          (item) => item.sourceId == id || item.targetId == id,
+        )
+        .toList();
+  }
 }
 
 void main() {
@@ -251,6 +260,39 @@ void main() {
     expect(
       await engine.getConnectionBetween('vent-2', 'vent-1'),
       isNull,
+    );
+  });
+
+  test('finds connections where an experience is either source or target',
+      () async {
+    final repository = FakeResonanceRepository([]);
+    final engine = LocalResonanceEngine(repository: repository);
+
+    await engine.createConnection(
+      sourceId: 'vent-1',
+      targetId: 'vent-2',
+      type: ResonanceConnectionType.discovery,
+      strength: 0.7,
+    );
+    await engine.createConnection(
+      sourceId: 'vent-3',
+      targetId: 'vent-1',
+      type: ResonanceConnectionType.response,
+      strength: 0.8,
+    );
+    await engine.createConnection(
+      sourceId: 'vent-4',
+      targetId: 'vent-5',
+      type: ResonanceConnectionType.similarity,
+      strength: 0.9,
+    );
+
+    final connections = await engine.getConnectionsInvolving('vent-1');
+
+    expect(connections, hasLength(2));
+    expect(
+      connections.map((connection) => connection.id),
+      containsAll(<String>['vent-1_vent-2', 'vent-3_vent-1']),
     );
   });
 }
