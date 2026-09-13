@@ -5,7 +5,7 @@ import 'package:ventvo/systems/resonance/models/resonance_map.dart';
 import 'package:ventvo/systems/resonance/services/resonance_engine.dart';
 import 'package:ventvo/systems/resonance/services/resonance_map_reconciliation_service.dart';
 
-a class FakeResonanceMapEngine implements ResonanceMapEngine {
+class FakeResonanceMapEngine implements ResonanceMapEngine {
   final Map<String, ResonanceMap> maps = {};
   final Map<String, List<ResonanceConnection>> connectionsByExperience = {};
 
