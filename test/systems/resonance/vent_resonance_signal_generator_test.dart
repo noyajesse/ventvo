@@ -264,4 +264,73 @@ void main() {
       isTrue,
     );
   });
+
+  test('gives richer phrases a higher signal strength', () {
+    final simpleVent = Vent(
+      id: 'vent-10',
+      content: 'I feel alone.',
+      spaceId: 'space-10',
+      voiceMark: '◇',
+      createdAt: DateTime(2026, 1, 1),
+    );
+    final richVent = Vent(
+      id: 'vent-11',
+      content: 'No one understands what I am going through.',
+      spaceId: 'space-11',
+      voiceMark: '◇',
+      createdAt: DateTime(2026, 1, 1),
+    );
+    final simpleSpace = Space(
+      id: 'space-10',
+      mode: SpaceMode.justListen,
+      originatingVentId: 'vent-10',
+      creatorVoiceMark: '◇',
+      createdAt: DateTime(2026, 1, 1),
+    );
+    final richSpace = Space(
+      id: 'space-11',
+      mode: SpaceMode.justListen,
+      originatingVentId: 'vent-11',
+      creatorVoiceMark: '◇',
+      createdAt: DateTime(2026, 1, 1),
+    );
+
+    final simpleSignal = generator
+        .generate(vent: simpleVent, space: simpleSpace)
+        .firstWhere((signal) => signal.key == 'feeling_alone');
+    final richSignal = generator
+        .generate(vent: richVent, space: richSpace)
+        .firstWhere((signal) => signal.key == 'feeling_alone');
+
+    expect(richSignal.strength, greaterThan(simpleSignal.strength));
+  });
+
+  test('extracts connection difficulty as a distinct experience', () {
+    final vent = Vent(
+      id: 'vent-12',
+      content: "I can't connect with anyone at university.",
+      spaceId: 'space-12',
+      voiceMark: '◇',
+      createdAt: DateTime(2026, 1, 1),
+    );
+    final space = Space(
+      id: 'space-12',
+      mode: SpaceMode.justListen,
+      originatingVentId: 'vent-12',
+      creatorVoiceMark: '◇',
+      createdAt: DateTime(2026, 1, 1),
+    );
+
+    final signals = generator.generate(vent: vent, space: space);
+    final connectionSignal = signals.firstWhere(
+      (signal) => signal.key == 'connection_difficulty',
+    );
+
+    expect(connectionSignal.type, ResonanceSignalType.experiential);
+    expect(connectionSignal.strength, greaterThan(0.95));
+    expect(
+      signals.any((signal) => signal.key == 'university'),
+      isTrue,
+    );
+  });
 }
