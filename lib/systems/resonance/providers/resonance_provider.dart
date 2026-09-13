@@ -4,6 +4,7 @@ import '../repositories/local_resonance_repository.dart';
 import '../repositories/resonance_repository.dart';
 import '../services/resonance_connection_service.dart';
 import '../services/resonance_engine.dart';
+import '../services/resonance_thread_formation_service.dart';
 import '../services/resonance_thread_service.dart';
 import '../services/space_resonance_discovery_service.dart';
 import '../services/vent_resonance_discovery_service.dart';
@@ -38,6 +39,20 @@ final resonanceConnectionServiceProvider =
 final resonanceThreadServiceProvider = Provider<ResonanceThreadService>((ref) {
   return ResonanceThreadService(
     engine: ref.watch(resonanceEngineProvider),
+  );
+});
+
+/// Application-facing Thread formation service for Resonance.
+///
+/// This service decides whether a new experience meaningfully continues an
+/// existing Thread. It reuses the shared engine and Thread service rather than
+/// introducing matching logic into product features.
+final resonanceThreadFormationServiceProvider =
+    Provider<ResonanceThreadFormationService>((ref) {
+  final engine = ref.watch(resonanceEngineProvider);
+  return ResonanceThreadFormationService(
+    engine: engine,
+    threadService: ref.watch(resonanceThreadServiceProvider),
   );
 });
 
