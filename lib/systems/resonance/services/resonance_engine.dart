@@ -3,6 +3,7 @@ import '../models/resonance_candidate.dart';
 import '../models/resonance_connection.dart';
 import '../models/resonance_query.dart';
 import '../repositories/resonance_repository.dart';
+import 'resonance_signal_composer.dart';
 
 /// Shared Resonance service consumed by product features.
 abstract class ResonanceEngine {
@@ -21,33 +22,44 @@ abstract class ResonanceEngine {
 class LocalResonanceEngine implements ResonanceEngine {
   final ResonanceRepository repository;
   final DeterministicResonanceScorer scorer;
+  final ResonanceSignalComposer composer;
 
   const LocalResonanceEngine({
     required this.repository,
     this.scorer = const DeterministicResonanceScorer(),
+    this.composer = const ResonanceSignalComposer(),
   });
 
   @override
   Future<void> indexCandidate(ResonanceCandidate candidate) {
-    return repository.saveCandidate(candidate);
+    final profile = candidate.profile ?? composer.compose(candidate.signals);
+    return repository.saveCandidate(
+      candidate.copyWith(profile: profile),
+    );
   }
 
   @override
   Future<List<ResonanceCandidate>> discover(ResonanceQuery query) async {
     final candidates = await repository.findCandidates(query);
+    final sourceProfile = composer.compose(query.signals);
 
     final ranked = candidates
-        .where((candidate) =>
-            candidate.id != query.sourceId &&
-            !query.excludedIds.contains(candidate.id))
-        .map(
-          (candidate) => candidate.copyWith(
-            score: scorer.score(
-              sourceSignals: query.signals,
-              candidate: candidate,
-            ),
-          ),
+        .where(
+          (candidate) =>
+              candidate.id != query.sourceId &&
+              !query.excludedIds.contains(candidate.id),
         )
+        .map((candidate) {
+          final candidateProfile =
+              candidate.profile ?? composer.compose(candidate.signals);
+          return candidate.copyWith(
+            score: scorer.scoreProfiles(
+              source: sourceProfile,
+              candidate: candidateProfile,
+            ),
+            profile: candidateProfile,
+          );
+        })
         .where((candidate) => candidate.score > 0)
         .toList()
       ..sort((a, b) => b.score.compareTo(a.score));
