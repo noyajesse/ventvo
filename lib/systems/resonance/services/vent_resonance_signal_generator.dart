@@ -31,21 +31,23 @@ class VentResonanceSignalGenerator {
     }
 
     for (final pattern in _experientialPatterns) {
-      if (_containsAny(normalized, pattern.phrases)) {
+      final strength = _bestMatchStrength(normalized, pattern);
+      if (strength > 0) {
         add(
           ResonanceSignalType.experiential,
           pattern.key,
-          strength: pattern.strength,
+          strength: strength,
         );
       }
     }
 
     for (final pattern in _semanticPatterns) {
-      if (_containsAny(normalized, pattern.phrases)) {
+      final strength = _bestMatchStrength(normalized, pattern);
+      if (strength > 0) {
         add(
           ResonanceSignalType.semantic,
           pattern.key,
-          strength: pattern.strength,
+          strength: strength,
         );
       }
     }
@@ -72,18 +74,32 @@ class VentResonanceSignalGenerator {
     return List.unmodifiable(signals);
   }
 
-  bool _containsAny(String content, List<String> patterns) {
-    for (final pattern in patterns) {
+  /// Returns the strongest phrase match for a signal pattern.
+  ///
+  /// Longer, more specific phrases receive a small deterministic bonus. This
+  /// lets the engine distinguish a broad phrase such as "alone" from a richer
+  /// expression such as "no one understands" without using AI.
+  double _bestMatchStrength(String content, _SignalPattern pattern) {
+    var bestStrength = 0.0;
+
+    for (final phrase in pattern.phrases) {
       final regex = RegExp(
-        r'(^|[^a-z0-9])' + RegExp.escape(pattern) + r'([^a-z0-9]|$)',
+        r'(^|[^a-z0-9])' + RegExp.escape(phrase) + r'([^a-z0-9]|$)',
       );
 
       for (final match in regex.allMatches(content)) {
-        if (!_isNegated(content, match.start)) return true;
+        if (_isNegated(content, match.start)) continue;
+
+        final wordCount = phrase.split(' ').length;
+        final specificityBonus = ((wordCount - 1) * 0.05).clamp(0, 0.15);
+        final strength =
+            (pattern.strength + specificityBonus).clamp(0, 1).toDouble();
+
+        if (strength > bestStrength) bestStrength = strength;
       }
     }
 
-    return false;
+    return bestStrength;
   }
 
   /// Checks a small window before a matched phrase for common negation forms.
@@ -180,6 +196,15 @@ class VentResonanceSignalGenerator {
       'feel like i belong',
       'don\'t belong',
     ]),
+    _SignalPattern('connection_difficulty', [
+      'can\'t connect with anyone',
+      'can\'t connect',
+      'hard to connect with anyone',
+      'hard to connect',
+      'feel disconnected',
+      'feeling disconnected',
+      'disconnected from everyone',
+    ], strength: 0.95),
   ];
 
   static const _semanticPatterns = <_SignalPattern>[
