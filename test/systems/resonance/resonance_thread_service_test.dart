@@ -24,7 +24,21 @@ class FakeResonanceRepository implements ResonanceRepository {
 
 ResonanceThreadService _service(FakeResonanceRepository repository) => ResonanceThreadService(engine: LocalResonanceEngine(repository: repository));
 
-ResonanceConnection _connection({String id = 'vent-1_vent-2', String sourceId = 'vent-1', String targetId = 'vent-2'}) => ResonanceConnection(id: id, sourceId: sourceId, targetId: targetId, type: ResonanceConnectionType.sharedExperience, strength: 0.8, createdAt: DateTime(2026, 1, 1));
+ResonanceConnection _connection({
+  String id = 'vent-1_vent-2',
+  String sourceId = 'vent-1',
+  String targetId = 'vent-2',
+  double strength = 0.8,
+  ResonanceConnectionState state = ResonanceConnectionState.active,
+}) => ResonanceConnection(
+      id: id,
+      sourceId: sourceId,
+      targetId: targetId,
+      type: ResonanceConnectionType.sharedExperience,
+      strength: strength,
+      state: state,
+      createdAt: DateTime(2026, 1, 1),
+    );
 
 void main() {
   test('creates a Thread from its originating experience', () async {
@@ -63,6 +77,44 @@ void main() {
     final updated = await service.extendThread(thread: thread, experienceId: 'vent-2', connection: _connection(id: 'vent-3_vent-4', sourceId: 'vent-3', targetId: 'vent-4'));
     expect(updated, isNull);
     expect(thread.experienceIds, ['vent-1']);
+  });
+
+  test('rejects an extension from a suggested connection', () async {
+    final repository = FakeResonanceRepository();
+    final service = _service(repository);
+    final thread = await service.createThread(threadId: 'thread-1', originatingExperienceId: 'vent-1', createdAt: DateTime(2026, 1, 1));
+    final updated = await service.extendThread(
+      thread: thread,
+      experienceId: 'vent-2',
+      connection: _connection(state: ResonanceConnectionState.suggested),
+    );
+    expect(updated, isNull);
+    expect(thread.experienceIds, ['vent-1']);
+  });
+
+  test('rejects an extension from a weak connection', () async {
+    final repository = FakeResonanceRepository();
+    final service = _service(repository);
+    final thread = await service.createThread(threadId: 'thread-1', originatingExperienceId: 'vent-1', createdAt: DateTime(2026, 1, 1));
+    final updated = await service.extendThread(
+      thread: thread,
+      experienceId: 'vent-2',
+      connection: _connection(strength: 0.59),
+    );
+    expect(updated, isNull);
+    expect(thread.experienceIds, ['vent-1']);
+  });
+
+  test('rejects an extension from a closed connection', () async {
+    final repository = FakeResonanceRepository();
+    final service = _service(repository);
+    final thread = await service.createThread(threadId: 'thread-1', originatingExperienceId: 'vent-1', createdAt: DateTime(2026, 1, 1));
+    final updated = await service.extendThread(
+      thread: thread,
+      experienceId: 'vent-2',
+      connection: _connection(state: ResonanceConnectionState.closed),
+    );
+    expect(updated, isNull);
   });
 
   test('does not duplicate an experience already in the Thread', () async {
