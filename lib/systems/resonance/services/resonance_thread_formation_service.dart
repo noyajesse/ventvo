@@ -21,7 +21,6 @@ class ResonanceThreadFormationService {
     this.formationPolicy = const ResonanceThreadFormationPolicy(),
   });
 
-  /// Finds the strongest existing Thread that the experience can continue.
   Future<ResonanceThread?> findBestThreadForExperience(
     String experienceId,
   ) async {
@@ -48,8 +47,6 @@ class ResonanceThreadFormationService {
     return ranked.isEmpty ? null : ranked.first.thread;
   }
 
-  /// Finds the best Thread and extends it when a meaningful continuation
-  /// exists. Returns null when no existing Thread is strong enough.
   Future<ResonanceThread?> extendBestThreadForExperience({
     required String experienceId,
     String? voiceMark,
@@ -148,14 +145,15 @@ class ResonanceThreadFormationService {
       return null;
     }
 
-    final experienceIds = <String>[
-      experienceId,
-      ...selectedConnections.map(
-        (connection) => _counterpartId(connection, experienceId),
-      ),
-    ];
+    final counterpartIds = selectedConnections
+        .map((connection) => _counterpartId(connection, experienceId))
+        .whereType<String>();
 
-    final normalizedExperienceIds = experienceIds.toSet().toList();
+    final normalizedExperienceIds = <String>{
+      experienceId,
+      ...counterpartIds,
+    }.toList();
+
     if (normalizedExperienceIds.length < 3) {
       return null;
     }
