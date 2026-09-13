@@ -208,6 +208,31 @@ void main() {
     expect(second.strength, first.strength);
   });
 
+  test('preserves an accepted connection when discovery repeats', () async {
+    final repository = FakeResonanceRepository([]);
+    final engine = LocalResonanceEngine(repository: repository);
+
+    final first = await engine.createConnection(
+      sourceId: 'vent-1',
+      targetId: 'vent-2',
+      type: ResonanceConnectionType.sharedExperience,
+      strength: 0.8,
+    );
+    final accepted = first.copyWith(state: ResonanceConnectionState.accepted);
+    await engine.updateConnection(accepted);
+
+    final rediscovered = await engine.createConnection(
+      sourceId: 'vent-1',
+      targetId: 'vent-2',
+      type: ResonanceConnectionType.similarity,
+      strength: 0.4,
+    );
+
+    expect(rediscovered.state, ResonanceConnectionState.accepted);
+    expect(rediscovered.type, ResonanceConnectionType.sharedExperience);
+    expect(rediscovered.strength, 0.8);
+  });
+
   test('can look up a connection by its exact direction', () async {
     final repository = FakeResonanceRepository([]);
     final engine = LocalResonanceEngine(repository: repository);
