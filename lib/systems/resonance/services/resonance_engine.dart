@@ -55,7 +55,8 @@ class LocalResonanceEngine implements ResonanceEngine {
           return candidate.copyWith(
             score: scorer.scoreProfiles(
               source: sourceProfile,
-              candidate: candidateProfile,
+              candidateProfile: candidateProfile,
+              candidate: candidate,
             ),
             profile: candidateProfile,
           );
