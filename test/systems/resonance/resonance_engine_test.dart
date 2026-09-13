@@ -3,12 +3,14 @@ import 'package:ventvo/systems/resonance/models/resonance_candidate.dart';
 import 'package:ventvo/systems/resonance/models/resonance_connection.dart';
 import 'package:ventvo/systems/resonance/models/resonance_query.dart';
 import 'package:ventvo/systems/resonance/models/resonance_signal.dart';
+import 'package:ventvo/systems/resonance/models/resonance_thread.dart';
 import 'package:ventvo/systems/resonance/repositories/resonance_repository.dart';
 import 'package:ventvo/systems/resonance/services/resonance_engine.dart';
 
 class FakeResonanceRepository implements ResonanceRepository {
   final List<ResonanceCandidate> candidates;
   final List<ResonanceConnection> connections = [];
+  final Map<String, ResonanceThread> threads = {};
 
   FakeResonanceRepository(this.candidates);
 
@@ -65,6 +67,30 @@ class FakeResonanceRepository implements ResonanceRepository {
           (item) => item.sourceId == id || item.targetId == id,
         )
         .toList();
+  }
+
+  @override
+  Future<void> saveThread(ResonanceThread thread) async {
+    threads[thread.id] = thread;
+  }
+
+  @override
+  Future<ResonanceThread?> getThread(String threadId) async {
+    return threads[threadId];
+  }
+
+  @override
+  Future<List<ResonanceThread>> getThreadsForExperience(
+    String experienceId,
+  ) async {
+    return threads.values
+        .where((thread) => thread.containsExperience(experienceId))
+        .toList();
+  }
+
+  @override
+  Future<List<ResonanceThread>> getThreads() async {
+    return threads.values.toList();
   }
 }
 
