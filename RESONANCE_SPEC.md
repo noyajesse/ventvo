@@ -1,10 +1,10 @@
-# Ventvo Resonance System Specification v1.0
+# Ventvo Resonance System Specification v1.1
 
 ## Status
 
-Proposed foundation for implementation.
+Implemented foundation under active development.
 
-This document defines the first technical/product specification for Ventvo's Resonance system. It is intentionally implementation-oriented while leaving room for later refinement of the matching algorithm and user experience.
+This document defines the technical/product specification for Ventvo's Resonance system. It is implementation-oriented while leaving room for later refinement of discovery algorithms and user experience.
 
 ---
 
@@ -112,12 +112,12 @@ Do the experiences describe a similar lived experience or circumstance?
 
 Does the creator's requested interaction align with the potential response?
 
-Examples:
+The current Vent model has only two Space modes:
 
-- Just Listen should not be treated as an invitation for advice.
-- Similar Experiences can prioritize people who have lived something comparable.
-- Encouragement can prioritize supportive experiences.
-- Open Discussion can permit broader perspective.
+- `Just Listen`
+- `Open Discussion`
+
+These modes are represented as Resonance intent/context signals. Resonance must respect the creator's selected Space mode rather than inventing additional response modes.
 
 ### 5.4 Context Compatibility
 
@@ -181,13 +181,15 @@ The engine must not be embedded inside Feed, Space, or Crash Out.
 
 Those features consume the engine through a shared interface.
 
+The current local engine is deterministic and testable. Production semantic/AI discovery remains future infrastructure.
+
 ---
 
 # 7. Candidate Discovery
 
 Candidate discovery finds potentially relevant experiences before ranking them.
 
-The first implementation may use deterministic/local rules so that the architecture can be tested without requiring an AI model or production-scale infrastructure.
+The first implementation uses deterministic/local rules so that the architecture can be tested without requiring an AI model or production-scale infrastructure.
 
 Possible future candidate sources include:
 
@@ -234,22 +236,85 @@ A Resonance Connection represents a meaningful relationship discovered or create
 
 It is not automatically a friendship, follow, or permanent relationship.
 
-A connection should contain enough information to establish:
+A connection contains:
 
-- source experience
-- related experience or Voice
+- source experience/Voice identifier
+- related experience/Voice identifier
 - connection type
-- originating context
-- confidence/relevance information where appropriate
-- creation time
-- safety state
+- relevance strength
 - lifecycle state
+- creation time
 
-A connection may be temporary, contextual, or develop into a Resonance Thread.
+Current connection types are:
+
+- `sharedExperience` — meaningful overlap in lived experience
+- `perspective` — related experience with compatible but potentially different intent/perspective
+- `similarity` — broader meaningful overlap when a more specific type cannot be inferred
+- `response` — a future response-based relationship
+- `discovery` — a future discovery relationship
+
+The current implementation creates connections in the `suggested` state and manages their lifecycle through `ResonanceConnectionService`.
 
 ---
 
-# 10. Resonance Threads
+# 10. Resonance Connection Lifecycle
+
+Connections are modeled as a finite state machine rather than allowing arbitrary state changes from the UI.
+
+Current states:
+
+```text
+SUGGESTED
+   ├── ACCEPTED
+   ├── CLOSED
+   └── BLOCKED
+
+ACCEPTED
+   ├── ACTIVE
+   ├── CLOSED
+   └── BLOCKED
+
+ACTIVE
+   ├── CLOSED
+   └── BLOCKED
+
+CLOSED  → terminal
+BLOCKED → terminal
+```
+
+Meaning:
+
+- `suggested` — Resonance identified a meaningful possible relationship.
+- `accepted` — the connection has been acknowledged/opened for further use.
+- `active` — the connection is participating in an ongoing Resonance relationship such as a future Thread, Map, or connection experience.
+- `closed` — the relationship has ended and should not continue normally.
+- `blocked` — the relationship is prevented for safety/privacy reasons and is terminal.
+
+The lifecycle is controlled by `ResonanceConnectionLifecycle` and orchestrated by `ResonanceConnectionService`.
+
+UI code must not directly mutate connection state.
+
+The intended flow is:
+
+```text
+UI
+ ↓
+Riverpod
+ ↓
+ResonanceConnectionService
+ ↓
+ResonanceEngine
+ ↓
+ResonanceRepository
+```
+
+Invalid transitions are rejected by the lifecycle policy.
+
+This is a finite state machine and is intentionally explicit so future Thread, Map, safety, and backend implementations can reuse the same connection semantics.
+
+---
+
+# 11. Resonance Threads
 
 A Resonance Thread is a developing chain of related experiences connected through Resonance.
 
@@ -281,9 +346,11 @@ A Thread may eventually contain:
 
 Threads should be created only when the relationship is meaningful enough to justify persistence.
 
+The existing `ResonanceThread` model is a domain foundation; full Thread behavior is future work.
+
 ---
 
-# 11. Resonance Maps
+# 12. Resonance Maps
 
 A Resonance Map represents the broader pattern of relationships discovered through Resonance.
 
@@ -302,11 +369,11 @@ Maps are not required for the first Resonance implementation.
 
 They will consume established Resonance relationships rather than implementing a separate matching system.
 
-The first Map implementation should be data-driven and can initially remain invisible to users until the relationship model is stable.
+The existing `ResonanceMap` model is a domain foundation; full Map behavior is future work.
 
 ---
 
-# 12. Feed Integration
+# 13. Feed Integration
 
 The Feed is a discovery surface powered by Resonance.
 
@@ -317,7 +384,7 @@ Resonance
     |
 Discovery candidates
     |
-Feed ranking/filtering
+Feed presentation/filtering
     |
 Moment cards
     |
@@ -338,7 +405,7 @@ Feed ranking may add presentation-specific rules, but it must rely on the shared
 
 ---
 
-# 13. Space Integration
+# 14. Space Integration
 
 A Space remains the contextual experience around a Vent.
 
@@ -364,9 +431,16 @@ A Voice must not be forced into a Space merely because an algorithm considers th
 
 Participation remains user-controlled.
 
+For the current Space model:
+
+- `Just Listen` means the creator wants the expression to be encountered without a conversation requirement.
+- `Open Discussion` means the creator is open to people responding with their perspective.
+
+Resonance may operate around both modes, but it must not turn `Just Listen` into an implicit discussion space.
+
 ---
 
-# 14. Crash Out Integration
+# 15. Crash Out Integration
 
 Crash Out remains private unless the user explicitly chooses an outward pathway.
 
@@ -396,7 +470,7 @@ The user must never have a private Crash Out silently indexed for public discove
 
 ---
 
-# 15. The Small-Group / Three-Person Experience
+# 16. The Small-Group / Three-Person Experience
 
 Ventvo may eventually present a small number of people or experiences to someone who chooses a connection pathway.
 
@@ -418,7 +492,7 @@ The experience should emphasize understanding rather than algorithmic matchmakin
 
 ---
 
-# 16. Echo and Echo Notes
+# 17. Echo and Echo Notes
 
 Echo is a future response layer that can become another source of Resonance signals.
 
@@ -438,7 +512,7 @@ They should not bypass Space rules or privacy controls.
 
 ---
 
-# 17. Privacy Architecture
+# 18. Privacy Architecture
 
 Resonance must maintain strict separation between:
 
@@ -467,7 +541,7 @@ The system should return only the minimum information required for the requested
 
 ---
 
-# 18. Safety Architecture
+# 19. Safety Architecture
 
 Every Resonance pathway must include safety filtering.
 
@@ -489,7 +563,7 @@ Safety is not a UI-only concern. It belongs in the Resonance service/repository 
 
 ---
 
-# 19. No Popularity Optimization
+# 20. No Popularity Optimization
 
 Resonance must not optimize primarily for:
 
@@ -505,53 +579,55 @@ A highly popular experience is not automatically a highly resonant experience.
 
 ---
 
-# 20. Initial Implementation Strategy
+# 21. Implementation Strategy
 
-The first implementation should be deterministic and testable.
-
-Do not begin with an AI model.
+The implementation is staged so the connection model is proven before production AI.
 
 ### Stage A — Domain models
 
-Create the core Resonance models and enums.
+Create and refine the core Resonance models and enums. **Implemented foundation.**
 
 ### Stage B — Repository contract
 
-Define how Resonance candidates and connections are retrieved/stored.
+Define how Resonance candidates and connections are retrieved/stored. **Implemented foundation.**
 
 ### Stage C — Engine contract
 
-Define the shared service interface used by Feed, Space, and Crash Out.
+Define the shared service interface used by Feed, Space, and Crash Out. **Implemented foundation.**
 
 ### Stage D — Local deterministic engine
 
-Implement a small testable engine using structured signals and deterministic scoring.
+Implement a testable engine using structured signals and deterministic scoring. **Implemented foundation.**
 
 ### Stage E — Feed integration
 
-Replace hard-coded discovery with Resonance-powered candidates.
+Replace hard-coded discovery with Resonance-powered candidates. **Foundation implemented.**
 
 ### Stage F — Space integration
 
-Allow meaningful relationships discovered around Spaces to become Resonance connections.
+Allow meaningful relationships discovered around Spaces to become Resonance discovery results. **Foundation implemented.**
 
-### Stage G — Crash Out integration
+### Stage G — Connection lifecycle
 
-Implement the explicit Find People Who Understand pathway using the same engine.
+Create, accept, activate, close, and block Resonance Connections through a controlled lifecycle service. **Implemented foundation.**
 
-### Stage H — Backend
+### Stage H — Crash Out integration
 
-Move persistence and discovery to Supabase with secure authorization and scalable querying.
+Implement the explicit Find People Who Understand pathway using the same engine. **Future.**
 
-### Stage I — Advanced discovery
+### Stage I — Backend
 
-Evaluate embeddings/AI-assisted similarity only after the core model is proven.
+Move persistence and discovery to Supabase with secure authorization and scalable querying. **Future.**
+
+### Stage J — Advanced discovery
+
+Evaluate embeddings/AI-assisted similarity only after the core model is proven. **Future.**
 
 ---
 
-# 21. Proposed Feature Boundary
+# 22. Feature Boundary
 
-Resonance should be implemented as a reusable system rather than as a normal product screen.
+Resonance is implemented as a reusable system rather than as a normal product screen.
 
 Recommended structure:
 
@@ -571,7 +647,7 @@ Feature modules consume Resonance through providers/services and should not dire
 
 ---
 
-# 22. Data Flow Rule
+# 23. Data Flow Rule
 
 Ventvo follows the engineering architecture:
 
@@ -580,11 +656,11 @@ UI
  ↓
 Provider
  ↓
+Domain/Application Service
+ ↓
 Repository
  ↓
-Service
- ↓
-Backend
+Local or Backend implementation
 ```
 
 For Resonance:
@@ -594,22 +670,22 @@ Feed / Space / Crash Out UI
             ↓
 Feature Provider
             ↓
-Resonance Provider
+Resonance Provider / Service
             ↓
-Resonance Engine / Service
+Resonance Engine
             ↓
 Resonance Repository
             ↓
-Supabase
+Local / Supabase implementation
 ```
 
-This keeps product features independent from the underlying connection algorithm.
+This keeps product features independent from the underlying connection algorithm and storage implementation.
 
 ---
 
-# 23. What We Are NOT Implementing Yet
+# 24. What We Are NOT Implementing Yet
 
-The first Resonance foundation will not attempt to solve everything.
+The current Resonance foundation does not attempt to solve everything.
 
 We are not yet implementing:
 
@@ -621,32 +697,41 @@ We are not yet implementing:
 - recommendation notifications
 - permanent psychological profiles
 - diagnosis or mental-health classification
+- a second matching system inside Crash Out
 
 These can be evaluated after the core connection model works.
 
 ---
 
-# 24. First Engineering Deliverable
+# 25. Testing Requirements
 
-The immediate implementation target is:
+Resonance changes require automated tests for both deterministic behavior and architectural boundaries.
 
-```text
-Resonance domain models
-        ↓
-Resonance repository contract
-        ↓
-Resonance engine contract
-        ↓
-Deterministic local engine
-        ↓
-Unit tests
-```
+Current coverage includes:
 
-Only after this foundation passes testing should Feed and Space be rebuilt around it.
+- signal generation
+- signal composition
+- candidate/profile integration
+- deterministic scoring
+- candidate discovery
+- privacy/safety filtering
+- Feed and Space discovery orchestration
+- connection creation
+- connection type inference
+- self/invalid connection rejection
+- connection lifecycle transitions
+- invalid lifecycle transition rejection
+
+After the latest Connection Lifecycle implementation:
+
+- `flutter analyze` passes with no issues.
+- `flutter test` passes all tests.
+
+Future backend and production discovery work must retain equivalent unit/integration coverage.
 
 ---
 
-# 25. Success Criteria
+# 26. Success Criteria
 
 The Resonance foundation is successful when:
 
@@ -660,10 +745,11 @@ The Resonance foundation is successful when:
 8. The first implementation can be tested without requiring production AI.
 9. Backend persistence can replace local storage without changing product concepts.
 10. The architecture remains consistent with Ventvo's principle: meaningful connection over engagement.
+11. Connection lifecycle state cannot be arbitrarily mutated by UI code.
 
 ---
 
-# 26. Architectural Principle
+# 27. Architectural Principle
 
 Resonance is the connective tissue of Ventvo.
 
