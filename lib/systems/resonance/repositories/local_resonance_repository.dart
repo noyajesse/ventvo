@@ -46,6 +46,20 @@ class LocalResonanceRepository implements ResonanceRepository {
   }
 
   @override
+  Future<ResonanceConnection?> getConnectionBetween(
+    String sourceId,
+    String targetId,
+  ) async {
+    for (final connection in _connections) {
+      if (connection.sourceId == sourceId &&
+          connection.targetId == targetId) {
+        return connection;
+      }
+    }
+    return null;
+  }
+
+  @override
   Future<List<ResonanceConnection>> getConnectionsFor(String sourceId) async {
     return _connections
         .where((connection) => connection.sourceId == sourceId)
