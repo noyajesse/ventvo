@@ -23,6 +23,8 @@ abstract class ResonanceEngine {
     String targetId,
   );
 
+  Future<List<ResonanceConnection>> getConnectionsInvolving(String id);
+
   Future<void> updateConnection(ResonanceConnection connection);
 }
 
@@ -106,6 +108,11 @@ class LocalResonanceEngine implements ResonanceEngine {
     String targetId,
   ) {
     return repository.getConnectionBetween(sourceId, targetId);
+  }
+
+  @override
+  Future<List<ResonanceConnection>> getConnectionsInvolving(String id) {
+    return repository.getConnectionsInvolving(id);
   }
 
   @override
