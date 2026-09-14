@@ -1,12 +1,17 @@
 import '../models/echo.dart';
 import '../models/space.dart';
 import '../models/space_response.dart';
+import 'echo_response_resonance_service.dart';
 import 'space_response_storage.dart';
 
 class EchoService {
   final SpaceResponseStorage storage;
+  final EchoResponseResonanceService? responseResonanceService;
 
-  const EchoService({required this.storage});
+  const EchoService({
+    required this.storage,
+    this.responseResonanceService,
+  });
 
   Future<List<Echo>> loadForSpace(String spaceId) async {
     final responses = await storage.loadForSpace(spaceId);
@@ -36,7 +41,18 @@ class EchoService {
     );
 
     await storage.add(response);
-    return _toEcho(response);
+    final echo = _toEcho(response);
+
+    final resonanceService = responseResonanceService;
+    if (resonanceService != null) {
+      await resonanceService.connectEcho(
+        space: space,
+        echo: echo,
+        sourceExperienceId: 'vent:${space.originatingVentId}',
+      );
+    }
+
+    return echo;
   }
 
   Echo _toEcho(SpaceResponse response) {
