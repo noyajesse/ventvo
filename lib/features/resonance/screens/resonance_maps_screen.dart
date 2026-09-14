@@ -9,6 +9,7 @@ import '../../spaces/models/echo_note.dart';
 import '../../spaces/providers/space_provider.dart';
 import '../../spaces/screens/space_screen.dart';
 import '../../ventvo_voice/models/vent.dart';
+import '../../ventvo_voice/providers/vent_provider.dart';
 import '../../../systems/resonance/models/resonance_connection.dart';
 import '../../../systems/resonance/models/resonance_map.dart';
 import '../models/resonance_map_experience.dart';
