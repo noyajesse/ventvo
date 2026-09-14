@@ -50,6 +50,7 @@ class VentStorage {
       'createdAt': vent.createdAt.toIso8601String(),
       'visibility': vent.visibility.name,
       'safetyState': vent.safetyState.name,
+      'lifecycleState': vent.lifecycleState.name,
       'originatingCrashOutId': vent.originatingCrashOutId,
     };
   }
@@ -83,6 +84,7 @@ class VentStorage {
       createdAt: parsedCreatedAt,
       visibility: _parseVisibility(map['visibility']),
       safetyState: _parseSafetyState(map['safetyState']),
+      lifecycleState: _parseLifecycleState(map['lifecycleState']),
       originatingCrashOutId: map['originatingCrashOutId'] as String?,
     );
   }
@@ -98,6 +100,13 @@ class VentStorage {
     return VentSafetyState.values.firstWhere(
       (item) => item.name == value,
       orElse: () => VentSafetyState.approved,
+    );
+  }
+
+  VentLifecycleState _parseLifecycleState(Object? value) {
+    return VentLifecycleState.values.firstWhere(
+      (item) => item.name == value,
+      orElse: () => VentLifecycleState.active,
     );
   }
 }
