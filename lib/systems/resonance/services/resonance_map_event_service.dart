@@ -1,7 +1,6 @@
 import '../models/resonance_connection.dart';
 import 'resonance_engine.dart';
 import 'resonance_map_evolution_service.dart';
-import 'resonance_map_reconciliation_service.dart';
 
 /// Orchestrates Map reactions to meaningful Resonance connection events.
 ///
@@ -11,20 +10,18 @@ import 'resonance_map_reconciliation_service.dart';
 class ResonanceMapEventService {
   final ResonanceMapEngine mapEngine;
   final ResonanceMapEvolutionService evolutionService;
-  final ResonanceMapReconciliationService reconciliationService;
 
   const ResonanceMapEventService({
     required this.mapEngine,
     required this.evolutionService,
-    required this.reconciliationService,
   });
 
   /// Reacts to a persisted connection state transition.
   ///
   /// Only accepted and active connections can evolve a Map. If both endpoints
   /// already belong to the same Map, no evolution is attempted because there is
-  /// no new experience to add. Maps are reconciled before evolution through
-  /// [ResonanceMapEvolutionService].
+  /// no new experience to add. Reconciliation is delegated to the evolution
+  /// service so there is one canonical Map-growth path.
   Future<void> handleConnectionStateChange(
     ResonanceConnection connection,
   ) async {
