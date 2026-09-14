@@ -7,7 +7,6 @@ import 'package:ventvo/features/spaces/services/echo_resonance_link_service.dart
 import 'package:ventvo/features/spaces/services/echo_resonance_link_storage.dart';
 import 'package:ventvo/systems/resonance/models/resonance_candidate.dart';
 import 'package:ventvo/systems/resonance/models/resonance_connection.dart';
-import 'package:ventvo/systems/resonance/models/resonance_map.dart';
 import 'package:ventvo/systems/resonance/models/resonance_query.dart';
 import 'package:ventvo/systems/resonance/models/resonance_thread.dart';
 import 'package:ventvo/systems/resonance/services/resonance_engine.dart';
