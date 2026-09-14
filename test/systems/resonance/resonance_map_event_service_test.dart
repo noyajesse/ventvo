@@ -54,10 +54,18 @@ ResonanceConnection connection({
   );
 }
 
-ResonanceMap map({List<ResonanceConnection> connections = const []}) {
+ResonanceMap map({
+  String id = 'map-1',
+  List<String> experienceIds = const [
+    'experience-1',
+    'experience-2',
+    'experience-3',
+  ],
+  List<ResonanceConnection> connections = const [],
+}) {
   return ResonanceMap.create(
-    id: 'map-1',
-    experienceIds: const ['experience-1', 'experience-2', 'experience-3'],
+    id: id,
+    experienceIds: experienceIds,
     connections: connections,
     createdAt: createdAt,
   );
@@ -165,6 +173,28 @@ void main() {
     );
 
     expect(engine.maps['map-1']!.experienceIds, orderedEquals(existing.experienceIds));
+  });
+
+  test('does not merge two established Maps', () async {
+    final engine = FakeResonanceMapEngine();
+    engine.maps['map-1'] = map(
+      experienceIds: const ['experience-1', 'experience-2', 'experience-3'],
+    );
+    engine.maps['map-2'] = map(
+      id: 'map-2',
+      experienceIds: const ['experience-4', 'experience-5', 'experience-6'],
+    );
+
+    await service(engine).handleConnectionStateChange(
+      connection(
+        id: 'cross-map',
+        sourceId: 'experience-1',
+        targetId: 'experience-4',
+      ),
+    );
+
+    expect(engine.maps['map-1']!.experienceIds, hasLength(3));
+    expect(engine.maps['map-2']!.experienceIds, hasLength(3));
   });
 
   test('does nothing when neither endpoint belongs to a Map', () async {
