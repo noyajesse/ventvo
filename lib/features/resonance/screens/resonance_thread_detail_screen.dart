@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/ventvo_colors.dart';
+import '../../spaces/models/echo_note.dart';
 import '../../spaces/providers/space_provider.dart';
 import '../../spaces/screens/space_screen.dart';
 import '../../spaces/models/space.dart';
@@ -45,7 +46,8 @@ class ResonanceThreadDetailScreen extends ConsumerWidget {
             );
           }
 
-          final experiences = snapshot.data ?? const <ResonanceThreadExperience>[];
+          final experiences =
+              snapshot.data ?? const <ResonanceThreadExperience>[];
 
           return ListView(
             physics: const BouncingScrollPhysics(),
@@ -240,7 +242,7 @@ class _ExperienceStep extends StatelessWidget {
 }
 
 class _EchoNotePreview extends StatelessWidget {
-  final dynamic note;
+  final EchoNote note;
 
   const _EchoNotePreview(this.note);
 
@@ -259,7 +261,7 @@ class _EchoNotePreview extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            note.voiceMark as String,
+            note.voiceMark,
             style: const TextStyle(
               color: VentvoColors.textMuted,
               fontSize: 10,
@@ -268,7 +270,7 @@ class _EchoNotePreview extends StatelessWidget {
           const SizedBox(width: 9),
           Expanded(
             child: Text(
-              note.content as String,
+              note.content,
               style: const TextStyle(
                 color: VentvoColors.textSecondary,
                 fontSize: 12,
