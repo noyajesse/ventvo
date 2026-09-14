@@ -8,13 +8,11 @@ import '../../../systems/resonance/providers/resonance_provider.dart';
 
 class ResonanceRelationshipScreen extends ConsumerStatefulWidget {
   final ResonanceCandidate candidate;
-  final String sourceId;
   final ResonanceConnection connection;
 
   const ResonanceRelationshipScreen({
     super.key,
     required this.candidate,
-    required this.sourceId,
     required this.connection,
   });
 
@@ -115,7 +113,7 @@ class _ResonanceRelationshipScreenState
           padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
           children: [
             Text(
-              widget.candidate.id,
+              widget.candidate.profile?.displayLabel ?? 'RESONANCE',
               style: const TextStyle(
                 color: VentvoColors.textMuted,
                 fontSize: 10,
