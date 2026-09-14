@@ -164,7 +164,7 @@ void main() {
     final connection = engine.connections.single;
     expect(connection.type, ResonanceConnectionType.response);
     expect(connection.state, ResonanceConnectionState.active);
-    expect(connection.sourceId, 'vent:vent-1');
+    expect(connection.sourceId, 'vent-1');
     expect(connection.targetId, 'echo:${echo!.id}');
     expect(linkStorage.link?.echoId, echo.id);
     expect(linkStorage.link?.connectionId, connection.id);
