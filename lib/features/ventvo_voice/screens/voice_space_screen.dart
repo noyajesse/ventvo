@@ -11,6 +11,7 @@ import '../../crash_out/screens/private_crash_outs_screen.dart';
 import '../../crash_out/models/crash_out.dart';
 import '../../crash_out/providers/crash_out_provider.dart';
 import 'create_vent_screen.dart';
+import 'voice_evolution_screen.dart';
 
 class VoiceSpaceScreen extends ConsumerWidget {
   const VoiceSpaceScreen({super.key});
@@ -41,9 +42,17 @@ class VoiceSpaceScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const VoiceEvolutionScreen(),
+                ),
+              );
+            },
+            tooltip: 'Shape your Voice',
             icon: const Icon(
-              Icons.more_horiz_rounded,
+              Icons.tune_rounded,
               color: VentvoColors.textMuted,
             ),
           ),
