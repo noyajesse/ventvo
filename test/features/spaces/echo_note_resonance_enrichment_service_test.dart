@@ -49,11 +49,13 @@ void main() {
     expect(enrichment!.echoId, 'echo-1');
     expect(enrichment.connectionId, 'vent-1_echo-1');
     expect(
-      enrichment.profile.relationships,
-      contains('echo_note'),
+      enrichment.profile.relationships.any(
+        (signal) => signal.key == 'echo_note',
+      ),
+      isTrue,
     );
     expect(
-      enrichment.profile.experiences,
+      enrichment.profile.experiences.map((signal) => signal.key),
       containsAll(['shared_experience', 'personal_reflection']),
     );
   });
