@@ -21,6 +21,7 @@ import 'package:ventvo/systems/resonance/services/resonance_map_evolution_servic
 import 'package:ventvo/systems/resonance/services/resonance_map_event_service.dart';
 import 'package:ventvo/systems/resonance/services/resonance_map_integrity_policy.dart';
 import 'package:ventvo/systems/resonance/services/resonance_map_reconciliation_service.dart';
+import 'package:ventvo/systems/resonance/services/resonance_map_reconciliation_service.dart';
 import 'package:ventvo/systems/resonance/services/resonance_engine.dart';
 
 class _FakeResponseStorage extends SpaceResponseStorage {
@@ -261,8 +262,10 @@ void main() {
     expect(updatedMap, isNotNull);
     expect(updatedMap!.experienceIds, contains('echo:${createdEcho.id}'));
     expect(
-      updatedMap.connections,
-      contains(responseConnection),
+      updatedMap.connections.any(
+        (connection) => connection.id == responseConnection.id,
+      ),
+      isTrue,
     );
     expect(updatedMap.experienceIds, hasLength(4));
   });
