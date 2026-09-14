@@ -48,7 +48,7 @@ class EchoService {
       await resonanceService.connectEcho(
         space: space,
         echo: echo,
-        sourceExperienceId: 'vent:${space.originatingVentId}',
+        sourceExperienceId: space.originatingVentId,
       );
     }
 
