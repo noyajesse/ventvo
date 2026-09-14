@@ -7,6 +7,7 @@ import '../services/resonance_engine.dart';
 import '../services/resonance_map_discovery_service.dart';
 import '../services/resonance_map_formation_service.dart';
 import '../services/resonance_map_reconciliation_service.dart';
+import '../services/resonance_map_thread_integration_service.dart';
 import '../services/resonance_thread_discovery_service.dart';
 import '../services/resonance_thread_formation_service.dart';
 import '../services/resonance_thread_reconciliation_service.dart';
@@ -14,32 +15,24 @@ import '../services/resonance_thread_service.dart';
 import '../services/space_resonance_discovery_service.dart';
 import '../services/vent_resonance_discovery_service.dart';
 
-/// Shared local Resonance repository.
-///
-/// Product features depend on the contract rather than constructing storage
-/// themselves. The provider can later be overridden with a backend repository.
 final resonanceRepositoryProvider = Provider<ResonanceRepository>((ref) {
   return LocalResonanceRepository();
 });
 
-/// Concrete local engine instance shared by all Resonance capabilities.
 final localResonanceEngineProvider = Provider<LocalResonanceEngine>((ref) {
   return LocalResonanceEngine(
     repository: ref.watch(resonanceRepositoryProvider),
   );
 });
 
-/// Shared Resonance engine exposed through the core capability contract.
 final resonanceEngineProvider = Provider<ResonanceEngine>((ref) {
   return ref.watch(localResonanceEngineProvider);
 });
 
-/// Shared Map capability exposed from the same concrete engine instance.
 final resonanceMapEngineProvider = Provider<ResonanceMapEngine>((ref) {
   return ref.watch(localResonanceEngineProvider);
 });
 
-/// Shared Thread reconciliation boundary.
 final resonanceThreadReconciliationServiceProvider =
     Provider<ResonanceThreadReconciliationService>((ref) {
   return ResonanceThreadReconciliationService(
@@ -47,7 +40,6 @@ final resonanceThreadReconciliationServiceProvider =
   );
 });
 
-/// Shared Map reconciliation boundary.
 final resonanceMapReconciliationServiceProvider =
     Provider<ResonanceMapReconciliationService>((ref) {
   return ResonanceMapReconciliationService(
@@ -55,11 +47,6 @@ final resonanceMapReconciliationServiceProvider =
   );
 });
 
-/// Application-facing Map formation service.
-///
-/// Formation decides whether meaningful Resonance evidence is strong enough
-/// for a Map to exist. It is deliberately separate from Map discovery and
-/// reconciliation.
 final resonanceMapFormationServiceProvider =
     Provider<ResonanceMapFormationService>((ref) {
   return ResonanceMapFormationService(
@@ -67,7 +54,6 @@ final resonanceMapFormationServiceProvider =
   );
 });
 
-/// Shared Map discovery/query boundary.
 final resonanceMapDiscoveryServiceProvider =
     Provider<ResonanceMapDiscoveryService>((ref) {
   return ResonanceMapDiscoveryService(
@@ -78,7 +64,17 @@ final resonanceMapDiscoveryServiceProvider =
   );
 });
 
-/// Application-facing connection service for Resonance relationships.
+final resonanceMapThreadIntegrationServiceProvider =
+    Provider<ResonanceMapThreadIntegrationService>((ref) {
+  return ResonanceMapThreadIntegrationService(
+    resonanceEngine: ref.watch(resonanceEngineProvider),
+    mapEngine: ref.watch(resonanceMapEngineProvider),
+    reconciliationService: ref.watch(
+      resonanceMapReconciliationServiceProvider,
+    ),
+  );
+});
+
 final resonanceConnectionServiceProvider =
     Provider<ResonanceConnectionService>((ref) {
   return ResonanceConnectionService(
@@ -89,14 +85,12 @@ final resonanceConnectionServiceProvider =
   );
 });
 
-/// Application-facing Thread service for Resonance Threads.
 final resonanceThreadServiceProvider = Provider<ResonanceThreadService>((ref) {
   return ResonanceThreadService(
     engine: ref.watch(resonanceEngineProvider),
   );
 });
 
-/// Application-facing Thread formation service for Resonance.
 final resonanceThreadFormationServiceProvider =
     Provider<ResonanceThreadFormationService>((ref) {
   final engine = ref.watch(resonanceEngineProvider);
@@ -106,7 +100,6 @@ final resonanceThreadFormationServiceProvider =
   );
 });
 
-/// Application-facing Thread discovery/query boundary.
 final resonanceThreadDiscoveryServiceProvider =
     Provider<ResonanceThreadDiscoveryService>((ref) {
   return ResonanceThreadDiscoveryService(
@@ -117,7 +110,6 @@ final resonanceThreadDiscoveryServiceProvider =
   );
 });
 
-/// Application-facing discovery service for Vent experiences.
 final ventResonanceDiscoveryServiceProvider =
     Provider<VentResonanceDiscoveryService>((ref) {
   return VentResonanceDiscoveryService(
@@ -125,7 +117,6 @@ final ventResonanceDiscoveryServiceProvider =
   );
 });
 
-/// Application-facing discovery service for Space experiences.
 final spaceResonanceDiscoveryServiceProvider =
     Provider<SpaceResonanceDiscoveryService>((ref) {
   return SpaceResonanceDiscoveryService(
