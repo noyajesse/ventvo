@@ -13,7 +13,7 @@ void main() {
     double strength = 0.7,
     ResonanceConnectionState state = ResonanceConnectionState.active,
   }) {
-    return ResonanceConnection.create(
+    return ResonanceConnection(
       id: id,
       sourceId: 'origin',
       targetId: targetId,
@@ -34,7 +34,10 @@ void main() {
     );
 
     expect(decision.isEligible, isTrue);
-    expect(decision.experienceIds, containsAll(['origin', 'experience-a', 'experience-b']));
+    expect(
+      decision.experienceIds,
+      containsAll(['origin', 'experience-a', 'experience-b']),
+    );
     expect(decision.connections, hasLength(2));
   });
 
