@@ -298,7 +298,24 @@ class _MapNode extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = large ? 44.0 : 27.0;
-    return Container(width: size, height: size, alignment: Alignment.center, decoration: BoxDecoration(color: VentvoColors.surfaceElevated, shape: BoxShape.circle, border: Border.all(color: VentvoColors.border)), child: Text(label, style: TextStyle(color: VentvoColors.textSecondary, fontSize: large ? 11 : 8, fontWeight: FontWeight.w700));
+    return Container(
+      width: size,
+      height: size,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: VentvoColors.surfaceElevated,
+        shape: BoxShape.circle,
+        border: Border.all(color: VentvoColors.border),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: VentvoColors.textSecondary,
+          fontSize: large ? 11 : 8,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
   }
 }
 
