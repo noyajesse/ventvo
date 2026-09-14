@@ -16,13 +16,12 @@ import 'package:ventvo/systems/resonance/models/resonance_query.dart';
 import 'package:ventvo/systems/resonance/models/resonance_thread.dart';
 import 'package:ventvo/systems/resonance/services/resonance_connection_lifecycle.dart';
 import 'package:ventvo/systems/resonance/services/resonance_connection_service.dart';
+import 'package:ventvo/systems/resonance/services/resonance_engine.dart';
 import 'package:ventvo/systems/resonance/services/resonance_map_evolution_policy.dart';
 import 'package:ventvo/systems/resonance/services/resonance_map_evolution_service.dart';
 import 'package:ventvo/systems/resonance/services/resonance_map_event_service.dart';
 import 'package:ventvo/systems/resonance/services/resonance_map_integrity_policy.dart';
 import 'package:ventvo/systems/resonance/services/resonance_map_reconciliation_service.dart';
-import 'package:ventvo/systems/resonance/services/resonance_map_reconciliation_service.dart';
-import 'package:ventvo/systems/resonance/services/resonance_engine.dart';
 
 class _FakeResponseStorage extends SpaceResponseStorage {
   final List<SpaceResponse> responses = [];
