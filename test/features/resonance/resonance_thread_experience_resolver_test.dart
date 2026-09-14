@@ -5,6 +5,7 @@ import '../../../lib/features/resonance/services/resonance_thread_experience_res
 import '../../../lib/features/spaces/models/echo.dart';
 import '../../../lib/features/spaces/models/echo_note.dart';
 import '../../../lib/features/spaces/models/space.dart';
+import '../../../lib/features/spaces/models/space_response.dart';
 import '../../../lib/features/spaces/services/echo_note_service.dart';
 import '../../../lib/features/spaces/services/echo_note_storage.dart';
 import '../../../lib/features/spaces/services/echo_service.dart';
@@ -13,12 +14,12 @@ import '../../../lib/features/ventvo_voice/models/vent.dart';
 import '../../../lib/systems/resonance/models/resonance_thread.dart';
 
 class _FakeResponseStorage extends SpaceResponseStorage {
-  final List<dynamic> responses;
+  final List<SpaceResponse> responses;
 
   _FakeResponseStorage(this.responses);
 
   @override
-  Future<List<dynamic>> loadForSpace(String spaceId) async {
+  Future<List<SpaceResponse>> loadForSpace(String spaceId) async {
     return responses.where((item) => item.spaceId == spaceId).toList();
   }
 }
@@ -40,7 +41,7 @@ class _FakeEchoNoteStorage extends EchoNoteStorage {
 }
 
 void main() {
-  test('resolves Vent and Echo experiences without exposing internal ids', () async {
+  test('resolves Vent and Echo experiences with Echo Notes', () async {
     final space = Space(
       id: 'space-1',
       mode: SpaceMode.openDiscussion,
@@ -76,20 +77,19 @@ void main() {
       createdAt: DateTime(2026, 1, 3),
     );
 
-    final responseStorage = _FakeResponseStorage([]);
-    responseStorage.responses.add(
-      _ResponseAdapter(
-        id: echo.id,
-        spaceId: echo.spaceId,
-        ventId: echo.ventId,
-        voiceMark: echo.voiceMark,
-        content: echo.content,
-        createdAt: echo.createdAt,
-      ),
-    );
-
     final resolver = ResonanceThreadExperienceResolver(
-      echoService: EchoService(storage: responseStorage),
+      echoService: EchoService(
+        storage: _FakeResponseStorage([
+          SpaceResponse(
+            id: echo.id,
+            spaceId: echo.spaceId,
+            ventId: echo.ventId,
+            voiceMark: echo.voiceMark,
+            content: echo.content,
+            createdAt: echo.createdAt,
+          ),
+        ]),
+      ),
       echoNoteService: EchoNoteService(
         storage: _FakeEchoNoteStorage([note]),
       ),
@@ -115,23 +115,5 @@ void main() {
     expect(resolved[1].content, echo.content);
     expect(resolved[1].echoNotes, hasLength(1));
     expect(resolved[1].echoNotes.single.content, note.content);
-  });
-}
-
-class _ResponseAdapter {
-  final String id;
-  final String spaceId;
-  final String? ventId;
-  final String voiceMark;
-  final String content;
-  final DateTime createdAt;
-
-  _ResponseAdapter({
-    required this.id,
-    required this.spaceId,
-    required this.ventId,
-    required this.voiceMark,
-    required this.content,
-    required this.createdAt,
   });
 }
