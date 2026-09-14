@@ -12,11 +12,12 @@ import '../../ventvo_voice/models/vent.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
 import '../../../systems/resonance/models/resonance_connection.dart';
 import '../../../systems/resonance/models/resonance_map.dart';
+import '../../../systems/resonance/models/resonance_thread.dart';
 import '../models/resonance_map_experience.dart';
 import '../providers/resonance_map_experience_provider.dart';
 import '../providers/resonance_map_threads_provider.dart';
 import '../providers/resonance_maps_provider.dart';
-import '../screens/resonance_thread_detail_screen.dart';
+import 'resonance_thread_detail_screen.dart';
 
 class ResonanceMapsScreen extends ConsumerWidget {
   const ResonanceMapsScreen({super.key});
@@ -154,10 +155,7 @@ class ResonanceMapDetailScreen extends ConsumerWidget {
               threads.when(
                 loading: () => const SizedBox.shrink(),
                 error: (_, _) => const SizedBox.shrink(),
-                data: (items) {
-                  if (items.isEmpty) return const SizedBox.shrink();
-                  return _MapThreadsSection(threads: items, ventsById: ventsById);
-                },
+                data: (items) => items.isEmpty ? const SizedBox.shrink() : _MapThreadsSection(threads: items, ventsById: ventsById),
               ),
               const SizedBox(height: 8),
               ...map.connections.map(_ConnectionCard.new),
@@ -188,9 +186,7 @@ class _MapThreadsSection extends StatelessWidget {
           (thread) => InkWell(
             borderRadius: BorderRadius.circular(16),
             onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => ResonanceThreadDetailScreen(thread: thread, ventsById: ventsById),
-              ),
+              MaterialPageRoute(builder: (_) => ResonanceThreadDetailScreen(thread: thread, ventsById: ventsById)),
             ),
             child: Container(
               margin: const EdgeInsets.only(bottom: 8),
@@ -302,7 +298,7 @@ class _MapNode extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = large ? 44.0 : 27.0;
-    return Container(width: size, height: size, alignment: Alignment.center, decoration: BoxDecoration(color: VentvoColors.surfaceElevated, shape: BoxShape.circle, border: Border.all(color: VentvoColors.border)), child: Text(label, style: TextStyle(color: VentvoColors.textSecondary, fontSize: large ? 11 : 8, fontWeight: FontWeight.w700)));
+    return Container(width: size, height: size, alignment: Alignment.center, decoration: BoxDecoration(color: VentvoColors.surfaceElevated, shape: BoxShape.circle, border: Border.all(color: VentvoColors.border)), child: Text(label, style: TextStyle(color: VentvoColors.textSecondary, fontSize: large ? 11 : 8, fontWeight: FontWeight.w700));
   }
 }
 
