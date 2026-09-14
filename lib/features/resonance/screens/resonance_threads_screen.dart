@@ -11,31 +11,39 @@ import 'resonance_maps_screen.dart';
 import 'resonance_thread_detail_screen.dart';
 
 class ResonanceThreadsScreen extends ConsumerWidget {
-  const ResonanceThreadsScreen({super.key});
+  final String? experienceId;
+
+  const ResonanceThreadsScreen({
+    super.key,
+    this.experienceId,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final threads = ref.watch(resonanceThreadsProvider);
+    final threads = experienceId == null
+        ? ref.watch(resonanceThreadsProvider)
+        : ref.watch(resonanceThreadsForExperienceProvider(experienceId!));
     final vents = ref.watch(ventProvider).asData?.value ?? const <Vent>[];
     final ventsById = {for (final vent in vents) vent.id: vent};
 
     return Scaffold(
       backgroundColor: VentvoColors.background,
       appBar: AppBar(
-        title: const Text('Resonance'),
+        title: Text(experienceId == null ? 'Resonance' : 'Related Threads'),
         centerTitle: true,
         actions: [
-          IconButton(
-            tooltip: 'Resonance Maps',
-            icon: const Icon(Icons.hub_outlined),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const ResonanceMapsScreen(),
-                ),
-              );
-            },
-          ),
+          if (experienceId == null)
+            IconButton(
+              tooltip: 'Resonance Maps',
+              icon: const Icon(Icons.hub_outlined),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const ResonanceMapsScreen(),
+                  ),
+                );
+              },
+            ),
         ],
       ),
       body: threads.when(
@@ -58,26 +66,30 @@ class ResonanceThreadsScreen extends ConsumerWidget {
         ),
         data: (items) {
           if (items.isEmpty) {
-            return const Center(
+            return Center(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 36),
+                padding: const EdgeInsets.symmetric(horizontal: 36),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Nothing is resonating yet.',
+                      experienceId == null
+                          ? 'Nothing is resonating yet.'
+                          : 'No related Threads yet.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: VentvoColors.textPrimary,
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Text(
-                      'When experiences remain meaningfully connected, Ventvo can let you encounter that relationship as a Resonance Thread.',
+                      experienceId == null
+                          ? 'When experiences remain meaningfully connected, Ventvo can let you encounter that relationship as a Resonance Thread.'
+                          : 'An active Resonance can become part of a deeper Thread when enough meaningful experiences connect around it.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: VentvoColors.textMuted,
                         fontSize: 13,
                         height: 1.6,
