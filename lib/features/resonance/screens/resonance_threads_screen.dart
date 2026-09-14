@@ -6,6 +6,7 @@ import '../../ventvo_voice/models/vent.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
 import '../../../systems/resonance/models/resonance_thread.dart';
 import '../providers/resonance_threads_provider.dart';
+import 'resonance_thread_detail_screen.dart';
 
 class ResonanceThreadsScreen extends ConsumerWidget {
   const ResonanceThreadsScreen({super.key});
@@ -112,61 +113,83 @@ class _ThreadCard extends StatelessWidget {
         .map((vent) => vent.content)
         .toList();
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.fromLTRB(18, 18, 18, 17),
-      decoration: BoxDecoration(
-        color: VentvoColors.surface,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: VentvoColors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'RESONANCE THREAD',
-            style: TextStyle(
-              color: VentvoColors.textMuted,
-              fontSize: 8,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 1.4,
+    return InkWell(
+      borderRadius: BorderRadius.circular(22),
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => ResonanceThreadDetailScreen(
+              thread: thread,
+              ventsById: ventsById,
             ),
           ),
-          const SizedBox(height: 9),
-          Text(
-            marks,
-            style: const TextStyle(
-              color: VentvoColors.textSecondary,
-              fontSize: 11,
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 14),
+        padding: const EdgeInsets.fromLTRB(18, 18, 18, 17),
+        decoration: BoxDecoration(
+          color: VentvoColors.surface,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: VentvoColors.border),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'RESONANCE THREAD',
+              style: TextStyle(
+                color: VentvoColors.textMuted,
+                fontSize: 8,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.4,
+              ),
             ),
-          ),
-          const SizedBox(height: 14),
-          Text(
-            '${thread.experienceIds.length} experiences · ${thread.connections.length} connections',
-            style: const TextStyle(
-              color: VentvoColors.textMuted,
-              fontSize: 10,
+            const SizedBox(height: 9),
+            Text(
+              marks,
+              style: const TextStyle(
+                color: VentvoColors.textSecondary,
+                fontSize: 11,
+              ),
             ),
-          ),
-          if (excerpts.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            ...excerpts.map(
-              (excerpt) => Padding(
-                padding: const EdgeInsets.only(bottom: 9),
-                child: Text(
-                  excerpt,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: VentvoColors.textPrimary,
-                    fontSize: 14,
-                    height: 1.45,
+            const SizedBox(height: 14),
+            Text(
+              '${thread.experienceIds.length} experiences · ${thread.connections.length} connections',
+              style: const TextStyle(
+                color: VentvoColors.textMuted,
+                fontSize: 10,
+              ),
+            ),
+            if (excerpts.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              ...excerpts.map(
+                (excerpt) => Padding(
+                  padding: const EdgeInsets.only(bottom: 9),
+                  child: Text(
+                    excerpt,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: VentvoColors.textPrimary,
+                      fontSize: 14,
+                      height: 1.45,
+                    ),
                   ),
                 ),
               ),
+            ],
+            const SizedBox(height: 8),
+            const Align(
+              alignment: Alignment.centerRight,
+              child: Icon(
+                Icons.arrow_forward_rounded,
+                size: 17,
+                color: VentvoColors.textMuted,
+              ),
             ),
           ],
-        ],
+        ),
       ),
     );
   }
