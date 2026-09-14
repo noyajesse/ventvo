@@ -9,6 +9,11 @@ enum VentSafetyState {
   restricted,
 }
 
+enum VentLifecycleState {
+  active,
+  archived,
+}
+
 class Vent {
   final String id;
   final String content;
@@ -18,6 +23,7 @@ class Vent {
   final DateTime createdAt;
   final VentVisibility visibility;
   final VentSafetyState safetyState;
+  final VentLifecycleState lifecycleState;
   final String? originatingCrashOutId;
 
   const Vent({
@@ -29,10 +35,14 @@ class Vent {
     required this.createdAt,
     this.visibility = VentVisibility.public,
     this.safetyState = VentSafetyState.approved,
+    this.lifecycleState = VentLifecycleState.active,
     this.originatingCrashOutId,
   });
 
+  bool get isActive => lifecycleState == VentLifecycleState.active;
+
   bool get isDiscoverable =>
+      isActive &&
       visibility == VentVisibility.public &&
       safetyState == VentSafetyState.approved;
 
@@ -45,6 +55,7 @@ class Vent {
     DateTime? createdAt,
     VentVisibility? visibility,
     VentSafetyState? safetyState,
+    VentLifecycleState? lifecycleState,
     String? originatingCrashOutId,
   }) {
     return Vent(
@@ -56,6 +67,7 @@ class Vent {
       createdAt: createdAt ?? this.createdAt,
       visibility: visibility ?? this.visibility,
       safetyState: safetyState ?? this.safetyState,
+      lifecycleState: lifecycleState ?? this.lifecycleState,
       originatingCrashOutId:
           originatingCrashOutId ?? this.originatingCrashOutId,
     );
