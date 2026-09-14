@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -20,13 +19,11 @@ class VoiceSpaceScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final voice = ref.watch(ventvoVoiceProvider).asData?.value;
     final vents = ref.watch(ventProvider).asData?.value ?? const [];
-    final crashOuts = ref.watch(crashOutProvider);
-
-    final privateCrashOuts = crashOuts
-        .where(
-          (crashOut) => crashOut.status == CrashOutStatus.keptPrivate,
-        )
-        .toList();
+    final crashOutState = ref.watch(crashOutProvider);
+    final privateCrashOuts = crashOutState.asData?.value
+            .where((crashOut) => crashOut.status == CrashOutStatus.keptPrivate)
+            .toList() ??
+        const <CrashOut>[];
 
     return Scaffold(
       backgroundColor: VentvoColors.background,
@@ -63,27 +60,20 @@ class VoiceSpaceScreen extends ConsumerWidget {
               _VoiceIdentity(
                 mark: voice?.mark ?? '◇',
                 name: voice?.name ?? 'Unnamed Voice',
-                expression:
-                    voice?.expression ?? 'Your Voice is waiting.',
+                expression: voice?.expression ?? 'Your Voice is waiting.',
               ),
-
               const SizedBox(height: 34),
-
               const _SectionLabel(
                 title: 'Your expression',
                 subtitle: 'Things you chose to let exist outside of you.',
               ),
-
               const SizedBox(height: 16),
-
               _StatsRow(
                 vents: vents.length,
                 moments: 0,
                 arcs: 0,
               ),
-
               const SizedBox(height: 30),
-
               if (vents.isNotEmpty) ...[
                 ...vents.asMap().entries.map(
                   (entry) => VentCard(
@@ -93,31 +83,23 @@ class VoiceSpaceScreen extends ConsumerWidget {
                 ),
               ] else
                 const _EmptyVentsCard(),
-
               if (privateCrashOuts.isNotEmpty) ...[
                 const SizedBox(height: 30),
-
                 const _SectionLabel(
                   title: 'Kept close',
                   subtitle: 'Things you chose not to release.',
                 ),
-
                 const SizedBox(height: 16),
-
                 _PrivateCrashOutCard(
                   count: privateCrashOuts.length,
                 ),
               ],
-
               const SizedBox(height: 34),
-
               const _SectionLabel(
                 title: 'Express',
                 subtitle: 'You decide what needs to happen next.',
               ),
-
               const SizedBox(height: 16),
-
               _PrimaryAction(
                 icon: Icons.edit_rounded,
                 label: 'Create a Vent',
@@ -131,9 +113,7 @@ class VoiceSpaceScreen extends ConsumerWidget {
                   );
                 },
               ),
-
               const SizedBox(height: 10),
-
               _SecondaryAction(
                 icon: Icons.waves_rounded,
                 label: 'Crash Out',
@@ -147,9 +127,7 @@ class VoiceSpaceScreen extends ConsumerWidget {
                   );
                 },
               ),
-
               const SizedBox(height: 10),
-
               _SecondaryAction(
                 icon: Icons.explore_outlined,
                 label: 'Explore',
@@ -216,9 +194,7 @@ class _VoiceIdentity extends StatelessWidget {
               ),
             ),
           ),
-
           const SizedBox(height: 18),
-
           Text(
             name,
             textAlign: TextAlign.center,
@@ -229,9 +205,7 @@ class _VoiceIdentity extends StatelessWidget {
               letterSpacing: -.4,
             ),
           ),
-
           const SizedBox(height: 8),
-
           Text(
             expression,
             textAlign: TextAlign.center,
@@ -239,93 +213,6 @@ class _VoiceIdentity extends StatelessWidget {
               color: VentvoColors.textSecondary,
               fontSize: 14,
               height: 1.5,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _StatsRow extends StatelessWidget {
-  const _StatsRow({
-    required this.vents,
-    required this.moments,
-    required this.arcs,
-  });
-
-  final int vents;
-  final int moments;
-  final int arcs;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: _Stat(
-            value: '$vents',
-            label: 'Vents',
-          ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: _Stat(
-            value: '$moments',
-            label: 'Moments',
-          ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: _Stat(
-            value: '$arcs',
-            label: 'Arcs',
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _Stat extends StatelessWidget {
-  const _Stat({
-    required this.value,
-    required this.label,
-  });
-
-  final String value;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        vertical: 15,
-        horizontal: 10,
-      ),
-      decoration: BoxDecoration(
-        color: VentvoColors.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: VentvoColors.border.withValues(alpha: .4),
-        ),
-      ),
-      child: Column(
-        children: [
-          Text(
-            value,
-            style: const TextStyle(
-              color: VentvoColors.textPrimary,
-              fontSize: 21,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 3),
-          Text(
-            label,
-            style: const TextStyle(
-              color: VentvoColors.textMuted,
-              fontSize: 11,
             ),
           ),
         ],
@@ -352,9 +239,8 @@ class _SectionLabel extends StatelessWidget {
           title,
           style: const TextStyle(
             color: VentvoColors.textPrimary,
-            fontSize: 19,
+            fontSize: 18,
             fontWeight: FontWeight.w600,
-            letterSpacing: -.2,
           ),
         ),
         const SizedBox(height: 4),
@@ -371,6 +257,71 @@ class _SectionLabel extends StatelessWidget {
   }
 }
 
+class _StatsRow extends StatelessWidget {
+  const _StatsRow({
+    required this.vents,
+    required this.moments,
+    required this.arcs,
+  });
+
+  final int vents;
+  final int moments;
+  final int arcs;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        _Stat(label: 'Vents', value: vents),
+        const SizedBox(width: 12),
+        _Stat(label: 'Moments', value: moments),
+        const SizedBox(width: 12),
+        _Stat(label: 'Arcs', value: arcs),
+      ],
+    );
+  }
+}
+
+class _Stat extends StatelessWidget {
+  const _Stat({required this.label, required this.value});
+
+  final String label;
+  final int value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          color: VentvoColors.surface,
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Column(
+          children: [
+            Text(
+              '$value',
+              style: const TextStyle(
+                color: VentvoColors.textPrimary,
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: const TextStyle(
+                color: VentvoColors.textMuted,
+                fontSize: 11,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _EmptyVentsCard extends StatelessWidget {
   const _EmptyVentsCard();
 
@@ -378,51 +329,34 @@ class _EmptyVentsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 22, 20, 22),
+      padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         color: VentvoColors.surface,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(
-          color: VentvoColors.border.withValues(alpha: .4),
-        ),
       ),
-      child: const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Nothing released yet.',
-            style: TextStyle(
-              color: VentvoColors.textPrimary,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          SizedBox(height: 6),
-          Text(
-            'Your first Vent will find its place here.',
-            style: TextStyle(
-              color: VentvoColors.textMuted,
-              fontSize: 13,
-              height: 1.45,
-            ),
-          ),
-        ],
+      child: const Text(
+        'Nothing has been released yet.\nYour Voice is still becoming.',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          color: VentvoColors.textSecondary,
+          fontSize: 14,
+          height: 1.5,
+        ),
       ),
     );
   }
 }
 
 class _PrivateCrashOutCard extends StatelessWidget {
-  const _PrivateCrashOutCard({
-    required this.count,
-  });
+  const _PrivateCrashOutCard({required this.count});
 
   final int count;
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.transparent,
+      color: VentvoColors.surface,
+      borderRadius: BorderRadius.circular(22),
       child: InkWell(
         borderRadius: BorderRadius.circular(22),
         onTap: () {
@@ -433,34 +367,15 @@ class _PrivateCrashOutCard extends StatelessWidget {
             ),
           );
         },
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(20, 20, 18, 20),
-          decoration: BoxDecoration(
-            color: VentvoColors.surface,
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(
-              color: VentvoColors.border.withValues(alpha: .4),
-            ),
-          ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
           child: Row(
             children: [
-              Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: VentvoColors.surfaceElevated,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: const Icon(
-                  Icons.lock_outline_rounded,
-                  color: VentvoColors.textSecondary,
-                  size: 19,
-                ),
+              const Icon(
+                Icons.lock_outline_rounded,
+                color: VentvoColors.textMuted,
               ),
-
               const SizedBox(width: 14),
-
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -475,7 +390,7 @@ class _PrivateCrashOutCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '$count ${count == 1 ? 'thing' : 'things'} kept close.',
+                      '$count kept close',
                       style: const TextStyle(
                         color: VentvoColors.textMuted,
                         fontSize: 12,
@@ -484,11 +399,10 @@ class _PrivateCrashOutCard extends StatelessWidget {
                   ],
                 ),
               ),
-
               const Icon(
                 Icons.arrow_forward_ios_rounded,
+                size: 13,
                 color: VentvoColors.textMuted,
-                size: 14,
               ),
             ],
           ),
@@ -514,20 +428,16 @@ class _PrimaryAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: VentvoColors.primary,
-      borderRadius: BorderRadius.circular(20),
+      color: VentvoColors.surface,
+      borderRadius: BorderRadius.circular(22),
       child: InkWell(
-        borderRadius: BorderRadius.circular(20),
         onTap: onTap,
+        borderRadius: BorderRadius.circular(22),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(18, 16, 16, 16),
+          padding: const EdgeInsets.all(20),
           child: Row(
             children: [
-              Icon(
-                icon,
-                color: VentvoColors.background,
-                size: 20,
-              ),
+              Icon(icon, color: VentvoColors.textPrimary),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
@@ -536,26 +446,26 @@ class _PrimaryAction extends StatelessWidget {
                     Text(
                       label,
                       style: const TextStyle(
-                        color: VentvoColors.background,
+                        color: VentvoColors.textPrimary,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 3),
+                    const SizedBox(height: 4),
                     Text(
                       subtitle,
-                      style: TextStyle(
-                        color: VentvoColors.background.withValues(alpha: .65),
-                        fontSize: 11,
+                      style: const TextStyle(
+                        color: VentvoColors.textMuted,
+                        fontSize: 12,
                       ),
                     ),
                   ],
                 ),
               ),
-              Icon(
-                Icons.arrow_forward_rounded,
-                color: VentvoColors.background.withValues(alpha: .7),
-                size: 18,
+              const Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 13,
+                color: VentvoColors.textMuted,
               ),
             ],
           ),
@@ -582,25 +492,15 @@ class _SecondaryAction extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: VentvoColors.surface,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(22),
       child: InkWell(
-        borderRadius: BorderRadius.circular(20),
         onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(18, 15, 16, 15),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: VentvoColors.border.withValues(alpha: .4),
-            ),
-          ),
+        borderRadius: BorderRadius.circular(22),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
           child: Row(
             children: [
-              Icon(
-                icon,
-                color: VentvoColors.textSecondary,
-                size: 20,
-              ),
+              Icon(icon, color: VentvoColors.textSecondary),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
@@ -610,25 +510,25 @@ class _SecondaryAction extends StatelessWidget {
                       label,
                       style: const TextStyle(
                         color: VentvoColors.textPrimary,
-                        fontSize: 14,
+                        fontSize: 15,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 3),
+                    const SizedBox(height: 4),
                     Text(
                       subtitle,
                       style: const TextStyle(
                         color: VentvoColors.textMuted,
-                        fontSize: 11,
+                        fontSize: 12,
                       ),
                     ),
                   ],
                 ),
               ),
               const Icon(
-                Icons.arrow_forward_rounded,
+                Icons.arrow_forward_ios_rounded,
+                size: 13,
                 color: VentvoColors.textMuted,
-                size: 17,
               ),
             ],
           ),
@@ -637,4 +537,3 @@ class _SecondaryAction extends StatelessWidget {
     );
   }
 }
-
