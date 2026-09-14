@@ -1,5 +1,6 @@
 import '../models/resonance_candidate.dart';
 import '../models/resonance_query.dart';
+import '../models/resonance_signal.dart';
 import 'resonance_engine.dart';
 
 /// Application-facing discovery boundary for the Feed.
