@@ -88,6 +88,7 @@ class VoiceSpaceScreen extends ConsumerWidget {
                   (entry) => VentCard(
                     vent: entry.value,
                     index: entry.key,
+                    showLifecycleActions: true,
                   ),
                 ),
               ] else
