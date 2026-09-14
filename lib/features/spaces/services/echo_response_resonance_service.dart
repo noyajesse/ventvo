@@ -4,7 +4,6 @@ import '../../../systems/resonance/services/resonance_engine.dart';
 import '../models/echo.dart';
 import '../models/space.dart';
 import 'echo_resonance_connection_service.dart';
-import 'echo_resonance_link_service.dart';
 
 /// Turns an explicit Echo in an Open Discussion Space into a response
 /// Resonance connection.
