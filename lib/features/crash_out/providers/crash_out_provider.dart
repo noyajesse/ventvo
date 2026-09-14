@@ -1,52 +1,60 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/crash_out.dart';
+import '../services/crash_out_storage.dart';
 
-class CrashOutNotifier extends Notifier<List<CrashOut>> {
+class CrashOutNotifier extends AsyncNotifier<List<CrashOut>> {
+  final CrashOutStorage _storage = CrashOutStorage();
+
   @override
-  List<CrashOut> build() {
-    return [];
+  Future<List<CrashOut>> build() async {
+    return _storage.load();
   }
 
-  void addCrashOut(CrashOut crashOut) {
-    state = [
-      ...state,
-      crashOut,
-    ];
+  Future<void> _persist(List<CrashOut> crashOuts) async {
+    state = AsyncData(crashOuts);
+    await _storage.save(crashOuts);
   }
 
-  void keepPrivate(String id) {
-    state = [
-      for (final crashOut in state)
+  Future<void> addCrashOut(CrashOut crashOut) async {
+    final current = state.asData?.value ?? const <CrashOut>[];
+    await _persist([...current, crashOut]);
+  }
+
+  Future<void> keepPrivate(String id) async {
+    final current = state.asData?.value ?? const <CrashOut>[];
+    await _persist([
+      for (final crashOut in current)
         crashOut.id == id
-            ? crashOut.copyWith(
-                status: CrashOutStatus.keptPrivate,
-              )
+            ? crashOut.copyWith(status: CrashOutStatus.keptPrivate)
             : crashOut,
-    ];
+    ]);
   }
 
-  void markConvertedToVent(String id) {
-    state = [
-      for (final crashOut in state)
+  Future<void> markConvertedToVent(String id) async {
+    final current = state.asData?.value ?? const <CrashOut>[];
+    await _persist([
+      for (final crashOut in current)
         crashOut.id == id
-            ? crashOut.copyWith(
-                status: CrashOutStatus.convertedToVent,
-              )
+            ? crashOut.copyWith(status: CrashOutStatus.convertedToVent)
             : crashOut,
-    ];
+    ]);
   }
 
-  void deleteCrashOut(String id) {
-    state = state
-        .where(
-          (crashOut) => crashOut.id != id,
-        )
-        .toList();
+  Future<void> deleteCrashOut(String id) async {
+    final current = state.asData?.value ?? const <CrashOut>[];
+    await _persist(
+      current.where((crashOut) => crashOut.id != id).toList(),
+    );
+  }
+
+  Future<void> clearCrashOuts() async {
+    await _storage.clear();
+    state = const AsyncData([]);
   }
 }
 
 final crashOutProvider =
-    NotifierProvider<CrashOutNotifier, List<CrashOut>>(
+    AsyncNotifierProvider<CrashOutNotifier, List<CrashOut>>(
   CrashOutNotifier.new,
 );
