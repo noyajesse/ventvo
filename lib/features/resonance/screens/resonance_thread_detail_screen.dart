@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/ventvo_colors.dart';
+import '../../spaces/providers/space_provider.dart';
+import '../../spaces/screens/space_screen.dart';
+import '../../spaces/models/space.dart';
 import '../../ventvo_voice/models/vent.dart';
 import '../../../systems/resonance/models/resonance_thread.dart';
 
-class ResonanceThreadDetailScreen extends StatelessWidget {
+class ResonanceThreadDetailScreen extends ConsumerWidget {
   final ResonanceThread thread;
   final Map<String, Vent> ventsById;
 
@@ -15,7 +19,9 @@ class ResonanceThreadDetailScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final spaces = ref.watch(spaceProvider).asData?.value ?? const <Space>[];
+    final spacesById = {for (final space in spaces) space.id: space};
     final experiences = thread.experienceIds
         .map((id) => ventsById[id])
         .whereType<Vent>()
@@ -54,7 +60,7 @@ class ResonanceThreadDetailScreen extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            '${experiences.length} connected experiences',
+            '${thread.experienceIds.length} connected experiences',
             style: const TextStyle(
               color: VentvoColors.textMuted,
               fontSize: 12,
@@ -75,6 +81,7 @@ class ResonanceThreadDetailScreen extends StatelessWidget {
               (entry) => _ExperienceStep(
                 index: entry.key,
                 vent: entry.value,
+                space: spacesById[entry.value.spaceId],
                 isLast: entry.key == experiences.length - 1,
               ),
             ),
@@ -104,11 +111,13 @@ class ResonanceThreadDetailScreen extends StatelessWidget {
 class _ExperienceStep extends StatelessWidget {
   final int index;
   final Vent vent;
+  final Space? space;
   final bool isLast;
 
   const _ExperienceStep({
     required this.index,
     required this.vent,
+    required this.space,
     required this.isLast,
   });
 
@@ -178,6 +187,16 @@ class _ExperienceStep extends StatelessWidget {
                       height: 1.5,
                     ),
                   ),
+                  if (space != null) ...[
+                    const SizedBox(height: 12),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () => SpaceScreen.open(context, space!),
+                        child: const Text('Open Space'),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
