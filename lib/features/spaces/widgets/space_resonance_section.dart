@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/ventvo_colors.dart';
 import '../../../systems/resonance/models/resonance_candidate.dart';
+import '../../../systems/resonance/models/resonance_connection.dart';
+import '../../../systems/resonance/providers/resonance_provider.dart';
 import '../../ventvo_voice/models/vent.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
 import '../models/space.dart';
@@ -69,8 +71,7 @@ class SpaceResonanceSection extends ConsumerWidget {
                     candidate: candidate,
                     vent: vent,
                     targetSpace: targetSpace,
-                    onTap: () =>
-                        SpaceScreen.open(context, targetSpace),
+                    onTap: () => SpaceScreen.open(context, targetSpace),
                   ),
                 );
               },
@@ -121,7 +122,7 @@ class _SectionCaption extends StatelessWidget {
   }
 }
 
-class _ResonanceCard extends StatelessWidget {
+class _ResonanceCard extends ConsumerStatefulWidget {
   final ResonanceCandidate candidate;
   final Vent vent;
   final Space targetSpace;
@@ -135,65 +136,119 @@ class _ResonanceCard extends StatelessWidget {
   });
 
   @override
+  ConsumerState<_ResonanceCard> createState() => _ResonanceCardState();
+}
+
+class _ResonanceCardState extends ConsumerState<_ResonanceCard> {
+  ResonanceConnection? connection;
+  bool saving = false;
+
+  Future<void> _resonate() async {
+    if (saving || connection != null) return;
+
+    setState(() => saving = true);
+
+    final service = ref.read(resonanceConnectionServiceProvider);
+    final suggested = await service.suggestConnection(
+      sourceId: widget.targetSpace.originatingVentId,
+      candidate: widget.candidate,
+    );
+
+    if (suggested == null) {
+      if (mounted) setState(() => saving = false);
+      return;
+    }
+
+    final accepted = await service.accept(suggested);
+    if (!mounted) return;
+
+    setState(() {
+      connection = accepted;
+      saving = false;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final hasResonated = connection != null;
+
     return Material(
       color: VentvoColors.surface,
       borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 15, 14, 15),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      vent.voiceMark,
-                      style: const TextStyle(
-                        color: VentvoColors.textMuted,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
-                      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 15, 14, 14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            InkWell(
+              onTap: widget.onTap,
+              borderRadius: BorderRadius.circular(14),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.vent.voiceMark,
+                          style: const TextStyle(
+                            color: VentvoColors.textMuted,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          widget.vent.content,
+                          maxLines: 4,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: VentvoColors.textPrimary,
+                            fontSize: 14,
+                            height: 1.45,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          widget.targetSpace.modeLabel.toUpperCase(),
+                          style: const TextStyle(
+                            color: VentvoColors.textMuted,
+                            fontSize: 8,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      vent.content,
-                      maxLines: 4,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: VentvoColors.textPrimary,
-                        fontSize: 14,
-                        height: 1.45,
-                      ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 2),
+                    child: Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 13,
+                      color: VentvoColors.textMuted,
                     ),
-                    const SizedBox(height: 10),
-                    Text(
-                      targetSpace.modeLabel.toUpperCase(),
-                      style: const TextStyle(
-                        color: VentvoColors.textMuted,
-                        fontSize: 8,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 12),
-              const Padding(
-                padding: EdgeInsets.only(top: 2),
-                child: Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 13,
-                  color: VentvoColors.textMuted,
+            ),
+            const SizedBox(height: 13),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                onPressed: hasResonated || saving ? null : _resonate,
+                icon: Icon(
+                  hasResonated
+                      ? Icons.check_rounded
+                      : Icons.blur_on_rounded,
+                  size: 15,
                 ),
+                label: Text(hasResonated ? 'Resonating' : 'Resonate'),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
