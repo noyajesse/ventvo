@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/vent.dart';
+import '../services/vent_lifecycle_service.dart';
 import '../services/vent_storage.dart';
 
 class VentNotifier extends AsyncNotifier<List<Vent>> {
@@ -52,3 +53,9 @@ final ventProvider =
     AsyncNotifierProvider<VentNotifier, List<Vent>>(
   VentNotifier.new,
 );
+
+final ventLifecycleServiceProvider = Provider<VentLifecycleService>((ref) {
+  return VentLifecycleService(
+    notifier: ref.read(ventProvider.notifier),
+  );
+});
