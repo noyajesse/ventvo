@@ -20,7 +20,7 @@ class _FakeSpaceResponseStorage extends SpaceResponseStorage {
 }
 
 void main() {
-  const discussion = Space(
+  final discussion = Space(
     id: 'space-1',
     mode: SpaceMode.openDiscussion,
     originatingVentId: 'vent-1',
@@ -28,7 +28,7 @@ void main() {
     createdAt: DateTime(2026, 1, 1),
   );
 
-  const justListen = Space(
+  final justListen = Space(
     id: 'space-2',
     mode: SpaceMode.justListen,
     originatingVentId: 'vent-2',
