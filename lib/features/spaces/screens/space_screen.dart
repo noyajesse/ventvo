@@ -7,8 +7,11 @@ import '../../ventvo_voice/models/vent.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
 import '../../ventvo_voice/providers/voice_provider.dart';
 import '../models/echo.dart';
+import '../models/echo_note.dart';
 import '../models/space.dart';
+import '../providers/echo_note_provider.dart';
 import '../providers/echo_provider.dart';
+import '../services/echo_note_service.dart';
 import '../services/echo_service.dart';
 import '../widgets/space_resonance_section.dart';
 
@@ -41,10 +44,12 @@ class SpaceScreen extends ConsumerStatefulWidget {
 
 class _SpaceScreenState extends ConsumerState<SpaceScreen> {
   late final EchoService echoService;
+  late final EchoNoteService echoNoteService;
   final controller = TextEditingController();
   final focusNode = FocusNode();
 
   List<Echo> echoes = const [];
+  Map<String, List<EchoNote>> echoNotes = const {};
   bool composerOpen = false;
   bool sending = false;
 
@@ -52,13 +57,24 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
   void initState() {
     super.initState();
     echoService = ref.read(echoServiceProvider);
+    echoNoteService = ref.read(echoNoteServiceProvider);
     _load();
   }
 
   Future<void> _load() async {
-    final value = await echoService.loadForSpace(widget.space.id);
+    final loadedEchoes = await echoService.loadForSpace(widget.space.id);
+    final loadedNotes = await echoNoteService.loadForSpace(widget.space.id);
     if (!mounted) return;
-    setState(() => echoes = value);
+
+    final groupedNotes = <String, List<EchoNote>>{};
+    for (final note in loadedNotes) {
+      groupedNotes.putIfAbsent(note.echoId, () => []).add(note);
+    }
+
+    setState(() {
+      echoes = loadedEchoes;
+      echoNotes = groupedNotes;
+    });
   }
 
   Future<void> _leaveEcho() async {
@@ -88,6 +104,106 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     }
 
     setState(() => sending = false);
+  }
+
+  Future<void> _openEchoNoteComposer(Echo echo) async {
+    final noteController = TextEditingController();
+    final voice = ref.read(ventvoVoiceProvider).asData?.value;
+    final note = await showModalBottomSheet<EchoNote>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 18,
+            right: 18,
+            bottom: MediaQuery.viewInsetsOf(context).bottom + 15,
+          ),
+          child: Material(
+            color: VentvoColors.surface,
+            borderRadius: BorderRadius.circular(24),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(18, 18, 18, 14),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'ECHO NOTE',
+                    style: TextStyle(
+                      color: VentvoColors.textMuted,
+                      fontSize: 8,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 7),
+                  const Text(
+                    'Leave a small piece of your own experience with this Echo.',
+                    style: TextStyle(
+                      color: VentvoColors.textSecondary,
+                      fontSize: 12,
+                      height: 1.45,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  TextField(
+                    controller: noteController,
+                    autofocus: true,
+                    minLines: 2,
+                    maxLines: 5,
+                    style: const TextStyle(
+                      color: VentvoColors.textPrimary,
+                      fontSize: 14,
+                      height: 1.45,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'What did this bring forward for you?',
+                      hintStyle: const TextStyle(
+                        color: VentvoColors.textMuted,
+                        fontSize: 13,
+                      ),
+                      filled: true,
+                      fillColor: VentvoColors.surfaceElevated,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(18),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: () async {
+                        final result = await echoNoteService.leaveEchoNote(
+                          space: widget.space,
+                          echo: echo,
+                          content: noteController.text,
+                          voiceMark: voice?.mark ?? '◇',
+                        );
+                        if (context.mounted) Navigator.pop(context, result);
+                      },
+                      child: const Text('Leave Echo Note'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+    noteController.dispose();
+
+    if (!mounted || note == null) return;
+    setState(() {
+      echoNotes = {
+        ...echoNotes,
+        echo.id: [...(echoNotes[echo.id] ?? const []), note],
+      };
+    });
   }
 
   void _openComposer() {
@@ -330,42 +446,106 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
   }
 
   Widget _echo(Echo echo) {
+    final notes = echoNotes[echo.id] ?? const <EchoNote>[];
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 25),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 7),
+                width: 5,
+                height: 5,
+                decoration: const BoxDecoration(
+                  color: VentvoColors.textMuted,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      echo.voiceMark,
+                      style: const TextStyle(
+                        color: VentvoColors.textMuted,
+                        fontSize: 10,
+                      ),
+                    ),
+                    const SizedBox(height: 7),
+                    Text(
+                      echo.content,
+                      style: const TextStyle(
+                        color: VentvoColors.textSecondary,
+                        fontSize: 15,
+                        height: 1.58,
+                      ),
+                    ),
+                    const SizedBox(height: 9),
+                    GestureDetector(
+                      onTap: () => _openEchoNoteComposer(echo),
+                      child: const Text(
+                        'Add an Echo Note…',
+                        style: TextStyle(
+                          color: VentvoColors.textMuted,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          if (notes.isNotEmpty) ...[
+            const SizedBox(height: 13),
+            Padding(
+              padding: const EdgeInsets.only(left: 19),
+              child: Column(
+                children: notes.map(_echoNote).toList(),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _echoNote(EchoNote note) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 11),
+      decoration: BoxDecoration(
+        color: VentvoColors.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: VentvoColors.border),
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            margin: const EdgeInsets.only(top: 7),
-            width: 5,
-            height: 5,
-            decoration: const BoxDecoration(
+          Text(
+            note.voiceMark,
+            style: const TextStyle(
               color: VentvoColors.textMuted,
-              shape: BoxShape.circle,
+              fontSize: 10,
             ),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 9),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  echo.voiceMark,
-                  style: const TextStyle(
-                    color: VentvoColors.textMuted,
-                    fontSize: 10,
-                  ),
-                ),
-                const SizedBox(height: 7),
-                Text(
-                  echo.content,
-                  style: const TextStyle(
-                    color: VentvoColors.textSecondary,
-                    fontSize: 15,
-                    height: 1.58,
-                  ),
-                ),
-              ],
+            child: Text(
+              note.content,
+              style: const TextStyle(
+                color: VentvoColors.textSecondary,
+                fontSize: 12,
+                height: 1.5,
+              ),
             ),
           ),
         ],
