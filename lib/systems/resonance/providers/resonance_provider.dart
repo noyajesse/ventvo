@@ -5,6 +5,7 @@ import '../repositories/resonance_repository.dart';
 import '../services/resonance_connection_service.dart';
 import '../services/resonance_engine.dart';
 import '../services/resonance_map_discovery_service.dart';
+import '../services/resonance_map_evolution_service.dart';
 import '../services/resonance_map_formation_service.dart';
 import '../services/resonance_map_reconciliation_service.dart';
 import '../services/resonance_map_thread_integration_service.dart';
@@ -51,6 +52,16 @@ final resonanceMapFormationServiceProvider =
     Provider<ResonanceMapFormationService>((ref) {
   return ResonanceMapFormationService(
     engine: ref.watch(resonanceMapEngineProvider),
+  );
+});
+
+final resonanceMapEvolutionServiceProvider =
+    Provider<ResonanceMapEvolutionService>((ref) {
+  return ResonanceMapEvolutionService(
+    engine: ref.watch(resonanceMapEngineProvider),
+    reconciliationService: ref.watch(
+      resonanceMapReconciliationServiceProvider,
+    ),
   );
 });
 
