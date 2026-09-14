@@ -2,15 +2,18 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ventvo/features/spaces/models/echo_resonance_link.dart';
 import 'package:ventvo/features/spaces/services/echo_resonance_link_service.dart';
+import 'package:ventvo/features/spaces/services/echo_resonance_link_storage.dart';
 
-class FakeEchoResonanceLinkStorage {
+class FakeEchoResonanceLinkStorage extends EchoResonanceLinkStorage {
   EchoResonanceLink? link;
 
+  @override
   Future<EchoResonanceLink?> loadForEcho(String echoId) async {
     if (link?.echoId == echoId) return link;
     return null;
   }
 
+  @override
   Future<void> save(EchoResonanceLink value) async {
     link = value;
   }
@@ -19,7 +22,7 @@ class FakeEchoResonanceLinkStorage {
 void main() {
   test('linkEcho creates a link without creating a Resonance connection', () async {
     final storage = FakeEchoResonanceLinkStorage();
-    final service = _TestableService(storage);
+    final service = EchoResonanceLinkService(storage: storage);
 
     final link = await service.linkEcho(
       echoId: ' echo-1 ',
@@ -34,7 +37,7 @@ void main() {
 
   test('blank identifiers are rejected', () async {
     final storage = FakeEchoResonanceLinkStorage();
-    final service = _TestableService(storage);
+    final service = EchoResonanceLinkService(storage: storage);
 
     expect(
       await service.linkEcho(echoId: ' ', connectionId: 'connection-1'),
@@ -48,7 +51,7 @@ void main() {
 
   test('getForEcho returns the existing link', () async {
     final storage = FakeEchoResonanceLinkStorage();
-    final service = _TestableService(storage);
+    final service = EchoResonanceLinkService(storage: storage);
 
     await service.linkEcho(
       echoId: 'echo-1',
@@ -62,41 +65,8 @@ void main() {
 
   test('getForEcho ignores a blank Echo id', () async {
     final storage = FakeEchoResonanceLinkStorage();
-    final service = _TestableService(storage);
+    final service = EchoResonanceLinkService(storage: storage);
 
     expect(await service.getForEcho(' '), isNull);
   });
-}
-
-class _TestableService extends EchoResonanceLinkService {
-  _TestableService(this.fakeStorage) : super(storage: throw UnimplementedError());
-
-  final FakeEchoResonanceLinkStorage fakeStorage;
-
-  @override
-  Future<EchoResonanceLink?> getForEcho(String echoId) {
-    final normalized = echoId.trim();
-    if (normalized.isEmpty) return Future.value(null);
-    return fakeStorage.loadForEcho(normalized);
-  }
-
-  @override
-  Future<EchoResonanceLink?> linkEcho({
-    required String echoId,
-    required String connectionId,
-  }) async {
-    final normalizedEchoId = echoId.trim();
-    final normalizedConnectionId = connectionId.trim();
-    if (normalizedEchoId.isEmpty || normalizedConnectionId.isEmpty) {
-      return null;
-    }
-
-    final link = EchoResonanceLink(
-      echoId: normalizedEchoId,
-      connectionId: normalizedConnectionId,
-      createdAt: DateTime.now(),
-    );
-    await fakeStorage.save(link);
-    return link;
-  }
 }
