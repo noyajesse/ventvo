@@ -1,4 +1,3 @@
-import '../../../systems/resonance/models/resonance_candidate.dart';
 import '../../../systems/resonance/services/vent_resonance_discovery_service.dart';
 import '../../spaces/models/space.dart';
 import '../../ventvo_voice/models/vent.dart';
