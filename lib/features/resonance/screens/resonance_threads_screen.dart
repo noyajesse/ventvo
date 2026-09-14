@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/ventvo_colors.dart';
 import '../../ventvo_voice/models/vent.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
+import '../../../systems/resonance/models/resonance_connection.dart';
 import '../../../systems/resonance/models/resonance_thread.dart';
 import '../providers/resonance_threads_provider.dart';
 import 'resonance_maps_screen.dart';
@@ -127,6 +128,8 @@ class _ThreadCard extends StatelessWidget {
         .map((vent) => vent.content)
         .toList();
 
+    final relationshipSummary = _relationshipSummary(thread.connections);
+
     return InkWell(
       borderRadius: BorderRadius.circular(22),
       onTap: () {
@@ -175,6 +178,17 @@ class _ThreadCard extends StatelessWidget {
                 fontSize: 10,
               ),
             ),
+            if (relationshipSummary != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                relationshipSummary,
+                style: const TextStyle(
+                  color: VentvoColors.textSecondary,
+                  fontSize: 11,
+                  height: 1.45,
+                ),
+              ),
+            ],
             if (excerpts.isNotEmpty) ...[
               const SizedBox(height: 16),
               ...excerpts.map(
@@ -206,5 +220,35 @@ class _ThreadCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String? _relationshipSummary(List<ResonanceConnection> connections) {
+    final labels = <String>[];
+    final seenTypes = <ResonanceConnectionType>{};
+
+    for (final connection in connections) {
+      if (!seenTypes.add(connection.type)) continue;
+      labels.add(_labelFor(connection.type));
+      if (labels.length == 2) break;
+    }
+
+    if (labels.isEmpty) return null;
+    if (labels.length == 1) return 'Connected through ${labels.first.toLowerCase()}.';
+    return 'Connected through ${labels[0].toLowerCase()} and ${labels[1].toLowerCase()}.';
+  }
+
+  String _labelFor(ResonanceConnectionType type) {
+    switch (type) {
+      case ResonanceConnectionType.sharedExperience:
+        return 'shared experience';
+      case ResonanceConnectionType.perspective:
+        return 'different perspective';
+      case ResonanceConnectionType.response:
+        return 'response';
+      case ResonanceConnectionType.similarity:
+        return 'similar experience';
+      case ResonanceConnectionType.discovery:
+        return 'discovered connection';
+    }
   }
 }
