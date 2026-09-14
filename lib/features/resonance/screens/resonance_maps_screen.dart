@@ -14,7 +14,9 @@ import '../../../systems/resonance/models/resonance_connection.dart';
 import '../../../systems/resonance/models/resonance_map.dart';
 import '../models/resonance_map_experience.dart';
 import '../providers/resonance_map_experience_provider.dart';
+import '../providers/resonance_map_threads_provider.dart';
 import '../providers/resonance_maps_provider.dart';
+import '../screens/resonance_thread_detail_screen.dart';
 
 class ResonanceMapsScreen extends ConsumerWidget {
   const ResonanceMapsScreen({super.key});
@@ -118,6 +120,7 @@ class ResonanceMapDetailScreen extends ConsumerWidget {
     final spaces = ref.watch(spaceProvider).asData?.value ?? const <Space>[];
     final spacesById = {for (final space in spaces) space.id: space};
     final resolver = ref.watch(resonanceMapExperienceResolverProvider);
+    final threads = ref.watch(resonanceMapThreadsProvider(map.id));
 
     return Scaffold(
       backgroundColor: VentvoColors.background,
@@ -147,6 +150,15 @@ class ResonanceMapDetailScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 24),
               ...experiences.map((experience) => _MapExperienceCard(experience: experience)),
+              const SizedBox(height: 16),
+              threads.when(
+                loading: () => const SizedBox.shrink(),
+                error: (_, _) => const SizedBox.shrink(),
+                data: (items) {
+                  if (items.isEmpty) return const SizedBox.shrink();
+                  return _MapThreadsSection(threads: items, ventsById: ventsById);
+                },
+              ),
               const SizedBox(height: 8),
               ...map.connections.map(_ConnectionCard.new),
               const SizedBox(height: 8),
@@ -155,6 +167,54 @@ class ResonanceMapDetailScreen extends ConsumerWidget {
           );
         },
       ),
+    );
+  }
+}
+
+class _MapThreadsSection extends StatelessWidget {
+  final List<ResonanceThread> threads;
+  final Map<String, Vent> ventsById;
+
+  const _MapThreadsSection({required this.threads, required this.ventsById});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('THREADS WITHIN THIS MAP', style: TextStyle(color: VentvoColors.textMuted, fontSize: 8, fontWeight: FontWeight.w700, letterSpacing: 1.4)),
+        const SizedBox(height: 10),
+        ...threads.map(
+          (thread) => InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => ResonanceThreadDetailScreen(thread: thread, ventsById: ventsById),
+              ),
+            ),
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.fromLTRB(14, 13, 12, 13),
+              decoration: BoxDecoration(color: VentvoColors.surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: VentvoColors.border)),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(thread.voiceMarks.isEmpty ? 'Connected experiences' : thread.voiceMarks.join('  ·  '), style: const TextStyle(color: VentvoColors.textSecondary, fontSize: 11)),
+                        const SizedBox(height: 5),
+                        Text('${thread.experienceIds.length} experiences · ${thread.connections.length} connections', style: const TextStyle(color: VentvoColors.textMuted, fontSize: 10)),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.arrow_forward_rounded, size: 16, color: VentvoColors.textMuted),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -172,13 +232,7 @@ class _MapExperienceCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Text(experience.voiceMark, style: const TextStyle(color: VentvoColors.textSecondary, fontSize: 11)),
-              const Spacer(),
-              Text(experience.isEcho ? 'ECHO' : 'VENT', style: const TextStyle(color: VentvoColors.textMuted, fontSize: 8, fontWeight: FontWeight.w700, letterSpacing: 1.2)),
-            ],
-          ),
+          Row(children: [Text(experience.voiceMark, style: const TextStyle(color: VentvoColors.textSecondary, fontSize: 11)), const Spacer(), Text(experience.isEcho ? 'ECHO' : 'VENT', style: const TextStyle(color: VentvoColors.textMuted, fontSize: 8, fontWeight: FontWeight.w700, letterSpacing: 1.2))]),
           const SizedBox(height: 8),
           Text(experience.content, maxLines: 5, overflow: TextOverflow.ellipsis, style: const TextStyle(color: VentvoColors.textPrimary, fontSize: 14, height: 1.5)),
           if (experience.echoNotes.isNotEmpty) ...[
@@ -186,10 +240,7 @@ class _MapExperienceCard extends StatelessWidget {
             ...experience.echoNotes.take(2).map(_EchoNotePreview.new),
           ],
           if (experience.space != null)
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(onPressed: () => SpaceScreen.open(context, experience.space!), child: const Text('Open Space')),
-            ),
+            Align(alignment: Alignment.centerRight, child: TextButton(onPressed: () => SpaceScreen.open(context, experience.space!), child: const Text('Open Space'))),
         ],
       ),
     );
@@ -207,14 +258,7 @@ class _EchoNotePreview extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 7),
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
       decoration: BoxDecoration(color: VentvoColors.surfaceElevated, borderRadius: BorderRadius.circular(14), border: Border.all(color: VentvoColors.border)),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(note.voiceMark, style: const TextStyle(color: VentvoColors.textMuted, fontSize: 10)),
-          const SizedBox(width: 9),
-          Expanded(child: Text(note.content, style: const TextStyle(color: VentvoColors.textSecondary, fontSize: 12, height: 1.5))),
-        ],
-      ),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(note.voiceMark, style: const TextStyle(color: VentvoColors.textMuted, fontSize: 10)), const SizedBox(width: 9), Expanded(child: Text(note.content, style: const TextStyle(color: VentvoColors.textSecondary, fontSize: 12, height: 1.5)))]),
     );
   }
 }
@@ -226,29 +270,21 @@ class _ResonanceConstellation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final visibleIds = map.experienceIds.take(detailed ? 9 : 5).toList();
-        final positions = <String, Offset>{};
-        final center = Offset(constraints.maxWidth / 2, constraints.maxHeight / 2);
-        final radius = math.min(constraints.maxWidth, constraints.maxHeight) * (detailed ? 0.32 : 0.30);
-        for (var i = 0; i < visibleIds.length; i++) {
-          final angle = (-math.pi / 2) + (i * math.pi * 2 / visibleIds.length);
-          positions[visibleIds[i]] = Offset(center.dx + radius * math.cos(angle), center.dy + radius * math.sin(angle));
-        }
-        return Stack(
-          children: [
-            Positioned.fill(child: CustomPaint(painter: _ConstellationPainter(map: map, positions: positions))),
-            for (final id in visibleIds)
-              Positioned(
-                left: positions[id]!.dx - (detailed ? 22 : 13.5),
-                top: positions[id]!.dy - (detailed ? 22 : 13.5),
-                child: _MapNode(label: _nodeLabel(id), large: detailed),
-              ),
-          ],
-        );
-      },
-    );
+    return LayoutBuilder(builder: (context, constraints) {
+      final visibleIds = map.experienceIds.take(detailed ? 9 : 5).toList();
+      final positions = <String, Offset>{};
+      final center = Offset(constraints.maxWidth / 2, constraints.maxHeight / 2);
+      final radius = math.min(constraints.maxWidth, constraints.maxHeight) * (detailed ? 0.32 : 0.30);
+      for (var i = 0; i < visibleIds.length; i++) {
+        final angle = (-math.pi / 2) + (i * math.pi * 2 / visibleIds.length);
+        positions[visibleIds[i]] = Offset(center.dx + radius * math.cos(angle), center.dy + radius * math.sin(angle));
+      }
+      return Stack(children: [
+        Positioned.fill(child: CustomPaint(painter: _ConstellationPainter(map: map, positions: positions))),
+        for (final id in visibleIds)
+          Positioned(left: positions[id]!.dx - (detailed ? 22 : 13.5), top: positions[id]!.dy - (detailed ? 22 : 13.5), child: _MapNode(label: _nodeLabel(id), large: detailed)),
+      ]);
+    });
   }
 
   String _nodeLabel(String id) {
@@ -266,13 +302,7 @@ class _MapNode extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = large ? 44.0 : 27.0;
-    return Container(
-      width: size,
-      height: size,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(color: VentvoColors.surfaceElevated, shape: BoxShape.circle, border: Border.all(color: VentvoColors.border)),
-      child: Text(label, style: TextStyle(color: VentvoColors.textSecondary, fontSize: large ? 11 : 8, fontWeight: FontWeight.w700)),
-    );
+    return Container(width: size, height: size, alignment: Alignment.center, decoration: BoxDecoration(color: VentvoColors.surfaceElevated, shape: BoxShape.circle, border: Border.all(color: VentvoColors.border)), child: Text(label, style: TextStyle(color: VentvoColors.textSecondary, fontSize: large ? 11 : 8, fontWeight: FontWeight.w700)));
   }
 }
 
@@ -306,13 +336,7 @@ class _ConnectionCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 9),
       padding: const EdgeInsets.fromLTRB(14, 13, 14, 13),
       decoration: BoxDecoration(color: VentvoColors.surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: VentvoColors.border)),
-      child: Row(
-        children: [
-          const Icon(Icons.link_rounded, size: 16, color: VentvoColors.textMuted),
-          const SizedBox(width: 10),
-          Expanded(child: Text(_connectionLabel(connection.type), style: const TextStyle(color: VentvoColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w600))),
-        ],
-      ),
+      child: Row(children: [const Icon(Icons.link_rounded, size: 16, color: VentvoColors.textMuted), const SizedBox(width: 10), Expanded(child: Text(_connectionLabel(connection.type), style: const TextStyle(color: VentvoColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w600)))]),
     );
   }
 
