@@ -248,9 +248,10 @@ void main() {
     );
 
     expect(echo, isNotNull);
+    final createdEcho = echo!;
 
     final responseConnection = engine.connections.singleWhere(
-      (connection) => connection.targetId == 'echo:${echo!.id}',
+      (connection) => connection.targetId == 'echo:${createdEcho.id}',
     );
     expect(responseConnection.sourceId, 'vent-1');
     expect(responseConnection.type, ResonanceConnectionType.response);
@@ -258,7 +259,7 @@ void main() {
 
     final updatedMap = await engine.getMap('map-1');
     expect(updatedMap, isNotNull);
-    expect(updatedMap!.experienceIds, contains('echo:${echo.id}'));
+    expect(updatedMap!.experienceIds, contains('echo:${createdEcho.id}'));
     expect(
       updatedMap.connections,
       contains(responseConnection),
