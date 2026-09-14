@@ -1,4 +1,5 @@
 import '../../spaces/models/echo.dart';
+import '../../spaces/models/echo_note.dart';
 import '../../spaces/models/space.dart';
 import '../../spaces/services/echo_note_service.dart';
 import '../../spaces/services/echo_service.dart';
@@ -20,7 +21,7 @@ class ResonanceMapExperienceResolver {
     required Map<String, Space> spacesById,
   }) async {
     final echoesByExperienceId = <String, Echo>{};
-    final notesByEchoId = <String, List<dynamic>>{};
+    final notesByEchoId = <String, List<EchoNote>>{};
 
     for (final space in spacesById.values) {
       final echoes = await echoService.loadForSpace(space.id);
@@ -60,7 +61,7 @@ class ResonanceMapExperienceResolver {
             space: spacesById[echo.spaceId],
             vent: null,
             echo: echo,
-            echoNotes: List.unmodifiable(notesByEchoId[echo.id] ?? const []),
+            echoNotes: notesByEchoId[echo.id] ?? const [],
           ),
         );
       }
