@@ -8,10 +8,7 @@ import '../../ventvo_voice/screens/create_vent_screen.dart';
 class PrivateCrashOutsScreen extends ConsumerWidget {
   const PrivateCrashOutsScreen({super.key});
 
-  void _turnIntoVent(
-    BuildContext context,
-    CrashOut crashOut,
-  ) {
+  void _turnIntoVent(BuildContext context, CrashOut crashOut) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -23,111 +20,81 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
     );
   }
 
-  void _letGo(
+  Future<void> _letGo(
     BuildContext context,
     WidgetRef ref,
     CrashOut crashOut,
-  ) {
-    ref
-        .read(crashOutProvider.notifier)
-        .deleteCrashOut(crashOut.id);
+  ) async {
+    await ref.read(crashOutProvider.notifier).deleteCrashOut(crashOut.id);
+    if (!context.mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Let go.'),
-      ),
+      const SnackBar(content: Text('Let go.')),
     );
   }
 
   @override
-  Widget build(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
-    final crashOuts = ref.watch(crashOutProvider);
-
-    final privateCrashOuts = crashOuts
-        .where(
-          (crashOut) =>
-              crashOut.status ==
-              CrashOutStatus.keptPrivate,
-        )
-        .toList();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final crashOutState = ref.watch(crashOutProvider);
 
     return Scaffold(
       backgroundColor: const Color(0xFF111111),
-
       appBar: AppBar(
         backgroundColor: const Color(0xFF111111),
         elevation: 0,
-
         title: const Text(
           'Private',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
-
       body: SafeArea(
-        child: privateCrashOuts.isEmpty
-            ? const Center(
+        child: crashOutState.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (_, _) => const Center(
+            child: Text(
+              'Couldn’t load your private Crash Outs.',
+              style: TextStyle(color: Colors.white54),
+            ),
+          ),
+          data: (crashOuts) {
+            final privateCrashOuts = crashOuts
+                .where((crashOut) => crashOut.status == CrashOutStatus.keptPrivate)
+                .toList();
+
+            if (privateCrashOuts.isEmpty) {
+              return const Center(
                 child: Padding(
                   padding: EdgeInsets.all(30),
-
                   child: Text(
                     'Nothing is kept here yet.',
                     textAlign: TextAlign.center,
-
-                    style: TextStyle(
-                      color: Colors.white54,
-                      fontSize: 17,
-                    ),
+                    style: TextStyle(color: Colors.white54, fontSize: 17),
                   ),
                 ),
-              )
-            : ListView.builder(
-                padding: const EdgeInsets.all(24),
+              );
+            }
 
-                itemCount: privateCrashOuts.length,
-
-                itemBuilder: (
-                  context,
-                  index,
-                ) {
-                  final crashOut =
-                      privateCrashOuts[index];
-
-                  return _PrivateCrashOutCard(
-                    crashOut: crashOut,
-
-                    onTurnIntoVent: () {
-                      _turnIntoVent(
-                        context,
-                        crashOut,
-                      );
-                    },
-
-                    onLetGo: () {
-                      _letGo(
-                        context,
-                        ref,
-                        crashOut,
-                      );
-                    },
-                  );
-                },
-              ),
+            return ListView.builder(
+              padding: const EdgeInsets.all(24),
+              itemCount: privateCrashOuts.length,
+              itemBuilder: (context, index) {
+                final crashOut = privateCrashOuts[index];
+                return _PrivateCrashOutCard(
+                  crashOut: crashOut,
+                  onTurnIntoVent: () => _turnIntoVent(context, crashOut),
+                  onLetGo: () => _letGo(context, ref, crashOut),
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }
 }
 
-class _PrivateCrashOutCard
-    extends StatelessWidget {
+class _PrivateCrashOutCard extends StatelessWidget {
   final CrashOut crashOut;
-
   final VoidCallback onTurnIntoVent;
   final VoidCallback onLetGo;
 
@@ -138,118 +105,59 @@ class _PrivateCrashOutCard
   });
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(
-        bottom: 18,
-      ),
-
+      margin: const EdgeInsets.only(bottom: 18),
       padding: const EdgeInsets.all(20),
-
       decoration: BoxDecoration(
         color: Colors.white10,
-
-        borderRadius:
-            BorderRadius.circular(22),
-
-        border: Border.all(
-          color: Colors.white12,
-        ),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: Colors.white12),
       ),
-
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
-
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Row(
             children: [
-              Icon(
-                Icons.lock_outline,
-                color: Colors.white54,
-                size: 18,
-              ),
-
+              Icon(Icons.lock_outline, color: Colors.white54, size: 18),
               SizedBox(width: 8),
-
               Text(
                 'Private Crash Out',
                 style: TextStyle(
                   color: Colors.white54,
                   fontSize: 13,
-                  fontWeight:
-                      FontWeight.bold,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],
           ),
-
           const SizedBox(height: 14),
-
           Text(
-            crashOut.textContent ??
-                'Voice Crash Out',
-
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 17,
-              height: 1.5,
-            ),
+            crashOut.textContent ?? 'Voice Crash Out',
+            style: const TextStyle(color: Colors.white, fontSize: 17, height: 1.5),
           ),
-
           const SizedBox(height: 20),
-
           Row(
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed:
-                      onTurnIntoVent,
-
-                  style:
-                      OutlinedButton.styleFrom(
-                    foregroundColor:
-                        Colors.white,
-
-                    side:
-                        const BorderSide(
-                      color:
-                          Colors.white24,
-                    ),
-
-                    padding:
-                        const EdgeInsets.symmetric(
-                      vertical: 12,
-                    ),
-
-                    shape:
-                        RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(
-                        14,
-                      ),
+                  onPressed: onTurnIntoVent,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    side: const BorderSide(color: Colors.white24),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-
-                  child: const Text(
-                    'Turn into Vent',
-                  ),
+                  child: const Text('Turn into Vent'),
                 ),
               ),
-
               const SizedBox(width: 10),
-
               IconButton(
                 onPressed: onLetGo,
-
                 tooltip: 'Let go',
-
-                icon: const Icon(
-                  Icons.delete_outline,
-                  color: Colors.white54,
-                ),
+                icon: const Icon(Icons.delete_outline, color: Colors.white54),
               ),
             ],
           ),
