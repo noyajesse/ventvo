@@ -29,7 +29,7 @@ class _CrashOutScreenState extends ConsumerState<CrashOutScreen> {
     super.dispose();
   }
 
-  void _releaseText() {
+  Future<void> _releaseText() async {
     if (!hasText) return;
 
     final now = DateTime.now();
@@ -40,7 +40,8 @@ class _CrashOutScreenState extends ConsumerState<CrashOutScreen> {
       createdAt: now,
     );
 
-    ref.read(crashOutProvider.notifier).addCrashOut(crashOut);
+    await ref.read(crashOutProvider.notifier).addCrashOut(crashOut);
+    if (!mounted) return;
 
     Navigator.push(
       context,
@@ -86,10 +87,7 @@ class _CrashOutScreenState extends ConsumerState<CrashOutScreen> {
               const Text(
                 'Just let it out.',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white54,
-                  fontSize: 18,
-                ),
+                style: TextStyle(color: Colors.white54, fontSize: 18),
               ),
               const SizedBox(height: 40),
               Expanded(
@@ -116,10 +114,7 @@ class _CrashOutScreenState extends ConsumerState<CrashOutScreen> {
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       hintText: 'Let it out...',
-                      hintStyle: TextStyle(
-                        color: Colors.white24,
-                        fontSize: 18,
-                      ),
+                      hintStyle: TextStyle(color: Colors.white24, fontSize: 18),
                     ),
                   ),
                 ),
@@ -153,10 +148,7 @@ class _CrashOutScreenState extends ConsumerState<CrashOutScreen> {
                 height: 55,
                 child: ElevatedButton(
                   onPressed: hasText ? _releaseText : null,
-                  child: const Text(
-                    'Release',
-                    style: TextStyle(fontSize: 17),
-                  ),
+                  child: const Text('Release', style: TextStyle(fontSize: 17)),
                 ),
               ),
             ],
