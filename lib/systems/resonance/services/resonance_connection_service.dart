@@ -36,6 +36,16 @@ class ResonanceConnectionService {
     );
   }
 
+  Future<ResonanceConnection?> getConnectionBetween(
+    String sourceId,
+    String targetId,
+  ) {
+    if (sourceId.trim().isEmpty || targetId.trim().isEmpty) {
+      return Future.value(null);
+    }
+    return engine.getConnectionBetween(sourceId, targetId);
+  }
+
   Future<ResonanceConnection?> accept(
     ResonanceConnection connection,
   ) async {
