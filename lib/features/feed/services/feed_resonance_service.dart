@@ -1,3 +1,4 @@
+import '../../../systems/resonance/models/resonance_candidate.dart';
 import '../../../systems/resonance/services/vent_resonance_discovery_service.dart';
 import '../../spaces/models/space.dart';
 import '../../ventvo_voice/models/vent.dart';
@@ -28,7 +29,7 @@ class FeedResonanceService {
       await discoveryService.indexVent(vent: vent, space: space);
     }
 
-    final discovered = <Vent>[];
+    final scoresByVentId = <String, double>{};
     final excludedIds = sources.map((vent) => vent.id).toSet();
 
     for (final source in sources.where((item) => item.isDiscoverable)) {
@@ -43,15 +44,29 @@ class FeedResonanceService {
       );
 
       for (final candidate in candidates) {
-        final vent = candidateVents
-            .where((item) => item.id == candidate.id)
-            .firstOrNull;
-        if (vent != null && !discovered.any((item) => item.id == vent.id)) {
-          discovered.add(vent);
+        final existingScore = scoresByVentId[candidate.id];
+        if (existingScore == null || candidate.score > existingScore) {
+          scoresByVentId[candidate.id] = candidate.score;
         }
       }
     }
 
-    return discovered;
+    final candidateById = {
+      for (final vent in candidateVents)
+        if (vent.isDiscoverable) vent.id: vent,
+    };
+
+    final discoveredIds = scoresByVentId.keys.toList()
+      ..sort((a, b) {
+        final scoreComparison =
+            scoresByVentId[b]!.compareTo(scoresByVentId[a]!);
+        if (scoreComparison != 0) return scoreComparison;
+        return a.compareTo(b);
+      });
+
+    return [
+      for (final id in discoveredIds)
+        if (candidateById.containsKey(id)) candidateById[id]!,
+    ];
   }
 }
