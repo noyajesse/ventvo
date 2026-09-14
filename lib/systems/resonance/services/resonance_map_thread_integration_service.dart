@@ -6,13 +6,15 @@ import 'resonance_map_reconciliation_service.dart';
 import 'resonance_map_thread_integration_policy.dart';
 
 class ResonanceMapThreadIntegrationService {
-  final ResonanceMapEngine engine;
+  final ResonanceEngine resonanceEngine;
+  final ResonanceMapEngine mapEngine;
   final ResonanceMapReconciliationService reconciliationService;
   final ResonanceMapThreadIntegrationPolicy integrationPolicy;
   final ResonanceMapIntegrityPolicy integrityPolicy;
 
   const ResonanceMapThreadIntegrationService({
-    required this.engine,
+    required this.resonanceEngine,
+    required this.mapEngine,
     required this.reconciliationService,
     this.integrationPolicy = const ResonanceMapThreadIntegrationPolicy(),
     this.integrityPolicy = const ResonanceMapIntegrityPolicy(),
@@ -27,7 +29,6 @@ class ResonanceMapThreadIntegrationService {
     if (mapId.trim().isEmpty) {
       throw ArgumentError.value(mapId, 'mapId', 'Map id cannot be empty.');
     }
-
     if (threadId.trim().isEmpty) {
       throw ArgumentError.value(
         threadId,
@@ -40,7 +41,7 @@ class ResonanceMapThreadIntegrationService {
     if (reconciled == null) return null;
 
     final map = reconciled.map;
-    final thread = await engine.getThread(threadId);
+    final thread = await resonanceEngine.getThread(threadId);
     if (thread == null) return null;
 
     final decision = integrationPolicy.evaluate(
@@ -49,24 +50,17 @@ class ResonanceMapThreadIntegrationService {
       isPrivacyRestricted: isPrivacyRestricted,
       isSafetyRestricted: isSafetyRestricted,
     );
-
     if (!decision.isEligible) return null;
-
-    final mergedConnections = _mergeConnections(
-      map.connections,
-      decision.connections,
-    );
 
     final updatedMap = map.copyWith(
       experienceIds: decision.experienceIds,
       threadIds: _addUnique(map.threadIds, thread.id),
-      connections: mergedConnections,
+      connections: _mergeConnections(map.connections, decision.connections),
     );
 
-    final integrity = integrityPolicy.evaluate(updatedMap);
-    if (integrity.isInvalid) return null;
+    if (integrityPolicy.evaluate(updatedMap).isInvalid) return null;
 
-    await engine.saveMap(updatedMap);
+    await mapEngine.saveMap(updatedMap);
     return updatedMap;
   }
 
@@ -82,11 +76,9 @@ class ResonanceMapThreadIntegrationService {
     final byId = <String, ResonanceConnection>{
       for (final connection in existing) connection.id: connection,
     };
-
     for (final connection in incoming) {
       byId[connection.id] = connection;
     }
-
     return byId.values.toList(growable: false);
   }
 }
