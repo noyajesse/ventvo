@@ -11,6 +11,7 @@ import '../../../systems/resonance/models/resonance_connection.dart';
 import '../../../systems/resonance/models/resonance_thread.dart';
 import '../models/resonance_thread_experience.dart';
 import '../providers/resonance_thread_experience_provider.dart';
+import 'resonance_thread_map_integration_screen.dart';
 
 class ResonanceThreadDetailScreen extends ConsumerWidget {
   final ResonanceThread thread;
@@ -33,6 +34,21 @@ class ResonanceThreadDetailScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Resonance Thread'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            tooltip: 'Connect to a Map',
+            icon: const Icon(Icons.hub_outlined),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => ResonanceThreadMapIntegrationScreen(
+                    thread: thread,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: FutureBuilder<List<ResonanceThreadExperience>>(
         future: resolver.resolve(
