@@ -85,7 +85,11 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
     if (!mounted) return;
 
     if (widget.crashOutId != null) {
-      ref.read(crashOutProvider.notifier).markConvertedToVent(widget.crashOutId!);
+      await ref
+          .read(crashOutProvider.notifier)
+          .markConvertedToVent(widget.crashOutId!);
+      if (!mounted) return;
+
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => const VoiceSpaceScreen()),
