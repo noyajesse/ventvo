@@ -31,7 +31,7 @@ class CrashOut {
     this.audioPath,
     required this.type,
     required this.createdAt,
-    this.status = CrashOutStatus.released,
+    this.status = CrashOutStatus.keptPrivate,
   });
 
   CrashOut copyWith({
