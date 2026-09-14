@@ -6,6 +6,7 @@ import '../../ventvo_voice/models/vent.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
 import '../../../systems/resonance/models/resonance_thread.dart';
 import '../providers/resonance_threads_provider.dart';
+import 'resonance_maps_screen.dart';
 import 'resonance_thread_detail_screen.dart';
 
 class ResonanceThreadsScreen extends ConsumerWidget {
@@ -22,6 +23,19 @@ class ResonanceThreadsScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Resonance'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            tooltip: 'Resonance Maps',
+            icon: const Icon(Icons.hub_outlined),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const ResonanceMapsScreen(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: threads.when(
         loading: () => const Center(
