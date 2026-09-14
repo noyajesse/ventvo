@@ -68,6 +68,7 @@ class SpaceResonanceSection extends ConsumerWidget {
                   child: _ResonanceCard(
                     candidate: candidate,
                     vent: vent,
+                    targetSpace: targetSpace,
                     onTap: () =>
                         SpaceScreen.open(context, targetSpace),
                   ),
@@ -123,11 +124,13 @@ class _SectionCaption extends StatelessWidget {
 class _ResonanceCard extends StatelessWidget {
   final ResonanceCandidate candidate;
   final Vent vent;
+  final Space targetSpace;
   final VoidCallback onTap;
 
   const _ResonanceCard({
     required this.candidate,
     required this.vent,
+    required this.targetSpace,
     required this.onTap,
   });
 
@@ -165,6 +168,16 @@ class _ResonanceCard extends StatelessWidget {
                         color: VentvoColors.textPrimary,
                         fontSize: 14,
                         height: 1.45,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      targetSpace.modeLabel.toUpperCase(),
+                      style: const TextStyle(
+                        color: VentvoColors.textMuted,
+                        fontSize: 8,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.2,
                       ),
                     ),
                   ],
