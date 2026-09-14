@@ -1,17 +1,17 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../lib/features/resonance/models/resonance_thread_experience.dart';
-import '../../../lib/features/resonance/services/resonance_thread_experience_resolver.dart';
-import '../../../lib/features/spaces/models/echo.dart';
-import '../../../lib/features/spaces/models/echo_note.dart';
-import '../../../lib/features/spaces/models/space.dart';
-import '../../../lib/features/spaces/models/space_response.dart';
-import '../../../lib/features/spaces/services/echo_note_service.dart';
-import '../../../lib/features/spaces/services/echo_note_storage.dart';
-import '../../../lib/features/spaces/services/echo_service.dart';
-import '../../../lib/features/spaces/services/space_response_storage.dart';
-import '../../../lib/features/ventvo_voice/models/vent.dart';
-import '../../../lib/systems/resonance/models/resonance_thread.dart';
+import 'package:ventvo/features/resonance/models/resonance_thread_experience.dart';
+import 'package:ventvo/features/resonance/services/resonance_thread_experience_resolver.dart';
+import 'package:ventvo/features/spaces/models/echo.dart';
+import 'package:ventvo/features/spaces/models/echo_note.dart';
+import 'package:ventvo/features/spaces/models/space.dart';
+import 'package:ventvo/features/spaces/models/space_response.dart';
+import 'package:ventvo/features/spaces/services/echo_note_service.dart';
+import 'package:ventvo/features/spaces/services/echo_note_storage.dart';
+import 'package:ventvo/features/spaces/services/echo_service.dart';
+import 'package:ventvo/features/spaces/services/space_response_storage.dart';
+import 'package:ventvo/features/ventvo_voice/models/vent.dart';
+import 'package:ventvo/systems/resonance/models/resonance_thread.dart';
 
 class _FakeResponseStorage extends SpaceResponseStorage {
   final List<SpaceResponse> responses;
