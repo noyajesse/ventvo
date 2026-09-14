@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/ventvo_colors.dart';
+import '../../ventvo_voice/models/vent.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
-import '../providers/resonance_threads_provider.dart';
 import '../../../systems/resonance/models/resonance_thread.dart';
+import '../providers/resonance_threads_provider.dart';
 
 class ResonanceThreadsScreen extends ConsumerWidget {
   const ResonanceThreadsScreen({super.key});
@@ -12,7 +13,7 @@ class ResonanceThreadsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final threads = ref.watch(resonanceThreadsProvider);
-    final vents = ref.watch(ventProvider).asData?.value ?? const [];
+    final vents = ref.watch(ventProvider).asData?.value ?? const <Vent>[];
     final ventsById = {for (final vent in vents) vent.id: vent};
 
     return Scaffold(
@@ -91,7 +92,7 @@ class ResonanceThreadsScreen extends ConsumerWidget {
 
 class _ThreadCard extends StatelessWidget {
   final ResonanceThread thread;
-  final Map<String, dynamic> ventsById;
+  final Map<String, Vent> ventsById;
 
   const _ThreadCard({
     required this.thread,
@@ -106,9 +107,9 @@ class _ThreadCard extends StatelessWidget {
 
     final excerpts = thread.experienceIds
         .map((id) => ventsById[id])
-        .whereType<dynamic>()
+        .whereType<Vent>()
         .take(3)
-        .map<String>((vent) => vent.content as String)
+        .map((vent) => vent.content)
         .toList();
 
     return Container(
