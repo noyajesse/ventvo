@@ -6,24 +6,18 @@ import '../../../core/theme/ventvo_colors.dart';
 import '../../ventvo_voice/models/vent.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
 import '../../ventvo_voice/providers/voice_provider.dart';
+import '../models/echo.dart';
 import '../models/space.dart';
-import '../models/space_response.dart';
-import '../providers/space_response_provider.dart';
-import '../services/space_response_service.dart';
+import '../providers/echo_provider.dart';
+import '../services/echo_service.dart';
 import '../widgets/space_resonance_section.dart';
 
 class SpaceScreen extends ConsumerStatefulWidget {
   final Space space;
 
-  const SpaceScreen({
-    super.key,
-    required this.space,
-  });
+  const SpaceScreen({super.key, required this.space});
 
-  static Future<void> open(
-    BuildContext context,
-    Space space,
-  ) {
+  static Future<void> open(BuildContext context, Space space) {
     return Navigator.of(context).push(
       PageRouteBuilder<void>(
         transitionDuration: VentvoMotion.immersive,
@@ -46,58 +40,58 @@ class SpaceScreen extends ConsumerStatefulWidget {
 }
 
 class _SpaceScreenState extends ConsumerState<SpaceScreen> {
-  late final SpaceResponseService responseService;
+  late final EchoService echoService;
   final controller = TextEditingController();
   final focusNode = FocusNode();
 
-  List<SpaceResponse> responses = const [];
+  List<Echo> echoes = const [];
   bool composerOpen = false;
   bool sending = false;
 
   @override
   void initState() {
     super.initState();
-    responseService = ref.read(spaceResponseServiceProvider);
+    echoService = ref.read(echoServiceProvider);
     _load();
   }
 
   Future<void> _load() async {
-    final value = await responseService.loadVisible(widget.space.id);
-
+    final value = await echoService.loadForSpace(widget.space.id);
     if (!mounted) return;
-
-    setState(() {
-      responses = value;
-    });
+    setState(() => echoes = value);
   }
 
-  Future<void> _respond() async {
+  Future<void> _leaveEcho() async {
     if (sending) return;
 
+    final text = controller.text.trim();
+    if (text.isEmpty) return;
+
+    setState(() => sending = true);
+
     final voice = ref.read(ventvoVoiceProvider).asData?.value;
-    final response = await responseService.addPerspective(
+    final echo = await echoService.leaveEcho(
       space: widget.space,
-      content: controller.text,
+      content: text,
       voiceMark: voice?.mark ?? '◇',
     );
 
-    if (response == null || !mounted) return;
+    if (!mounted) return;
 
-    setState(() {
-      responses = [...responses, response];
-      controller.clear();
-      composerOpen = false;
-      sending = false;
-    });
+    if (echo != null) {
+      setState(() {
+        echoes = [...echoes, echo];
+        controller.clear();
+        composerOpen = false;
+      });
+      focusNode.unfocus();
+    }
 
-    focusNode.unfocus();
+    setState(() => sending = false);
   }
 
   void _openComposer() {
-    setState(() {
-      composerOpen = true;
-    });
-
+    setState(() => composerOpen = true);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) focusNode.requestFocus();
     });
@@ -105,7 +99,6 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
 
   void _closeComposer() {
     if (sending) return;
-
     setState(() {
       composerOpen = false;
       controller.clear();
@@ -156,7 +149,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                     data: _content,
                   ),
             ),
-            if (widget.space.isOpenDiscussion) _discussionComposer(),
+            if (widget.space.isOpenDiscussion) _echoComposer(),
           ],
         ),
       ),
@@ -200,19 +193,14 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
 
   Widget _content(List<Vent> allVents) {
     final ids = widget.space.allVentIds.toSet();
-    final moments = allVents
-        .where((vent) => ids.contains(vent.id))
-        .toList()
+    final moments = allVents.where((vent) => ids.contains(vent.id)).toList()
       ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
     if (moments.isEmpty) {
       return const Center(
         child: Text(
           'This Space is empty.',
-          style: TextStyle(
-            color: VentvoColors.textMuted,
-            fontSize: 14,
-          ),
+          style: TextStyle(color: VentvoColors.textMuted, fontSize: 14),
         ),
       );
     }
@@ -231,9 +219,9 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
           space: widget.space,
           excludedIds: widget.space.allVentIds,
         ),
-        if (widget.space.isOpenDiscussion && responses.isNotEmpty) ...[
+        if (widget.space.isOpenDiscussion && echoes.isNotEmpty) ...[
           const SizedBox(height: 42),
-          _responseSection(),
+          _echoSection(),
         ],
       ],
     );
@@ -241,7 +229,6 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
 
   Widget _modeHeader() {
     final isDiscussion = widget.space.isOpenDiscussion;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -313,21 +300,17 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
           ),
         ),
         const SizedBox(height: 30),
-        Container(
-          width: 34,
-          height: 1,
-          color: VentvoColors.border,
-        ),
+        Container(width: 34, height: 1, color: VentvoColors.border),
       ],
     );
   }
 
-  Widget _responseSection() {
+  Widget _echoSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'DISCUSSION',
+          'ECHOES',
           style: TextStyle(
             color: VentvoColors.textMuted,
             fontSize: 8,
@@ -337,19 +320,16 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
         ),
         const SizedBox(height: 6),
         const Text(
-          'Voices sharing their thoughts with this Vent.',
-          style: TextStyle(
-            color: VentvoColors.textMuted,
-            fontSize: 11,
-          ),
+          'Voices leaving something of themselves with this Vent.',
+          style: TextStyle(color: VentvoColors.textMuted, fontSize: 11),
         ),
         const SizedBox(height: 18),
-        ...responses.map(_response),
+        ...echoes.map(_echo),
       ],
     );
   }
 
-  Widget _response(SpaceResponse response) {
+  Widget _echo(Echo echo) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 25),
       child: Row(
@@ -370,7 +350,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  response.voiceMark,
+                  echo.voiceMark,
                   style: const TextStyle(
                     color: VentvoColors.textMuted,
                     fontSize: 10,
@@ -378,7 +358,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                 ),
                 const SizedBox(height: 7),
                 Text(
-                  response.content,
+                  echo.content,
                   style: const TextStyle(
                     color: VentvoColors.textSecondary,
                     fontSize: 15,
@@ -393,7 +373,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     );
   }
 
-  Widget _discussionComposer() {
+  Widget _echoComposer() {
     if (!composerOpen) {
       return SafeArea(
         top: false,
@@ -411,7 +391,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                   children: [
                     Expanded(
                       child: Text(
-                        'Share your perspective…',
+                        'Leave an Echo…',
                         style: TextStyle(
                           color: VentvoColors.textMuted,
                           fontSize: 13,
@@ -459,7 +439,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                     height: 1.4,
                   ),
                   decoration: const InputDecoration(
-                    hintText: 'Share your perspective…',
+                    hintText: 'Leave an Echo…',
                     hintStyle: TextStyle(
                       color: VentvoColors.textMuted,
                       fontSize: 13,
@@ -488,11 +468,11 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                 ),
                 child: IconButton(
                   padding: EdgeInsets.zero,
-                  onPressed: sending ? null : _respond,
+                  onPressed: sending ? null : _leaveEcho,
                   icon: const Icon(Icons.arrow_upward_rounded),
                   color: VentvoColors.textPrimary,
                   iconSize: 19,
-                  tooltip: 'Send',
+                  tooltip: 'Leave Echo',
                 ),
               ),
             ],
