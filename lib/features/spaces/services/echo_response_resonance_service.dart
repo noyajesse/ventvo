@@ -30,9 +30,10 @@ class EchoResponseResonanceService {
     if (echo.spaceId != space.id) return null;
     if (sourceExperienceId.trim().isEmpty) return null;
 
-    final echoExperienceId = 'echo:${echo.id.trim()}';
-    if (echoExperienceId == 'echo:') return null;
+    final echoId = echo.id.trim();
+    if (echoId.isEmpty) return null;
 
+    final echoExperienceId = 'echo:$echoId';
     final connection = await engine.createConnection(
       sourceId: sourceExperienceId.trim(),
       targetId: echoExperienceId,
@@ -40,7 +41,10 @@ class EchoResponseResonanceService {
       strength: 1,
     );
 
-    final activated = await connectionService.activate(connection);
+    final accepted = await connectionService.accept(connection);
+    if (accepted == null) return null;
+
+    final activated = await connectionService.activate(accepted);
     if (activated == null) return null;
 
     await echoConnectionService.resolveForEcho(echo);
