@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -244,28 +246,68 @@ class _ResonanceConstellation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: _ConstellationPainter(map: map),
-      child: Center(
-        child: Wrap(
-          alignment: WrapAlignment.center,
-          spacing: detailed ? 20 : 8,
-          runSpacing: detailed ? 18 : 8,
-          children: map.experienceIds.take(detailed ? 9 : 5).map(
-            (id) => _MapNode(
-              label: _nodeLabel(id),
-              large: detailed,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final visibleIds = map.experienceIds.take(detailed ? 9 : 5).toList();
+        final positions = _positions(
+          visibleIds,
+          constraints.biggest,
+          detailed: detailed,
+        );
+
+        return Stack(
+          children: [
+            Positioned.fill(
+              child: CustomPaint(
+                painter: _ConstellationPainter(
+                  map: map,
+                  visibleIds: visibleIds,
+                  positions: positions,
+                ),
+              ),
             ),
-          ).toList(),
-        ),
-      ),
+            for (final id in visibleIds)
+              Positioned(
+                left: positions[id]!.dx - _nodeSize(detailed) / 2,
+                top: positions[id]!.dy - _nodeSize(detailed) / 2,
+                child: _MapNode(
+                  label: _nodeLabel(id),
+                  large: detailed,
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 
+  Map<String, Offset> _positions(
+    List<String> ids,
+    Size size, {
+    required bool detailed,
+  }) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = math.min(size.width, size.height) *
+        (detailed ? 0.32 : 0.30);
+    final result = <String, Offset>{};
+
+    for (var i = 0; i < ids.length; i++) {
+      final angle = (-math.pi / 2) + (i * math.pi * 2 / ids.length);
+      result[ids[i]] = Offset(
+        center.dx + radius * math.cos(angle),
+        center.dy + radius * math.sin(angle),
+      );
+    }
+
+    return result;
+  }
+
+  double _nodeSize(bool detailed) => detailed ? 44 : 27;
+
   String _nodeLabel(String id) {
     final cleaned = id.startsWith('echo:') ? id.substring(5) : id;
-    if (cleaned.length <= 2) return cleaned.toUpperCase();
-    return cleaned.characters.first.toUpperCase();
+    if (cleaned.isEmpty) return '?';
+    return cleaned.substring(0, 1).toUpperCase();
   }
 }
 
@@ -301,29 +343,23 @@ class _MapNode extends StatelessWidget {
 
 class _ConstellationPainter extends CustomPainter {
   final ResonanceMap map;
+  final List<String> visibleIds;
+  final Map<String, Offset> positions;
 
-  const _ConstellationPainter({required this.map});
+  const _ConstellationPainter({
+    required this.map,
+    required this.visibleIds,
+    required this.positions,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (map.experienceIds.length < 2) return;
+    if (visibleIds.length < 2) return;
 
     final paint = Paint()
       ..color = VentvoColors.border
       ..strokeWidth = 1
       ..style = PaintingStyle.stroke;
-
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.shortestSide * 0.30;
-    final positions = <String, Offset>{};
-
-    for (var i = 0; i < map.experienceIds.length; i++) {
-      final angle = (-3.14159 / 2) + (i * 6.28318 / map.experienceIds.length);
-      positions[map.experienceIds[i]] = Offset(
-        center.dx + radius * cos(angle),
-        center.dy + radius * sin(angle),
-      );
-    }
 
     for (final connection in map.connections) {
       final start = positions[connection.sourceId];
@@ -337,7 +373,7 @@ class _ConstellationPainter extends CustomPainter {
   bool shouldRepaint(covariant _ConstellationPainter oldDelegate) {
     return oldDelegate.map.id != map.id ||
         oldDelegate.map.connections.length != map.connections.length ||
-        oldDelegate.map.experienceIds.length != map.experienceIds.length;
+        oldDelegate.visibleIds.length != visibleIds.length;
   }
 }
 
