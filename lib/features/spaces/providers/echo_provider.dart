@@ -8,12 +8,6 @@ import '../services/echo_response_resonance_service.dart';
 import '../services/echo_service.dart';
 import '../services/space_response_storage.dart';
 
-final echoServiceProvider = Provider<EchoService>((ref) {
-  return EchoService(
-    storage: SpaceResponseStorage(),
-  );
-});
-
 final echoResonanceLinkStorageProvider =
     Provider<EchoResonanceLinkStorage>((ref) {
   return EchoResonanceLinkStorage();
@@ -41,6 +35,15 @@ final echoResponseResonanceServiceProvider =
     connectionService: ref.watch(resonanceConnectionServiceProvider),
     echoConnectionService: ref.watch(
       echoResonanceConnectionServiceProvider,
+    ),
+  );
+});
+
+final echoServiceProvider = Provider<EchoService>((ref) {
+  return EchoService(
+    storage: SpaceResponseStorage(),
+    responseResonanceService: ref.watch(
+      echoResponseResonanceServiceProvider,
     ),
   );
 });
