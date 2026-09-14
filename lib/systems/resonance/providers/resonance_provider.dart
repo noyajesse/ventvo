@@ -5,6 +5,7 @@ import '../repositories/resonance_repository.dart';
 import '../services/resonance_connection_service.dart';
 import '../services/resonance_engine.dart';
 import '../services/resonance_map_discovery_service.dart';
+import '../services/resonance_map_formation_service.dart';
 import '../services/resonance_map_reconciliation_service.dart';
 import '../services/resonance_thread_discovery_service.dart';
 import '../services/resonance_thread_formation_service.dart';
@@ -22,10 +23,6 @@ final resonanceRepositoryProvider = Provider<ResonanceRepository>((ref) {
 });
 
 /// Concrete local engine instance shared by all Resonance capabilities.
-///
-/// This provider is intentionally private to the provider layer. Product
-/// features continue to consume the abstract [ResonanceEngine] and
-/// [ResonanceMapEngine] contracts below.
 final localResonanceEngineProvider = Provider<LocalResonanceEngine>((ref) {
   return LocalResonanceEngine(
     repository: ref.watch(resonanceRepositoryProvider),
@@ -58,6 +55,18 @@ final resonanceMapReconciliationServiceProvider =
   );
 });
 
+/// Application-facing Map formation service.
+///
+/// Formation decides whether meaningful Resonance evidence is strong enough
+/// for a Map to exist. It is deliberately separate from Map discovery and
+/// reconciliation.
+final resonanceMapFormationServiceProvider =
+    Provider<ResonanceMapFormationService>((ref) {
+  return ResonanceMapFormationService(
+    engine: ref.watch(resonanceMapEngineProvider),
+  );
+});
+
 /// Shared Map discovery/query boundary.
 final resonanceMapDiscoveryServiceProvider =
     Provider<ResonanceMapDiscoveryService>((ref) {
@@ -81,9 +90,6 @@ final resonanceConnectionServiceProvider =
 });
 
 /// Application-facing Thread service for Resonance Threads.
-///
-/// Product features should use this boundary for Thread creation and
-/// extension rather than mutating Thread models directly.
 final resonanceThreadServiceProvider = Provider<ResonanceThreadService>((ref) {
   return ResonanceThreadService(
     engine: ref.watch(resonanceEngineProvider),
@@ -91,10 +97,6 @@ final resonanceThreadServiceProvider = Provider<ResonanceThreadService>((ref) {
 });
 
 /// Application-facing Thread formation service for Resonance.
-///
-/// This service decides whether a new experience meaningfully continues an
-/// existing Thread. It reuses the shared engine and Thread service rather than
-/// introducing matching logic into product features.
 final resonanceThreadFormationServiceProvider =
     Provider<ResonanceThreadFormationService>((ref) {
   final engine = ref.watch(resonanceEngineProvider);
@@ -105,9 +107,6 @@ final resonanceThreadFormationServiceProvider =
 });
 
 /// Application-facing Thread discovery/query boundary.
-///
-/// Product surfaces should use this provider when they need discoverable
-/// Threads. They should not implement Thread-state filtering themselves.
 final resonanceThreadDiscoveryServiceProvider =
     Provider<ResonanceThreadDiscoveryService>((ref) {
   return ResonanceThreadDiscoveryService(
@@ -119,9 +118,6 @@ final resonanceThreadDiscoveryServiceProvider =
 });
 
 /// Application-facing discovery service for Vent experiences.
-///
-/// Feed, Space, and Crash Out should consume this boundary rather than create
-/// a Resonance engine or repository directly.
 final ventResonanceDiscoveryServiceProvider =
     Provider<VentResonanceDiscoveryService>((ref) {
   return VentResonanceDiscoveryService(
@@ -130,9 +126,6 @@ final ventResonanceDiscoveryServiceProvider =
 });
 
 /// Application-facing discovery service for Space experiences.
-///
-/// Space uses the same Resonance engine as every other product surface. It
-/// does not perform candidate matching or repository access itself.
 final spaceResonanceDiscoveryServiceProvider =
     Provider<SpaceResonanceDiscoveryService>((ref) {
   return SpaceResonanceDiscoveryService(
