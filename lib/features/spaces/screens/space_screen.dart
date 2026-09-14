@@ -5,9 +5,11 @@ import '../../../core/motion/ventvo_motion.dart';
 import '../../../core/theme/ventvo_colors.dart';
 import '../../ventvo_voice/models/vent.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
+import '../../ventvo_voice/providers/voice_provider.dart';
 import '../models/space.dart';
 import '../models/space_response.dart';
-import '../services/space_response_storage.dart';
+import '../providers/space_response_provider.dart';
+import '../services/space_response_service.dart';
 import '../widgets/space_resonance_section.dart';
 
 class SpaceScreen extends ConsumerStatefulWidget {
@@ -44,7 +46,7 @@ class SpaceScreen extends ConsumerStatefulWidget {
 }
 
 class _SpaceScreenState extends ConsumerState<SpaceScreen> {
-  final storage = SpaceResponseStorage();
+  late final SpaceResponseService responseService;
   final controller = TextEditingController();
   final focusNode = FocusNode();
 
@@ -55,41 +57,31 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
   @override
   void initState() {
     super.initState();
+    responseService = ref.read(spaceResponseServiceProvider);
     _load();
   }
 
   Future<void> _load() async {
-    final value = await storage.loadForSpace(widget.space.id);
+    final value = await responseService.loadVisible(widget.space.id);
 
     if (!mounted) return;
 
     setState(() {
-      responses = value
-          .where((response) => !response.isMoment && !response.isHeard)
-          .toList();
+      responses = value;
     });
   }
 
   Future<void> _respond() async {
-    final text = controller.text.trim();
-    if (text.isEmpty || sending) return;
+    if (sending) return;
 
-    setState(() {
-      sending = true;
-    });
-
-    final response = SpaceResponse(
-      id: DateTime.now().microsecondsSinceEpoch.toString(),
-      spaceId: widget.space.id,
-      ventId: widget.space.originatingVentId,
-      voiceMark: '◇ You',
-      content: text,
-      createdAt: DateTime.now(),
+    final voice = ref.read(ventvoVoiceProvider).asData?.value;
+    final response = await responseService.addPerspective(
+      space: widget.space,
+      content: controller.text,
+      voiceMark: voice?.mark ?? '◇',
     );
 
-    await storage.add(response);
-
-    if (!mounted) return;
+    if (response == null || !mounted) return;
 
     setState(() {
       responses = [...responses, response];
