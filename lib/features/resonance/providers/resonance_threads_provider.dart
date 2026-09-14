@@ -8,3 +8,10 @@ final resonanceThreadsProvider = FutureProvider<List<ResonanceThread>>((ref) {
       .watch(resonanceThreadDiscoveryServiceProvider)
       .discoverAll(limit: 20);
 });
+
+final resonanceThreadsForExperienceProvider =
+    FutureProvider.family<List<ResonanceThread>, String>((ref, experienceId) {
+  return ref
+      .watch(resonanceThreadDiscoveryServiceProvider)
+      .discoverForExperience(experienceId, limit: 20);
+});
