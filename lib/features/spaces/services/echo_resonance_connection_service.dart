@@ -1,7 +1,7 @@
 import '../../../systems/resonance/models/resonance_connection.dart';
+import '../../../systems/resonance/services/echo_resonance_experience_service.dart';
 import '../../../systems/resonance/services/resonance_engine.dart';
 import '../models/echo.dart';
-import 'echo_resonance_experience_service.dart';
 import 'echo_resonance_link_service.dart';
 
 /// Resolves an Echo against the canonical Resonance connection graph.
