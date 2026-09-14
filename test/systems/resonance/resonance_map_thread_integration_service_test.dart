@@ -1,7 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:ventvo/systems/resonance/models/resonance_candidate.dart';
 import 'package:ventvo/systems/resonance/models/resonance_connection.dart';
 import 'package:ventvo/systems/resonance/models/resonance_map.dart';
+import 'package:ventvo/systems/resonance/models/resonance_query.dart';
 import 'package:ventvo/systems/resonance/models/resonance_thread.dart';
 import 'package:ventvo/systems/resonance/services/resonance_engine.dart';
 import 'package:ventvo/systems/resonance/services/resonance_map_reconciliation_service.dart';
@@ -13,10 +15,12 @@ class FakeResonanceEngine implements ResonanceEngine, ResonanceMapEngine {
   final Map<String, List<ResonanceConnection>> connectionsByExperience = {};
 
   @override
-  Future<void> indexCandidate(candidate) async {}
+  Future<void> indexCandidate(ResonanceCandidate candidate) async {}
 
   @override
-  Future<List> discover(query) async => const [];
+  Future<List<ResonanceCandidate>> discover(ResonanceQuery query) async {
+    return const [];
+  }
 
   @override
   Future<ResonanceConnection> createConnection({
