@@ -113,7 +113,7 @@ class _ResonanceRelationshipScreenState
           padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
           children: [
             Text(
-              widget.candidate.profile?.displayLabel ?? 'RESONANCE',
+              widget.candidate.voiceMark ?? 'RESONANCE',
               style: const TextStyle(
                 color: VentvoColors.textMuted,
                 fontSize: 10,
