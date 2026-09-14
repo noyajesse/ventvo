@@ -7,6 +7,7 @@ import '../../spaces/providers/space_provider.dart';
 import '../../spaces/screens/space_screen.dart';
 import '../../spaces/models/space.dart';
 import '../../ventvo_voice/models/vent.dart';
+import '../../../systems/resonance/models/resonance_connection.dart';
 import '../../../systems/resonance/models/resonance_thread.dart';
 import '../models/resonance_thread_experience.dart';
 import '../providers/resonance_thread_experience_provider.dart';
@@ -93,12 +94,21 @@ class ResonanceThreadDetailScreen extends ConsumerWidget {
                   ),
                 )
               else
-                ...experiences.asMap().entries.map(
-                  (entry) => _ExperienceStep(
-                    index: entry.key,
-                    experience: entry.value,
-                    isLast: entry.key == experiences.length - 1,
-                  ),
+                ...experiences.asMap().entries.expand(
+                  (entry) => <Widget>[
+                    _ExperienceStep(
+                      index: entry.key,
+                      experience: entry.value,
+                      isLast: entry.key == experiences.length - 1,
+                    ),
+                    if (entry.key < experiences.length - 1)
+                      _ConnectionBridge(
+                        connection: _connectionBetween(
+                          entry.value.id,
+                          experiences[entry.key + 1].id,
+                        ),
+                      ),
+                  ],
                 ),
               const SizedBox(height: 22),
               Container(
@@ -123,6 +133,16 @@ class ResonanceThreadDetailScreen extends ConsumerWidget {
       ),
     );
   }
+
+  ResonanceConnection? _connectionBetween(String firstId, String secondId) {
+    for (final connection in thread.connections) {
+      final matches =
+          (connection.sourceId == firstId && connection.targetId == secondId) ||
+          (connection.sourceId == secondId && connection.targetId == firstId);
+      if (matches) return connection;
+    }
+    return null;
+  }
 }
 
 class _ExperienceStep extends StatelessWidget {
@@ -139,39 +159,28 @@ class _ExperienceStep extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 18),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
             width: 32,
-            child: Column(
-              children: [
-                Container(
-                  width: 28,
-                  height: 28,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: VentvoColors.border),
-                  ),
-                  child: Text(
-                    '${index + 1}',
-                    style: const TextStyle(
-                      color: VentvoColors.textMuted,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+            child: Container(
+              width: 28,
+              height: 28,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: VentvoColors.border),
+              ),
+              child: Text(
+                '${index + 1}',
+                style: const TextStyle(
+                  color: VentvoColors.textMuted,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
                 ),
-                if (!isLast)
-                  Container(
-                    width: 1,
-                    height: 54,
-                    margin: const EdgeInsets.only(top: 6),
-                    color: VentvoColors.border,
-                  ),
-              ],
+              ),
             ),
           ),
           const SizedBox(width: 12),
@@ -238,6 +247,55 @@ class _ExperienceStep extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class _ConnectionBridge extends StatelessWidget {
+  final ResonanceConnection? connection;
+
+  const _ConnectionBridge({required this.connection});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(44, 0, 18, 8),
+      child: Row(
+        children: [
+          Container(
+            width: 1,
+            height: 18,
+            color: VentvoColors.border,
+          ),
+          const SizedBox(width: 10),
+          Text(
+            _labelFor(connection?.type),
+            style: const TextStyle(
+              color: VentvoColors.textMuted,
+              fontSize: 9,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.7,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _labelFor(ResonanceConnectionType? type) {
+    switch (type) {
+      case ResonanceConnectionType.sharedExperience:
+        return 'SHARED EXPERIENCE';
+      case ResonanceConnectionType.perspective:
+        return 'DIFFERENT PERSPECTIVE';
+      case ResonanceConnectionType.response:
+        return 'RESPONSE';
+      case ResonanceConnectionType.similarity:
+        return 'SIMILAR EXPERIENCE';
+      case ResonanceConnectionType.discovery:
+        return 'DISCOVERED CONNECTION';
+      case null:
+        return 'CONNECTED THROUGH RESONANCE';
+    }
   }
 }
 
