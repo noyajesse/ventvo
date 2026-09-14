@@ -11,6 +11,7 @@ import '../models/space.dart';
 import '../providers/space_provider.dart';
 import '../providers/space_resonance_provider.dart';
 import '../screens/space_screen.dart';
+import '../../resonance/screens/resonance_relationship_screen.dart';
 
 class SpaceResonanceSection extends ConsumerWidget {
   final Space space;
@@ -143,6 +144,24 @@ class _ResonanceCardState extends ConsumerState<_ResonanceCard> {
   ResonanceConnection? connection;
   bool saving = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadConnection();
+  }
+
+  Future<void> _loadConnection() async {
+    final existing = await ref
+        .read(resonanceConnectionServiceProvider)
+        .getConnectionBetween(
+          widget.targetSpace.originatingVentId,
+          widget.candidate.id,
+        );
+
+    if (!mounted || existing == null) return;
+    setState(() => connection = existing);
+  }
+
   Future<void> _resonate() async {
     if (saving || connection != null) return;
 
@@ -168,9 +187,49 @@ class _ResonanceCardState extends ConsumerState<_ResonanceCard> {
     });
   }
 
+  Future<void> _openRelationship() async {
+    final current = connection;
+    if (current == null || saving) return;
+
+    final updated = await Navigator.of(context).push<ResonanceConnection>(
+      MaterialPageRoute(
+        builder: (_) => ResonanceRelationshipScreen(
+          candidate: widget.candidate,
+          connection: current,
+        ),
+      ),
+    );
+
+    if (!mounted || updated == null) return;
+    setState(() => connection = updated);
+  }
+
+  String get _actionLabel {
+    final state = connection?.state;
+    switch (state) {
+      case ResonanceConnectionState.accepted:
+      case ResonanceConnectionState.active:
+        return 'Resonating';
+      case ResonanceConnectionState.closed:
+        return 'Resonance closed';
+      case ResonanceConnectionState.blocked:
+        return 'Resonance blocked';
+      case ResonanceConnectionState.suggested:
+      case null:
+        return 'Resonate';
+    }
+  }
+
+  bool get _canOpenRelationship {
+    final state = connection?.state;
+    return state == ResonanceConnectionState.accepted ||
+        state == ResonanceConnectionState.active;
+  }
+
   @override
   Widget build(BuildContext context) {
     final hasResonated = connection != null;
+    final canOpenRelationship = _canOpenRelationship;
 
     return Material(
       color: VentvoColors.surface,
@@ -238,14 +297,20 @@ class _ResonanceCardState extends ConsumerState<_ResonanceCard> {
             Align(
               alignment: Alignment.centerRight,
               child: TextButton.icon(
-                onPressed: hasResonated || saving ? null : _resonate,
+                onPressed: saving
+                    ? null
+                    : canOpenRelationship
+                        ? _openRelationship
+                        : hasResonated
+                            ? null
+                            : _resonate,
                 icon: Icon(
                   hasResonated
                       ? Icons.check_rounded
                       : Icons.blur_on_rounded,
                   size: 15,
                 ),
-                label: Text(hasResonated ? 'Resonating' : 'Resonate'),
+                label: Text(_actionLabel),
               ),
             ),
           ],
