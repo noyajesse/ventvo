@@ -19,9 +19,10 @@ class ResonanceMapEventService {
   /// Reacts to a persisted connection state transition.
   ///
   /// Only accepted and active connections can evolve a Map. If both endpoints
-  /// already belong to the same Map, no evolution is attempted because there is
-  /// no new experience to add. Reconciliation is delegated to the evolution
-  /// service so there is one canonical Map-growth path.
+  /// already belong to Maps, the event is ignored because connecting two
+  /// established Maps is a future Map-merge concern rather than evolution.
+  /// Reconciliation is delegated to the evolution service so there is one
+  /// canonical Map-growth path.
   Future<void> handleConnectionStateChange(
     ResonanceConnection connection,
   ) async {
@@ -34,26 +35,25 @@ class ResonanceMapEventService {
       connection.targetId,
     );
 
-    final handledMapIds = <String>{};
+    if (sourceMaps.isNotEmpty && targetMaps.isNotEmpty) return;
 
-    for (final map in sourceMaps) {
-      if (map.containsExperience(connection.targetId)) continue;
-      if (!handledMapIds.add(map.id)) continue;
-
-      await evolutionService.evolveWithExperience(
-        mapId: map.id,
-        experienceId: connection.targetId,
-      );
+    if (sourceMaps.isNotEmpty) {
+      for (final map in sourceMaps) {
+        await evolutionService.evolveWithExperience(
+          mapId: map.id,
+          experienceId: connection.targetId,
+        );
+      }
+      return;
     }
 
-    for (final map in targetMaps) {
-      if (map.containsExperience(connection.sourceId)) continue;
-      if (!handledMapIds.add(map.id)) continue;
-
-      await evolutionService.evolveWithExperience(
-        mapId: map.id,
-        experienceId: connection.sourceId,
-      );
+    if (targetMaps.isNotEmpty) {
+      for (final map in targetMaps) {
+        await evolutionService.evolveWithExperience(
+          mapId: map.id,
+          experienceId: connection.sourceId,
+        );
+      }
     }
   }
 
