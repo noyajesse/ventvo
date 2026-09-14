@@ -5,6 +5,7 @@ import '../../../core/theme/ventvo_colors.dart';
 import '../../../systems/resonance/models/resonance_candidate.dart';
 import '../../../systems/resonance/models/resonance_connection.dart';
 import '../../../systems/resonance/providers/resonance_provider.dart';
+import 'resonance_threads_screen.dart';
 
 class ResonanceRelationshipScreen extends ConsumerStatefulWidget {
   final ResonanceCandidate candidate;
@@ -94,10 +95,21 @@ class _ResonanceRelationshipScreenState
     Navigator.of(context).pop(updated);
   }
 
+  void _openRelatedThreads() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ResonanceThreadsScreen(
+          experienceId: widget.candidate.id,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final canActivate =
         connection.state == ResonanceConnectionState.accepted;
+    final isActive = connection.state == ResonanceConnectionState.active;
     final isTerminal =
         connection.state == ResonanceConnectionState.closed ||
         connection.state == ResonanceConnectionState.blocked;
@@ -150,6 +162,23 @@ class _ResonanceRelationshipScreenState
               label: 'STATE',
               value: _stateLabel(connection.state),
             ),
+            if (isActive) ...[
+              const SizedBox(height: 28),
+              _ActionButton(
+                label: 'Explore related Threads',
+                onPressed: saving ? null : _openRelatedThreads,
+                primary: true,
+              ),
+              const SizedBox(height: 9),
+              const Text(
+                'Active Resonance can become part of a deeper Thread when enough meaningful experiences connect around it.',
+                style: TextStyle(
+                  color: VentvoColors.textMuted,
+                  fontSize: 12,
+                  height: 1.5,
+                ),
+              ),
+            ],
             const SizedBox(height: 30),
             if (canActivate)
               _ActionButton(
