@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/ventvo_colors.dart';
 import '../providers/voice_provider.dart';
 import '../providers/vent_provider.dart';
+import '../providers/voice_space_provider.dart';
 import '../../feed/screens/feed_screen.dart';
 import '../../feed/widgets/vent_card.dart';
 import '../../crash_out/screens/crash_out_screen.dart';
@@ -20,6 +21,7 @@ class VoiceSpaceScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final voice = ref.watch(ventvoVoiceProvider).asData?.value;
     final vents = ref.watch(ventProvider).asData?.value ?? const [];
+    final resonanceStats = ref.watch(voiceSpaceResonanceStatsProvider);
     final crashOutState = ref.watch(crashOutProvider);
     final privateCrashOuts = crashOutState.asData?.value
             .where((crashOut) => crashOut.status == CrashOutStatus.keptPrivate)
@@ -79,8 +81,8 @@ class VoiceSpaceScreen extends ConsumerWidget {
               const SizedBox(height: 16),
               _StatsRow(
                 vents: vents.length,
-                moments: 0,
-                arcs: 0,
+                moments: resonanceStats.asData?.value.threads ?? 0,
+                arcs: resonanceStats.asData?.value.maps ?? 0,
               ),
               const SizedBox(height: 30),
               if (vents.isNotEmpty) ...[
