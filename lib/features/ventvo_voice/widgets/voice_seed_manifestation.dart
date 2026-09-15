@@ -6,11 +6,8 @@ import '../models/voice_seed.dart';
 import '../models/voice_seed_manifestation.dart';
 import '../services/voice_identity_catalog.dart';
 
-/// The visual surface through which a Voice Seed manifests itself.
-///
-/// A Seed is not represented by a shared animation with a changed symbol.
-/// Each Seed has its own visual formation language while sharing the same
-/// lightweight rendering infrastructure.
+/// Seed-specific cinematic manifestation. VAELOR deliberately remains the
+/// original reference animation; every other Seed gets its own choreography.
 class VoiceSeedManifestation extends StatefulWidget {
   const VoiceSeedManifestation({
     required this.seed,
@@ -24,8 +21,7 @@ class VoiceSeedManifestation extends StatefulWidget {
   final bool reveal;
 
   @override
-  State<VoiceSeedManifestation> createState() =>
-      _VoiceSeedManifestationState();
+  State<VoiceSeedManifestation> createState() => _VoiceSeedManifestationState();
 }
 
 class _VoiceSeedManifestationState extends State<VoiceSeedManifestation>
@@ -35,14 +31,8 @@ class _VoiceSeedManifestationState extends State<VoiceSeedManifestation>
   @override
   void initState() {
     super.initState();
-    final manifestation = VoiceIdentityCatalog.manifestationBySeedId(
-      widget.seed.id,
-    );
-    _controller = AnimationController(
-      vsync: this,
-      duration: manifestation.duration,
-    );
-
+    final m = VoiceIdentityCatalog.manifestationBySeedId(widget.seed.id);
+    _controller = AnimationController(vsync: this, duration: m.duration);
     if (widget.reveal) {
       _controller.forward();
     } else {
@@ -58,28 +48,23 @@ class _VoiceSeedManifestationState extends State<VoiceSeedManifestation>
 
   @override
   Widget build(BuildContext context) {
-    final manifestation = VoiceIdentityCatalog.manifestationBySeedId(
-      widget.seed.id,
-    );
-
+    final m = VoiceIdentityCatalog.manifestationBySeedId(widget.seed.id);
     return AnimatedBuilder(
       animation: _controller,
-      builder: (context, child) {
-        return SizedBox(
-          height: widget.size,
-          width: widget.size,
-          child: CustomPaint(
-            painter: _SeedManifestationPainter(
-              seedId: widget.seed.id,
-              symbol: widget.seed.mark.symbol,
-              motion: manifestation.motion,
-              reveal: manifestation.reveal,
-              progress: Curves.easeInOut.transform(_controller.value),
-              intensity: manifestation.intensity,
-            ),
+      builder: (context, child) => SizedBox(
+        height: widget.size,
+        width: widget.size,
+        child: CustomPaint(
+          painter: _SeedManifestationPainter(
+            seedId: widget.seed.id,
+            symbol: widget.seed.mark.symbol,
+            motion: m.motion,
+            reveal: m.reveal,
+            progress: Curves.easeInOut.transform(_controller.value),
+            intensity: m.intensity,
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }
@@ -103,314 +88,240 @@ class _SeedManifestationPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.shortestSide * 0.5;
+    final c = Offset(size.width / 2, size.height / 2);
+    final r = size.shortestSide * .5;
 
-    final borderPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2
-      ..color = Colors.white.withValues(alpha: 0.24 + (0.12 * intensity));
-    canvas.drawCircle(center, radius - 1, borderPaint);
-
+    // VAELOR is untouched: it is the original formation reference.
     if (seedId == 'vaelor') {
-      _paintVaelor(canvas, center);
+      final scale = Curves.easeOutBack.transform(progress) *
+          (1 + .025 * progress);
+      _symbol(canvas, c, scale, Curves.easeOut.transform(progress));
       return;
     }
 
+    _outerRing(canvas, c, r);
     switch (seedId) {
       case 'nyven':
-        _paintNyven(canvas, center, radius);
+        _nyven(canvas, c, r);
       case 'auren':
-        _paintAuren(canvas, center, radius);
+        _auren(canvas, c, r);
       case 'senya':
-        _paintSenya(canvas, center, radius);
+        _senya(canvas, c, r);
       case 'orvan':
-        _paintOrvan(canvas, center, radius);
+        _orvan(canvas, c, r);
       case 'elvae':
-        _paintElvae(canvas, center, radius);
+        _elvae(canvas, c, r);
       case 'nareth':
-        _paintNareth(canvas, center, radius);
+        _nareth(canvas, c, r);
       case 'veyra':
-        _paintVeyra(canvas, center, radius);
+        _veyra(canvas, c, r);
       case 'kaven':
-        _paintKaven(canvas, center, radius);
+        _kaven(canvas, c, r);
       default:
-        _paintNeutral(canvas, center, radius);
+        _symbol(canvas, c, progress, progress);
     }
   }
 
-  // VAELOR remains the reference manifestation: the quiet symbol reveal is
-  // intentionally kept simple rather than being replaced by the new system.
-  void _paintVaelor(Canvas canvas, Offset center) {
-    final revealProgress = Curves.easeOutBack.transform(progress);
-    final pulse = 1 + (0.025 * progress);
-    final opacity = Curves.easeOut.transform(progress);
-
-    _paintSymbol(
-      canvas,
-      center,
-      scale: revealProgress * pulse,
-      opacity: opacity,
-    );
+  double _stage(double start, double end, [Curve curve = Curves.easeOutCubic]) {
+    if (progress <= start) return 0;
+    if (progress >= end) return 1;
+    return curve.transform((progress - start) / (end - start));
   }
 
-  // NYVEN: resonance travels outward as layered waves before settling on the
-  // mark. The movement is horizontal rather than a generic scale animation.
-  void _paintNyven(Canvas canvas, Offset center, double radius) {
-    final paint = _linePaint((1 - progress) * 0.30 * intensity);
-    final waveProgress = Curves.easeOut.transform(progress);
-
-    for (var i = 0; i < 3; i++) {
-      final path = Path();
-      final y = center.dy + ((i - 1) * radius * 0.16);
-      final amplitude = radius * 0.18 * (1 - waveProgress);
-      path.moveTo(center.dx - radius * 0.55, y);
-      path.cubicTo(
-        center.dx - radius * 0.28,
-        y - amplitude,
-        center.dx + radius * 0.28,
-        y + amplitude,
-        center.dx + radius * 0.55,
-        y,
-      );
-      canvas.drawPath(path, paint);
-    }
-
-    _paintSymbol(
-      canvas,
-      center.translate(0, math.sin(waveProgress * math.pi) * 3),
-      scale: 0.70 + (0.30 * Curves.easeOutBack.transform(progress)),
-      opacity: Curves.easeOut.transform(progress),
-    );
-  }
-
-  // AUREN: a point of light grows from the centre, sending out short rays.
-  void _paintAuren(Canvas canvas, Offset center, double radius) {
-    final rayPaint = _linePaint((1 - progress) * 0.34 * intensity);
-    final spark = Curves.easeOut.transform(progress);
-    final rayRadius = radius * (0.18 + (0.38 * spark));
-
-    for (var i = 0; i < 8; i++) {
-      final angle = (math.pi * 2 / 8) * i;
-      final inner = Offset(
-        center.dx + math.cos(angle) * rayRadius * 0.55,
-        center.dy + math.sin(angle) * rayRadius * 0.55,
-      );
-      final outer = Offset(
-        center.dx + math.cos(angle) * rayRadius,
-        center.dy + math.sin(angle) * rayRadius,
-      );
-      canvas.drawLine(inner, outer, rayPaint);
-    }
-
-    _paintSymbol(
-      canvas,
-      center,
-      scale: 0.50 + (0.50 * Curves.easeOutBack.transform(progress)),
-      opacity: Curves.easeOut.transform(progress),
-      rotation: (1 - progress) * 0.18,
-    );
-  }
-
-  // SENYA: an incomplete ring opens gently around the mark, leaving room.
-  void _paintSenya(Canvas canvas, Offset center, double radius) {
-    final paint = _linePaint((1 - progress) * 0.28 * intensity);
-    final openProgress = Curves.easeOut.transform(progress);
-    final sweep = math.pi * (0.55 + (1.15 * openProgress));
-    final rect = Rect.fromCircle(center: center, radius: radius * 0.58);
-
-    canvas.drawArc(rect, math.pi + ((math.pi - sweep) / 2), sweep, false, paint);
-
-    _paintSymbol(
-      canvas,
-      center,
-      scale: 0.62 + (0.38 * Curves.easeOutBack.transform(progress)),
-      opacity: Curves.easeOut.transform(progress),
-    );
-  }
-
-  // ORVAN: the form descends and settles onto a grounded line.
-  void _paintOrvan(Canvas canvas, Offset center, double radius) {
-    final paint = _linePaint((1 - progress) * 0.28 * intensity);
-    final settle = Curves.easeOut.transform(progress);
-    final baseY = center.dy + radius * 0.34;
-    final width = radius * (0.22 + (0.22 * settle));
-    final top = center.dy - radius * (0.28 * settle);
-
-    final triangle = Path()
-      ..moveTo(center.dx, top)
-      ..lineTo(center.dx + width, baseY)
-      ..lineTo(center.dx - width, baseY)
-      ..close();
-    canvas.drawPath(triangle, paint);
-    canvas.drawLine(
-      Offset(center.dx - radius * 0.45, baseY),
-      Offset(center.dx + radius * 0.45, baseY),
-      paint,
-    );
-
-    _paintSymbol(
-      canvas,
-      center.translate(0, (1 - settle) * -8),
-      scale: 0.72 + (0.28 * Curves.easeOutBack.transform(progress)),
-      opacity: Curves.easeOut.transform(progress),
-    );
-  }
-
-  // ELVAE: two separate experiences draw toward one another and overlap.
-  void _paintElvae(Canvas canvas, Offset center, double radius) {
-    final paint = _linePaint((1 - progress) * 0.32 * intensity);
-    final converge = Curves.easeOut.transform(progress);
-    final separation = radius * (0.34 * (1 - converge));
-    final circleRadius = radius * 0.36;
-
-    canvas.drawCircle(
-      Offset(center.dx - separation, center.dy),
-      circleRadius,
-      paint,
-    );
-    canvas.drawCircle(
-      Offset(center.dx + separation, center.dy),
-      circleRadius,
-      paint,
-    );
-
-    _paintSymbol(
-      canvas,
-      center,
-      scale: 0.58 + (0.42 * Curves.easeOutBack.transform(progress)),
-      opacity: Curves.easeOut.transform(progress),
-    );
-  }
-
-  // NARETH: almost nothing happens. The form breathes instead of arriving.
-  void _paintNareth(Canvas canvas, Offset center, double radius) {
-    final paint = _linePaint((1 - progress) * 0.22 * intensity);
-    final breathe = math.sin(progress * math.pi);
-    final outer = radius * (0.25 + (0.22 * breathe));
-    final inner = radius * (0.12 + (0.10 * breathe));
-
-    canvas.drawCircle(center, outer, paint);
-    canvas.drawCircle(center, inner, paint);
-
-    _paintSymbol(
-      canvas,
-      center,
-      scale: 0.64 + (0.36 * Curves.easeOutBack.transform(progress)),
-      opacity: Curves.easeOut.transform(progress),
-    );
-  }
-
-  // VEYRA: a trace is left behind as the mark arrives.
-  void _paintVeyra(Canvas canvas, Offset center, double radius) {
-    final paint = _linePaint((1 - progress) * 0.30 * intensity);
-    final trailProgress = Curves.easeOut.transform(progress);
-    final rect = Rect.fromCircle(center: center, radius: radius * 0.52);
-
-    canvas.drawArc(
-      rect,
-      -math.pi * 0.82,
-      math.pi * 1.55 * trailProgress,
-      false,
-      paint,
-    );
-    canvas.drawArc(
-      rect.shift(const Offset(0, 4)),
-      -math.pi * 0.65,
-      math.pi * 0.85 * trailProgress,
-      false,
-      paint..strokeWidth = 1,
-    );
-
-    _paintSymbol(
-      canvas,
-      center,
-      scale: 0.52 + (0.48 * Curves.easeOutBack.transform(progress)),
-      opacity: Curves.easeOut.transform(progress),
-      rotation: (1 - progress) * 0.1,
-    );
-  }
-
-  // KAVEN: different directions meet at one shared point.
-  void _paintKaven(Canvas canvas, Offset center, double radius) {
-    final paint = _linePaint((1 - progress) * 0.32 * intensity);
-    final meet = Curves.easeOut.transform(progress);
-    final reach = radius * (0.28 + (0.28 * meet));
-
-    final points = <Offset>[
-      Offset(center.dx - reach, center.dy - reach),
-      Offset(center.dx + reach, center.dy + reach),
-      Offset(center.dx + reach, center.dy - reach),
-      Offset(center.dx - reach, center.dy + reach),
-    ];
-
-    for (final point in points) {
-      canvas.drawLine(point, center, paint);
-    }
-
-    _paintSymbol(
-      canvas,
-      center,
-      scale: 0.58 + (0.42 * Curves.easeOutBack.transform(progress)),
-      opacity: Curves.easeOut.transform(progress),
-    );
-  }
-
-  void _paintNeutral(Canvas canvas, Offset center, double radius) {
-    final paint = _linePaint((1 - progress) * 0.18 * intensity);
-    canvas.drawCircle(center, radius * (0.2 + (0.45 * progress)), paint);
-    _paintSymbol(canvas, center, scale: progress, opacity: progress);
-  }
-
-  Paint _linePaint(double opacity) {
-    return Paint()
+  void _outerRing(Canvas canvas, Offset c, double r) {
+    final p = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5
-      ..strokeCap = StrokeCap.round
-      ..color = Colors.white.withValues(
-        alpha: opacity.clamp(0.0, 1.0).toDouble(),
-      );
+      ..strokeWidth = 1.1
+      ..color = Colors.white.withValues(alpha: .10 + .08 * progress);
+    canvas.drawCircle(c, r - 1, p);
   }
 
-  void _paintSymbol(
-    Canvas canvas,
-    Offset center, {
-    required double scale,
-    required double opacity,
-    double rotation = 0,
-  }) {
-    final textPainter = TextPainter(
-      text: TextSpan(
-        text: symbol,
-        style: TextStyle(
-          color: Colors.white.withValues(
-            alpha: opacity.clamp(0.0, 1.0).toDouble(),
-          ),
-          fontSize: 55,
-          height: 1,
-        ),
-      ),
+  // NYVEN: streams converge, then resonance ripples back out.
+  void _nyven(Canvas canvas, Offset c, double r) {
+    final gather = _stage(.04, .55, Curves.easeInOutCubic);
+    final ripple = _stage(.46, .96);
+    for (var i = 0; i < 20; i++) {
+      final side = i.isEven ? -1.0 : 1.0;
+      final row = i ~/ 2;
+      final start = Offset(c.dx + side * r * .72,
+          c.dy + (row - 5) * r * .075);
+      final point = Offset.lerp(start, c, gather)!;
+      _dot(canvas, point, 1.4 + 1.3 * math.sin(ripple * math.pi),
+          .60 * (1 - gather));
+    }
+    for (var i = 0; i < 3; i++) {
+      final t = (ripple - i * .08).clamp(0.0, 1.0);
+      if (t == 0) continue;
+      final path = Path()..moveTo(c.dx - r * .12 * t, c.dy + (i - 1) * r * .12);
+      path.cubicTo(c.dx - r * .05 * t, c.dy - r * .15 * t,
+          c.dx + r * .05 * t, c.dy + r * .15 * t,
+          c.dx + r * .42 * t, c.dy + (i - 1) * r * .12);
+      canvas.drawPath(path, _line(.24 * intensity * (1 - ripple)));
+    }
+    _symbol(canvas, c, .18 + .82 * _stage(.42, .76, Curves.easeOutBack),
+        _stage(.42, .76));
+  }
+
+  // AUREN: ignition at the centre becomes a controlled burst of rays.
+  void _auren(Canvas canvas, Offset c, double r) {
+    final ignite = _stage(.05, .40);
+    final burst = _stage(.30, .72, Curves.easeOutBack);
+    final settle = _stage(.72, 1);
+    final glow = Paint()
+      ..color = Colors.white.withValues(alpha: .07 * ignite);
+    canvas.drawCircle(c, r * (.06 + .30 * burst), glow);
+    for (var i = 0; i < 12; i++) {
+      final a = math.pi * 2 * i / 12;
+      canvas.drawLine(c + _v(a, r * (.08 + .10 * burst)),
+          c + _v(a, r * (.18 + .30 * burst)),
+          _line(.32 * intensity * (1 - settle)));
+    }
+    _symbol(canvas, c, .18 + .82 * _stage(.34, .68, Curves.easeOutBack),
+        _stage(.34, .68));
+  }
+
+  // SENYA: the space opens around the listener instead of closing in.
+  void _senya(Canvas canvas, Offset c, double r) {
+    final open = _stage(.05, .62);
+    final settle = _stage(.62, 1);
+    final gap = math.pi * (.28 - .08 * open);
+    canvas.drawArc(Rect.fromCircle(center: c, radius: r * (.30 + .27 * open)),
+        -math.pi / 2 + gap, math.pi * 2 - gap * 2, false,
+        _line(.34 * intensity * (1 - settle)));
+    for (var i = 0; i < 14; i++) {
+      final a = math.pi * 2 * i / 14;
+      _dot(canvas, c + _v(a, r * (.55 - .15 * open)), 1.1,
+          .30 * (1 - open));
+    }
+    _symbol(canvas, c, .18 + .82 * _stage(.46, .76, Curves.easeOutBack),
+        _stage(.46, .76));
+  }
+
+  // ORVAN: the experience carries weight and settles onto a ground line.
+  void _orvan(Canvas canvas, Offset c, double r) {
+    final fall = _stage(.02, .58, Curves.easeInCubic);
+    final form = _stage(.34, .76, Curves.easeOutBack);
+    final base = c.dy + r * .30;
+    for (var i = 0; i < 16; i++) {
+      final x = c.dx + (i - 7.5) * r * .065;
+      final y = c.dy - r * .72 + (base - (c.dy - r * .72)) * fall;
+      _dot(canvas, Offset(x, y), 1.4, .55 * (1 - fall));
+    }
+    canvas.drawLine(Offset(c.dx - r * .48, base), Offset(c.dx + r * .48, base),
+        _line(.34 * intensity * form));
+    final w = r * (.12 + .24 * form);
+    final path = Path()..moveTo(c.dx, c.dy - r * .22 * form)
+      ..lineTo(c.dx + w, base)..lineTo(c.dx - w, base)..close();
+    canvas.drawPath(path, _line(.25 * intensity * form));
+    _symbol(canvas, c.translate(0, (1 - form) * -8),
+        .18 + .82 * _stage(.48, .78, Curves.easeOutBack), _stage(.48, .78));
+  }
+
+  // ELVAE: two experiences approach one another and become one recognition.
+  void _elvae(Canvas canvas, Offset c, double r) {
+    final meet = _stage(.03, .68, Curves.easeInOutCubic);
+    final reveal = _stage(.52, .90, Curves.easeOutBack);
+    final d = r * .42 * (1 - meet);
+    final rr = r * .27;
+    canvas.drawCircle(c.translate(-d, 0), rr, _line(.22 * (1 - reveal)));
+    canvas.drawCircle(c.translate(d, 0), rr, _line(.22 * (1 - reveal)));
+    for (var i = 0; i < 18; i++) {
+      final a = math.pi * 2 * i / 18;
+      final source = i.isEven ? c.translate(-d, 0) : c.translate(d, 0);
+      _dot(canvas, Offset.lerp(source + _v(a, rr), c, meet)!, 1.3,
+          .42 * (1 - reveal));
+    }
+    canvas.drawCircle(c, rr * (.5 + .4 * reveal), _line(.20 * reveal));
+    _symbol(canvas, c, .18 + .82 * _stage(.50, .80, Curves.easeOutBack),
+        _stage(.50, .80));
+  }
+
+  // NARETH: almost nothing happens; the silence itself breathes.
+  void _nareth(Canvas canvas, Offset c, double r) {
+    final fade = _stage(.10, .62);
+    final breath = math.sin(progress * math.pi);
+    canvas.drawCircle(c, r * (.24 + .18 * breath), _line(.18 * (1 - fade)));
+    canvas.drawCircle(c, r * (.10 + .08 * breath), _line(.12 * (1 - fade)));
+    for (var i = 0; i < 8; i++) {
+      final a = math.pi * 2 * i / 8;
+      _dot(canvas, c + _v(a, r * .42), 1, .22 * (1 - fade));
+    }
+    _symbol(canvas, c, .18 + .82 * _stage(.54, .78, Curves.easeOutBack),
+        _stage(.54, .78));
+  }
+
+  // VEYRA: a moving trace leaves an imprint before the mark appears.
+  void _veyra(Canvas canvas, Offset c, double r) {
+    final trace = _stage(.04, .72);
+    final settle = _stage(.64, 1);
+    final rect = Rect.fromCircle(center: c, radius: r * .52);
+    canvas.drawArc(rect, -math.pi * .86, math.pi * 1.55 * trace, false,
+        _line(.34 * intensity * (1 - settle)));
+    canvas.drawArc(rect.shift(Offset(0, r * .06)), -math.pi * .62,
+        math.pi * .82 * trace, false, _line(.18 * intensity * (1 - settle)));
+    final a = -math.pi * .86 + math.pi * 1.55 * trace;
+    _dot(canvas, c + _v(a, r * .52), 2.2, .55 * (1 - settle));
+    _symbol(canvas, c, .18 + .82 * _stage(.48, .78, Curves.easeOutBack),
+        _stage(.48, .78), (1 - trace) * .12);
+  }
+
+  // KAVEN: independent paths meet at one point, then resolve into the mark.
+  void _kaven(Canvas canvas, Offset c, double r) {
+    final meet = _stage(.03, .68, Curves.easeInOutCubic);
+    final settle = _stage(.62, 1);
+    final starts = <Offset>[
+      c + Offset(-r * .68, -r * .68), c + Offset(r * .68, r * .68),
+      c + Offset(r * .68, -r * .68), c + Offset(-r * .68, r * .68),
+    ];
+    for (final start in starts) {
+      final p = Offset.lerp(start, c, meet)!;
+      canvas.drawLine(start, p, _line(.32 * intensity * (1 - settle)));
+      _dot(canvas, p, 1.6, .50 * (1 - meet));
+    }
+    canvas.drawCircle(c, r * (.08 + .15 * meet), _line(.22 * meet));
+    _symbol(canvas, c, .18 + .82 * _stage(.48, .78, Curves.easeOutBack),
+        _stage(.48, .78));
+  }
+
+  Offset _v(double angle, double distance) =>
+      Offset(math.cos(angle) * distance, math.sin(angle) * distance);
+
+  void _dot(Canvas canvas, Offset p, double radius, double opacity) {
+    canvas.drawCircle(p, radius, Paint()..color = Colors.white.withValues(
+      alpha: opacity.clamp(0.0, 1.0).toDouble(),
+    ));
+  }
+
+  Paint _line(double opacity) => Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 1.5
+    ..strokeCap = StrokeCap.round
+    ..color = Colors.white.withValues(
+      alpha: opacity.clamp(0.0, 1.0).toDouble(),
+    );
+
+  void _symbol(Canvas canvas, Offset c, double scale, double opacity,
+      [double rotation = 0]) {
+    final painter = TextPainter(
+      text: TextSpan(text: symbol, style: TextStyle(
+        color: Colors.white.withValues(alpha: opacity.clamp(0.0, 1.0).toDouble()),
+        fontSize: 55,
+        height: 1,
+        fontWeight: FontWeight.w300,
+      )),
       textDirection: TextDirection.ltr,
     )..layout();
-
     canvas.save();
-    canvas.translate(center.dx, center.dy);
+    canvas.translate(c.dx, c.dy);
     canvas.rotate(rotation);
     canvas.scale(scale.clamp(0.0, 1.2).toDouble());
-    textPainter.paint(
-      canvas,
-      Offset(-textPainter.width / 2, -textPainter.height / 2),
-    );
+    painter.paint(canvas, Offset(-painter.width / 2, -painter.height / 2));
     canvas.restore();
   }
 
   @override
-  bool shouldRepaint(covariant _SeedManifestationPainter oldDelegate) {
-    return oldDelegate.seedId != seedId ||
-        oldDelegate.symbol != symbol ||
-        oldDelegate.motion != motion ||
-        oldDelegate.reveal != reveal ||
-        oldDelegate.progress != progress ||
-        oldDelegate.intensity != intensity;
-  }
+  bool shouldRepaint(covariant _SeedManifestationPainter oldDelegate) =>
+      oldDelegate.seedId != seedId || oldDelegate.symbol != symbol ||
+      oldDelegate.motion != motion || oldDelegate.reveal != reveal ||
+      oldDelegate.progress != progress || oldDelegate.intensity != intensity;
 }
