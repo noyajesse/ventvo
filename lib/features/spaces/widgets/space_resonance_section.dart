@@ -7,6 +7,7 @@ import '../../../systems/resonance/models/resonance_connection.dart';
 import '../../../systems/resonance/providers/resonance_provider.dart';
 import '../../ventvo_voice/models/vent.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
+import '../../ventvo_voice/providers/voice_lifecycle_provider.dart';
 import '../models/space.dart';
 import '../providers/space_provider.dart';
 import '../providers/space_resonance_provider.dart';
@@ -185,6 +186,7 @@ class _ResonanceCardState extends ConsumerState<_ResonanceCard> {
       connection = accepted;
       saving = false;
     });
+    ref.invalidate(voiceLifecycleProvider);
   }
 
   Future<void> _openRelationship() async {
@@ -202,6 +204,7 @@ class _ResonanceCardState extends ConsumerState<_ResonanceCard> {
 
     if (!mounted || updated == null) return;
     setState(() => connection = updated);
+    ref.invalidate(voiceLifecycleProvider);
   }
 
   String get _actionLabel {
