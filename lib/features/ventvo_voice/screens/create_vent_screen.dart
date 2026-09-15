@@ -78,6 +78,7 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
       spaceId: spaceId,
       voiceMark: voiceMark,
       voiceName: voice?.name,
+      voiceSeedId: voice?.seedId,
       createdAt: now,
       originatingCrashOutId: widget.crashOutId,
     );
