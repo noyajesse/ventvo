@@ -4,6 +4,7 @@ import '../models/ventvo_voice.dart';
 
 class VentvoVoiceStorage {
   static const _voiceIdKey = 'ventvo_voice_id';
+  static const _seedIdKey = 'ventvo_voice_seed_id';
   static const _expressionKey = 'ventvo_voice_expression';
   static const _resonanceKey = 'ventvo_voice_resonance';
   static const _markKey = 'ventvo_voice_mark';
@@ -25,6 +26,7 @@ class VentvoVoiceStorage {
 
     return VentvoVoice(
       voiceId: prefs.getString(_voiceIdKey),
+      seedId: prefs.getString(_seedIdKey),
       expression: prefs.getString(_expressionKey),
       resonance: prefs.getString(_resonanceKey),
       mark: prefs.getString(_markKey),
@@ -38,6 +40,7 @@ class VentvoVoiceStorage {
 
     await Future.wait([
       _setNullableString(prefs, _voiceIdKey, voice.voiceId),
+      _setNullableString(prefs, _seedIdKey, voice.seedId),
       _setNullableString(prefs, _expressionKey, voice.expression),
       _setNullableString(prefs, _resonanceKey, voice.resonance),
       _setNullableString(prefs, _markKey, voice.mark),
@@ -63,6 +66,7 @@ class VentvoVoiceStorage {
 
     await Future.wait([
       prefs.remove(_voiceIdKey),
+      prefs.remove(_seedIdKey),
       prefs.remove(_expressionKey),
       prefs.remove(_resonanceKey),
       prefs.remove(_markKey),
