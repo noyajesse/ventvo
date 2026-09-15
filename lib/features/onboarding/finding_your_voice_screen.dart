@@ -182,91 +182,167 @@ class _FindingYourVoiceScreenState
     );
   }
 
-  Widget _buildFormationContent() {
-    final seed = _seed;
-    if (!_isForming || seed == null) {
-      return const SizedBox.shrink();
-    }
+  Widget _buildVoiceReveal(TextTheme textTheme) {
+    if (!_isRevealed || _seed == null) return const SizedBox.shrink();
 
-    final isVaelor = seed.id == 'vaelor';
-    final child = isVaelor
-        ? AnimatedBuilder(
-            animation: Listenable.merge([
-              _formationController,
-              _breathController,
-            ]),
-            builder: (context, _) => CustomPaint(
-              size: const Size(250, 250),
-              painter: VoiceFormationPainter(
-                progress: _formationController.value,
-                symbol: seed.mark.symbol,
-                color: VentvoColors.primary,
-                breath: _breathController.value,
+    return FadeTransition(
+      opacity: CurvedAnimation(
+        parent: _formationController,
+        curve: const Interval(0.72, 0.88, curve: Curves.easeOut),
+      ),
+      child: ScaleTransition(
+        scale: Tween<double>(begin: 0.88, end: 1.0).animate(
+          CurvedAnimation(
+            parent: _formationController,
+            curve: const Interval(0.70, 0.90, curve: Curves.easeOutBack),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'YOUR VOICE',
+              textAlign: TextAlign.center,
+              style: textTheme.labelLarge?.copyWith(
+                color: VentvoColors.textMuted,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 2.8,
               ),
             ),
-          )
-        : VoiceSeedManifestation(
-            seed: seed,
-            size: 250,
-            reveal: true,
-          );
-
-    return child;
+            const SizedBox(height: 14),
+            Text(
+              _seed!.word,
+              textAlign: TextAlign.center,
+              style: textTheme.displaySmall?.copyWith(
+                color: VentvoColors.primary,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 1.2,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
-  Widget _buildRevealContent(TextTheme textTheme) {
-    final seed = _seed;
-    if (!_isRevealed || seed == null) {
-      return const SizedBox.shrink();
-    }
+  Widget _buildMeaning(TextTheme textTheme) {
+    if (!_isRevealed || _seed == null) return const SizedBox.shrink();
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          'YOUR VOICE',
-          style: textTheme.labelLarge?.copyWith(
-            color: VentvoColors.textMuted,
-            letterSpacing: 3.2,
-          ),
+    return FadeTransition(
+      opacity: CurvedAnimation(
+        parent: _formationController,
+        curve: const Interval(0.80, 0.94, curve: Curves.easeOut),
+      ),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 340),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              _seed!.meaning,
+              textAlign: TextAlign.center,
+              style: textTheme.bodyLarge?.copyWith(
+                color: VentvoColors.textSecondary,
+                height: 1.6,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'It can grow with you.',
+              style: textTheme.bodySmall?.copyWith(
+                color: VentvoColors.textMuted,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 12),
-        Text(
-          seed.word,
-          style: textTheme.displaySmall?.copyWith(
-            fontWeight: FontWeight.w600,
-            letterSpacing: 2.5,
-          ),
-        ),
-        const SizedBox(height: 18),
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 330),
-          child: Text(
-            seed.meaning,
-            textAlign: TextAlign.center,
-            style: textTheme.bodyLarge?.copyWith(
-              color: VentvoColors.textSecondary,
-              height: 1.5,
+      ),
+    );
+  }
+
+  Widget _buildEnterButton() {
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 650),
+      curve: Curves.easeOut,
+      opacity: _canEnter ? 1.0 : 0.0,
+      child: IgnorePointer(
+        ignoring: !_canEnter,
+        child: SizedBox(
+          width: double.infinity,
+          height: 56,
+          child: ElevatedButton(
+            onPressed: _enterVentvo,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: VentvoColors.buttonBlue,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18),
+              ),
+            ),
+            child: const Text(
+              'Enter Ventvo',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.1,
+              ),
             ),
           ),
         ),
-        const SizedBox(height: 10),
-        Text(
-          'It can grow with you.',
-          style: textTheme.bodySmall?.copyWith(
-            color: VentvoColors.textMuted,
-          ),
+      ),
+    );
+  }
+
+  Widget _buildVisual() {
+    final seed = _seed;
+
+    if (seed == null) {
+      return FadeTransition(
+        opacity: CurvedAnimation(
+          parent: _introController,
+          curve: const Interval(0.0, 0.35, curve: Curves.easeOut),
         ),
-        const SizedBox(height: 28),
-        SizedBox(
-          width: 190,
-          height: 48,
-          child: ElevatedButton(
-            onPressed: _canEnter ? _enterVentvo : null,
-            child: const Text('Enter Ventvo'),
+        child: ScaleTransition(
+          scale: Tween<double>(begin: 0.72, end: 1.0).animate(
+            CurvedAnimation(
+              parent: _introController,
+              curve: const Interval(0.0, 0.45, curve: Curves.easeOutBack),
+            ),
           ),
+          child: const _InitialMark(),
         ),
-      ],
+      );
+    }
+
+    // VAELOR keeps the original formation animation exactly as the reference.
+    // Every other Seed uses its own manifestation language.
+    if (seed.id == 'vaelor') {
+      return AnimatedBuilder(
+        animation: Listenable.merge([
+          _formationController,
+          _breathController,
+        ]),
+        builder: (context, child) {
+          final breath = Curves.easeInOut.transform(_breathController.value);
+          return CustomPaint(
+            size: const Size(250, 250),
+            painter: VoiceFormationPainter(
+              progress: _formationController.value,
+              symbol: seed.mark.symbol,
+              color: VentvoColors.primary,
+              breath: breath,
+            ),
+          );
+        },
+      );
+    }
+
+    return Center(
+      child: VoiceSeedManifestation(
+        seed: seed,
+        size: 250,
+        reveal: true,
+      ),
     );
   }
 
@@ -277,32 +353,73 @@ class _FindingYourVoiceScreenState
     return Scaffold(
       backgroundColor: VentvoColors.background,
       body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Center(
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 500),
-                      child: _isRevealed
-                          ? _buildRevealContent(textTheme)
-                          : _buildFormationContent(),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final availableHeight = constraints.maxHeight;
+            return SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: availableHeight),
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 28,
+                      vertical: 24,
+                    ),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 520),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 250,
+                            height: 250,
+                            child: _buildVisual(),
+                          ),
+                          const SizedBox(height: 22),
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 600),
+                            layoutBuilder: (currentChild, previousChildren) {
+                              return Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  ...previousChildren,
+                                  if (currentChild != null) currentChild,
+                                ],
+                              );
+                            },
+                            child: _isRevealed
+                                ? _buildVoiceReveal(textTheme)
+                                : _buildFindingContent(textTheme),
+                          ),
+                          const SizedBox(height: 24),
+                          _buildMeaning(textTheme),
+                          const SizedBox(height: 38),
+                          _buildEnterButton(),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 400),
-                  child: _isForming && !_isRevealed
-                      ? _buildFindingContent(textTheme)
-                      : const SizedBox(height: 120),
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
+      ),
+    );
+  }
+}
+
+class _InitialMark extends StatelessWidget {
+  const _InitialMark();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Icon(
+        Icons.graphic_eq_rounded,
+        size: 78,
+        color: VentvoColors.primary,
       ),
     );
   }
