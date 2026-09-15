@@ -21,7 +21,7 @@ class _VoiceDiscoveryScreenState extends ConsumerState<VoiceDiscoveryScreen> {
   late final VoiceSeed discoveredSeed;
 
   final VoiceSeedDiscoveryService _discoveryService =
-      const VoiceSeedDiscoveryService();
+      VoiceSeedDiscoveryService();
 
   @override
   void initState() {
