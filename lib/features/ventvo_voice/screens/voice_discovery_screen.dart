@@ -19,7 +19,7 @@ class VoiceDiscoveryScreen extends ConsumerStatefulWidget {
 class _VoiceDiscoveryScreenState extends ConsumerState<VoiceDiscoveryScreen> {
   bool discovered = false;
   bool starting = false;
-  late VoiceSeed discoveredSeed;
+  late final VoiceSeed discoveredSeed;
 
   final VoiceSeedDiscoveryService _discoveryService =
       const VoiceSeedDiscoveryService();
@@ -27,18 +27,16 @@ class _VoiceDiscoveryScreenState extends ConsumerState<VoiceDiscoveryScreen> {
   @override
   void initState() {
     super.initState();
-    discoveredSeed = VoiceIdentityCatalog.seedById('vaelor');
+
+    // The Seed is chosen once when the discovery experience begins. The same
+    // Seed is then revealed and persisted; tapping the button cannot produce
+    // a different identity.
+    discoveredSeed = _discoveryService.discoverRandom();
 
     Future.delayed(
       const Duration(seconds: 3),
       () {
         if (!mounted) return;
-
-        final voice = ref.read(ventvoVoiceProvider).asData?.value;
-        if (voice != null) {
-          discoveredSeed = _discoveryService.discover(voice);
-        }
-
         setState(() => discovered = true);
       },
     );
@@ -48,11 +46,14 @@ class _VoiceDiscoveryScreenState extends ConsumerState<VoiceDiscoveryScreen> {
     if (starting) return;
 
     setState(() => starting = true);
-    final voice = await ref.read(ventvoVoiceProvider.notifier).ensureVoice();
-    final seed = _discoveryService.discover(voice);
+    await ref.read(ventvoVoiceProvider.notifier).ensureVoice();
 
-    await ref.read(ventvoVoiceProvider.notifier).updateName(seed.word);
-    await ref.read(ventvoVoiceProvider.notifier).updateMark(seed.mark.symbol);
+    await ref
+        .read(ventvoVoiceProvider.notifier)
+        .updateName(discoveredSeed.word);
+    await ref
+        .read(ventvoVoiceProvider.notifier)
+        .updateMark(discoveredSeed.mark.symbol);
 
     if (!mounted) return;
 
