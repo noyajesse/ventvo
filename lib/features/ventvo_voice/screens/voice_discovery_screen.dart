@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/voice_seed.dart';
 import '../providers/voice_provider.dart';
-import '../services/voice_identity_catalog.dart';
 import '../services/voice_seed_discovery_service.dart';
 import '../widgets/voice_seed_manifestation.dart';
 import 'voice_resonance_screen.dart';
