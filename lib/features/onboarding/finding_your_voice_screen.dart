@@ -384,7 +384,9 @@ class _FindingYourVoiceScreenState
                                 alignment: Alignment.center,
                                 children: [
                                   ...previousChildren,
-                                  if (currentChild != null) currentChild,
+                                  ...?currentChild == null
+                                      ? null
+                                      : [currentChild],
                                 ],
                               );
                             },
