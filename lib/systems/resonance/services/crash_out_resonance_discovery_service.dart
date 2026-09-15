@@ -37,6 +37,7 @@ class CrashOutResonanceDiscoveryService {
       voiceMark: voiceMark,
       visibility: VentVisibility.public,
       safetyState: VentSafetyState.approved,
+      createdAt: crashOut.createdAt,
     );
 
     final querySpace = Space(
