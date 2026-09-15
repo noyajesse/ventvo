@@ -10,7 +10,7 @@ import 'voice_identity_catalog.dart';
 /// personality. Ventvo gives the Voice a starting point, then lets real
 /// experience shape it over time.
 class VoiceSeedDiscoveryService {
-  VoiceSeedDiscoveryService({Random? random}) : _random = random;
+  VoiceSeedDiscoveryService({this._random});
 
   final Random? _random;
 
