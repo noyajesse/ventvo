@@ -15,14 +15,15 @@ class VentvoVoiceNotifier extends AsyncNotifier<VentvoVoice?> {
     final name = voice.name?.trim().toLowerCase();
     if (name == null || name.isEmpty) return voice;
 
-    final seed = VoiceIdentityCatalog.seeds.cast().where((candidate) {
-      return candidate.word.toLowerCase() == name;
-    }).firstOrNull;
-    if (seed == null) return voice;
+    for (final seed in VoiceIdentityCatalog.seeds) {
+      if (seed.word.toLowerCase() == name) {
+        final migrated = voice.copyWith(seedId: seed.id);
+        await _storage.save(migrated);
+        return migrated;
+      }
+    }
 
-    final migrated = voice.copyWith(seedId: seed.id);
-    await _storage.save(migrated);
-    return migrated;
+    return voice;
   }
 
   Future<void> _persist(VentvoVoice voice) async {
