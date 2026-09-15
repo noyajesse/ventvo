@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../providers/voice_provider.dart';
 import 'voice_resonance_screen.dart';
 
-class VoiceDiscoveryScreen extends StatefulWidget {
+class VoiceDiscoveryScreen extends ConsumerStatefulWidget {
   const VoiceDiscoveryScreen({super.key});
 
   @override
-  State<VoiceDiscoveryScreen> createState() =>
+  ConsumerState<VoiceDiscoveryScreen> createState() =>
       _VoiceDiscoveryScreenState();
 }
 
 class _VoiceDiscoveryScreenState
-    extends State<VoiceDiscoveryScreen> {
-
+    extends ConsumerState<VoiceDiscoveryScreen> {
   bool discovered = false;
+  bool starting = false;
 
   @override
   void initState() {
@@ -30,6 +33,21 @@ class _VoiceDiscoveryScreenState
     );
   }
 
+  Future<void> _shapeVoice() async {
+    if (starting) return;
+
+    setState(() => starting = true);
+    await ref.read(ventvoVoiceProvider.notifier).ensureVoice();
+    if (!mounted) return;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const VoiceResonanceScreen(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,14 +55,10 @@ class _VoiceDiscoveryScreenState
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 32,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Column(
-              mainAxisAlignment:
-                  MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-
                 Container(
                   height: 130,
                   width: 130,
@@ -57,7 +71,7 @@ class _VoiceDiscoveryScreenState
                   ),
                   child: Center(
                     child: Text(
-                      discovered ? "◇" : "◌",
+                      discovered ? '◇' : '◌',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 55,
@@ -65,13 +79,11 @@ class _VoiceDiscoveryScreenState
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 50),
-
                 Text(
                   discovered
-                      ? "A Voice has appeared."
-                      : "Finding your Voice...",
+                      ? 'A Voice has appeared.'
+                      : 'Finding your Voice...',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Colors.white,
@@ -79,12 +91,10 @@ class _VoiceDiscoveryScreenState
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-
                 const SizedBox(height: 25),
-
                 if (discovered)
                   const Text(
-                    "A Voice is waiting to be shaped.",
+                    'A Voice is waiting to be shaped.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white70,
@@ -94,41 +104,26 @@ class _VoiceDiscoveryScreenState
                   )
                 else
                   const Text(
-                    "Listening for a Voice that belongs here.",
+                    'Listening for a Voice that belongs here.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white70,
                       fontSize: 16,
                     ),
                   ),
-
                 const SizedBox(height: 50),
-
                 if (discovered)
                   SizedBox(
                     width: double.infinity,
                     height: 55,
                     child: ElevatedButton(
-                      onPressed: () {
-
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const VoiceResonanceScreen(),
-                          ),
-                        );
-
-                      },
-                      child: const Text(
-                        "Shape My Voice",
-                        style: TextStyle(
-                          fontSize: 17,
-                        ),
+                      onPressed: starting ? null : _shapeVoice,
+                      child: Text(
+                        starting ? 'Preparing Your Voice...' : 'Shape My Voice',
+                        style: const TextStyle(fontSize: 17),
                       ),
                     ),
                   ),
-
               ],
             ),
           ),
