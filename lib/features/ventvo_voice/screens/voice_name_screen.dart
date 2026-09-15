@@ -8,29 +8,41 @@ class VoiceNameScreen extends ConsumerStatefulWidget {
   const VoiceNameScreen({super.key});
 
   @override
-  ConsumerState<VoiceNameScreen> createState() =>
-      _VoiceNameScreenState();
+  ConsumerState<VoiceNameScreen> createState() => _VoiceNameScreenState();
 }
 
-class _VoiceNameScreenState
-    extends ConsumerState<VoiceNameScreen> {
-
+class _VoiceNameScreenState extends ConsumerState<VoiceNameScreen> {
   String? selectedName;
 
   final List<Map<String, String>> names = [
     {
-      "name": "VAELOR",
-      "meaning": "A Voice shaped by reflection.",
+      'name': 'VAELOR',
+      'meaning': 'A Voice shaped by reflection.',
     },
     {
-      "name": "NYVEN",
-      "meaning": "A Voice shaped by discovery.",
+      'name': 'NYVEN',
+      'meaning': 'A Voice shaped by discovery.',
     },
     {
-      "name": "AUREN",
-      "meaning": "A Voice shaped by connection.",
+      'name': 'AUREN',
+      'meaning': 'A Voice shaped by connection.',
     },
   ];
+
+  Future<void> _continue() async {
+    final name = selectedName;
+    if (name == null) return;
+
+    await ref.read(ventvoVoiceProvider.notifier).updateName(name);
+    if (!mounted) return;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const VoiceBirthScreen(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,9 +54,8 @@ class _VoiceNameScreenState
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-
               const Text(
-                "Your Voice has found its name.",
+                'Your Voice has found its name.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white,
@@ -52,11 +63,9 @@ class _VoiceNameScreenState
                   fontWeight: FontWeight.bold,
                 ),
               ),
-
               const SizedBox(height: 20),
-
               const Text(
-                "Choose the name that feels connected to your Voice.",
+                'Choose the name that feels connected to your Voice.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white70,
@@ -64,113 +73,59 @@ class _VoiceNameScreenState
                   height: 1.5,
                 ),
               ),
-
               const SizedBox(height: 40),
-
               ...names.map((item) {
-
-                final selected =
-                    selectedName == item["name"];
+                final selected = selectedName == item['name'];
 
                 return GestureDetector(
-                  onTap: () {
-
-                    setState(() {
-                      selectedName = item["name"];
-                    });
-
-                  },
+                  onTap: () => setState(() => selectedName = item['name']),
                   child: Container(
-                    margin: const EdgeInsets.only(
-                      bottom: 18,
-                    ),
+                    margin: const EdgeInsets.only(bottom: 18),
                     width: double.infinity,
                     padding: const EdgeInsets.all(20),
-
                     decoration: BoxDecoration(
-                      color: selected
-                          ? Colors.white24
-                          : Colors.transparent,
-
-                      borderRadius:
-                          BorderRadius.circular(20),
-
+                      color: selected ? Colors.white24 : Colors.transparent,
+                      borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: selected
-                            ? Colors.white
-                            : Colors.white24,
+                        color: selected ? Colors.white : Colors.white24,
                       ),
                     ),
-
                     child: Column(
                       children: [
-
                         Text(
-                          item["name"]!,
+                          item['name']!,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-
                         const SizedBox(height: 8),
-
                         Text(
-                          item["meaning"]!,
+                          item['meaning']!,
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             color: Colors.white70,
                             fontSize: 14,
                           ),
                         ),
-
                       ],
                     ),
                   ),
                 );
-
               }),
-
               const SizedBox(height: 25),
-
               SizedBox(
                 width: double.infinity,
                 height: 55,
-
                 child: ElevatedButton(
-
-                  onPressed: selectedName == null
-                      ? null
-                      : () {
-
-                          ref
-                              .read(
-                                ventvoVoiceProvider.notifier,
-                              )
-                              .updateName(selectedName!);
-
-
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const VoiceBirthScreen(),
-                            ),
-                          );
-
-                        },
-
+                  onPressed: selectedName == null ? null : _continue,
                   child: const Text(
-                    "Continue",
-                    style: TextStyle(
-                      fontSize: 17,
-                    ),
+                    'Continue',
+                    style: TextStyle(fontSize: 17),
                   ),
-
                 ),
               ),
-
             ],
           ),
         ),
