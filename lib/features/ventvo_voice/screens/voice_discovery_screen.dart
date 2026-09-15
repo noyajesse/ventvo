@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../models/voice_seed.dart';
 import '../providers/voice_provider.dart';
+import '../services/voice_identity_catalog.dart';
+import '../services/voice_seed_discovery_service.dart';
+import '../widgets/voice_seed_manifestation.dart';
 import 'voice_resonance_screen.dart';
 
 class VoiceDiscoveryScreen extends ConsumerStatefulWidget {
@@ -12,23 +16,30 @@ class VoiceDiscoveryScreen extends ConsumerStatefulWidget {
       _VoiceDiscoveryScreenState();
 }
 
-class _VoiceDiscoveryScreenState
-    extends ConsumerState<VoiceDiscoveryScreen> {
+class _VoiceDiscoveryScreenState extends ConsumerState<VoiceDiscoveryScreen> {
   bool discovered = false;
   bool starting = false;
+  late VoiceSeed discoveredSeed;
+
+  final VoiceSeedDiscoveryService _discoveryService =
+      const VoiceSeedDiscoveryService();
 
   @override
   void initState() {
     super.initState();
+    discoveredSeed = VoiceIdentityCatalog.seedById('vaelor');
 
     Future.delayed(
       const Duration(seconds: 3),
       () {
-        if (mounted) {
-          setState(() {
-            discovered = true;
-          });
+        if (!mounted) return;
+
+        final voice = ref.read(ventvoVoiceProvider).asData?.value;
+        if (voice != null) {
+          discoveredSeed = _discoveryService.discover(voice);
         }
+
+        setState(() => discovered = true);
       },
     );
   }
@@ -37,7 +48,12 @@ class _VoiceDiscoveryScreenState
     if (starting) return;
 
     setState(() => starting = true);
-    await ref.read(ventvoVoiceProvider.notifier).ensureVoice();
+    final voice = await ref.read(ventvoVoiceProvider.notifier).ensureVoice();
+    final seed = _discoveryService.discover(voice);
+
+    await ref.read(ventvoVoiceProvider.notifier).updateName(seed.word);
+    await ref.read(ventvoVoiceProvider.notifier).updateMark(seed.mark.symbol);
+
     if (!mounted) return;
 
     Navigator.push(
@@ -59,30 +75,15 @@ class _VoiceDiscoveryScreenState
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  height: 130,
-                  width: 130,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white24,
-                      width: 2,
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      discovered ? '◇' : '◌',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 55,
-                      ),
-                    ),
-                  ),
+                VoiceSeedManifestation(
+                  seed: discoveredSeed,
+                  size: 130,
+                  reveal: discovered,
                 ),
                 const SizedBox(height: 50),
                 Text(
                   discovered
-                      ? 'A Voice has appeared.'
+                      ? '${discoveredSeed.word} has appeared.'
                       : 'Finding your Voice...',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
@@ -91,18 +92,29 @@ class _VoiceDiscoveryScreenState
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 25),
-                if (discovered)
-                  const Text(
-                    'A Voice is waiting to be shaped.',
+                const SizedBox(height: 20),
+                if (discovered) ...[
+                  Text(
+                    discoveredSeed.meaning,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white70,
                       fontSize: 17,
                       height: 1.5,
                     ),
-                  )
-                else
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    discoveredSeed.feeling,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white54,
+                      fontSize: 14,
+                      height: 1.5,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ] else
                   const Text(
                     'Listening for a Voice that belongs here.',
                     textAlign: TextAlign.center,
