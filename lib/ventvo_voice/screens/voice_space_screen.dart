@@ -10,10 +10,10 @@ import '../../features/feed/screens/feed_screen.dart';
 import '../../features/feed/widgets/vent_card.dart';
 import '../../features/resonance/providers/resonance_maps_provider.dart';
 import '../../features/resonance/providers/resonance_threads_provider.dart';
-import '../providers/vent_provider.dart';
-import '../providers/voice_provider.dart';
-import 'create_vent_screen.dart';
-import 'voice_evolution_screen.dart';
+import '../../features/ventvo_voice/providers/vent_provider.dart';
+import '../../features/ventvo_voice/providers/voice_provider.dart';
+import '../../features/ventvo_voice/screens/create_vent_screen.dart';
+import '../../features/ventvo_voice/screens/voice_evolution_screen.dart';
 
 class VoiceSpaceScreen extends ConsumerWidget {
   const VoiceSpaceScreen({super.key});
