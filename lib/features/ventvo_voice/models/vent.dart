@@ -20,6 +20,7 @@ class Vent {
   final String spaceId;
   final String voiceMark;
   final String? voiceName;
+  final String? voiceSeedId;
   final DateTime createdAt;
   final VentVisibility visibility;
   final VentSafetyState safetyState;
@@ -32,6 +33,7 @@ class Vent {
     required this.spaceId,
     required this.voiceMark,
     this.voiceName,
+    this.voiceSeedId,
     required this.createdAt,
     this.visibility = VentVisibility.public,
     this.safetyState = VentSafetyState.approved,
@@ -52,6 +54,7 @@ class Vent {
     String? spaceId,
     String? voiceMark,
     String? voiceName,
+    String? voiceSeedId,
     DateTime? createdAt,
     VentVisibility? visibility,
     VentSafetyState? safetyState,
@@ -64,6 +67,7 @@ class Vent {
       spaceId: spaceId ?? this.spaceId,
       voiceMark: voiceMark ?? this.voiceMark,
       voiceName: voiceName ?? this.voiceName,
+      voiceSeedId: voiceSeedId ?? this.voiceSeedId,
       createdAt: createdAt ?? this.createdAt,
       visibility: visibility ?? this.visibility,
       safetyState: safetyState ?? this.safetyState,
