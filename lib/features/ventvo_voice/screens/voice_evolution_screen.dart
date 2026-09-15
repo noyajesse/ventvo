@@ -36,10 +36,8 @@ class _VoiceEvolutionScreenState extends ConsumerState<VoiceEvolutionScreen> {
   void initState() {
     super.initState();
     final voice = ref.read(ventvoVoiceProvider).asData?.value;
-    expressionController =
-        TextEditingController(text: voice?.expression ?? '');
-    resonanceController =
-        TextEditingController(text: voice?.resonance ?? '');
+    expressionController = TextEditingController(text: voice?.expression ?? '');
+    resonanceController = TextEditingController(text: voice?.resonance ?? '');
   }
 
   @override
@@ -163,7 +161,7 @@ class _VoiceEvolutionScreenState extends ConsumerState<VoiceEvolutionScreen> {
             const SizedBox(height: 28),
             lifecycle.when(
               loading: () => const SizedBox.shrink(),
-              error: (_, __) => const SizedBox.shrink(),
+              error: (_, _) => const SizedBox.shrink(),
               data: (snapshot) => _VoiceJourney(snapshot: snapshot),
             ),
             const SizedBox(height: 28),
@@ -202,6 +200,7 @@ class _VoiceEvolutionScreenState extends ConsumerState<VoiceEvolutionScreen> {
               style: TextStyle(
                 color: VentvoColors.textMuted,
                 fontSize: 12,
+                height: 1.4,
               ),
             ),
             const SizedBox(height: 30),
@@ -247,15 +246,15 @@ class _VoiceJourney extends StatelessWidget {
 
   final VoiceLifecycleSnapshot snapshot;
 
-  static const _stages = VoiceLifecycleStage.values;
-
   @override
   Widget build(BuildContext context) {
+    const stages = VoiceLifecycleStage.values;
+
     return Container(
       padding: const EdgeInsets.fromLTRB(18, 20, 18, 18),
       decoration: BoxDecoration(
         color: VentvoColors.surface,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(
           color: VentvoColors.border.withValues(alpha: .55),
         ),
@@ -277,20 +276,70 @@ class _VoiceJourney extends StatelessWidget {
             style: const TextStyle(
               color: VentvoColors.textSecondary,
               fontSize: 13,
-              height: 1.45,
+              height: 1.4,
             ),
           ),
           const SizedBox(height: 18),
-          for (var index = 0; index < _stages.length; index++)
-            _JourneyStep(
-              stage: _stages[index],
-              active: snapshot.stage == _stages[index],
-              reached: snapshot.hasReached(_stages[index]),
-              isLast: index == _stages.length - 1,
+          ...stages.map(
+            (stage) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Row(
+                children: [
+                  Icon(
+                    snapshot.hasReached(stage)
+                        ? Icons.radio_button_checked_rounded
+                        : Icons.radio_button_unchecked_rounded,
+                    size: 18,
+                    color: snapshot.hasReached(stage)
+                        ? VentvoColors.primary
+                        : VentvoColors.textMuted,
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    stage.title,
+                    style: TextStyle(
+                      color: snapshot.hasReached(stage)
+                          ? VentvoColors.textPrimary
+                          : VentvoColors.textMuted,
+                      fontSize: 14,
+                      fontWeight: snapshot.stage == stage
+                          ? FontWeight.w600
+                          : FontWeight.w400,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          const SizedBox(height: 8),
+          ),
+          const Divider(height: 24),
+          Row(
+            children: [
+              _stat('Vents', snapshot.ventCount),
+              _stat('Resonances', snapshot.resonanceCount),
+              _stat('Arcs', snapshot.arcCount),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _stat(String label, int value) {
+    return Expanded(
+      child: Column(
+        children: [
           Text(
-            '${snapshot.ventCount} ${snapshot.ventCount == 1 ? 'Vent' : 'Vents'}  ·  ${snapshot.resonanceCount} ${snapshot.resonanceCount == 1 ? 'Resonance' : 'Resonances'}  ·  ${snapshot.arcCount} ${snapshot.arcCount == 1 ? 'Arc' : 'Arcs'}',
+            value.toString(),
+            style: const TextStyle(
+              color: VentvoColors.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 3),
+          Text(
+            label,
+            textAlign: TextAlign.center,
             style: const TextStyle(
               color: VentvoColors.textMuted,
               fontSize: 11,
@@ -298,79 +347,6 @@ class _VoiceJourney extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _JourneyStep extends StatelessWidget {
-  const _JourneyStep({
-    required this.stage,
-    required this.active,
-    required this.reached,
-    required this.isLast,
-  });
-
-  final VoiceLifecycleStage stage;
-  final bool active;
-  final bool reached;
-  final bool isLast;
-
-  @override
-  Widget build(BuildContext context) {
-    final titleStyle = TextStyle(
-      color: active ? VentvoColors.textPrimary : VentvoColors.textSecondary,
-      fontSize: 13,
-      fontWeight: active ? FontWeight.w600 : FontWeight.w500,
-    );
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 22,
-          child: Column(
-            children: [
-              Container(
-                width: 9,
-                height: 9,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: reached
-                        ? VentvoColors.textPrimary
-                        : VentvoColors.border,
-                  ),
-                ),
-                child: reached
-                    ? const Center(
-                        child: SizedBox(
-                          width: 3,
-                          height: 3,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: VentvoColors.textPrimary,
-                            ),
-                          ),
-                        ),
-                      )
-                    : null,
-              ),
-              if (!isLast)
-                Container(
-                  width: 1,
-                  height: 30,
-                  color: VentvoColors.border,
-                ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 8),
-        Padding(
-          padding: const EdgeInsets.only(top: 1),
-          child: Text(stage.title, style: titleStyle),
-        ),
-      ],
     );
   }
 }
