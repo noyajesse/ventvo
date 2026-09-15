@@ -113,7 +113,7 @@ class _SeedManifestationPainter extends CustomPainter {
     canvas.drawCircle(center, radius - 1, borderPaint);
 
     if (seedId == 'vaelor') {
-      _paintVaelor(canvas, center, size);
+      _paintVaelor(canvas, center);
       return;
     }
 
@@ -139,7 +139,9 @@ class _SeedManifestationPainter extends CustomPainter {
     }
   }
 
-  void _paintVaelor(Canvas canvas, Offset center, Size size) {
+  // VAELOR remains the reference manifestation: the quiet symbol reveal is
+  // intentionally kept simple rather than being replaced by the new system.
+  void _paintVaelor(Canvas canvas, Offset center) {
     final revealProgress = Curves.easeOutBack.transform(progress);
     final pulse = 1 + (0.025 * progress);
     final opacity = Curves.easeOut.transform(progress);
@@ -152,33 +154,37 @@ class _SeedManifestationPainter extends CustomPainter {
     );
   }
 
+  // NYVEN: resonance travels outward as layered waves before settling on the
+  // mark. The movement is horizontal rather than a generic scale animation.
   void _paintNyven(Canvas canvas, Offset center, double radius) {
     final paint = _linePaint((1 - progress) * 0.30 * intensity);
-    final travel = Curves.easeOut.transform(progress);
+    final waveProgress = Curves.easeOut.transform(progress);
 
     for (var i = 0; i < 3; i++) {
       final path = Path();
       final y = center.dy + ((i - 1) * radius * 0.16);
+      final amplitude = radius * 0.18 * (1 - waveProgress);
       path.moveTo(center.dx - radius * 0.55, y);
       path.cubicTo(
-        center.dx - radius * 0.25,
-        y - radius * 0.22,
-        center.dx + radius * 0.02,
-        y + radius * 0.22,
+        center.dx - radius * 0.28,
+        y - amplitude,
+        center.dx + radius * 0.28,
+        y + amplitude,
         center.dx + radius * 0.55,
         y,
       );
-      canvas.drawPath(path, paint..strokeWidth = 1.5);
+      canvas.drawPath(path, paint);
     }
 
     _paintSymbol(
       canvas,
-      center.translate(0, math.sin(travel * math.pi) * 3),
-      scale: 0.7 + (0.3 * Curves.easeOutBack.transform(progress)),
+      center.translate(0, math.sin(waveProgress * math.pi) * 3),
+      scale: 0.70 + (0.30 * Curves.easeOutBack.transform(progress)),
       opacity: Curves.easeOut.transform(progress),
     );
   }
 
+  // AUREN: a point of light grows from the centre, sending out short rays.
   void _paintAuren(Canvas canvas, Offset center, double radius) {
     final rayPaint = _linePaint((1 - progress) * 0.34 * intensity);
     final spark = Curves.easeOut.transform(progress);
@@ -200,12 +206,13 @@ class _SeedManifestationPainter extends CustomPainter {
     _paintSymbol(
       canvas,
       center,
-      scale: 0.5 + (0.5 * Curves.easeOutBack.transform(progress)),
+      scale: 0.50 + (0.50 * Curves.easeOutBack.transform(progress)),
       opacity: Curves.easeOut.transform(progress),
       rotation: (1 - progress) * 0.18,
     );
   }
 
+  // SENYA: an incomplete ring opens gently around the mark, leaving room.
   void _paintSenya(Canvas canvas, Offset center, double radius) {
     final paint = _linePaint((1 - progress) * 0.28 * intensity);
     final openProgress = Curves.easeOut.transform(progress);
@@ -222,6 +229,7 @@ class _SeedManifestationPainter extends CustomPainter {
     );
   }
 
+  // ORVAN: the form descends and settles onto a grounded line.
   void _paintOrvan(Canvas canvas, Offset center, double radius) {
     final paint = _linePaint((1 - progress) * 0.28 * intensity);
     final settle = Curves.easeOut.transform(progress);
@@ -249,6 +257,7 @@ class _SeedManifestationPainter extends CustomPainter {
     );
   }
 
+  // ELVAE: two separate experiences draw toward one another and overlap.
   void _paintElvae(Canvas canvas, Offset center, double radius) {
     final paint = _linePaint((1 - progress) * 0.32 * intensity);
     final converge = Curves.easeOut.transform(progress);
@@ -274,6 +283,7 @@ class _SeedManifestationPainter extends CustomPainter {
     );
   }
 
+  // NARETH: almost nothing happens. The form breathes instead of arriving.
   void _paintNareth(Canvas canvas, Offset center, double radius) {
     final paint = _linePaint((1 - progress) * 0.22 * intensity);
     final breathe = math.sin(progress * math.pi);
@@ -291,6 +301,7 @@ class _SeedManifestationPainter extends CustomPainter {
     );
   }
 
+  // VEYRA: a trace is left behind as the mark arrives.
   void _paintVeyra(Canvas canvas, Offset center, double radius) {
     final paint = _linePaint((1 - progress) * 0.30 * intensity);
     final trailProgress = Curves.easeOut.transform(progress);
@@ -320,31 +331,22 @@ class _SeedManifestationPainter extends CustomPainter {
     );
   }
 
+  // KAVEN: different directions meet at one shared point.
   void _paintKaven(Canvas canvas, Offset center, double radius) {
     final paint = _linePaint((1 - progress) * 0.32 * intensity);
     final meet = Curves.easeOut.transform(progress);
     final reach = radius * (0.28 + (0.28 * meet));
 
-    canvas.drawLine(
+    final points = <Offset>[
       Offset(center.dx - reach, center.dy - reach),
-      center,
-      paint,
-    );
-    canvas.drawLine(
       Offset(center.dx + reach, center.dy + reach),
-      center,
-      paint,
-    );
-    canvas.drawLine(
       Offset(center.dx + reach, center.dy - reach),
-      center,
-      paint,
-    );
-    canvas.drawLine(
       Offset(center.dx - reach, center.dy + reach),
-      center,
-      paint,
-    );
+    ];
+
+    for (final point in points) {
+      canvas.drawLine(point, center, paint);
+    }
 
     _paintSymbol(
       canvas,
@@ -365,7 +367,7 @@ class _SeedManifestationPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5
       ..strokeCap = StrokeCap.round
-      ..color = Colors.white.withOpacity(opacity);
+      ..color = Colors.white.withOpacity(opacity.clamp(0.0, 1.0).toDouble());
   }
 
   void _paintSymbol(
@@ -379,7 +381,7 @@ class _SeedManifestationPainter extends CustomPainter {
       text: TextSpan(
         text: symbol,
         style: TextStyle(
-          color: Colors.white.withOpacity(opacity.clamp(0, 1)),
+          color: Colors.white.withOpacity(opacity.clamp(0.0, 1.0).toDouble()),
           fontSize: 55,
           height: 1,
         ),
@@ -390,7 +392,7 @@ class _SeedManifestationPainter extends CustomPainter {
     canvas.save();
     canvas.translate(center.dx, center.dy);
     canvas.rotate(rotation);
-    canvas.scale(scale.clamp(0, 1.2));
+    canvas.scale(scale.clamp(0.0, 1.2).toDouble());
     textPainter.paint(
       canvas,
       Offset(-textPainter.width / 2, -textPainter.height / 2),
