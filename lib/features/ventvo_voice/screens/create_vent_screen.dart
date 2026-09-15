@@ -7,6 +7,7 @@ import '../../spaces/providers/space_provider.dart';
 import '../../../systems/resonance/providers/resonance_provider.dart';
 import '../models/vent.dart';
 import '../providers/vent_provider.dart';
+import '../providers/voice_lifecycle_provider.dart';
 import '../providers/voice_provider.dart';
 import 'voice_space_screen.dart';
 
@@ -87,6 +88,7 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
           vent: vent,
           space: space,
         );
+    ref.invalidate(voiceLifecycleProvider);
     if (!mounted) return;
 
     if (widget.crashOutId != null) {
@@ -110,6 +112,10 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
   Widget build(BuildContext context) {
     final voice = ref.watch(ventvoVoiceProvider).asData?.value;
     final canRelease = selectedMode != null && controller.text.trim().length >= 3;
+    final voiceIdentity = [
+      if (voice?.name != null && voice!.name!.trim().isNotEmpty) voice.name!.trim(),
+      if (voice?.mark != null && voice!.mark!.trim().isNotEmpty) voice.mark!.trim(),
+    ].join('  ');
 
     return Scaffold(
       backgroundColor: const Color(0xFF111111),
@@ -132,7 +138,15 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
                 style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
-              Text('◇ ${voice?.mark ?? "Voice"}', style: const TextStyle(color: Colors.white70, fontSize: 18)),
+              Text(
+                voiceIdentity.isEmpty ? 'Your Voice' : voiceIdentity,
+                style: const TextStyle(color: Colors.white70, fontSize: 18),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'This Vent becomes part of your Voice journey.',
+                style: TextStyle(color: Colors.white38, fontSize: 13, height: 1.4),
+              ),
               const SizedBox(height: 30),
               TextField(
                 controller: controller,
