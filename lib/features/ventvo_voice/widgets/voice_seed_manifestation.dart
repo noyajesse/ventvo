@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../../../core/theme/ventvo_colors.dart';
 import '../models/voice_seed.dart';
 import '../models/voice_seed_manifestation.dart';
 import '../services/voice_identity_catalog.dart';
@@ -9,8 +10,8 @@ import '../services/voice_identity_catalog.dart';
 /// Shared cinematic Voice Formation experience for every Seed.
 ///
 /// VAELOR's original painter remains untouched in onboarding and is the visual
-/// reference. Other Seeds use this same formation language while expressing
-/// their own identity through a distinct transformation layer.
+/// reference. Every other Seed now carries the same atmospheric foundation,
+/// then expresses its identity through a distinct transformation layer.
 class VoiceSeedManifestation extends StatefulWidget {
   const VoiceSeedManifestation({
     required this.seed,
@@ -100,8 +101,8 @@ class _SeedManifestationPainter extends CustomPainter {
     final c = Offset(size.width / 2, size.height / 2);
     final r = size.shortestSide * .5;
 
-    // VAELOR keeps its original VoiceFormationPainter. This painter owns the
-    // shared formation language for every other Seed.
+    // The atmosphere is the shared VAELOR DNA: blue energy, orbit, gathering,
+    // emergence, and a quiet living field around the forming Voice.
     _atmosphere(canvas, c, r);
 
     switch (seedId) {
@@ -140,19 +141,49 @@ class _SeedManifestationPainter extends CustomPainter {
     return curve.transform((progress - start) / (end - start));
   }
 
-  /// Shared quiet beginning: a sparse field exists before the Voice is known.
+  /// Shared VAELOR-like blue energy field.
+  ///
+  /// It starts as a quiet orbit, gathers toward the Voice, and leaves a faint
+  /// living field behind it. Seed-specific choreography is layered on top.
   void _atmosphere(Canvas canvas, Offset c, double r) {
     final gather = _stage(.08, .58, Curves.easeInOutCubic);
-    final fade = _stage(.52, .82);
+    final emerge = _stage(.50, .78, Curves.easeOutCubic);
+    final settle = _stage(.78, 1, Curves.easeInOut);
 
+    final orbitRadius = r * (.68 - .38 * gather);
+    final orbitOpacity = .12 * (1 - gather) + .10 * settle;
+
+    canvas.drawCircle(c, orbitRadius, _blueLine(orbitOpacity));
+
+    // The particles use the same orbital gathering language as VAELOR, with
+    // a slightly richer field so the other Seeds do not feel empty between
+    // their identity-specific events.
     for (var i = 0; i < 18; i++) {
-      final angle = math.pi * 2 * i / 18 + .35;
-      final orbit = r * (.68 + .06 * math.sin(i * 1.7));
-      final start = c + _v(angle, orbit);
-      final point = Offset.lerp(start, c, gather)!;
-      _dot(canvas, point, 1.0 + .45 * (1 - gather),
-          .22 * (1 - fade) * intensity);
+      final baseAngle = math.pi * 2 * i / 18 + .35;
+      final rotation = gather * math.pi * .75;
+      final angle = baseAngle + rotation;
+      final startingRadius = r * (.68 + .06 * math.sin(i * 1.7));
+      final finalRadius = r * (.13 + (i % 3) * .025);
+      final radius = startingRadius +
+          ((finalRadius - startingRadius) * gather);
+      final point = c + _v(angle, radius);
+
+      final opacity =
+          (.46 * (1 - gather) + .11 * settle) * intensity;
+      final particleSize =
+          1.1 + (.65 * (1 - gather)) + (.9 * emerge) +
+              (.35 * math.sin((i * 1.8) + progress * math.pi * 2).abs());
+
+      _blueDot(canvas, point, particleSize, opacity);
     }
+
+    // A soft central energy bloom appears as the Voice starts to emerge.
+    final glow = Paint()
+      ..style = PaintingStyle.fill
+      ..color = VentvoColors.primary.withValues(
+        alpha: (.025 + .055 * emerge) * intensity,
+      );
+    canvas.drawCircle(c, r * (.18 + .26 * emerge), glow);
   }
 
   /// Shared presence field: every Voice gets the same sense of arrival.
@@ -162,8 +193,8 @@ class _SeedManifestationPainter extends CustomPainter {
     final radius = r * (.18 + .38 * appear);
     final opacity = .10 + .16 * appear;
 
-    canvas.drawCircle(c, radius, _line(opacity * (1 - settle * .35)));
-    canvas.drawCircle(c, radius * .74, _line(opacity * .38));
+    canvas.drawCircle(c, radius, _blueLine(opacity * (1 - settle * .35)));
+    canvas.drawCircle(c, radius * .74, _blueLine(opacity * .38));
   }
 
   /// Shared final breathing state: the Seed stops feeling like an animation
@@ -172,7 +203,7 @@ class _SeedManifestationPainter extends CustomPainter {
     final breathe = _stage(.88, 1, Curves.easeInOut);
     final pulse = math.sin(breathe * math.pi);
     final radius = r * (.40 + .035 * pulse);
-    canvas.drawCircle(c, radius, _line(.08 + .08 * pulse));
+    canvas.drawCircle(c, radius, _blueLine(.08 + .08 * pulse));
   }
 
   /// Shared Voice Mark emergence. The mark is the destination of every
@@ -228,7 +259,7 @@ class _SeedManifestationPainter extends CustomPainter {
     final burst = _stage(.32, .72, Curves.easeOutBack);
     final settle = _stage(.72, .90);
     final glow = Paint()
-      ..color = Colors.white.withValues(alpha: .07 * ignite * intensity);
+      ..color = VentvoColors.primary.withValues(alpha: .07 * ignite * intensity);
     canvas.drawCircle(c, r * (.06 + .30 * burst), glow);
 
     for (var i = 0; i < 12; i++) {
@@ -392,24 +423,30 @@ class _SeedManifestationPainter extends CustomPainter {
   Offset _v(double angle, double distance) =>
       Offset(math.cos(angle) * distance, math.sin(angle) * distance);
 
-  void _dot(Canvas canvas, Offset p, double radius, double opacity) {
+  void _blueDot(Canvas canvas, Offset p, double radius, double opacity) {
     canvas.drawCircle(
       p,
       radius,
       Paint()
-        ..color = Colors.white.withValues(
+        ..color = VentvoColors.primary.withValues(
           alpha: opacity.clamp(0.0, 1.0).toDouble(),
         ),
     );
   }
 
-  Paint _line(double opacity) => Paint()
+  void _dot(Canvas canvas, Offset p, double radius, double opacity) {
+    _blueDot(canvas, p, radius, opacity);
+  }
+
+  Paint _blueLine(double opacity) => Paint()
     ..style = PaintingStyle.stroke
-    ..strokeWidth = 1.5
+    ..strokeWidth = 1.2
     ..strokeCap = StrokeCap.round
-    ..color = Colors.white.withValues(
+    ..color = VentvoColors.primary.withValues(
       alpha: opacity.clamp(0.0, 1.0).toDouble(),
     );
+
+  Paint _line(double opacity) => _blueLine(opacity);
 
   void _symbol(
     Canvas canvas,
@@ -422,7 +459,7 @@ class _SeedManifestationPainter extends CustomPainter {
       text: TextSpan(
         text: symbol,
         style: TextStyle(
-          color: Colors.white.withValues(
+          color: VentvoColors.primary.withValues(
             alpha: opacity.clamp(0.0, 1.0).toDouble(),
           ),
           fontSize: 55,
