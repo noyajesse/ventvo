@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../repositories/local_resonance_repository.dart';
 import '../repositories/resonance_repository.dart';
+import '../services/crash_out_resonance_discovery_service.dart';
 import '../services/resonance_connection_service.dart';
 import '../services/resonance_engine.dart';
 import '../services/resonance_map_discovery_service.dart';
@@ -141,6 +142,13 @@ final ventResonanceDiscoveryServiceProvider =
 final spaceResonanceDiscoveryServiceProvider =
     Provider<SpaceResonanceDiscoveryService>((ref) {
   return SpaceResonanceDiscoveryService(
+    engine: ref.watch(resonanceEngineProvider),
+  );
+});
+
+final crashOutResonanceDiscoveryServiceProvider =
+    Provider<CrashOutResonanceDiscoveryService>((ref) {
+  return CrashOutResonanceDiscoveryService(
     engine: ref.watch(resonanceEngineProvider),
   );
 });
