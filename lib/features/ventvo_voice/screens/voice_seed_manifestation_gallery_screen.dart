@@ -25,7 +25,7 @@ class VoiceSeedManifestationGalleryScreen extends StatelessWidget {
       body: ListView.separated(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
         itemCount: seeds.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 24),
+        separatorBuilder: (_, _) => const SizedBox(height: 24),
         itemBuilder: (context, index) {
           final seed = seeds[index];
           final manifestation =
@@ -34,7 +34,7 @@ class VoiceSeedManifestationGalleryScreen extends StatelessWidget {
           return Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.white.withOpacity(0.10)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Column(
@@ -58,7 +58,7 @@ class VoiceSeedManifestationGalleryScreen extends StatelessWidget {
                   seed.essence,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.70),
+                    color: Colors.white.withValues(alpha: 0.70),
                     fontSize: 14,
                   ),
                 ),
@@ -66,7 +66,7 @@ class VoiceSeedManifestationGalleryScreen extends StatelessWidget {
                 Text(
                   '${manifestation.motion.name} · ${manifestation.reveal.name}',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.35),
+                    color: Colors.white.withValues(alpha: 0.35),
                     fontSize: 11,
                     letterSpacing: 0.4,
                   ),
