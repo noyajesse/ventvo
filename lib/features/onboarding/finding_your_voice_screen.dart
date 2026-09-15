@@ -76,8 +76,6 @@ class _FindingYourVoiceScreenState
   void _startFormation() {
     if (!mounted || _isForming) return;
 
-    // No questions, no personality quiz, and no VAELOR fallback.
-    // Every new Voice receives a random starting Seed from the full catalog.
     final seed = _discoveryService.discoverRandom();
 
     setState(() {
@@ -314,8 +312,6 @@ class _FindingYourVoiceScreenState
       );
     }
 
-    // VAELOR keeps the original formation animation exactly as the reference.
-    // Every other Seed uses its own manifestation language.
     if (seed.id == 'vaelor') {
       return AnimatedBuilder(
         animation: Listenable.merge([
@@ -380,13 +376,12 @@ class _FindingYourVoiceScreenState
                           AnimatedSwitcher(
                             duration: const Duration(milliseconds: 600),
                             layoutBuilder: (currentChild, previousChildren) {
+                              final current = currentChild;
                               return Stack(
                                 alignment: Alignment.center,
                                 children: [
                                   ...previousChildren,
-                                  ...?currentChild == null
-                                      ? null
-                                      : [currentChild],
+                                  ...[current].whereType<Widget>(),
                                 ],
                               );
                             },
