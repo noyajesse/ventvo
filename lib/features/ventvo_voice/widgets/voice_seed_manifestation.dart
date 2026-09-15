@@ -109,7 +109,7 @@ class _SeedManifestationPainter extends CustomPainter {
     final borderPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2
-      ..color = Colors.white.withOpacity(0.24 + (0.12 * intensity));
+      ..color = Colors.white.withValues(alpha: 0.24 + (0.12 * intensity));
     canvas.drawCircle(center, radius - 1, borderPaint);
 
     if (seedId == 'vaelor') {
@@ -367,7 +367,9 @@ class _SeedManifestationPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5
       ..strokeCap = StrokeCap.round
-      ..color = Colors.white.withOpacity(opacity.clamp(0.0, 1.0).toDouble());
+      ..color = Colors.white.withValues(
+        alpha: opacity.clamp(0.0, 1.0).toDouble(),
+      );
   }
 
   void _paintSymbol(
@@ -381,7 +383,9 @@ class _SeedManifestationPainter extends CustomPainter {
       text: TextSpan(
         text: symbol,
         style: TextStyle(
-          color: Colors.white.withOpacity(opacity.clamp(0.0, 1.0).toDouble()),
+          color: Colors.white.withValues(
+            alpha: opacity.clamp(0.0, 1.0).toDouble(),
+          ),
           fontSize: 55,
           height: 1,
         ),
