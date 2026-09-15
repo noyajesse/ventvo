@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/ventvo_colors.dart';
-import '../models/voice_mark.dart';
+import '../models/voice_seed.dart';
 import '../providers/voice_provider.dart';
 import '../services/voice_identity_catalog.dart';
 
@@ -15,60 +15,53 @@ class VoiceEvolutionScreen extends ConsumerStatefulWidget {
 }
 
 class _VoiceEvolutionScreenState extends ConsumerState<VoiceEvolutionScreen> {
-  late final TextEditingController nameController;
   late final TextEditingController expressionController;
   late final TextEditingController resonanceController;
 
-  late String selectedMarkId;
-  late String suggestedName;
+  late String selectedSeedId;
 
   @override
   void initState() {
     super.initState();
     final voice = ref.read(ventvoVoiceProvider).asData?.value;
-    final currentMark = voice?.mark == null
-        ? VoiceIdentityCatalog.marks.first
-        : VoiceIdentityCatalog.markBySymbol(voice!.mark!);
+    final existingSeed = voice?.name == null
+        ? null
+        : _findSeedByStoredName(voice!.name!);
 
-    nameController = TextEditingController(text: voice?.name ?? '');
     expressionController =
         TextEditingController(text: voice?.expression ?? '');
     resonanceController =
         TextEditingController(text: voice?.resonance ?? '');
-    selectedMarkId = currentMark.id;
-    suggestedName = VoiceIdentityCatalog.names.first;
+    selectedSeedId = existingSeed?.id ?? VoiceIdentityCatalog.seeds.first.id;
+  }
+
+  VoiceSeed? _findSeedByStoredName(String name) {
+    for (final seed in VoiceIdentityCatalog.seeds) {
+      if (seed.word == name) return seed;
+    }
+    return null;
   }
 
   @override
   void dispose() {
-    nameController.dispose();
     expressionController.dispose();
     resonanceController.dispose();
     super.dispose();
   }
 
-  VoiceMark get selectedMark => VoiceIdentityCatalog.markById(selectedMarkId);
-
-  void _useSuggestedName(String name) {
-    nameController.text = name;
-    nameController.selection = TextSelection.collapsed(
-      offset: nameController.text.length,
-    );
-    setState(() {});
-  }
+  VoiceSeed get selectedSeed => VoiceIdentityCatalog.seedById(selectedSeedId);
 
   Future<void> _save() async {
-    final name = nameController.text.trim();
     final expression = expressionController.text.trim();
     final resonance = resonanceController.text.trim();
 
-    if (name.isEmpty || expression.isEmpty || resonance.isEmpty) return;
+    if (expression.isEmpty || resonance.isEmpty) return;
 
     final notifier = ref.read(ventvoVoiceProvider.notifier);
-    await notifier.updateName(name);
+    await notifier.updateName(selectedSeed.word);
     await notifier.updateExpression(expression);
     await notifier.updateResonance(resonance);
-    await notifier.updateMark(selectedMark.symbol);
+    await notifier.updateMark(selectedSeed.mark.symbol);
 
     if (!mounted) return;
     Navigator.pop(context);
@@ -76,8 +69,7 @@ class _VoiceEvolutionScreenState extends ConsumerState<VoiceEvolutionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final canSave = nameController.text.trim().isNotEmpty &&
-        expressionController.text.trim().isNotEmpty &&
+    final canSave = expressionController.text.trim().isNotEmpty &&
         resonanceController.text.trim().isNotEmpty;
 
     return Scaffold(
@@ -101,7 +93,7 @@ class _VoiceEvolutionScreenState extends ConsumerState<VoiceEvolutionScreen> {
             ),
             const SizedBox(height: 10),
             const Text(
-              'As you grow, you can choose what your Voice carries forward. Nothing here changes your private identity.',
+              'Your Voice begins with a Seed. It is not a personality label. It is a small piece of the language you carry through Ventvo.',
               style: TextStyle(
                 color: VentvoColors.textSecondary,
                 fontSize: 14,
@@ -109,23 +101,74 @@ class _VoiceEvolutionScreenState extends ConsumerState<VoiceEvolutionScreen> {
               ),
             ),
             const SizedBox(height: 28),
-            Center(
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 220),
-                child: Text(
-                  selectedMark.symbol,
-                  key: ValueKey(selectedMark.id),
-                  style: const TextStyle(
-                    color: VentvoColors.textPrimary,
-                    fontSize: 72,
-                    fontWeight: FontWeight.w300,
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 220),
+              child: Column(
+                key: ValueKey(selectedSeed.id),
+                children: [
+                  Text(
+                    selectedSeed.mark.symbol,
+                    style: const TextStyle(
+                      color: VentvoColors.textPrimary,
+                      fontSize: 72,
+                      fontWeight: FontWeight.w300,
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 8),
+                  Text(
+                    selectedSeed.word,
+                    style: const TextStyle(
+                      color: VentvoColors.textPrimary,
+                      fontSize: 22,
+                      letterSpacing: 2,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    selectedSeed.essence,
+                    style: const TextStyle(
+                      color: VentvoColors.textMuted,
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 22),
+            Container(
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: VentvoColors.surface,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    selectedSeed.meaning,
+                    style: const TextStyle(
+                      color: VentvoColors.textPrimary,
+                      fontSize: 15,
+                      height: 1.45,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '“${selectedSeed.feeling}”',
+                    style: const TextStyle(
+                      color: VentvoColors.textSecondary,
+                      fontSize: 13,
+                      height: 1.45,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 28),
             const Text(
-              'Choose a mark',
+              'Find your Seed',
               style: TextStyle(
                 color: VentvoColors.textPrimary,
                 fontSize: 16,
@@ -134,67 +177,47 @@ class _VoiceEvolutionScreenState extends ConsumerState<VoiceEvolutionScreen> {
             ),
             const SizedBox(height: 6),
             const Text(
-              'A small visual sign for your Voice. It does not define you.',
+              'There is no right one. Choose the one that feels closest to where your Voice is now.',
               style: TextStyle(
                 color: VentvoColors.textSecondary,
                 fontSize: 13,
                 height: 1.4,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             Wrap(
               spacing: 10,
               runSpacing: 10,
               children: [
-                for (final mark in VoiceIdentityCatalog.marks)
+                for (final seed in VoiceIdentityCatalog.seeds)
                   ChoiceChip(
-                    label: Text(
-                      mark.symbol,
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                    selected: selectedMarkId == mark.id,
+                    label: Text('${seed.mark.symbol} ${seed.word}'),
+                    selected: selectedSeedId == seed.id,
                     onSelected: (_) =>
-                        setState(() => selectedMarkId = mark.id),
+                        setState(() => selectedSeedId = seed.id),
                   ),
               ],
             ),
             const SizedBox(height: 28),
-            _field('Voice name', nameController),
-            const SizedBox(height: 10),
+            _field('Expression', expressionController, maxLines: 3),
+            const SizedBox(height: 8),
             const Text(
-              'A name can be yours without being your real name.',
+              'What your Voice is carrying right now.',
               style: TextStyle(
                 color: VentvoColors.textMuted,
                 fontSize: 12,
               ),
             ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (final name in VoiceIdentityCatalog.names.take(6))
-                  ActionChip(
-                    label: Text(name),
-                    onPressed: () => _useSuggestedName(name),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            TextButton(
-              onPressed: () {
-                final names = VoiceIdentityCatalog.names;
-                final currentIndex = names.indexOf(suggestedName);
-                final nextIndex = (currentIndex + 1) % names.length;
-                setState(() => suggestedName = names[nextIndex]);
-                _useSuggestedName(suggestedName);
-              },
-              child: const Text('Show another name'),
-            ),
-            const SizedBox(height: 12),
-            _field('Expression', expressionController, maxLines: 3),
             const SizedBox(height: 16),
             _field('Resonance', resonanceController, maxLines: 3),
+            const SizedBox(height: 8),
+            const Text(
+              'What your Voice recognizes or feels connected to.',
+              style: TextStyle(
+                color: VentvoColors.textMuted,
+                fontSize: 12,
+              ),
+            ),
             const SizedBox(height: 30),
             SizedBox(
               height: 54,
