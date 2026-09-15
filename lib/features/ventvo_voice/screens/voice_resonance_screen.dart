@@ -8,21 +8,34 @@ class VoiceResonanceScreen extends ConsumerStatefulWidget {
   const VoiceResonanceScreen({super.key});
 
   @override
-  ConsumerState<VoiceResonanceScreen> createState() =>
-      _VoiceResonanceScreenState();
+  ConsumerState<VoiceResonanceScreen> createState() => _VoiceResonanceScreenState();
 }
 
-class _VoiceResonanceScreenState
-    extends ConsumerState<VoiceResonanceScreen> {
+class _VoiceResonanceScreenState extends ConsumerState<VoiceResonanceScreen> {
   String? selectedResonance;
 
   final List<String> resonances = [
-    "Stillness",
-    "Spark",
-    "Flow",
-    "Horizon",
-    "Depth",
+    'Stillness',
+    'Spark',
+    'Flow',
+    'Horizon',
+    'Depth',
   ];
+
+  Future<void> _continue() async {
+    final resonance = selectedResonance;
+    if (resonance == null) return;
+
+    await ref.read(ventvoVoiceProvider.notifier).updateResonance(resonance);
+    if (!mounted) return;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const VoiceMarkScreen(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,14 +43,12 @@ class _VoiceResonanceScreenState
       backgroundColor: const Color(0xFF111111),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 32,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 32),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                "Choose your resonance.",
+                'Choose your resonance.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white,
@@ -45,11 +56,9 @@ class _VoiceResonanceScreenState
                   fontWeight: FontWeight.bold,
                 ),
               ),
-
               const SizedBox(height: 20),
-
               const Text(
-                "What feeling should your Voice leave behind?",
+                'What feeling should your Voice leave behind?',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white70,
@@ -57,38 +66,24 @@ class _VoiceResonanceScreenState
                   height: 1.5,
                 ),
               ),
-
               const SizedBox(height: 40),
-
               Wrap(
                 spacing: 15,
                 runSpacing: 15,
                 alignment: WrapAlignment.center,
                 children: resonances.map((item) {
-                  final selected =
-                      selectedResonance == item;
+                  final selected = selectedResonance == item;
 
                   return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedResonance = item;
-                      });
-                    },
+                    onTap: () => setState(() => selectedResonance = item),
                     child: Container(
                       width: 120,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 18,
-                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 18),
                       decoration: BoxDecoration(
-                        color: selected
-                            ? Colors.white24
-                            : Colors.transparent,
-                        borderRadius:
-                            BorderRadius.circular(20),
+                        color: selected ? Colors.white24 : Colors.transparent,
+                        borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: selected
-                              ? Colors.white
-                              : Colors.white24,
+                          color: selected ? Colors.white : Colors.white24,
                         ),
                       ),
                       child: Text(
@@ -103,37 +98,13 @@ class _VoiceResonanceScreenState
                   );
                 }).toList(),
               ),
-
               const SizedBox(height: 50),
-
               SizedBox(
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton(
-                  onPressed:
-                      selectedResonance == null
-                          ? null
-                          : () {
-                              ref
-                                  .read(
-                                    ventvoVoiceProvider
-                                        .notifier,
-                                  )
-                                  .updateResonance(
-                                    selectedResonance!,
-                                  );
-
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const VoiceMarkScreen(),
-                                ),
-                              );
-                            },
-                  child: const Text(
-                    "Continue",
-                  ),
+                  onPressed: selectedResonance == null ? null : _continue,
+                  child: const Text('Continue'),
                 ),
               ),
             ],
