@@ -373,6 +373,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
   }
 
   Widget _origin(Vent vent) {
+    final voiceLabel = vent.voiceName?.trim();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -386,6 +387,18 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                 fontWeight: FontWeight.w500,
               ),
             ),
+            if (voiceLabel != null && voiceLabel.isNotEmpty) ...[
+              const SizedBox(width: 7),
+              Text(
+                voiceLabel,
+                style: const TextStyle(
+                  color: VentvoColors.textMuted,
+                  fontSize: 9,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.7,
+                ),
+              ),
+            ],
             const Spacer(),
             const Text(
               'VENT',
@@ -561,12 +574,12 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
           padding: const EdgeInsets.fromLTRB(18, 8, 18, 15),
           child: Material(
             color: VentvoColors.surface,
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(20),
             child: InkWell(
-              borderRadius: BorderRadius.circular(24),
               onTap: _openComposer,
+              borderRadius: BorderRadius.circular(20),
               child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 18, vertical: 15),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 15),
                 child: Row(
                   children: [
                     Expanded(
@@ -579,9 +592,9 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                       ),
                     ),
                     Icon(
-                      Icons.reply_rounded,
-                      color: VentvoColors.textSecondary,
-                      size: 19,
+                      Icons.arrow_upward_rounded,
+                      size: 17,
+                      color: VentvoColors.textMuted,
                     ),
                   ],
                 ),
@@ -596,66 +609,56 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
       top: false,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(18, 8, 18, 15),
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(15, 8, 7, 8),
-          decoration: BoxDecoration(
-            color: VentvoColors.surface,
-            borderRadius: BorderRadius.circular(25),
-            border: Border.all(color: VentvoColors.border),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: controller,
-                  focusNode: focusNode,
-                  minLines: 1,
-                  maxLines: 5,
-                  textInputAction: TextInputAction.newline,
-                  style: const TextStyle(
-                    color: VentvoColors.textPrimary,
-                    fontSize: 14,
-                    height: 1.4,
-                  ),
-                  decoration: const InputDecoration(
-                    hintText: 'Leave an Echo…',
-                    hintStyle: TextStyle(
-                      color: VentvoColors.textMuted,
+        child: Material(
+          color: VentvoColors.surface,
+          borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(14, 10, 10, 10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: controller,
+                    focusNode: focusNode,
+                    minLines: 1,
+                    maxLines: 4,
+                    textCapitalization: TextCapitalization.sentences,
+                    style: const TextStyle(
+                      color: VentvoColors.textPrimary,
                       fontSize: 13,
+                      height: 1.45,
                     ),
-                    border: InputBorder.none,
-                    isDense: true,
-                    contentPadding: EdgeInsets.symmetric(vertical: 8),
+                    decoration: const InputDecoration(
+                      hintText: 'What do you want to leave here?',
+                      hintStyle: TextStyle(
+                        color: VentvoColors.textMuted,
+                        fontSize: 12,
+                      ),
+                      border: InputBorder.none,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 4),
-              IconButton(
-                onPressed: _closeComposer,
-                icon: const Icon(Icons.close_rounded),
-                color: VentvoColors.textMuted,
-                iconSize: 19,
-                tooltip: 'Close',
-              ),
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: VentvoColors.surfaceElevated,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: VentvoColors.border),
+                IconButton(
+                  onPressed: sending ? null : _closeComposer,
+                  icon: const Icon(Icons.close_rounded, size: 18),
+                  color: VentvoColors.textMuted,
+                  tooltip: 'Close',
                 ),
-                child: IconButton(
-                  padding: EdgeInsets.zero,
+                IconButton(
                   onPressed: sending ? null : _leaveEcho,
-                  icon: const Icon(Icons.arrow_upward_rounded),
-                  color: VentvoColors.textPrimary,
-                  iconSize: 19,
+                  icon: sending
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 1.5),
+                        )
+                      : const Icon(Icons.arrow_upward_rounded, size: 18),
+                  color: VentvoColors.textSecondary,
                   tooltip: 'Leave Echo',
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
