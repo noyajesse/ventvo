@@ -1,5 +1,6 @@
 class VentvoVoice {
   final String? voiceId;
+  final String? seedId;
   final String? expression;
   final String? resonance;
   final String? mark;
@@ -8,6 +9,7 @@ class VentvoVoice {
 
   const VentvoVoice({
     this.voiceId,
+    this.seedId,
     this.expression,
     this.resonance,
     this.mark,
@@ -17,6 +19,7 @@ class VentvoVoice {
 
   VentvoVoice copyWith({
     String? voiceId,
+    String? seedId,
     String? expression,
     String? resonance,
     String? mark,
@@ -25,6 +28,7 @@ class VentvoVoice {
   }) {
     return VentvoVoice(
       voiceId: voiceId ?? this.voiceId,
+      seedId: seedId ?? this.seedId,
       expression: expression ?? this.expression,
       resonance: resonance ?? this.resonance,
       mark: mark ?? this.mark,
