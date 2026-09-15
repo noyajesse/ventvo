@@ -17,23 +17,24 @@ void main() {
       selected.add(service.discoverRandom().id);
     }
 
-    expect(selected, containsAll(
-      VoiceIdentityCatalog.seeds.map((seed) => seed.id),
-    ));
+    expect(
+      selected,
+      containsAll(VoiceIdentityCatalog.seeds.map((seed) => seed.id)),
+    );
   });
 
   test('random discovery never treats VAELOR as a fallback', () {
     final service = VoiceSeedDiscoveryService(random: Random(1));
     final seeds = List.generate(
       VoiceIdentityCatalog.seeds.length,
-      (_) => service.discover(const VentvoVoice(createdAt: DateTime(2026, 1, 1))),
+      (_) => service.discover(VentvoVoice(createdAt: DateTime(2026, 1, 1))),
     );
 
     expect(seeds.map((seed) => seed.id).toSet().length, greaterThan(1));
   });
 
   test('preserves an existing Ventvo Seed name', () {
-    const voice = VentvoVoice(
+    final voice = VentvoVoice(
       name: 'NYVEN',
       mark: '✦',
       resonance: 'Stillness',
@@ -57,7 +58,7 @@ void main() {
   });
 
   test('discovery of an existing Seed remains stable', () {
-    const voice = VentvoVoice(
+    final voice = VentvoVoice(
       name: 'AUREN',
       createdAt: DateTime(2026, 1, 1),
     );
@@ -72,7 +73,7 @@ void main() {
   });
 
   test('a Voice with no identity can receive any valid Seed', () {
-    const voice = VentvoVoice(createdAt: DateTime(2026, 1, 1));
+    final voice = VentvoVoice(createdAt: DateTime(2026, 1, 1));
     final service = VoiceSeedDiscoveryService(random: Random(19));
 
     final seed = service.discover(voice);
@@ -84,7 +85,7 @@ void main() {
   });
 
   test('existing Seed identity takes priority over random discovery', () {
-    const voice = VentvoVoice(
+    final voice = VentvoVoice(
       name: 'VEYRA',
       createdAt: DateTime(2026, 1, 1),
     );
@@ -113,9 +114,9 @@ void main() {
   });
 
   test('random discovery does not mutate the Voice', () {
-    const voice = VentvoVoice(createdAt: DateTime(2026, 1, 1));
-    final service = VoiceSeedDiscoveryService(random: Random(8));
+    final voice = VentvoVoice(createdAt: DateTime(2026, 1, 1));
 
+    final service = VoiceSeedDiscoveryService(random: Random(8));
     service.discover(voice);
 
     expect(voice.name, isNull);
