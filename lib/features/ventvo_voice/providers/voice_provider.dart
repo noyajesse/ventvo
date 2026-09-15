@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/ventvo_voice.dart';
+import '../services/voice_identity_catalog.dart';
 import '../services/voice_storage.dart';
 
 class VentvoVoiceNotifier extends AsyncNotifier<VentvoVoice?> {
@@ -8,7 +9,20 @@ class VentvoVoiceNotifier extends AsyncNotifier<VentvoVoice?> {
 
   @override
   Future<VentvoVoice?> build() async {
-    return _storage.load();
+    final voice = await _storage.load();
+    if (voice == null || voice.seedId != null) return voice;
+
+    final name = voice.name?.trim().toLowerCase();
+    if (name == null || name.isEmpty) return voice;
+
+    final seed = VoiceIdentityCatalog.seeds.cast().where((candidate) {
+      return candidate.word.toLowerCase() == name;
+    }).firstOrNull;
+    if (seed == null) return voice;
+
+    final migrated = voice.copyWith(seedId: seed.id);
+    await _storage.save(migrated);
+    return migrated;
   }
 
   Future<void> _persist(VentvoVoice voice) async {
