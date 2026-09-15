@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../crash_out/providers/crash_out_provider.dart';
 import '../../spaces/models/space.dart';
 import '../../spaces/providers/space_provider.dart';
+import '../../../systems/resonance/providers/resonance_provider.dart';
 import '../models/vent.dart';
 import '../providers/vent_provider.dart';
 import '../providers/voice_provider.dart';
@@ -82,6 +83,10 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
 
     await ref.read(spaceProvider.notifier).addSpace(space);
     await ref.read(ventProvider.notifier).addVent(vent);
+    await ref.read(ventResonanceDiscoveryServiceProvider).indexVent(
+          vent: vent,
+          space: space,
+        );
     if (!mounted) return;
 
     if (widget.crashOutId != null) {
