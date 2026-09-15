@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/theme/ventvo_colors.dart';
-import '../../crash_out/models/crash_out.dart';
-import '../../crash_out/providers/crash_out_provider.dart';
-import '../../crash_out/screens/crash_out_screen.dart';
-import '../../crash_out/screens/private_crash_outs_screen.dart';
-import '../../feed/screens/feed_screen.dart';
-import '../../feed/widgets/vent_card.dart';
-import '../../resonance/providers/resonance_maps_provider.dart';
-import '../../resonance/providers/resonance_threads_provider.dart';
+import '../../core/theme/ventvo_colors.dart';
+import '../../features/crash_out/models/crash_out.dart';
+import '../../features/crash_out/providers/crash_out_provider.dart';
+import '../../features/crash_out/screens/crash_out_screen.dart';
+import '../../features/crash_out/screens/private_crash_outs_screen.dart';
+import '../../features/feed/screens/feed_screen.dart';
+import '../../features/feed/widgets/vent_card.dart';
+import '../../features/resonance/providers/resonance_maps_provider.dart';
+import '../../features/resonance/providers/resonance_threads_provider.dart';
 import '../providers/vent_provider.dart';
 import '../providers/voice_provider.dart';
 import 'create_vent_screen.dart';
