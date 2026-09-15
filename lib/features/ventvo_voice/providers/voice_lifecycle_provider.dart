@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/ventvo_voice.dart';
 import 'vent_provider.dart';
 import 'voice_provider.dart';
 import 'voice_space_provider.dart';
