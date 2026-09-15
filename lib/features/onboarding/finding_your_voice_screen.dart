@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/ventvo_colors.dart';
-import '../../core/voice/ventvo_voice.dart' as voice_core;
-import '../../core/voice/ventvo_voice_seed.dart';
-import '../../core/voice/ventvo_voice_system.dart';
-import '../ventvo_voice/models/ventvo_voice.dart' as voice_model;
+import '../ventvo_voice/models/voice_seed.dart';
+import '../ventvo_voice/models/ventvo_voice.dart';
 import '../ventvo_voice/providers/voice_provider.dart';
 import '../ventvo_voice/screens/voice_space_screen.dart';
+import '../ventvo_voice/services/voice_seed_discovery_service.dart';
+import '../ventvo_voice/widgets/voice_seed_manifestation.dart';
 import 'voice_formation_painter.dart';
 
 class FindingYourVoiceScreen extends ConsumerStatefulWidget {
@@ -25,8 +25,10 @@ class _FindingYourVoiceScreenState
   late final AnimationController _formationController;
   late final AnimationController _breathController;
 
-  VentvoVoiceSeed? _seed;
+  final VoiceSeedDiscoveryService _discoveryService =
+      VoiceSeedDiscoveryService();
 
+  VoiceSeed? _seed;
   bool _isForming = false;
   bool _isRevealed = false;
   bool _canEnter = false;
@@ -40,31 +42,26 @@ class _FindingYourVoiceScreenState
       vsync: this,
       duration: const Duration(milliseconds: 1800),
     );
-
     _formationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 4800),
     );
-
     _breathController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 2600),
     );
 
     _introController.forward();
-
     _introController.addStatusListener((status) {
       if (status == AnimationStatus.completed && mounted) {
         _startFormation();
       }
     });
-
     _formationController.addStatusListener((status) {
       if (status == AnimationStatus.completed && mounted) {
         _revealVoice();
       }
     });
-
     _breathController.repeat(reverse: true);
   }
 
@@ -79,15 +76,16 @@ class _FindingYourVoiceScreenState
   void _startFormation() {
     if (!mounted || _isForming) return;
 
-    const voiceSystem = VentvoVoiceSystem();
-    final seed = voiceSystem.createInitialSeed();
+    // No questions, no personality quiz, and no VAELOR fallback.
+    // Every new Voice receives a random starting Seed from the full catalog.
+    final seed = _discoveryService.discoverRandom();
 
     setState(() {
       _seed = seed;
       _isForming = true;
     });
 
-    _formationController.forward();
+    _formationController.forward(from: 0);
   }
 
   Future<void> _revealVoice() async {
@@ -97,12 +95,7 @@ class _FindingYourVoiceScreenState
       _isRevealed = true;
     });
 
-    // Let the user sit with the completed Voice
-    // before presenting the action.
-    await Future<void>.delayed(
-      const Duration(milliseconds: 900),
-    );
-
+    await Future<void>.delayed(const Duration(milliseconds: 900));
     if (!mounted) return;
 
     setState(() {
@@ -110,80 +103,36 @@ class _FindingYourVoiceScreenState
     });
   }
 
-  voice_core.VentvoVoice get _foundation {
-    return _seed!.currentFoundation;
-  }
-
-  String get _voiceEssence {
-    switch (_foundation) {
-      case voice_core.VentvoVoice.vaelor:
-        return 'A voice that gives what is inside a place to exist.';
-
-      case voice_core.VentvoVoice.nyven:
-        return 'A voice that finds resonance in being heard.';
-
-      case voice_core.VentvoVoice.auren:
-        return 'A voice that grows and becomes through expression.';
-    }
-  }
-
-  Color get _voiceColor {
-    switch (_foundation) {
-      case voice_core.VentvoVoice.vaelor:
-        return VentvoColors.primary;
-
-      case voice_core.VentvoVoice.nyven:
-        return VentvoColors.secondary;
-
-      case voice_core.VentvoVoice.auren:
-        return VentvoColors.primary;
-    }
-  }
-
   Future<void> _enterVentvo() async {
     if (_hasEntered || _seed == null) return;
 
     _hasEntered = true;
-
     final seed = _seed!;
 
-    final voice = voice_model.VentvoVoice(
-      voiceId: DateTime.now().microsecondsSinceEpoch.toString(),
-      name: seed.name,
-      mark: seed.mark,
-      expression: _voiceEssence,
-      resonance: _foundation.principle,
-      createdAt: DateTime.now(),
+    final now = DateTime.now();
+    final voice = VentvoVoice(
+      voiceId: now.microsecondsSinceEpoch.toString(),
+      name: seed.word,
+      mark: seed.mark.symbol,
+      expression: seed.meaning,
+      resonance: seed.feeling,
+      createdAt: now,
     );
 
-    await ref
-        .read(ventvoVoiceProvider.notifier)
-        .setVoice(voice);
-
+    await ref.read(ventvoVoiceProvider.notifier).setVoice(voice);
     if (!mounted) return;
 
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(
-        builder: (_) => const VoiceSpaceScreen(),
-      ),
+      MaterialPageRoute(builder: (_) => const VoiceSpaceScreen()),
       (route) => false,
     );
   }
 
   Widget _buildFindingContent(TextTheme textTheme) {
     return FadeTransition(
-      opacity: Tween<double>(
-        begin: 0.0,
-        end: 1.0,
-      ).animate(
-        CurvedAnimation(
-          parent: _introController,
-          curve: const Interval(
-            0.18,
-            0.52,
-            curve: Curves.easeOut,
-          ),
-        ),
+      opacity: CurvedAnimation(
+        parent: _introController,
+        curve: const Interval(0.18, 0.52, curve: Curves.easeOut),
       ),
       child: SlideTransition(
         position: Tween<Offset>(
@@ -192,11 +141,7 @@ class _FindingYourVoiceScreenState
         ).animate(
           CurvedAnimation(
             parent: _introController,
-            curve: const Interval(
-              0.18,
-              0.58,
-              curve: Curves.easeOutCubic,
-            ),
+            curve: const Interval(0.18, 0.58, curve: Curves.easeOutCubic),
           ),
         ),
         child: Column(
@@ -212,9 +157,7 @@ class _FindingYourVoiceScreenState
             ),
             const SizedBox(height: 22),
             ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 340,
-              ),
+              constraints: const BoxConstraints(maxWidth: 340),
               child: Text(
                 'You don’t have to define yourself before you begin.',
                 textAlign: TextAlign.center,
@@ -239,31 +182,18 @@ class _FindingYourVoiceScreenState
   }
 
   Widget _buildVoiceReveal(TextTheme textTheme) {
-    if (!_isRevealed || _seed == null) {
-      return const SizedBox.shrink();
-    }
+    if (!_isRevealed || _seed == null) return const SizedBox.shrink();
 
     return FadeTransition(
       opacity: CurvedAnimation(
         parent: _formationController,
-        curve: const Interval(
-          0.72,
-          0.88,
-          curve: Curves.easeOut,
-        ),
+        curve: const Interval(0.72, 0.88, curve: Curves.easeOut),
       ),
       child: ScaleTransition(
-        scale: Tween<double>(
-          begin: 0.88,
-          end: 1.0,
-        ).animate(
+        scale: Tween<double>(begin: 0.88, end: 1.0).animate(
           CurvedAnimation(
             parent: _formationController,
-            curve: const Interval(
-              0.70,
-              0.90,
-              curve: Curves.easeOutBack,
-            ),
+            curve: const Interval(0.70, 0.90, curve: Curves.easeOutBack),
           ),
         ),
         child: Column(
@@ -280,10 +210,10 @@ class _FindingYourVoiceScreenState
             ),
             const SizedBox(height: 14),
             Text(
-              _seed!.name,
+              _seed!.word,
               textAlign: TextAlign.center,
               style: textTheme.displaySmall?.copyWith(
-                color: _voiceColor,
+                color: VentvoColors.primary,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 1.2,
               ),
@@ -295,28 +225,20 @@ class _FindingYourVoiceScreenState
   }
 
   Widget _buildMeaning(TextTheme textTheme) {
-    if (!_isRevealed) {
-      return const SizedBox.shrink();
-    }
+    if (!_isRevealed || _seed == null) return const SizedBox.shrink();
 
     return FadeTransition(
       opacity: CurvedAnimation(
         parent: _formationController,
-        curve: const Interval(
-          0.80,
-          0.94,
-          curve: Curves.easeOut,
-        ),
+        curve: const Interval(0.80, 0.94, curve: Curves.easeOut),
       ),
       child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          maxWidth: 340,
-        ),
+        constraints: const BoxConstraints(maxWidth: 340),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              _voiceEssence,
+              _seed!.meaning,
               textAlign: TextAlign.center,
               style: textTheme.bodyLarge?.copyWith(
                 color: VentvoColors.textSecondary,
@@ -378,24 +300,13 @@ class _FindingYourVoiceScreenState
       return FadeTransition(
         opacity: CurvedAnimation(
           parent: _introController,
-          curve: const Interval(
-            0.0,
-            0.35,
-            curve: Curves.easeOut,
-          ),
+          curve: const Interval(0.0, 0.35, curve: Curves.easeOut),
         ),
         child: ScaleTransition(
-          scale: Tween<double>(
-            begin: 0.72,
-            end: 1.0,
-          ).animate(
+          scale: Tween<double>(begin: 0.72, end: 1.0).animate(
             CurvedAnimation(
               parent: _introController,
-              curve: const Interval(
-                0.0,
-                0.45,
-                curve: Curves.easeOutBack,
-              ),
+              curve: const Interval(0.0, 0.45, curve: Curves.easeOutBack),
             ),
           ),
           child: const _InitialMark(),
@@ -403,30 +314,35 @@ class _FindingYourVoiceScreenState
       );
     }
 
-    return AnimatedBuilder(
-      animation: Listenable.merge([
-        _formationController,
-        _breathController,
-      ]),
-      builder: (context, child) {
-        final formationProgress =
-            _formationController.value;
+    // VAELOR keeps the original formation animation exactly as the reference.
+    // Every other Seed uses its own manifestation language.
+    if (seed.id == 'vaelor') {
+      return AnimatedBuilder(
+        animation: Listenable.merge([
+          _formationController,
+          _breathController,
+        ]),
+        builder: (context, child) {
+          final breath = Curves.easeInOut.transform(_breathController.value);
+          return CustomPaint(
+            size: const Size(250, 250),
+            painter: VoiceFormationPainter(
+              progress: _formationController.value,
+              symbol: seed.mark.symbol,
+              color: VentvoColors.primary,
+              breath: breath,
+            ),
+          );
+        },
+      );
+    }
 
-        final breath =
-            Curves.easeInOut.transform(
-          _breathController.value,
-        );
-
-        return CustomPaint(
-          size: const Size(250, 250),
-          painter: VoiceFormationPainter(
-            progress: formationProgress,
-            symbol: seed.mark,
-            color: _voiceColor,
-            breath: breath,
-          ),
-        );
-      },
+    return Center(
+      child: VoiceSeedManifestation(
+        seed: seed,
+        size: 250,
+        reveal: true,
+      ),
     );
   }
 
@@ -439,15 +355,11 @@ class _FindingYourVoiceScreenState
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final availableHeight =
-                constraints.maxHeight;
-
+            final availableHeight = constraints.maxHeight;
             return SingleChildScrollView(
               physics: const NeverScrollableScrollPhysics(),
               child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: availableHeight,
-                ),
+                constraints: BoxConstraints(minHeight: availableHeight),
                 child: Center(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -455,27 +367,19 @@ class _FindingYourVoiceScreenState
                       vertical: 24,
                     ),
                     child: ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        maxWidth: 520,
-                      ),
+                      constraints: const BoxConstraints(maxWidth: 520),
                       child: Column(
-                        mainAxisAlignment:
-                            MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SizedBox(
                             width: 250,
                             height: 250,
                             child: _buildVisual(),
                           ),
-
                           const SizedBox(height: 22),
-
                           AnimatedSwitcher(
-                            duration: const Duration(
-                              milliseconds: 600,
-                            ),
-                            layoutBuilder:
-                                (currentChild, previousChildren) {
+                            duration: const Duration(milliseconds: 600),
+                            layoutBuilder: (currentChild, previousChildren) {
                               return Stack(
                                 alignment: Alignment.center,
                                 children: [
@@ -485,20 +389,12 @@ class _FindingYourVoiceScreenState
                               );
                             },
                             child: _isRevealed
-                                ? _buildVoiceReveal(
-                                    textTheme,
-                                  )
-                                : _buildFindingContent(
-                                    textTheme,
-                                  ),
+                                ? _buildVoiceReveal(textTheme)
+                                : _buildFindingContent(textTheme),
                           ),
-
                           const SizedBox(height: 24),
-
                           _buildMeaning(textTheme),
-
                           const SizedBox(height: 38),
-
                           _buildEnterButton(),
                         ],
                       ),
