@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/ventvo_colors.dart';
 import '../models/voice_seed.dart';
+import '../providers/voice_lifecycle_provider.dart';
 import '../providers/voice_provider.dart';
 import '../services/voice_identity_catalog.dart';
 
@@ -57,6 +58,7 @@ class _VoiceEvolutionScreenState extends ConsumerState<VoiceEvolutionScreen> {
     final notifier = ref.read(ventvoVoiceProvider.notifier);
     await notifier.updateExpression(expression);
     await notifier.updateResonance(resonance);
+    ref.invalidate(voiceLifecycleProvider);
 
     if (!mounted) return;
     Navigator.pop(context);
@@ -65,6 +67,7 @@ class _VoiceEvolutionScreenState extends ConsumerState<VoiceEvolutionScreen> {
   @override
   Widget build(BuildContext context) {
     final seed = currentSeed;
+    final lifecycle = ref.watch(voiceLifecycleProvider);
     final canSave = expressionController.text.trim().isNotEmpty &&
         resonanceController.text.trim().isNotEmpty;
 
@@ -158,6 +161,12 @@ class _VoiceEvolutionScreenState extends ConsumerState<VoiceEvolutionScreen> {
                 ),
               ),
             const SizedBox(height: 28),
+            lifecycle.when(
+              loading: () => const SizedBox.shrink(),
+              error: (_, __) => const SizedBox.shrink(),
+              data: (snapshot) => _VoiceJourney(snapshot: snapshot),
+            ),
+            const SizedBox(height: 28),
             const Text(
               'What is changing?',
               style: TextStyle(
@@ -229,6 +238,139 @@ class _VoiceEvolutionScreenState extends ConsumerState<VoiceEvolutionScreen> {
           borderSide: BorderSide.none,
         ),
       ),
+    );
+  }
+}
+
+class _VoiceJourney extends StatelessWidget {
+  const _VoiceJourney({required this.snapshot});
+
+  final VoiceLifecycleSnapshot snapshot;
+
+  static const _stages = VoiceLifecycleStage.values;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(18, 20, 18, 18),
+      decoration: BoxDecoration(
+        color: VentvoColors.surface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: VentvoColors.border.withValues(alpha: .55),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Where your Voice is now',
+            style: TextStyle(
+              color: VentvoColors.textPrimary,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            snapshot.stage.description,
+            style: const TextStyle(
+              color: VentvoColors.textSecondary,
+              fontSize: 13,
+              height: 1.45,
+            ),
+          ),
+          const SizedBox(height: 18),
+          for (var index = 0; index < _stages.length; index++)
+            _JourneyStep(
+              stage: _stages[index],
+              active: snapshot.stage == _stages[index],
+              reached: snapshot.hasReached(_stages[index]),
+              isLast: index == _stages.length - 1,
+            ),
+          const SizedBox(height: 8),
+          Text(
+            '${snapshot.ventCount} ${snapshot.ventCount == 1 ? 'Vent' : 'Vents'}  ·  ${snapshot.resonanceCount} ${snapshot.resonanceCount == 1 ? 'Resonance' : 'Resonances'}  ·  ${snapshot.arcCount} ${snapshot.arcCount == 1 ? 'Arc' : 'Arcs'}',
+            style: const TextStyle(
+              color: VentvoColors.textMuted,
+              fontSize: 11,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _JourneyStep extends StatelessWidget {
+  const _JourneyStep({
+    required this.stage,
+    required this.active,
+    required this.reached,
+    required this.isLast,
+  });
+
+  final VoiceLifecycleStage stage;
+  final bool active;
+  final bool reached;
+  final bool isLast;
+
+  @override
+  Widget build(BuildContext context) {
+    final titleStyle = TextStyle(
+      color: active ? VentvoColors.textPrimary : VentvoColors.textSecondary,
+      fontSize: 13,
+      fontWeight: active ? FontWeight.w600 : FontWeight.w500,
+    );
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 22,
+          child: Column(
+            children: [
+              Container(
+                width: 9,
+                height: 9,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: reached
+                        ? VentvoColors.textPrimary
+                        : VentvoColors.border,
+                  ),
+                ),
+                child: reached
+                    ? const Center(
+                        child: SizedBox(
+                          width: 3,
+                          height: 3,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: VentvoColors.textPrimary,
+                            ),
+                          ),
+                        ),
+                      )
+                    : null,
+              ),
+              if (!isLast)
+                Container(
+                  width: 1,
+                  height: 30,
+                  color: VentvoColors.border,
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 8),
+        Padding(
+          padding: const EdgeInsets.only(top: 1),
+          child: Text(stage.title, style: titleStyle),
+        ),
+      ],
     );
   }
 }
