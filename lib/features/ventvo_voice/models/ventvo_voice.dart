@@ -5,6 +5,8 @@ class VentvoVoice {
   final String? mark;
   final String? name;
   final DateTime createdAt;
+  final int evolutionCount;
+  final DateTime? lastEvolvedAt;
 
   const VentvoVoice({
     this.voiceId,
@@ -13,6 +15,8 @@ class VentvoVoice {
     this.mark,
     this.name,
     required this.createdAt,
+    this.evolutionCount = 0,
+    this.lastEvolvedAt,
   });
 
   VentvoVoice copyWith({
@@ -22,6 +26,8 @@ class VentvoVoice {
     String? mark,
     String? name,
     DateTime? createdAt,
+    int? evolutionCount,
+    DateTime? lastEvolvedAt,
   }) {
     return VentvoVoice(
       voiceId: voiceId ?? this.voiceId,
@@ -30,6 +36,8 @@ class VentvoVoice {
       mark: mark ?? this.mark,
       name: name ?? this.name,
       createdAt: createdAt ?? this.createdAt,
+      evolutionCount: evolutionCount ?? this.evolutionCount,
+      lastEvolvedAt: lastEvolvedAt ?? this.lastEvolvedAt,
     );
   }
 }
