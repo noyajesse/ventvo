@@ -18,28 +18,27 @@ class _VoiceEvolutionScreenState extends ConsumerState<VoiceEvolutionScreen> {
   late final TextEditingController expressionController;
   late final TextEditingController resonanceController;
 
-  late String selectedSeedId;
+  VoiceSeed? get currentSeed {
+    final voice = ref.read(ventvoVoiceProvider).asData?.value;
+    final name = voice?.name;
+    if (name == null || name.trim().isEmpty) return null;
+
+    for (final seed in VoiceIdentityCatalog.seeds) {
+      if (seed.word.toLowerCase() == name.trim().toLowerCase()) {
+        return seed;
+      }
+    }
+    return null;
+  }
 
   @override
   void initState() {
     super.initState();
     final voice = ref.read(ventvoVoiceProvider).asData?.value;
-    final existingSeed = voice?.name == null
-        ? null
-        : _findSeedByStoredName(voice!.name!);
-
     expressionController =
         TextEditingController(text: voice?.expression ?? '');
     resonanceController =
         TextEditingController(text: voice?.resonance ?? '');
-    selectedSeedId = existingSeed?.id ?? VoiceIdentityCatalog.seeds.first.id;
-  }
-
-  VoiceSeed? _findSeedByStoredName(String name) {
-    for (final seed in VoiceIdentityCatalog.seeds) {
-      if (seed.word == name) return seed;
-    }
-    return null;
   }
 
   @override
@@ -49,8 +48,6 @@ class _VoiceEvolutionScreenState extends ConsumerState<VoiceEvolutionScreen> {
     super.dispose();
   }
 
-  VoiceSeed get selectedSeed => VoiceIdentityCatalog.seedById(selectedSeedId);
-
   Future<void> _save() async {
     final expression = expressionController.text.trim();
     final resonance = resonanceController.text.trim();
@@ -58,10 +55,8 @@ class _VoiceEvolutionScreenState extends ConsumerState<VoiceEvolutionScreen> {
     if (expression.isEmpty || resonance.isEmpty) return;
 
     final notifier = ref.read(ventvoVoiceProvider.notifier);
-    await notifier.updateName(selectedSeed.word);
     await notifier.updateExpression(expression);
     await notifier.updateResonance(resonance);
-    await notifier.updateMark(selectedSeed.mark.symbol);
 
     if (!mounted) return;
     Navigator.pop(context);
@@ -69,6 +64,7 @@ class _VoiceEvolutionScreenState extends ConsumerState<VoiceEvolutionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final seed = currentSeed;
     final canSave = expressionController.text.trim().isNotEmpty &&
         resonanceController.text.trim().isNotEmpty;
 
@@ -77,7 +73,7 @@ class _VoiceEvolutionScreenState extends ConsumerState<VoiceEvolutionScreen> {
       appBar: AppBar(
         backgroundColor: VentvoColors.background,
         elevation: 0,
-        title: const Text('Shape Your Voice'),
+        title: const Text('Let Your Voice Evolve'),
       ),
       body: SafeArea(
         child: ListView(
@@ -93,7 +89,7 @@ class _VoiceEvolutionScreenState extends ConsumerState<VoiceEvolutionScreen> {
             ),
             const SizedBox(height: 10),
             const Text(
-              'Your Voice begins with a Seed. It is not a personality label. It is a small piece of the language you carry through Ventvo.',
+              'Your Seed is where your Voice began. What you carry around it can change as you live, express, and recognize new things.',
               style: TextStyle(
                 color: VentvoColors.textSecondary,
                 fontSize: 14,
@@ -101,74 +97,69 @@ class _VoiceEvolutionScreenState extends ConsumerState<VoiceEvolutionScreen> {
               ),
             ),
             const SizedBox(height: 28),
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 220),
-              child: Column(
-                key: ValueKey(selectedSeed.id),
-                children: [
-                  Text(
-                    selectedSeed.mark.symbol,
-                    style: const TextStyle(
-                      color: VentvoColors.textPrimary,
-                      fontSize: 72,
-                      fontWeight: FontWeight.w300,
-                    ),
+            if (seed != null)
+              Container(
+                padding: const EdgeInsets.fromLTRB(20, 22, 20, 22),
+                decoration: BoxDecoration(
+                  color: VentvoColors.surface,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: VentvoColors.border.withValues(alpha: .55),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    selectedSeed.word,
-                    style: const TextStyle(
-                      color: VentvoColors.textPrimary,
-                      fontSize: 22,
-                      letterSpacing: 2,
-                      fontWeight: FontWeight.w600,
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      seed.mark.symbol,
+                      style: const TextStyle(
+                        color: VentvoColors.textPrimary,
+                        fontSize: 56,
+                        fontWeight: FontWeight.w300,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    selectedSeed.essence,
-                    style: const TextStyle(
-                      color: VentvoColors.textMuted,
-                      fontSize: 13,
+                    const SizedBox(height: 8),
+                    Text(
+                      seed.word,
+                      style: const TextStyle(
+                        color: VentvoColors.textPrimary,
+                        fontSize: 21,
+                        letterSpacing: 1.5,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 5),
+                    Text(
+                      seed.essence,
+                      style: const TextStyle(
+                        color: VentvoColors.textMuted,
+                        fontSize: 12,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      seed.meaning,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: VentvoColors.textSecondary,
+                        fontSize: 13,
+                        height: 1.45,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else
+              const Text(
+                'Your Seed will appear here once your Voice has been discovered.',
+                style: TextStyle(
+                  color: VentvoColors.textSecondary,
+                  fontSize: 14,
+                  height: 1.5,
+                ),
               ),
-            ),
-            const SizedBox(height: 22),
-            Container(
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                color: VentvoColors.surface,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    selectedSeed.meaning,
-                    style: const TextStyle(
-                      color: VentvoColors.textPrimary,
-                      fontSize: 15,
-                      height: 1.45,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '“${selectedSeed.feeling}”',
-                    style: const TextStyle(
-                      color: VentvoColors.textSecondary,
-                      fontSize: 13,
-                      height: 1.45,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ],
-              ),
-            ),
             const SizedBox(height: 28),
             const Text(
-              'Find your Seed',
+              'What is changing?',
               style: TextStyle(
                 color: VentvoColors.textPrimary,
                 fontSize: 16,
@@ -177,28 +168,14 @@ class _VoiceEvolutionScreenState extends ConsumerState<VoiceEvolutionScreen> {
             ),
             const SizedBox(height: 6),
             const Text(
-              'There is no right one. Choose the one that feels closest to where your Voice is now.',
+              'Your Seed does not need to be configured. Your expression can simply change with you.',
               style: TextStyle(
                 color: VentvoColors.textSecondary,
                 fontSize: 13,
                 height: 1.4,
               ),
             ),
-            const SizedBox(height: 14),
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: [
-                for (final seed in VoiceIdentityCatalog.seeds)
-                  ChoiceChip(
-                    label: Text('${seed.mark.symbol} ${seed.word}'),
-                    selected: selectedSeedId == seed.id,
-                    onSelected: (_) =>
-                        setState(() => selectedSeedId = seed.id),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 18),
             _field('Expression', expressionController, maxLines: 3),
             const SizedBox(height: 8),
             const Text(
