@@ -16,6 +16,30 @@ class VentvoVoiceNotifier extends AsyncNotifier<VentvoVoice?> {
     await _storage.save(voice);
   }
 
+  /// Creates the local Voice shell used while the user shapes their Voice.
+  ///
+  /// The shell is intentionally incomplete: the following Voice steps fill
+  /// in its mark, name, resonance, and expression. Keeping one Voice object
+  /// throughout the flow prevents update methods from silently doing nothing.
+  Future<VentvoVoice> ensureVoice() async {
+    final existing = state.asData?.value;
+    if (existing != null) return existing;
+
+    final stored = await _storage.load();
+    if (stored != null) {
+      state = AsyncData(stored);
+      return stored;
+    }
+
+    final now = DateTime.now();
+    final voice = VentvoVoice(
+      voiceId: 'voice_${now.millisecondsSinceEpoch}',
+      createdAt: now,
+    );
+    await _persist(voice);
+    return voice;
+  }
+
   Future<void> setVoice(VentvoVoice voice) async {
     await _persist(voice);
   }
