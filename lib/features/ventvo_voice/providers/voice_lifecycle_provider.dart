@@ -36,13 +36,12 @@ final voiceLifecycleProvider = FutureProvider<VoiceLifecycleSnapshot>((ref) asyn
   final vents = await ref.watch(ventProvider.future);
   final resonance = await ref.watch(voiceSpaceResonanceStatsProvider.future);
 
-  final hasExpression = _hasText(voice?.expression);
+  final hasExpression = _hasText(voice?.expression) || vents.isNotEmpty;
   final hasResonance = _hasText(voice?.resonance) || resonance.threads > 0;
 
-  final stage = _stageFor(
+  final stage = voiceLifecycleStageFor(
     hasExpression: hasExpression,
     hasResonance: hasResonance,
-    ventCount: vents.length,
     arcCount: resonance.maps,
   );
 
@@ -58,14 +57,13 @@ final voiceLifecycleProvider = FutureProvider<VoiceLifecycleSnapshot>((ref) asyn
 
 bool _hasText(String? value) => value != null && value.trim().isNotEmpty;
 
-VoiceLifecycleStage _stageFor({
+VoiceLifecycleStage voiceLifecycleStageFor({
   required bool hasExpression,
   required bool hasResonance,
-  required int ventCount,
   required int arcCount,
 }) {
   if (arcCount > 0) return VoiceLifecycleStage.becoming;
-  if (hasResonance || ventCount > 0) return VoiceLifecycleStage.resonance;
+  if (hasResonance) return VoiceLifecycleStage.resonance;
   if (hasExpression) return VoiceLifecycleStage.expression;
   return VoiceLifecycleStage.seed;
 }
