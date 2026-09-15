@@ -1,5 +1,6 @@
 import '../models/voice_mark.dart';
 import '../models/voice_seed.dart';
+import '../models/voice_seed_manifestation.dart';
 
 class VoiceIdentityCatalog {
   const VoiceIdentityCatalog._();
@@ -109,6 +110,72 @@ class VoiceIdentityCatalog {
     ),
   ];
 
+  static const manifestations = <VoiceSeedManifestation>[
+    VoiceSeedManifestation(
+      seedId: 'vaelor',
+      motion: VoiceManifestationMotion.unfold,
+      reveal: VoiceManifestationReveal.center,
+      duration: Duration(milliseconds: 3000),
+      intensity: 0.55,
+    ),
+    VoiceSeedManifestation(
+      seedId: 'nyven',
+      motion: VoiceManifestationMotion.ripple,
+      reveal: VoiceManifestationReveal.wave,
+      duration: Duration(milliseconds: 3000),
+      intensity: 0.7,
+    ),
+    VoiceSeedManifestation(
+      seedId: 'auren',
+      motion: VoiceManifestationMotion.emerge,
+      reveal: VoiceManifestationReveal.spark,
+      duration: Duration(milliseconds: 2800),
+      intensity: 0.8,
+    ),
+    VoiceSeedManifestation(
+      seedId: 'senya',
+      motion: VoiceManifestationMotion.open,
+      reveal: VoiceManifestationReveal.ring,
+      duration: Duration(milliseconds: 3000),
+      intensity: 0.35,
+    ),
+    VoiceSeedManifestation(
+      seedId: 'orvan',
+      motion: VoiceManifestationMotion.settle,
+      reveal: VoiceManifestationReveal.grounded,
+      duration: Duration(milliseconds: 2800),
+      intensity: 0.45,
+    ),
+    VoiceSeedManifestation(
+      seedId: 'elvae',
+      motion: VoiceManifestationMotion.converge,
+      reveal: VoiceManifestationReveal.overlap,
+      duration: Duration(milliseconds: 3000),
+      intensity: 0.65,
+    ),
+    VoiceSeedManifestation(
+      seedId: 'nareth',
+      motion: VoiceManifestationMotion.breathe,
+      reveal: VoiceManifestationReveal.pause,
+      duration: Duration(milliseconds: 3200),
+      intensity: 0.25,
+    ),
+    VoiceSeedManifestation(
+      seedId: 'veyra',
+      motion: VoiceManifestationMotion.trace,
+      reveal: VoiceManifestationReveal.trail,
+      duration: Duration(milliseconds: 3000),
+      intensity: 0.6,
+    ),
+    VoiceSeedManifestation(
+      seedId: 'kaven',
+      motion: VoiceManifestationMotion.meet,
+      reveal: VoiceManifestationReveal.intersection,
+      duration: Duration(milliseconds: 3000),
+      intensity: 0.65,
+    ),
+  ];
+
   static const names = <String>[
     'VAELOR',
     'NYVEN',
@@ -146,6 +213,13 @@ class VoiceIdentityCatalog {
     return seeds.firstWhere(
       (seed) => seed.word == word,
       orElse: () => seeds.first,
+    );
+  }
+
+  static VoiceSeedManifestation manifestationBySeedId(String seedId) {
+    return manifestations.firstWhere(
+      (manifestation) => manifestation.seedId == seedId,
+      orElse: () => manifestations.first,
     );
   }
 }
