@@ -72,7 +72,20 @@ class VoiceSpaceScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _VoiceIdentity(seed: seed, voice: voice),
-              const SizedBox(height: 36),
+              const SizedBox(height: 30),
+              if (vents.isEmpty) ...[
+                _FirstMomentCard(
+                  onCreateVent: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const CreateVentScreen(),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 34),
+              ],
               const _SectionLabel(
                 title: 'Your journey',
                 subtitle: 'Your Voice is shaped by what you live, release, and recognize.',
@@ -101,8 +114,7 @@ class VoiceSpaceScreen extends ConsumerWidget {
                     showLifecycleActions: true,
                   ),
                 ),
-              ] else
-                const _EmptyVentsCard(),
+              ],
               if (privateCrashOuts.isNotEmpty) ...[
                 const SizedBox(height: 30),
                 const _SectionLabel(
@@ -284,6 +296,72 @@ class _VoiceIdentity extends StatelessWidget {
   }
 }
 
+class _FirstMomentCard extends StatelessWidget {
+  const _FirstMomentCard({required this.onCreateVent});
+
+  final VoidCallback onCreateVent;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(22, 22, 22, 20),
+      decoration: BoxDecoration(
+        color: VentvoColors.surface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: VentvoColors.primary.withValues(alpha: 0.18),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Your Voice is here.',
+            style: TextStyle(
+              color: VentvoColors.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 7),
+          const Text(
+            'Now give it a moment. What you release can become a Space, meet another Voice, and grow into Resonance.',
+            style: TextStyle(
+              color: VentvoColors.textSecondary,
+              fontSize: 13,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 18),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton(
+              onPressed: onCreateVent,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: VentvoColors.buttonBlue,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              child: const Text(
+                'Release your first moment',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _SectionLabel extends StatelessWidget {
   const _SectionLabel({required this.title, required this.subtitle});
 
@@ -376,31 +454,6 @@ class _Stat extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _EmptyVentsCard extends StatelessWidget {
-  const _EmptyVentsCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        color: VentvoColors.surface,
-        borderRadius: BorderRadius.circular(22),
-      ),
-      child: const Text(
-        'Nothing has been released yet.\nYour Voice is still becoming.',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          color: VentvoColors.textSecondary,
-          fontSize: 14,
-          height: 1.5,
         ),
       ),
     );
@@ -566,6 +619,7 @@ class _ActionCard extends StatelessWidget {
                       style: const TextStyle(
                         color: VentvoColors.textMuted,
                         fontSize: 12,
+                        height: 1.4,
                       ),
                     ),
                   ],
