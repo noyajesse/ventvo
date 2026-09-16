@@ -2,7 +2,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:ventvo/main.dart';
+import 'package:ventvo/features/ventvo_voice/models/ventvo_voice.dart';
 import 'package:ventvo/features/ventvo_voice/providers/voice_provider.dart';
+
+class _EmptyVoiceNotifier extends AsyncNotifier<VentvoVoice?> {
+  @override
+  Future<VentvoVoice?> build() async => null;
+}
 
 void main() {
   testWidgets('Ventvo onboarding smoke test', (WidgetTester tester) async {
@@ -11,9 +17,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          ventvoVoiceProvider.overrideWithValue(
-            const AsyncData(null),
-          ),
+          ventvoVoiceProvider.overrideWith(_EmptyVoiceNotifier.new),
         ],
         child: const VentvoApp(),
       ),
