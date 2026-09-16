@@ -113,8 +113,11 @@ class _FindingYourVoiceScreenState
       seedId: seed.id,
       name: seed.word,
       mark: seed.mark.symbol,
-      expression: seed.meaning,
-      resonance: seed.feeling,
+      // The Seed describes where the Voice begins. It must not be stored as
+      // earned expression or resonance, otherwise a brand-new Voice would
+      // incorrectly skip the Seed stage of its lifecycle.
+      expression: null,
+      resonance: null,
       createdAt: now,
     );
 
