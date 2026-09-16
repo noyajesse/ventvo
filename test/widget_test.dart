@@ -5,7 +5,7 @@ import 'package:ventvo/main.dart';
 import 'package:ventvo/features/ventvo_voice/models/ventvo_voice.dart';
 import 'package:ventvo/features/ventvo_voice/providers/voice_provider.dart';
 
-class _EmptyVoiceNotifier extends AsyncNotifier<VentvoVoice?> {
+class _EmptyVoiceNotifier extends VentvoVoiceNotifier {
   @override
   Future<VentvoVoice?> build() async => null;
 }
