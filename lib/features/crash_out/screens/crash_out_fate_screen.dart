@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/crash_out.dart';
 import '../providers/crash_out_provider.dart';
-import 'crash_out_resonance_screen.dart';
 import '../../ventvo_voice/screens/create_vent_screen.dart';
 import '../../ventvo_voice/screens/voice_space_screen.dart';
 
@@ -55,15 +54,6 @@ class CrashOutFateScreen extends ConsumerWidget {
     );
   }
 
-  void _findPeople(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => CrashOutResonanceScreen(crashOut: crashOut),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final canTurnIntoVent =
@@ -107,22 +97,6 @@ class CrashOutFateScreen extends ConsumerWidget {
                   child: ElevatedButton(
                     onPressed: () => _turnIntoVent(context),
                     child: const Text('Turn into a Vent', style: TextStyle(fontSize: 17)),
-                  ),
-                ),
-                const SizedBox(height: 14),
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: OutlinedButton(
-                    onPressed: () => _findPeople(context),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      side: const BorderSide(color: Colors.white24),
-                    ),
-                    child: const Text(
-                      'Find people who understand',
-                      style: TextStyle(fontSize: 17),
-                    ),
                   ),
                 ),
                 const SizedBox(height: 14),
