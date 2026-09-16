@@ -2,14 +2,20 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:ventvo/main.dart';
+import 'package:ventvo/features/ventvo_voice/providers/voice_provider.dart';
 
 void main() {
   testWidgets('Ventvo onboarding smoke test', (WidgetTester tester) async {
-    // Start the app using the same ProviderScope configuration used by the
-    // real application.
+    // The smoke test covers the new-user onboarding path, so explicitly
+    // provide an empty Voice state instead of reading device persistence.
     await tester.pumpWidget(
-      const ProviderScope(
-        child: VentvoApp(),
+      ProviderScope(
+        overrides: [
+          ventvoVoiceProvider.overrideWithValue(
+            const AsyncData(null),
+          ),
+        ],
+        child: const VentvoApp(),
       ),
     );
 
