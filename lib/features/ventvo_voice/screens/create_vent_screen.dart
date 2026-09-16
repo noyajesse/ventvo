@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/theme/ventvo_colors.dart';
 import '../../crash_out/providers/crash_out_provider.dart';
 import '../../spaces/models/space.dart';
 import '../../spaces/providers/space_provider.dart';
@@ -111,88 +112,148 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     final voice = ref.watch(ventvoVoiceProvider).asData?.value;
-    final canRelease = selectedMode != null && controller.text.trim().length >= 3;
+    final canRelease =
+        selectedMode != null && controller.text.trim().length >= 3;
     final voiceIdentity = [
-      if (voice?.name != null && voice!.name!.trim().isNotEmpty) voice.name!.trim(),
-      if (voice?.mark != null && voice!.mark!.trim().isNotEmpty) voice.mark!.trim(),
+      if (voice?.mark != null && voice!.mark!.trim().isNotEmpty)
+        voice.mark!.trim(),
+      if (voice?.name != null && voice!.name!.trim().isNotEmpty)
+        voice.name!.trim(),
     ].join('  ');
 
     return Scaffold(
-      backgroundColor: const Color(0xFF111111),
+      backgroundColor: VentvoColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF111111),
+        backgroundColor: VentvoColors.background,
         elevation: 0,
+        titleSpacing: 22,
         title: Text(
           isFromCrashOut ? 'Turn into a Vent' : 'Release a Moment',
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
         ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 35),
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(22, 18, 22, 40),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                isFromCrashOut ? 'Let this moment become a Vent.' : 'Release a Moment',
-                style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+                isFromCrashOut
+                    ? 'Let this moment become a Vent.'
+                    : 'Give the moment somewhere to exist.',
+                style: textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  height: 1.2,
+                ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               Text(
                 voiceIdentity.isEmpty ? 'Your Voice' : voiceIdentity,
-                style: const TextStyle(color: Colors.white70, fontSize: 18),
+                style: textTheme.bodyMedium?.copyWith(
+                  color: VentvoColors.textMuted,
+                ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'This Vent becomes part of your Voice journey.',
-                style: TextStyle(color: Colors.white38, fontSize: 13, height: 1.4),
+                style: textTheme.bodySmall?.copyWith(
+                  color: VentvoColors.textMuted,
+                  height: 1.4,
+                ),
               ),
-              const SizedBox(height: 30),
-              TextField(
-                controller: controller,
-                maxLines: 7,
-                style: const TextStyle(color: Colors.white, fontSize: 17, height: 1.5),
-                decoration: InputDecoration(
-                  hintText: 'What wants to be heard?',
-                  hintStyle: const TextStyle(color: Colors.white38),
-                  filled: true,
-                  fillColor: Colors.white10,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(22),
-                    borderSide: BorderSide.none,
+              const SizedBox(height: 26),
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: VentvoColors.surface,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: VentvoColors.border),
+                ),
+                child: TextField(
+                  controller: controller,
+                  maxLines: 8,
+                  minLines: 6,
+                  textCapitalization: TextCapitalization.sentences,
+                  style: textTheme.bodyLarge?.copyWith(
+                    color: VentvoColors.textPrimary,
+                    height: 1.5,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'What wants to be heard?',
+                    hintStyle: textTheme.bodyLarge?.copyWith(
+                      color: VentvoColors.textMuted,
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.all(20),
                   ),
                 ),
               ),
-              const SizedBox(height: 35),
-              const Text(
+              const SizedBox(height: 30),
+              Text(
                 'Choose how this Vent can be held',
-                style: TextStyle(color: Colors.white, fontSize: 19, fontWeight: FontWeight.bold),
+                style: textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-              const SizedBox(height: 8),
-              const Text(
-                'You can choose between being heard or opening the experience to discussion.',
-                style: TextStyle(color: Colors.white54, fontSize: 14, height: 1.4),
+              const SizedBox(height: 7),
+              Text(
+                'You decide whether this moment needs presence or conversation.',
+                style: textTheme.bodySmall?.copyWith(
+                  color: VentvoColors.textMuted,
+                  height: 1.45,
+                ),
               ),
-              const SizedBox(height: 18),
+              const SizedBox(height: 14),
               _spaceOption(
                 mode: SpaceMode.justListen,
                 title: 'Just Listen',
                 description: 'I want to be heard without opening a discussion.',
+                icon: Icons.hearing_outlined,
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 10),
               _spaceOption(
                 mode: SpaceMode.openDiscussion,
                 title: 'Open Discussion',
                 description: 'I am open to other Voices sharing perspectives.',
+                icon: Icons.forum_outlined,
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 30),
               SizedBox(
                 width: double.infinity,
-                height: 55,
+                height: 56,
                 child: ElevatedButton(
                   onPressed: canRelease ? _releaseVent : null,
-                  child: Text(isFromCrashOut ? 'Release as Vent' : 'Release Moment'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: VentvoColors.buttonBlue,
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: VentvoColors.surface,
+                    disabledForegroundColor: VentvoColors.textMuted,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                  ),
+                  child: Text(
+                    isFromCrashOut ? 'Release as Vent' : 'Release Moment',
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Center(
+                child: Text(
+                  'You can choose how people meet this moment.',
+                  textAlign: TextAlign.center,
+                  style: textTheme.bodySmall?.copyWith(
+                    color: VentvoColors.textMuted,
+                  ),
                 ),
               ),
             ],
@@ -206,6 +267,7 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
     required SpaceMode mode,
     required String title,
     required String description,
+    required IconData icon,
   }) {
     final isSelected = selectedMode == mode;
 
@@ -213,24 +275,82 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
       button: true,
       selected: isSelected,
       label: '$title. $description',
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () => setState(() => selectedMode = mode),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: isSelected ? Colors.white24 : Colors.transparent,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: isSelected ? Colors.white : Colors.white24),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 6),
-              Text(description, style: const TextStyle(color: Colors.white70, fontSize: 14, height: 1.4)),
-            ],
+      child: Material(
+        color: isSelected ? VentvoColors.primary.withValues(alpha: 0.08) : VentvoColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: () => setState(() => selectedMode = mode),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            width: double.infinity,
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isSelected
+                    ? VentvoColors.primary.withValues(alpha: 0.65)
+                    : VentvoColors.border,
+                width: isSelected ? 1.3 : 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isSelected
+                        ? VentvoColors.primary.withValues(alpha: 0.12)
+                        : VentvoColors.background,
+                  ),
+                  alignment: Alignment.center,
+                  child: Icon(
+                    icon,
+                    size: 20,
+                    color: isSelected
+                        ? VentvoColors.primary
+                        : VentvoColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          color: VentvoColors.textPrimary,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        description,
+                        style: const TextStyle(
+                          color: VentvoColors.textMuted,
+                          fontSize: 12,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Icon(
+                  isSelected
+                      ? Icons.check_circle_rounded
+                      : Icons.radio_button_unchecked_rounded,
+                  color: isSelected
+                      ? VentvoColors.primary
+                      : VentvoColors.textMuted,
+                  size: 21,
+                ),
+              ],
+            ),
           ),
         ),
       ),
