@@ -133,23 +133,35 @@ class ResonanceMapDetailScreen extends ConsumerStatefulWidget {
 
 class _ResonanceMapDetailScreenState extends ConsumerState<ResonanceMapDetailScreen> {
   String? _selectedId;
+  late Future<List<ResonanceMapExperience>> _experiencesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _experiencesFuture = _resolveExperiences();
+  }
+
+  Future<List<ResonanceMapExperience>> _resolveExperiences() {
+    final spaces = ref.read(spaceProvider).asData?.value ?? const <Space>[];
+    final spacesById = {for (final space in spaces) space.id: space};
+    final resolver = ref.read(resonanceMapExperienceResolverProvider);
+
+    return resolver.resolve(
+      experienceIds: widget.map.experienceIds,
+      ventsById: widget.ventsById,
+      spacesById: spacesById,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final spaces = ref.watch(spaceProvider).asData?.value ?? const <Space>[];
-    final spacesById = {for (final space in spaces) space.id: space};
-    final resolver = ref.watch(resonanceMapExperienceResolverProvider);
     final threads = ref.watch(resonanceMapThreadsProvider(widget.map.id));
 
     return Scaffold(
       backgroundColor: VentvoColors.background,
       appBar: AppBar(title: const Text('Map'), centerTitle: true),
       body: FutureBuilder<List<ResonanceMapExperience>>(
-        future: resolver.resolve(
-          experienceIds: widget.map.experienceIds,
-          ventsById: widget.ventsById,
-          spacesById: spacesById,
-        ),
+        future: _experiencesFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator(strokeWidth: 1.5));
@@ -384,14 +396,22 @@ class _InteractiveConstellation extends StatelessWidget {
             for (final id in ids)
               if (positions[id] != null)
                 Positioned(
-                  left: positions[id]!.dx - 31,
-                  top: positions[id]!.dy - 31,
-                  width: 62,
-                  height: 62,
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => onSelected(id),
-                    child: _ConstellationNode(label: labels[id] ?? _fallbackLabel(id), selected: selectedId == id),
+                  left: positions[id]!.dx - 36,
+                  top: positions[id]!.dy - 36,
+                  width: 72,
+                  height: 72,
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: InkWell(
+                      customBorder: const CircleBorder(),
+                      splashColor: VentvoColors.primary.withValues(alpha: 0.08),
+                      highlightColor: VentvoColors.primary.withValues(alpha: 0.04),
+                      onTap: () => onSelected(id),
+                      child: _ConstellationNode(
+                        label: labels[id] ?? _fallbackLabel(id),
+                        selected: selectedId == id,
+                      ),
+                    ),
                   ),
                 ),
           ],
