@@ -11,8 +11,9 @@ void main() {
     await container.read(resonanceDemoBootstrapProvider.future);
 
     final engine = container.read(resonanceEngineProvider);
+    final mapEngine = container.read(resonanceMapEngineProvider);
     final threads = await engine.getThreads();
-    final maps = await engine.getMaps();
+    final maps = await mapEngine.getMaps();
 
     expect(threads, hasLength(1));
     expect(threads.single.experienceIds, containsAll(<String>[
@@ -40,7 +41,8 @@ void main() {
     await container.read(resonanceDemoBootstrapProvider.future);
 
     final engine = container.read(resonanceEngineProvider);
+    final mapEngine = container.read(resonanceMapEngineProvider);
     expect(await engine.getThreads(), hasLength(1));
-    expect(await engine.getMaps(), hasLength(1));
+    expect(await mapEngine.getMaps(), hasLength(1));
   });
 }
