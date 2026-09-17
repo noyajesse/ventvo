@@ -18,7 +18,7 @@ class ResonanceGatheringCandidate {
     required this.connections,
   });
 
-  bool containsExperience(String experienceId) {
-    return experienceIds.contains(experienceId);
+  bool containsExperience(Object experience) {
+    return experienceIds.contains(experience is String ? experience : null);
   }
 }
