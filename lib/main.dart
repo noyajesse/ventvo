@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
-import 'features/auth/welcome_screen.dart';
 import 'core/theme/app_theme.dart';
+import 'features/auth/welcome_screen.dart';
 
-void main() {
-  runApp(const VentvoApp());
-}
+void main() => runApp(const VentvoApp());
 
 class VentvoApp extends StatelessWidget {
   const VentvoApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Ventvo',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
-      home: const WelcomeScreen(),
-    );
-  }
+  Widget build(BuildContext context) => MaterialApp(
+        title: 'Ventvo',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.darkTheme,
+        home: const WelcomeScreen(),
+      );
 }
