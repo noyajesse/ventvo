@@ -192,14 +192,14 @@ class _ResonanceMapDetailScreenState extends ConsumerState<ResonanceMapDetailScr
                   onSelected: (id) => setState(() => _selectedId = id),
                 ),
               ),
-              const SizedBox(height: 18),
+              const SizedBox(height: 14),
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 220),
                 child: selected == null
-                    ? const _MapPrompt(key: ValueKey('prompt'))
+                    ? const SizedBox.shrink(key: ValueKey('empty-selection'))
                     : _SelectedExperience(key: ValueKey(selected.id), experience: selected),
               ),
-              const SizedBox(height: 22),
+              const SizedBox(height: 18),
               threads.when(
                 loading: () => const SizedBox.shrink(),
                 error: (_, _) => const SizedBox.shrink(),
@@ -223,29 +223,6 @@ class _ResonanceMapDetailScreenState extends ConsumerState<ResonanceMapDetailScr
   }
 }
 
-class _MapPrompt extends StatelessWidget {
-  const _MapPrompt({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8),
-      child: Row(
-        children: [
-          Icon(Icons.touch_app_outlined, size: 17, color: VentvoColors.textMuted),
-          SizedBox(width: 9),
-          Expanded(
-            child: Text(
-              'Touch an experience to see where it leads.',
-              style: TextStyle(color: VentvoColors.textMuted, fontSize: 12, height: 1.5),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _SelectedExperience extends StatelessWidget {
   final ResonanceMapExperience experience;
 
@@ -254,7 +231,7 @@ class _SelectedExperience extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 15, 16, 15),
+      padding: const EdgeInsets.fromLTRB(16, 15, 16, 13),
       decoration: BoxDecoration(
         color: VentvoColors.surfaceElevated,
         borderRadius: BorderRadius.circular(20),
@@ -263,9 +240,19 @@ class _SelectedExperience extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            experience.voiceMark,
-            style: const TextStyle(color: VentvoColors.textSecondary, fontSize: 11, fontWeight: FontWeight.w600),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  experience.voiceMark,
+                  style: const TextStyle(color: VentvoColors.textSecondary, fontSize: 11, fontWeight: FontWeight.w600),
+                ),
+              ),
+              const Text(
+                'EXPERIENCE',
+                style: TextStyle(color: VentvoColors.textMuted, fontSize: 8, fontWeight: FontWeight.w700, letterSpacing: 1.1),
+              ),
+            ],
           ),
           const SizedBox(height: 9),
           Text(
@@ -275,7 +262,7 @@ class _SelectedExperience extends StatelessWidget {
             style: const TextStyle(color: VentvoColors.textPrimary, fontSize: 14, height: 1.55),
           ),
           if (experience.space != null) ...[
-            const SizedBox(height: 5),
+            const SizedBox(height: 4),
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
@@ -302,7 +289,7 @@ class _MapThreadsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'THREADS WITHIN THIS MAP',
+          'PATHS THROUGH THIS LANDSCAPE',
           style: TextStyle(color: VentvoColors.textMuted, fontSize: 8, fontWeight: FontWeight.w700, letterSpacing: 1.4),
         ),
         const SizedBox(height: 10),
@@ -427,9 +414,10 @@ class _ConstellationNode extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
-            width: selected ? 25 : 17,
-            height: selected ? 25 : 17,
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOut,
+            width: selected ? 27 : 17,
+            height: selected ? 27 : 17,
             decoration: BoxDecoration(
               color: selected ? VentvoColors.primary : VentvoColors.surfaceElevated,
               shape: BoxShape.circle,
@@ -438,21 +426,24 @@ class _ConstellationNode extends StatelessWidget {
                 width: selected ? 2 : 1,
               ),
               boxShadow: selected
-                  ? [BoxShadow(color: VentvoColors.primary.withValues(alpha: 0.28), blurRadius: 18, spreadRadius: 3)]
+                  ? [BoxShadow(color: VentvoColors.primary.withValues(alpha: 0.24), blurRadius: 20, spreadRadius: 4)]
                   : null,
             ),
           ),
           const SizedBox(height: 5),
           if (label.isNotEmpty)
-            Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
+            AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 180),
               style: TextStyle(
                 color: selected ? VentvoColors.textPrimary : VentvoColors.textMuted,
-                fontSize: 9,
+                fontSize: selected ? 9.5 : 9,
                 fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+              ),
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
               ),
             ),
         ],
@@ -498,6 +489,13 @@ class _ConstellationPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+
+    final atmosphere = Paint()
+      ..color = VentvoColors.primary.withValues(alpha: 0.035)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 55);
+    canvas.drawCircle(center, math.min(size.width, size.height) * 0.27, atmosphere);
+
     for (final connection in map.connections) {
       final start = positions[connection.sourceId];
       final end = positions[connection.targetId];
@@ -506,20 +504,34 @@ class _ConstellationPainter extends CustomPainter {
       final selected = selectedId != null && (connection.sourceId == selectedId || connection.targetId == selectedId);
       final paint = Paint()
         ..color = selected
-            ? VentvoColors.primary.withValues(alpha: 0.58)
-            : VentvoColors.secondary.withValues(alpha: 0.16)
-        ..strokeWidth = selected ? 1.4 : 0.9
+            ? VentvoColors.primary.withValues(alpha: 0.62)
+            : VentvoColors.secondary.withValues(alpha: 0.15)
+        ..strokeWidth = selected ? 1.5 : 0.85
         ..style = PaintingStyle.stroke;
 
       canvas.drawLine(start, end, paint);
     }
 
-    final center = positions[map.experienceIds.isEmpty ? '' : map.experienceIds.first];
-    if (center != null) {
+    final centerId = map.experienceIds.isEmpty ? '' : map.experienceIds.first;
+    final centerNode = positions[centerId];
+    if (centerNode != null) {
       final glow = Paint()
-        ..color = VentvoColors.primary.withValues(alpha: 0.07)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 28);
-      canvas.drawCircle(center, 34, glow);
+        ..color = VentvoColors.primary.withValues(alpha: 0.08)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 26);
+      canvas.drawCircle(centerNode, 30, glow);
+    }
+
+    final ambientDots = <Offset>[
+      Offset(size.width * 0.16, size.height * 0.22),
+      Offset(size.width * 0.78, size.height * 0.18),
+      Offset(size.width * 0.86, size.height * 0.70),
+      Offset(size.width * 0.20, size.height * 0.78),
+      Offset(size.width * 0.62, size.height * 0.86),
+      Offset(size.width * 0.38, size.height * 0.14),
+    ];
+    final dotPaint = Paint()..color = VentvoColors.textMuted.withValues(alpha: 0.10);
+    for (final dot in ambientDots) {
+      canvas.drawCircle(dot, 1.2, dotPaint);
     }
   }
 
