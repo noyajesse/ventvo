@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/motion/ventvo_motion.dart';
 import '../../../core/theme/ventvo_colors.dart';
 import '../../ventvo_voice/models/vent.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
@@ -21,19 +20,9 @@ class SpaceScreen extends ConsumerStatefulWidget {
   const SpaceScreen({super.key, required this.space});
 
   static Future<void> open(BuildContext context, Space space) {
-    return Navigator.of(context).push(
-      PageRouteBuilder<void>(
-        transitionDuration: VentvoMotion.immersive,
-        reverseTransitionDuration: VentvoMotion.immersive,
-        pageBuilder: (_, animation, _) {
-          return FadeTransition(
-            opacity: CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeOutCubic,
-            ),
-            child: SpaceScreen(space: space),
-          );
-        },
+    return Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => SpaceScreen(space: space),
       ),
     );
   }
@@ -412,19 +401,16 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
           ],
         ),
         const SizedBox(height: 25),
-        Hero(
-          tag: 'moment-${vent.id}',
-          child: Material(
-            color: Colors.transparent,
-            child: Text(
-              vent.content,
-              style: const TextStyle(
-                color: VentvoColors.textPrimary,
-                fontSize: 29,
-                height: 1.43,
-                fontWeight: FontWeight.w500,
-                letterSpacing: -0.45,
-              ),
+        Material(
+          color: Colors.transparent,
+          child: Text(
+            vent.content,
+            style: const TextStyle(
+              color: VentvoColors.textPrimary,
+              fontSize: 29,
+              height: 1.43,
+              fontWeight: FontWeight.w500,
+              letterSpacing: -0.45,
             ),
           ),
         ),
