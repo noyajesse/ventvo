@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/ventvo_colors.dart';
 import '../providers/resonance_maps_provider.dart';
 import '../providers/resonance_threads_provider.dart';
+import 'resonance_gatherings_screen.dart';
 import 'resonance_maps_screen.dart';
 import 'resonance_threads_screen.dart';
 
@@ -58,9 +59,15 @@ class VoiceResonanceHubScreen extends ConsumerWidget {
             ),
             onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ResonanceMapsScreen())),
           ),
+          const SizedBox(height: 10),
+          const _Entry(
+            icon: Icons.forum_outlined,
+            title: 'Gatherings',
+            subtitle: 'Meet where connected experiences converge',
+          ),
           const SizedBox(height: 28),
           const Text(
-            'Threads show one connected path. Maps show the wider landscape around those connections.',
+            'Threads show one connected path. Maps show the wider landscape. Gatherings are opportunities for connected Voices to meet.',
             style: TextStyle(color: VentvoColors.textMuted, fontSize: 12, height: 1.55),
           ),
         ],
@@ -70,18 +77,18 @@ class VoiceResonanceHubScreen extends ConsumerWidget {
 }
 
 class _Entry extends StatelessWidget {
-  const _Entry({required this.icon, required this.title, required this.subtitle, required this.onTap});
+  const _Entry({required this.icon, required this.title, required this.subtitle, this.onTap});
   final IconData icon;
   final String title;
   final String subtitle;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) => Material(
         color: VentvoColors.surface,
         borderRadius: BorderRadius.circular(22),
         child: InkWell(
-          onTap: onTap,
+          onTap: onTap ?? () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ResonanceGatheringsScreen())),
           borderRadius: BorderRadius.circular(22),
           child: Padding(
             padding: const EdgeInsets.all(20),
