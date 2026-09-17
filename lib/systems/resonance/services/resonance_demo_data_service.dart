@@ -137,13 +137,14 @@ class ResonanceDemoDataService {
       type: ResonanceConnectionType.perspective,
       strength: 0.72,
     );
-    await connectionService.accept(third);
+    final acceptedThird = await connectionService.accept(third);
+    if (acceptedThird == null) return;
 
     await threadService.extendThread(
       thread: thread,
       experienceId: 'demo_mira_moment',
       voiceMark: '◇ Mira',
-      connection: third,
+      connection: acceptedThird,
     );
   }
 }
