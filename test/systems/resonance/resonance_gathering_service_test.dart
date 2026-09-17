@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../lib/systems/resonance/models/resonance_connection.dart';
-import '../../../lib/systems/resonance/models/resonance_map.dart';
-import '../../../lib/systems/resonance/services/resonance_gathering_service.dart';
+import 'package:ventvo/systems/resonance/models/resonance_connection.dart';
+import 'package:ventvo/systems/resonance/models/resonance_map.dart';
+import 'package:ventvo/systems/resonance/services/resonance_gathering_service.dart';
 
 void main() {
   final now = DateTime(2026, 9, 17);
