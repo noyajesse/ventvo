@@ -19,6 +19,9 @@ class ResonanceGatheringCandidate {
   });
 
   bool containsExperience(Object experience) {
-    return experienceIds.contains(experience is String ? experience : null);
+    final experienceId = experience is String
+        ? experience
+        : (experience as dynamic).id as String;
+    return experienceIds.contains(experienceId);
   }
 }
