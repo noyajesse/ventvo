@@ -6,6 +6,7 @@ import 'core/theme/ventvo_colors.dart';
 import 'features/onboarding/welcome_screen.dart';
 import 'features/ventvo_voice/providers/voice_provider.dart';
 import 'features/ventvo_voice/screens/voice_space_screen.dart';
+import 'systems/resonance/services/resonance_demo_data_service.dart';
 
 void main() {
   runApp(
@@ -34,11 +35,20 @@ class AppEntryGate extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final bootstrap = ref.watch(resonanceDemoBootstrapProvider);
     final voice = ref.watch(ventvoVoiceProvider);
 
+    return bootstrap.when(
+      loading: () => const _AppLoadingScreen(),
+      error: (_, _) => _voiceEntry(voice),
+      data: (_) => _voiceEntry(voice),
+    );
+  }
+
+  Widget _voiceEntry(AsyncValue<dynamic> voice) {
     return voice.when(
       loading: () => const _AppLoadingScreen(),
-      error: (error, stackTrace) => const WelcomeScreen(),
+      error: (_, _) => const WelcomeScreen(),
       data: (value) {
         if (value == null) return const WelcomeScreen();
         return const VoiceSpaceScreen();
