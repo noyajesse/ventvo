@@ -1,11 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ventvo/systems/resonance/models/resonance_connection.dart';
-import 'package:ventvo/systems/resonance/models/resonance_gathering_candidate.dart';
 import 'package:ventvo/systems/resonance/models/resonance_map.dart';
 import 'package:ventvo/systems/resonance/services/resonance_gathering_service.dart';
 
-const now = DateTime(2026, 1, 1);
+final now = DateTime(2026, 1, 1);
 
 ResonanceConnection connection({
   required String id,
@@ -22,7 +21,6 @@ ResonanceConnection connection({
     strength: strength,
     state: state,
     createdAt: now,
-    updatedAt: now,
   );
 }
 
