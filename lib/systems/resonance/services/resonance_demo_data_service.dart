@@ -15,7 +15,7 @@ import '../providers/resonance_provider.dart';
 class ResonanceDemoDataService {
   static final DateTime _createdAt = DateTime(2026, 8, 27, 12, 0);
 
-  static const List<Vent> vents = [
+  static final List<Vent> vents = [
     Vent(
       id: 'demo_nera_moment',
       content: 'I thought starting over would make me feel free. Nobody tells you how invisible a new beginning can feel.',
@@ -50,7 +50,7 @@ class ResonanceDemoDataService {
     ),
   ];
 
-  static const List<Space> spaces = [
+  static final List<Space> spaces = [
     Space(
       id: 'demo_nera_space',
       mode: SpaceMode.justListen,
@@ -83,7 +83,7 @@ class ResonanceDemoDataService {
 
   final Ref ref;
 
-  const ResonanceDemoDataService(this.ref);
+  ResonanceDemoDataService(this.ref);
 
   Future<void> initialize() async {
     final engine = ref.read(resonanceEngineProvider);
