@@ -44,24 +44,15 @@ class _VentCardState extends ConsumerState<VentCard> {
       loading: () => _buildMoment(context, null),
       error: (_, _) => _buildMoment(context, null),
       data: (spaces) {
-        final space = spaces
-            .where((item) => item.id == widget.vent.spaceId)
-            .firstOrNull;
-
+        final space = spaces.where((item) => item.id == widget.vent.spaceId).firstOrNull;
         return _buildMoment(context, space);
       },
     );
   }
 
-  Widget _buildMoment(
-    BuildContext context,
-    Space? space,
-  ) {
+  Widget _buildMoment(BuildContext context, Space? space) {
     final text = widget.vent.content.trim();
-
     final isFirst = widget.index == 0;
-    final isShort = text.length < 90;
-    final isLong = text.length > 180;
 
     return AnimatedScale(
       scale: pressed ? 0.985 : 1,
@@ -69,77 +60,38 @@ class _VentCardState extends ConsumerState<VentCard> {
       curve: Curves.easeOutCubic,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTapDown: space == null
-            ? null
-            : (_) {
-                setState(() {
-                  pressed = true;
-                });
-              },
-        onTapCancel: space == null
-            ? null
-            : () {
-                setState(() {
-                  pressed = false;
-                });
-              },
+        onTapDown: space == null ? null : (_) => setState(() => pressed = true),
+        onTapCancel: space == null ? null : () => setState(() => pressed = false),
         onTapUp: space == null
             ? null
             : (_) async {
-                setState(() {
-                  pressed = false;
-                });
-
-                await SpaceScreen.open(
-                  context,
-                  space,
-                );
+                setState(() => pressed = false);
+                await SpaceScreen.open(context, space);
               },
         child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            8,
-            isFirst ? 22 : 34,
-            8,
-            isShort
-                ? 34
-                : isLong
-                    ? 48
-                    : 40,
-          ),
+          padding: EdgeInsets.fromLTRB(8, isFirst ? 18 : 22, 8, 22),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _header(),
-              SizedBox(height: isFirst ? 18 : 16),
-              Hero(
-                tag: 'moment-${widget.vent.id}',
-                child: Material(
-                  color: Colors.transparent,
-                  child: Text(
-                    text,
-                    maxLines: isShort ? 4 : 6,
-                    overflow: TextOverflow.fade,
-                    style: TextStyle(
-                      color: VentvoColors.textPrimary,
-                      fontSize: isFirst
-                          ? 27
-                          : isShort
-                              ? 22
-                              : 24,
-                      height: 1.45,
-                      fontWeight: isFirst
-                          ? FontWeight.w500
-                          : FontWeight.w400,
-                      letterSpacing: -0.25,
-                    ),
-                  ),
+              const SizedBox(height: 12),
+              Text(
+                text,
+                maxLines: 7,
+                overflow: TextOverflow.fade,
+                style: const TextStyle(
+                  color: VentvoColors.textPrimary,
+                  fontSize: 20,
+                  height: 1.48,
+                  fontWeight: FontWeight.w400,
+                  letterSpacing: -0.12,
                 ),
               ),
               if (space != null) ...[
-                const SizedBox(height: 20),
-                _spaceHint(),
+                const SizedBox(height: 14),
+                _spaceHint(space),
               ],
-              const SizedBox(height: 28),
+              const SizedBox(height: 20),
               if (!isFirst) _subtleDivider(),
             ],
           ),
@@ -186,12 +138,11 @@ class _VentCardState extends ConsumerState<VentCard> {
             itemBuilder: (_) => [
               PopupMenuItem(
                 value: 'toggle',
-                child: Text(
-                  widget.vent.isActive ? 'Archive Vent' : 'Restore Vent',
-                ),
+                child: Text(widget.vent.isActive ? 'Archive Vent' : 'Restore Vent'),
               ),
             ],
           ),
+        const SizedBox(width: 8),
         Text(
           _timeAgo(widget.vent.createdAt),
           style: const TextStyle(
@@ -203,7 +154,7 @@ class _VentCardState extends ConsumerState<VentCard> {
     );
   }
 
-  Widget _spaceHint() {
+  Widget _spaceHint(Space space) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -216,14 +167,20 @@ class _VentCardState extends ConsumerState<VentCard> {
           ),
         ),
         const SizedBox(width: 9),
-        const Text(
-          'Space',
-          style: TextStyle(
+        Text(
+          space.modeLabel,
+          style: const TextStyle(
             color: VentvoColors.textMuted,
             fontSize: 10,
             fontWeight: FontWeight.w500,
             letterSpacing: 0.3,
           ),
+        ),
+        const SizedBox(width: 7),
+        const Icon(
+          Icons.arrow_forward_rounded,
+          size: 13,
+          color: VentvoColors.textMuted,
         ),
       ],
     );
