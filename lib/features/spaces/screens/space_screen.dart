@@ -390,7 +390,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
             ],
             const Spacer(),
             const Text(
-              'VENT',
+              'MOMENT',
               style: TextStyle(
                 color: VentvoColors.textMuted,
                 fontSize: 8,
@@ -435,7 +435,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
         ),
         const SizedBox(height: 6),
         const Text(
-          'Voices leaving something of themselves with this Vent.',
+          'Voices leaving something of themselves with this Moment.',
           style: TextStyle(color: VentvoColors.textMuted, fontSize: 11),
         ),
         const SizedBox(height: 18),
