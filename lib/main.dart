@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/ventvo_colors.dart';
 import 'features/onboarding/welcome_screen.dart';
+import 'features/feed/screens/feed_screen.dart';
 import 'features/ventvo_voice/providers/voice_provider.dart';
 import 'features/ventvo_voice/screens/voice_space_screen.dart';
 import 'systems/resonance/services/resonance_demo_data_service.dart';
@@ -51,7 +52,7 @@ class AppEntryGate extends ConsumerWidget {
       error: (_, _) => const WelcomeScreen(),
       data: (value) {
         if (value == null) return const WelcomeScreen();
-        return const VoiceSpaceScreen();
+        return const FeedScreen();
       },
     );
   }
