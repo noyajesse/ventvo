@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/ventvo_colors.dart';
+import '../../../systems/resonance/providers/resonance_provider.dart';
 import '../../crash_out/providers/crash_out_provider.dart';
 import '../../spaces/models/space.dart';
 import '../../spaces/providers/space_provider.dart';
-import '../../../systems/resonance/providers/resonance_provider.dart';
+import '../../spaces/screens/space_screen.dart';
 import '../models/vent.dart';
 import '../providers/vent_provider.dart';
 import '../providers/voice_lifecycle_provider.dart';
@@ -107,7 +108,15 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
       return;
     }
 
-    Navigator.pop(context);
+    // A released Moment should be experienced in its Space immediately.
+    // Replacing the composer keeps the back path returning to the Voice
+    // rather than reopening the composer.
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SpaceScreen(space: space),
+      ),
+    );
   }
 
   @override
@@ -159,7 +168,7 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'This Vent becomes part of your Voice journey.',
+                'This Moment becomes part of your Voice journey.',
                 style: textTheme.bodySmall?.copyWith(
                   color: VentvoColors.textMuted,
                   height: 1.4,
@@ -276,7 +285,9 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
       selected: isSelected,
       label: '$title. $description',
       child: Material(
-        color: isSelected ? VentvoColors.primary.withValues(alpha: 0.08) : VentvoColors.surface,
+        color: isSelected
+            ? VentvoColors.primary.withValues(alpha: 0.08)
+            : VentvoColors.surface,
         borderRadius: BorderRadius.circular(20),
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
