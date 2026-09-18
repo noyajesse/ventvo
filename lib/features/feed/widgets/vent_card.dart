@@ -77,7 +77,7 @@ class _VentCardState extends ConsumerState<VentCard> {
               const SizedBox(height: 12),
               Text(
                 text,
-                maxLines: 7,
+                maxLines: 4,
                 overflow: TextOverflow.fade,
                 style: const TextStyle(
                   color: VentvoColors.textPrimary,
