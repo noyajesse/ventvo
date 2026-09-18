@@ -31,8 +31,12 @@ class FeedNotifier extends AsyncNotifier<List<Vent>> {
       candidateVents: fixtureVents,
     );
 
-    return [...ownVents, ...discovery]
-      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    final discovered = [...ownVents, ...discovery];
+
+    // A new Voice should encounter a real Moment immediately.
+    final result = discovered.isEmpty ? [...fixtureVents] : discovered;
+
+    return result..sort((a, b) => b.createdAt.compareTo(a.createdAt));
   }
 
   void addDiscoveredMoment(Vent vent) {
