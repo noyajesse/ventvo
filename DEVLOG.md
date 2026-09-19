@@ -362,3 +362,23 @@ The existing `DEVLOG.md` on `development` contains historical entries plus an ol
 ## Next Step
 
 Continue with Resonance integration by connecting generated Vent signals to the existing repository/engine boundary. Do not add unrelated features or prematurely implement AI systems.
+
+
+## Find People Who Understand
+
+Date: 2026-09-19
+Branch: development
+
+Completed:
+- Added an independent Find People Who Understand entry in Voice Space.
+- The discovery flow starts from one of the user's own discoverable Vents.
+- Matching is delegated to the shared VentResonanceDiscoveryService and deterministic Resonance engine.
+- All of the user's own Vents are excluded from the candidate set.
+- Results are limited to active, public, approved Vents before they are shown.
+- Added an explicit Find People Who Understand action to the Crash Out fate screen; choosing it is the outward discovery step while the Crash Out itself remains private.
+- Added Crash Out lifecycle tests covering private-by-default, conversion state, and letting go.
+
+Boundary:
+- Find People discovers experiences; it does not create a separate matching system.
+- A private Crash Out is never indexed as a public candidate by this flow.
+- Connection creation remains a Resonance responsibility.
