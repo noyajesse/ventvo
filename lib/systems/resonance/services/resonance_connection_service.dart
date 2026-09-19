@@ -24,6 +24,7 @@ class ResonanceConnectionService {
   Future<ResonanceConnection?> suggestConnection({
     required String sourceId,
     required ResonanceCandidate candidate,
+    String? sourceVoiceId,
   }) async {
     if (candidate.id == sourceId || candidate.score <= 0) return null;
 
@@ -31,6 +32,8 @@ class ResonanceConnectionService {
     return engine.createConnection(
       sourceId: sourceId,
       targetId: candidate.id,
+      sourceVoiceId: sourceVoiceId,
+      targetVoiceId: candidate.voiceId,
       type: type,
       strength: candidate.score.clamp(0.0, 1.0).toDouble(),
     );
