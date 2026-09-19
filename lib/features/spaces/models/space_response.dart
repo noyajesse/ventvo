@@ -3,6 +3,7 @@ class SpaceResponse {
   final String spaceId;
   final String? ventId;
   final String voiceMark;
+  final String? authorVoiceId;
   final String content;
   final DateTime createdAt;
   final bool isMoment;
@@ -13,6 +14,7 @@ class SpaceResponse {
     required this.spaceId,
     this.ventId,
     required this.voiceMark,
+    this.authorVoiceId,
     required this.content,
     required this.createdAt,
     this.isMoment = false,
