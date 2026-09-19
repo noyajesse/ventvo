@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/crash_out.dart';
 import '../providers/crash_out_provider.dart';
-import 'crash_out_resonance_screen.dart';
 import '../../ventvo_voice/screens/create_vent_screen.dart';
 import '../../ventvo_voice/screens/voice_space_screen.dart';
 
