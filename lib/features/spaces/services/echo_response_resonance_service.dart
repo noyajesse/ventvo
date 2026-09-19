@@ -25,6 +25,8 @@ class EchoResponseResonanceService {
     required Space space,
     required Echo echo,
     required String sourceExperienceId,
+    String? sourceVoiceId,
+    String? actorVoiceId,
   }) async {
     if (!space.isOpenDiscussion) return null;
     if (echo.spaceId != space.id) return null;
@@ -33,18 +35,31 @@ class EchoResponseResonanceService {
     final echoId = echo.id.trim();
     if (echoId.isEmpty) return null;
 
+    final responderVoiceId = echo.authorVoiceId ?? actorVoiceId;
+    if (responderVoiceId == null || responderVoiceId.trim().isEmpty) {
+      return null;
+    }
+
     final echoExperienceId = 'echo:$echoId';
     final connection = await engine.createConnection(
       sourceId: sourceExperienceId.trim(),
+      sourceVoiceId: sourceVoiceId,
       targetId: echoExperienceId,
+      targetVoiceId: responderVoiceId,
       type: ResonanceConnectionType.response,
       strength: 1,
     );
 
-    final accepted = await connectionService.accept(connection);
+    final accepted = await connectionService.accept(
+      connection,
+      actorVoiceId: responderVoiceId,
+    );
     if (accepted == null) return null;
 
-    final activated = await connectionService.activate(accepted);
+    final activated = await connectionService.activate(
+      accepted,
+      actorVoiceId: responderVoiceId,
+    );
     if (activated == null) return null;
 
     await echoConnectionService.resolveForEcho(echo);
