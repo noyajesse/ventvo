@@ -50,6 +50,16 @@ class ResonanceThreadFormationPolicy {
       );
     }
 
+    final voiceIds = _distinctVoiceIds(
+      experienceId: experienceId,
+      connections: eligible,
+    );
+    if (voiceIds == null || voiceIds.length < minimumMeaningfulConnections + 1) {
+      return const ResonanceThreadFormationDecision.ineligible(
+        ResonanceThreadFormationReason.insufficientVoices,
+      );
+    }
+
     final hasMeaningfulConnection = eligible.any(_isMeaningfulConnectionType);
     if (!hasMeaningfulConnection) {
       return const ResonanceThreadFormationDecision.ineligible(
@@ -81,6 +91,52 @@ class ResonanceThreadFormationPolicy {
     return connection.type == ResonanceConnectionType.sharedExperience ||
         connection.type == ResonanceConnectionType.response ||
         connection.type == ResonanceConnectionType.perspective;
+  }
+
+  Set<String>? _distinctVoiceIds({
+    required String experienceId,
+    required List<ResonanceConnection> connections,
+  }) {
+    String? focalVoiceId;
+    final counterpartVoiceIds = <String>{};
+
+    for (final connection in connections) {
+      final counterpartId = _counterpartId(connection, experienceId);
+      if (counterpartId == null) continue;
+
+      final counterpartVoiceId = _counterpartVoiceId(
+        connection,
+        experienceId,
+      );
+      if (counterpartVoiceId == null || counterpartVoiceId.trim().isEmpty) {
+        return null;
+      }
+
+      if (counterpartId == experienceId) {
+        focalVoiceId ??= counterpartVoiceId;
+      } else {
+        counterpartVoiceIds.add(counterpartVoiceId);
+      }
+    }
+
+    if (focalVoiceId == null || counterpartVoiceIds.length < 2) {
+      return null;
+    }
+
+    return {focalVoiceId, ...counterpartVoiceIds};
+  }
+
+  String? _counterpartVoiceId(
+    ResonanceConnection connection,
+    String experienceId,
+  ) {
+    if (connection.sourceId == experienceId) {
+      return connection.targetVoiceId;
+    }
+    if (connection.targetId == experienceId) {
+      return connection.sourceVoiceId;
+    }
+    return null;
   }
 
   String? _counterpartId(
@@ -126,6 +182,7 @@ enum ResonanceThreadFormationReason {
   privacyRestricted,
   safetyRestricted,
   insufficientExperiences,
+  insufficientVoices,
   similarityOnly,
   insufficientResonance,
 }
