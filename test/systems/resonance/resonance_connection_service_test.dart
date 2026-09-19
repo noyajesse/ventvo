@@ -151,7 +151,7 @@ void main() {
   test('rejects invalid lifecycle transitions', () async {
     final engine = FakeResonanceEngine();
     final service = ResonanceConnectionService(engine: engine);
-    final updated = await service.activate(_connection());
+    final updated = await service.activate(_connection(), actorVoiceId: 'voice-1');
     expect(updated, isNull);
     expect(engine.updatedConnection, isNull);
   });
