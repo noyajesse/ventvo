@@ -8,6 +8,7 @@ import '../../../systems/resonance/providers/resonance_provider.dart';
 import '../../ventvo_voice/models/vent.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
 import 'resonance_relationship_screen.dart';
+import 'resonance_conversation_screen.dart';
 
 class ResonanceConnectionsScreen extends ConsumerStatefulWidget {
   const ResonanceConnectionsScreen({super.key});
@@ -72,13 +73,18 @@ class _ResonanceConnectionsScreenState
       score: view.connection.strength,
     );
 
+    final screen = view.connection.state == ResonanceConnectionState.active
+        ? ResonanceConversationScreen(
+            candidate: candidate,
+            connection: view.connection,
+          )
+        : ResonanceRelationshipScreen(
+            candidate: candidate,
+            connection: view.connection,
+          );
+
     Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => ResonanceRelationshipScreen(
-          candidate: candidate,
-          connection: view.connection,
-        ),
-      ),
+      MaterialPageRoute(builder: (_) => screen),
     );
   }
 
