@@ -25,6 +25,7 @@ void main() {
 
     final conversation = await service.openForConnection(
       connection: _activeConnection(),
+      participantVoiceId: 'voice-1',
       sourceVoiceMark: 'VAELOR ◇',
       targetVoiceMark: 'NYVEN ∿',
     );
@@ -48,6 +49,7 @@ void main() {
 
     final conversation = await service.openForConnection(
       connection: connection,
+      participantVoiceId: 'voice-1',
       sourceVoiceMark: 'VAELOR ◇',
       targetVoiceMark: 'NYVEN ∿',
     );
@@ -61,6 +63,7 @@ void main() {
     );
     final conversation = await service.openForConnection(
       connection: _activeConnection(),
+      participantVoiceId: 'voice-1',
       sourceVoiceMark: 'VAELOR ◇',
       targetVoiceMark: 'NYVEN ∿',
     );
@@ -87,6 +90,7 @@ void main() {
     );
     final conversation = await service.openForConnection(
       connection: _activeConnection(),
+      participantVoiceId: 'voice-1',
       sourceVoiceMark: 'VAELOR ◇',
       targetVoiceMark: 'NYVEN ∿',
     );
@@ -102,3 +106,41 @@ void main() {
     expect(await service.getMessages(conversation.id), isEmpty);
   });
 }
+
+
+  test('does not open a conversation for a non-participant', () async {
+    final service = ResonanceConversationService(
+      repository: LocalResonanceConversationRepository(),
+    );
+
+    final conversation = await service.openForConnection(
+      connection: _activeConnection(),
+      participantVoiceId: 'voice-3',
+      sourceVoiceMark: 'VAELOR ◇',
+      targetVoiceMark: 'NYVEN ∿',
+    );
+
+    expect(conversation, isNull);
+  });
+
+  test('does not send a message from a non-participant', () async {
+    final service = ResonanceConversationService(
+      repository: LocalResonanceConversationRepository(),
+    );
+    final conversation = await service.openForConnection(
+      connection: _activeConnection(),
+      participantVoiceId: 'voice-1',
+      sourceVoiceMark: 'VAELOR ◇',
+      targetVoiceMark: 'NYVEN ∿',
+    );
+
+    final message = await service.sendMessage(
+      conversation: conversation!,
+      senderVoiceId: 'voice-3',
+      senderVoiceMark: 'OTHER',
+      text: 'This should not be sent.',
+    );
+
+    expect(message, isNull);
+    expect(await service.getMessages(conversation.id), isEmpty);
+  });
