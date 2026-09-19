@@ -58,8 +58,8 @@ class VentStorage {
   Vent? _fromMap(Map<String, dynamic> map) {
     final id = map['id'];
     final content = map['content'];
-    final spaceId = map['spaceId'];
-    final voiceMark = map['voiceMark'];
+    final spaceId = map['spaceId'];    final voiceMark = map['voiceMark'];
+    final ownerVoiceId = map['ownerVoiceId'];
     final voiceName = map['voiceName'];
     final createdAt = map['createdAt'];
 
