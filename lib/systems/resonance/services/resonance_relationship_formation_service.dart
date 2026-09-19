@@ -60,7 +60,7 @@ class ResonanceRelationshipFormationService {
     String experienceId,
   ) {
     final ids = [experienceId, connection.sourceId, connection.targetId]..sort();
-    return 'thread-' + ids.join('-');
+    return 'thread-${ids.join('-')}';
   }
 }
 
