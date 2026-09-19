@@ -8,6 +8,7 @@ import '../../../systems/resonance/providers/resonance_provider.dart';
 import '../../ventvo_voice/models/vent.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
 import '../../ventvo_voice/providers/voice_lifecycle_provider.dart';
+import '../../ventvo_voice/providers/voice_provider.dart';
 import '../models/space.dart';
 import '../providers/space_provider.dart';
 import '../providers/space_resonance_provider.dart';
@@ -168,25 +169,42 @@ class _ResonanceCardState extends ConsumerState<_ResonanceCard> {
 
     setState(() => saving = true);
 
-    final service = ref.read(resonanceConnectionServiceProvider);
-    final suggested = await service.suggestConnection(
-      sourceId: widget.targetSpace.originatingVentId,
-      candidate: widget.candidate,
-    );
-
-    if (suggested == null) {
+    final voice = await ref.read(ventvoVoiceProvider.future);
+    final sourceVoiceId = voice?.voiceId;
+    if (sourceVoiceId == null || sourceVoiceId.trim().isEmpty) {
       if (mounted) setState(() => saving = false);
       return;
     }
 
-    final accepted = await service.accept(suggested);
-    if (!mounted) return;
+    final sourceVent = await _loadSourceVent();
+    if (sourceVent?.ownerVoiceId != sourceVoiceId) {
+      if (mounted) setState(() => saving = false);
+      return;
+    }
 
+    final service = ref.read(resonanceConnectionServiceProvider);
+    final suggested = await service.suggestConnection(
+      sourceId: widget.targetSpace.originatingVentId,
+      sourceVoiceId: sourceVoiceId,
+      candidate: widget.candidate,
+    );
+
+    if (!mounted) return;
     setState(() {
-      connection = accepted;
+      connection = suggested;
       saving = false;
     });
     ref.invalidate(voiceLifecycleProvider);
+  }
+
+  Future<Vent?> _loadSourceVent() async {
+    final vents = ref.read(ventProvider).asData?.value ?? const <Vent>[];
+    for (final vent in vents) {
+      if (vent.id == widget.targetSpace.originatingVentId) {
+        return vent;
+      }
+    }
+    return null;
   }
 
   Future<void> _openRelationship() async {
@@ -231,7 +249,7 @@ class _ResonanceCardState extends ConsumerState<_ResonanceCard> {
 
   @override
   Widget build(BuildContext context) {
-    final hasResonated = connection != null;
+    final hasResonated = connection != null;\n    final isSuggested = connection?.state == ResonanceConnectionState.suggested;
     final canOpenRelationship = _canOpenRelationship;
 
     return Material(
