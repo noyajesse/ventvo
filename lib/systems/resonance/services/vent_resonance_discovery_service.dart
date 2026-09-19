@@ -29,6 +29,7 @@ class VentResonanceDiscoveryService {
       id: vent.id,
       type: ResonanceCandidateType.vent,
       voiceMark: vent.voiceMark,
+      voiceId: vent.ownerVoiceId,
       score: 0,
       signals: signalGenerator.generate(vent: vent, space: space),
     );
