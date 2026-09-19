@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/ventvo_colors.dart';
+import '../../../systems/resonance/models/resonance_candidate.dart';
 import '../../../systems/resonance/models/resonance_connection.dart';
 import '../../../systems/resonance/providers/resonance_provider.dart';
 import '../../ventvo_voice/models/vent.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
+import 'resonance_relationship_screen.dart';
 
 class ResonanceConnectionsScreen extends ConsumerStatefulWidget {
   const ResonanceConnectionsScreen({super.key});
@@ -59,13 +61,24 @@ class _ResonanceConnectionsScreenState
     );
   }
 
-  Future<void> _activate(_ConnectionView view) async {
-    final updated = await ref.read(resonanceConnectionServiceProvider)
-        .activate(view.connection);
-    if (updated == null || !mounted) return;
-    setState(() => _connectionsFuture = _loadConnections());
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Connection is now active.')),
+  void _openConnection(_ConnectionView view) {
+    final target = view.target;
+    if (target == null) return;
+
+    final candidate = ResonanceCandidate(
+      id: target.id,
+      type: ResonanceCandidateType.vent,
+      voiceMark: target.voiceMark,
+      score: view.connection.strength,
+    );
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ResonanceRelationshipScreen(
+          candidate: candidate,
+          connection: view.connection,
+        ),
+      ),
     );
   }
 
@@ -117,9 +130,12 @@ class _ResonanceConnectionsScreenState
                           view.target != null
                       ? () => _accept(view)
                       : null,
-                  onActivate: view.connection.state ==
-                          ResonanceConnectionState.accepted
-                      ? () => _activate(view)
+                  onOpen: (view.connection.state ==
+                              ResonanceConnectionState.accepted ||
+                          view.connection.state ==
+                              ResonanceConnectionState.active) &&
+                      view.target != null
+                      ? () => _openConnection(view)
                       : null,
                 );
               },
@@ -146,12 +162,12 @@ class _ConnectionView {
 class _ConnectionCard extends StatelessWidget {
   final _ConnectionView view;
   final VoidCallback? onAccept;
-  final VoidCallback? onActivate;
+  final VoidCallback? onOpen;
 
   const _ConnectionCard({
     required this.view,
     this.onAccept,
-    this.onActivate,
+    this.onOpen,
   });
 
   String get _status {
@@ -214,10 +230,15 @@ class _ConnectionCard extends StatelessWidget {
               onPressed: onAccept, child: const Text('Accept Connection'),
             )),
           ],
-          if (onActivate != null) ...[
+          if (onOpen != null) ...[
             const SizedBox(height: 14),
             SizedBox(width: double.infinity, child: FilledButton(
-              onPressed: onActivate, child: const Text('Enter Connection'),
+              onPressed: onOpen,
+              child: Text(
+                view.connection.state == ResonanceConnectionState.active
+                    ? 'Open Connection'
+                    : 'Enter Connection',
+              ),
             )),
           ],
         ],
