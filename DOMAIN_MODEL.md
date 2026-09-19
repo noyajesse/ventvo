@@ -207,6 +207,30 @@ It is not a like system, popularity score, follower system, or single matching f
 - Maps
 - Discovery results
 
+### Connection lifecycle
+
+A discovered relationship does not immediately become an active relationship.
+
+```text
+Suggested
+   ↓
+Accepted
+   ↓
+Active
+```
+
+A connection may instead be closed or blocked from the appropriate states.
+
+- **Suggested** means Resonance found a meaningful possible relationship.
+- **Accepted** means the receiving side has acknowledged the connection.
+- **Active** means the relationship is open for the shared connection experience.
+- **Closed** ends the relationship.
+- **Blocked** prevents the relationship for safety/privacy reasons.
+
+The lifecycle is owned by the Resonance connection lifecycle and connection service. UI surfaces request transitions through the service; they do not mutate connection state directly.
+
+The current local prototype can create and display a suggested connection and expose the lifecycle UI boundary, but it cannot yet simulate a real second Voice receiving and accepting a connection because authentication and multi-Voice backend persistence are not implemented.
+
 ### Consumers
 - Feed
 - Space
@@ -247,6 +271,12 @@ Repositories provide storage contracts. They should not decide what a Vent means
 
 ### Rule 4 — Resonance is reusable
 Any product surface that needs meaningful human discovery calls Resonance rather than implementing matching locally.
+
+### Rule 4a — Discovery does not end the journey
+When a user chooses **This resonates with me**, Resonance creates a suggested connection through the connection service. The connection must then follow the shared lifecycle rather than ending at discovery.
+
+### Rule 4b — Connection is relationship state, not a generic chat shortcut
+An active connection should remain grounded in the shared experience that created it. A generic direct-message system must not replace the connection model.
 
 ### Rule 5 — Crash Out remains private by default
 Nothing in Crash Out should become public or discoverable until the user explicitly chooses a pathway that permits it.
