@@ -114,7 +114,15 @@ void main() {
   test('does not accept when the target Voice identity is missing', () async {
     final engine = FakeResonanceEngine();
     final service = ResonanceConnectionService(engine: engine);
-    final connection = _connection().copyWith(targetVoiceId: null);
+    final connection = ResonanceConnection(
+      id: 'vent-1_vent-2',
+      sourceId: 'vent-1',
+      targetId: 'vent-2',
+      sourceVoiceId: 'voice-1',
+      type: ResonanceConnectionType.sharedExperience,
+      strength: 0.82,
+      createdAt: DateTime(2026, 1, 1),
+    );
     final updated = await service.accept(connection, actorVoiceId: 'voice-2');
     expect(updated, isNull);
     expect(engine.updatedConnection, isNull);
