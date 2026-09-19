@@ -134,8 +134,13 @@ class _ResonanceRelationshipScreenState
 
   @override
   Widget build(BuildContext context) {
+    final voiceId = ref.watch(ventvoVoiceProvider).valueOrNull?.voiceId;
+    final isParticipant = voiceId != null &&
+        (connection.sourceVoiceId == voiceId ||
+            connection.targetVoiceId == voiceId);
     final canActivate =
-        connection.state == ResonanceConnectionState.accepted;
+        connection.state == ResonanceConnectionState.accepted &&
+        isParticipant;
     final isActive = connection.state == ResonanceConnectionState.active;
     final isTerminal =
         connection.state == ResonanceConnectionState.closed ||
