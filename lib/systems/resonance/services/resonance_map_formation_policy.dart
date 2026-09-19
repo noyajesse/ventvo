@@ -136,19 +136,6 @@ class ResonanceMapFormationPolicy {
     return {focalVoiceId, ...counterpartVoiceIds};
   }
 
-  String? _counterpartVoiceId(
-    ResonanceConnection connection,
-    String experienceId,
-  ) {
-    if (connection.sourceId == experienceId) {
-      return connection.targetVoiceId;
-    }
-    if (connection.targetId == experienceId) {
-      return connection.sourceVoiceId;
-    }
-    return null;
-  }
-
   String? _counterpartId(
     ResonanceConnection connection,
     String experienceId,
