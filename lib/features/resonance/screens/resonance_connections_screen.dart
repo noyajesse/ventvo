@@ -173,10 +173,10 @@ class _ConnectionCard extends StatelessWidget {
 
   String get _title {
     if (view.source != null && view.target != null) {
-      return view.source!.voiceMark + ' ↔ ' + view.target!.voiceMark;
+      return '${view.source!.voiceMark} ↔ ${view.target!.voiceMark}';
     }
     final vent = view.source ?? view.target;
-    return vent == null ? 'Resonance' : 'Resonance · ' + vent.voiceMark;
+    return vent == null ? 'Resonance' : 'Resonance · ${vent.voiceMark}';
   }
 
   @override
