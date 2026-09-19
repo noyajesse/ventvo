@@ -8,6 +8,8 @@ ResonanceConnection _activeConnection() {
     id: 'vent-1_vent-2',
     sourceId: 'vent-1',
     targetId: 'vent-2',
+    sourceVoiceId: 'voice-1',
+    targetVoiceId: 'voice-2',
     type: ResonanceConnectionType.sharedExperience,
     strength: 0.82,
     state: ResonanceConnectionState.active,
@@ -31,6 +33,8 @@ void main() {
     expect(conversation!.connectionId, 'vent-1_vent-2');
     expect(conversation.sourceVoiceMark, 'VAELOR ◇');
     expect(conversation.targetVoiceMark, 'NYVEN ∿');
+    expect(conversation.sourceVoiceId, 'voice-1');
+    expect(conversation.targetVoiceId, 'voice-2');
   });
 
   test('does not open a conversation for an accepted but inactive connection', () async {
