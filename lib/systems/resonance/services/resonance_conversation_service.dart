@@ -12,6 +12,8 @@ class ResonanceConversationService {
     required ResonanceConnection connection,
     required String sourceVoiceMark,
     required String targetVoiceMark,
+    String? sourceVoiceId,
+    String? targetVoiceId,
   }) async {
     if (connection.state != ResonanceConnectionState.active) return null;
 
@@ -25,6 +27,8 @@ class ResonanceConversationService {
       targetExperienceId: connection.targetId,
       sourceVoiceMark: sourceVoiceMark,
       targetVoiceMark: targetVoiceMark,
+      sourceVoiceId: sourceVoiceId,
+      targetVoiceId: targetVoiceId,
       createdAt: DateTime.now(),
     );
     await repository.saveConversation(conversation);
