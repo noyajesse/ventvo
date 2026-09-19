@@ -32,16 +32,18 @@ class ResonanceRelationshipFormationService {
       connection.sourceId,
       connection.targetId,
     }) {
-      formedThread ??= await threadFormationService.formThreadForExperience(
+      final thread = await threadFormationService.formThreadForExperience(
         experienceId: experienceId,
         threadId: _buildThreadId(connection, experienceId),
         createdAt: connection.createdAt,
       );
+      formedThread ??= thread;
 
-      formedMap ??= await mapFormationService.formForExperience(
+      final map = await mapFormationService.formForExperience(
         experienceId,
         createdAt: connection.createdAt,
       );
+      formedMap ??= map;
     }
 
     return ResonanceRelationshipFormationResult(
