@@ -1090,3 +1090,29 @@ Services receive engines, repositories, and reconciliation dependencies rather t
 ### Query/application boundaries
 
 Product features ask Resonance for valid domain results instead of reproducing filtering rules independently.
+
+
+# 29. Relationship Formation Orchestration
+
+Thread and Map formation are triggered by a narrow orchestration boundary after a Resonance connection reaches an accepted or active state. The orchestration does not replace the existing formation policies. It asks the Thread and Map formation services to evaluate the current relationship evidence.
+
+```text
+Connection lifecycle
+       ↓
+Accepted / Active
+       ↓
+Relationship formation orchestration
+       ↓
+Thread formation policy/service   Map formation policy/service
+       ↓                         ↓
+   Thread (if justified)      Map (if justified)
+```
+
+Formation remains conservative:
+- suggested, closed, and blocked connections do not form structures;
+- a single connection is insufficient for Thread/Map formation;
+- existing strength, meaningful-type, combined-evidence, and privacy/safety thresholds remain authoritative;
+- formation is evaluated from either endpoint of a qualifying connection;
+- multiple experiences belonging to the same Voice do not count as multiple people.
+
+Voice IDs are participant identifiers rather than authentication credentials. Production authorization must still be enforced server-side.
