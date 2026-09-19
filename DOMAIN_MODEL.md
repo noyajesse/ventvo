@@ -359,3 +359,10 @@ These are implementation gaps, not reasons to change the domain boundaries.
 8. Replace prototype local persistence with secure backend persistence.
 9. Add authentication, authorization, moderation, reporting, and privacy enforcement.
 10. Add advanced semantic/AI discovery only after the core system is proven.
+
+
+### Thread and Map formation integrity
+
+Threads and Maps represent relationships among experiences and therefore must not treat multiple experiences from one Voice as multiple independent people. Formation requires explicit Voice identities and enough distinct participating Voices to satisfy the structure's existing evidence thresholds.
+
+The formation boundary is orchestrated only after an accepted or active Resonance connection. Suggested, closed, and blocked relationships cannot trigger formation. The existing Thread and Map formation policies remain responsible for strength, meaningful relationship type, evidence, and privacy/safety decisions.
