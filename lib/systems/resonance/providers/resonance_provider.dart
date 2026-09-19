@@ -10,6 +10,7 @@ import '../services/resonance_map_event_service.dart';
 import '../services/resonance_map_evolution_service.dart';
 import '../services/resonance_map_formation_service.dart';
 import '../services/resonance_map_reconciliation_service.dart';
+import '../services/resonance_relationship_formation_service.dart';
 import '../services/resonance_map_thread_integration_service.dart';
 import '../services/resonance_thread_discovery_service.dart';
 import '../services/resonance_thread_formation_service.dart';
@@ -96,6 +97,18 @@ final resonanceMapThreadIntegrationServiceProvider =
   );
 });
 
+final resonanceRelationshipFormationServiceProvider =
+    Provider<ResonanceRelationshipFormationService>((ref) {
+  return ResonanceRelationshipFormationService(
+    threadFormationService: ref.watch(
+      resonanceThreadFormationServiceProvider,
+    ),
+    mapFormationService: ref.watch(
+      resonanceMapFormationServiceProvider,
+    ),
+  );
+});
+
 final resonanceConnectionServiceProvider =
     Provider<ResonanceConnectionService>((ref) {
   return ResonanceConnectionService(
@@ -104,6 +117,9 @@ final resonanceConnectionServiceProvider =
       resonanceThreadReconciliationServiceProvider,
     ),
     mapEventService: ref.watch(resonanceMapEventServiceProvider),
+    relationshipFormationService: ref.watch(
+      resonanceRelationshipFormationServiceProvider,
+    ),
   );
 });
 
