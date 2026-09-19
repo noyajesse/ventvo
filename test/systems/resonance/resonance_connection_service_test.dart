@@ -192,4 +192,19 @@ void main() {
     expect(activated!.state, ResonanceConnectionState.active);
   });
 
+
+  test('does not accept when the target Voice identity is missing', () async {
+    final engine = FakeResonanceEngine();
+    final service = ResonanceConnectionService(engine: engine);
+
+    final connection = _connection().copyWith(targetVoiceId: null);
+    final updated = await service.accept(
+      connection,
+      actorVoiceId: 'voice-2',
+    );
+
+    expect(updated, isNull);
+    expect(engine.updatedConnection, isNull);
+  });
+
 }
