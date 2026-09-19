@@ -1,3 +1,20 @@
+### Echo Voice Ownership and Lifecycle Fix
+
+Date: 2026-09-19  
+Branch: development
+
+- Echo and SpaceResponse now retain the optional Voice ID of the Voice that created the response.
+- Echo creation passes the local Voice ID into the response flow instead of relying on the public Voice mark.
+- Response Resonance carries the responder Voice as the target participant and only accepts/activates when that Voice is the actor.
+- The originating Vent owner can be carried as the source participant when available.
+- Space Resonance now creates a suggested connection without pretending the other Voice has already accepted it.
+- Local Resonance demo connections now use stable demo Voice IDs and target-side acceptance.
+- Resonance test doubles were updated for the explicit source/target Voice ID parameters.
+
+Verification:
+- GitHub-side code inspection completed.
+- Flutter analyzer/tests have not been run from this environment; run `flutter analyze` and `flutter test` locally.
+
 ### Honest Local Resonance State
 
 Date: 2026-09-19  
