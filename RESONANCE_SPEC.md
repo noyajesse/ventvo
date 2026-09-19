@@ -704,20 +704,32 @@ Crash Out
     ↓
 Private release
     ↓
-Explicit connection pathway
+Explicit Find People Who Understand request
     ↓
 Resonance Engine
     ↓
 Safety/privacy filtering
     ↓
-Relevant experiences / Voices
+Relevant public experiences
+    ↓
+User chooses whether to leave a Resonance
+    ↓
+Suggested connection
 ```
 
 The matching engine belongs to Resonance, not Crash Out.
 
-Crash Out only supplies an explicitly authorized experience to Resonance and consumes the returned connection experience.
+Crash Out only supplies an explicitly authorized experience to Resonance and consumes the returned discovery/connection experience.
 
 A private Crash Out must never be silently indexed for public discovery.
+
+After a Resonance is left, the connection follows the shared lifecycle rather than ending at discovery:
+
+```text
+Suggested → Accepted → Active
+```
+
+The receiving Voice controls whether the suggested connection is accepted. The active connection should remain grounded in the shared experience that created it rather than becoming a generic direct-message shortcut.
 
 ---
 
@@ -878,7 +890,7 @@ Use the established Resonance query/discovery infrastructure from product surfac
 
 ### Stage L — Crash Out integration
 
-Implement the explicit Find People Who Understand pathway using the shared Resonance engine. **Future.**
+Implement and validate the explicit Find People Who Understand pathway using the shared Resonance engine, including the private Crash Out boundary. **Foundation exists; full recipient-side connection flow remains future.**
 
 ### Stage M — Backend
 
@@ -1089,6 +1101,7 @@ Future Resonance capabilities may include:
 - Resonance Maps
 - Echo-driven relationship strengthening
 - explicit Find People Who Understand experience
+- connection-state and active shared-experience surfaces
 - small-group experiences
 - user-controlled discovery preferences
 - production backend persistence
