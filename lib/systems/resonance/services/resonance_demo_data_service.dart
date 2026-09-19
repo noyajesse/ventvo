@@ -22,6 +22,7 @@ class ResonanceDemoDataService {
       spaceId: 'demo_nera_space',
       voiceMark: '◇ Nera',
       voiceName: 'Nera',
+      ownerVoiceId: 'demo_voice_nera',
       createdAt: DateTime(2026, 8, 27, 12, 10),
     ),
     Vent(
@@ -30,6 +31,7 @@ class ResonanceDemoDataService {
       spaceId: 'demo_sol_space',
       voiceMark: '◇ Sol',
       voiceName: 'Sol',
+      ownerVoiceId: 'demo_voice_sol',
       createdAt: DateTime(2026, 8, 27, 11, 42),
     ),
     Vent(
@@ -38,6 +40,7 @@ class ResonanceDemoDataService {
       spaceId: 'demo_aven_space',
       voiceMark: '◇ Aven',
       voiceName: 'Aven',
+      ownerVoiceId: 'demo_voice_aven',
       createdAt: DateTime(2026, 8, 27, 11, 15),
     ),
     Vent(
@@ -46,6 +49,7 @@ class ResonanceDemoDataService {
       spaceId: 'demo_mira_space',
       voiceMark: '◇ Mira',
       voiceName: 'Mira',
+      ownerVoiceId: 'demo_voice_mira',
       createdAt: DateTime(2026, 8, 27, 10, 48),
     ),
   ];
@@ -103,19 +107,23 @@ class ResonanceDemoDataService {
 
     final first = await engine.createConnection(
       sourceId: 'demo_nera_moment',
+      sourceVoiceId: 'demo_voice_nera',
       targetId: 'demo_sol_moment',
+      targetVoiceId: 'demo_voice_sol',
       type: ResonanceConnectionType.sharedExperience,
       strength: 0.84,
     );
     final second = await engine.createConnection(
       sourceId: 'demo_nera_moment',
+      sourceVoiceId: 'demo_voice_nera',
       targetId: 'demo_aven_moment',
+      targetVoiceId: 'demo_voice_aven',
       type: ResonanceConnectionType.sharedExperience,
       strength: 0.78,
     );
 
-    await connectionService.accept(first);
-    await connectionService.accept(second);
+    await connectionService.accept(first, actorVoiceId: 'demo_voice_sol');
+    await connectionService.accept(second, actorVoiceId: 'demo_voice_aven');
 
     final thread = await threadFormation.formThreadForExperience(
       experienceId: 'demo_nera_moment',
@@ -133,11 +141,13 @@ class ResonanceDemoDataService {
 
     final third = await engine.createConnection(
       sourceId: 'demo_nera_moment',
+      sourceVoiceId: 'demo_voice_nera',
       targetId: 'demo_mira_moment',
+      targetVoiceId: 'demo_voice_mira',
       type: ResonanceConnectionType.perspective,
       strength: 0.72,
     );
-    final acceptedThird = await connectionService.accept(third);
+    final acceptedThird = await connectionService.accept(third, actorVoiceId: 'demo_voice_mira');
     if (acceptedThird == null) return;
 
     await threadService.extendThread(
