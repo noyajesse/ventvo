@@ -51,6 +51,16 @@ class ResonanceMapFormationPolicy {
       );
     }
 
+    final voiceIds = _distinctVoiceIds(
+      experienceId: experienceId,
+      connections: meaningful,
+    );
+    if (voiceIds == null || voiceIds.length < minimumExperiences) {
+      return const ResonanceMapFormationDecision.ineligible(
+        ResonanceMapFormationReason.insufficientVoices,
+      );
+    }
+
     if (meaningful.length < minimumMeaningfulConnections) {
       return const ResonanceMapFormationDecision.ineligible(
         ResonanceMapFormationReason.insufficientConnections,
@@ -84,6 +94,52 @@ class ResonanceMapFormationPolicy {
     return connection.type == ResonanceConnectionType.sharedExperience ||
         connection.type == ResonanceConnectionType.response ||
         connection.type == ResonanceConnectionType.perspective;
+  }
+
+  Set<String>? _distinctVoiceIds({
+    required String experienceId,
+    required List<ResonanceConnection> connections,
+  }) {
+    String? focalVoiceId;
+    final counterpartVoiceIds = <String>{};
+
+    for (final connection in connections) {
+      final counterpartId = _counterpartId(connection, experienceId);
+      if (counterpartId == null) continue;
+
+      final counterpartVoiceId = _counterpartVoiceId(
+        connection,
+        experienceId,
+      );
+      if (counterpartVoiceId == null || counterpartVoiceId.trim().isEmpty) {
+        return null;
+      }
+
+      if (counterpartId == experienceId) {
+        focalVoiceId ??= counterpartVoiceId;
+      } else {
+        counterpartVoiceIds.add(counterpartVoiceId);
+      }
+    }
+
+    if (focalVoiceId == null || counterpartVoiceIds.length < 2) {
+      return null;
+    }
+
+    return {focalVoiceId, ...counterpartVoiceIds};
+  }
+
+  String? _counterpartVoiceId(
+    ResonanceConnection connection,
+    String experienceId,
+  ) {
+    if (connection.sourceId == experienceId) {
+      return connection.targetVoiceId;
+    }
+    if (connection.targetId == experienceId) {
+      return connection.sourceVoiceId;
+    }
+    return null;
   }
 
   String? _counterpartId(
@@ -123,6 +179,7 @@ enum ResonanceMapFormationReason {
   privacyRestricted,
   safetyRestricted,
   insufficientExperiences,
+  insufficientVoices,
   insufficientConnections,
   insufficientResonance,
 }
