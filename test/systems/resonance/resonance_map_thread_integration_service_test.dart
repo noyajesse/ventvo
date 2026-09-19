@@ -26,6 +26,8 @@ class FakeResonanceEngine implements ResonanceEngine, ResonanceMapEngine {
   Future<ResonanceConnection> createConnection({
     required String sourceId,
     required String targetId,
+    String? sourceVoiceId,
+    String? targetVoiceId,
     required ResonanceConnectionType type,
     required double strength,
   }) async {
