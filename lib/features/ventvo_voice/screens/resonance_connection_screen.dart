@@ -98,6 +98,7 @@ class _ResonanceConnectionScreenState
           .read(resonanceConnectionServiceProvider)
           .suggestConnection(
             sourceId: widget.sourceVent.id,
+            sourceVoiceId: widget.sourceVent.ownerVoiceId,
             candidate: candidate,
           );
 
