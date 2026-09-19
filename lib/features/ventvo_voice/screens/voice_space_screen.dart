@@ -8,6 +8,7 @@ import '../../crash_out/providers/crash_out_provider.dart';
 import '../../crash_out/screens/crash_out_screen.dart';
 import '../../crash_out/screens/private_crash_outs_screen.dart';
 import '../../resonance/screens/voice_resonance_hub_screen.dart';
+import '../../resonance/screens/find_people_screen.dart';
 import '../models/voice_seed.dart';
 import '../providers/vent_provider.dart';
 import '../providers/voice_provider.dart';
@@ -97,6 +98,13 @@ class VoiceSpaceScreen extends ConsumerWidget {
                 subtitle:
                     '${vents.length} expressed ${vents.length == 1 ? 'moment' : 'moments'}',
                 onTap: () => open(const VoiceMomentsScreen()),
+              ),
+              const SizedBox(height: 10),
+              _VoiceEntry(
+                icon: Icons.people_outline_rounded,
+                title: 'Find People Who Understand',
+                subtitle: 'Discover experiences that may resonate with yours.',
+                onTap: () => open(const FindPeopleScreen()),
               ),
               const SizedBox(height: 10),
               _VoiceEntry(
