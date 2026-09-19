@@ -8,6 +8,7 @@ import '../../../systems/resonance/providers/resonance_provider.dart';
 import '../../ventvo_voice/models/vent.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
 import 'resonance_relationship_screen.dart';
+import '../../ventvo_voice/providers/voice_provider.dart';
 import 'resonance_conversation_screen.dart';
 
 class ResonanceConnectionsScreen extends ConsumerStatefulWidget {
@@ -30,6 +31,8 @@ class _ResonanceConnectionsScreenState
 
   Future<List<_ConnectionView>> _loadConnections() async {
     final vents = await ref.read(ventProvider.future);
+    final voice = await ref.read(ventvoVoiceProvider.future);
+    final localVoiceId = voice?.voiceId;
     final ventById = {for (final vent in vents) vent.id: vent};
     final engine = ref.read(resonanceEngineProvider);
     final seen = <String>{};
@@ -43,6 +46,7 @@ class _ResonanceConnectionsScreenState
           connection: connection,
           source: ventById[connection.sourceId],
           target: ventById[connection.targetId],
+          localVoiceId: localVoiceId,
         ));
       }
     }
@@ -53,8 +57,10 @@ class _ResonanceConnectionsScreenState
   }
 
   Future<void> _accept(_ConnectionView view) async {
+    final localVoiceId = view.localVoiceId;
+    if (localVoiceId == null) return;
     final updated = await ref.read(resonanceConnectionServiceProvider)
-        .accept(view.connection);
+        .accept(view.connection, actorVoiceId: localVoiceId);
     if (updated == null || !mounted) return;
     setState(() => _connectionsFuture = _loadConnections());
     ScaffoldMessenger.of(context).showSnackBar(
@@ -63,13 +69,18 @@ class _ResonanceConnectionsScreenState
   }
 
   void _openConnection(_ConnectionView view) {
-    final target = view.target;
-    if (target == null) return;
+    final localVoiceId = view.localVoiceId;
+    if (localVoiceId == null) return;
+
+    final localIsSource = view.connection.sourceVoiceId == localVoiceId;
+    final counterpart = localIsSource ? view.target : view.source;
+    if (counterpart == null) return;
 
     final candidate = ResonanceCandidate(
-      id: target.id,
+      id: counterpart.id,
       type: ResonanceCandidateType.vent,
-      voiceMark: target.voiceMark,
+      voiceMark: counterpart.voiceMark,
+      voiceId: counterpart.ownerVoiceId,
       score: view.connection.strength,
     );
 
@@ -133,7 +144,9 @@ class _ResonanceConnectionsScreenState
                   view: view,
                   onAccept: view.connection.state ==
                               ResonanceConnectionState.suggested &&
-                          view.target != null
+                          view.target != null &&
+                          view.localVoiceId != null &&
+                          view.connection.targetVoiceId == view.localVoiceId
                       ? () => _accept(view)
                       : null,
                   onOpen: (view.connection.state ==
@@ -157,11 +170,13 @@ class _ConnectionView {
   final ResonanceConnection connection;
   final Vent? source;
   final Vent? target;
+  final String? localVoiceId;
 
   const _ConnectionView({
     required this.connection,
     required this.source,
     required this.target,
+    required this.localVoiceId,
   });
 }
 
