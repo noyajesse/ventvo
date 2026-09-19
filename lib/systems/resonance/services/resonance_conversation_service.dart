@@ -19,7 +19,7 @@ class ResonanceConversationService {
     if (existing != null) return existing;
 
     final conversation = ResonanceConversation(
-      id: 'conversation_' + connection.id,
+      id: 'conversation_${connection.id}',
       connectionId: connection.id,
       sourceExperienceId: connection.sourceId,
       targetExperienceId: connection.targetId,
@@ -45,7 +45,7 @@ class ResonanceConversationService {
     if (trimmed.isEmpty) return null;
 
     final message = ResonanceMessage(
-      id: 'message_' + DateTime.now().microsecondsSinceEpoch.toString(),
+      id: 'message_${DateTime.now().microsecondsSinceEpoch}',
       conversationId: conversation.id,
       senderVoiceId: senderVoiceId,
       senderVoiceMark: senderVoiceMark,
