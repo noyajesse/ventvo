@@ -157,6 +157,8 @@ void main() {
       space: space,
       content: 'I felt this too.',
       voiceMark: '△',
+      authorVoiceId: 'voice-2',
+      sourceVoiceId: 'voice-1',
     );
 
     expect(echo, isNotNull);
