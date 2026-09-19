@@ -13,6 +13,8 @@ ResonanceConnection _connection({
     id: id,
     sourceId: 'vent-new',
     targetId: targetId,
+    sourceVoiceId: 'voice-new',
+    targetVoiceId: 'voice-$targetId',
     type: type,
     strength: strength,
     state: state,
