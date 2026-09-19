@@ -10,15 +10,18 @@ class ResonanceConversationService {
 
   Future<ResonanceConversation?> openForConnection({
     required ResonanceConnection connection,
+    required String participantVoiceId,
     required String sourceVoiceMark,
     required String targetVoiceMark,
-    String? sourceVoiceId,
-    String? targetVoiceId,
   }) async {
     if (connection.state != ResonanceConnectionState.active) return null;
+    if (!_isParticipant(connection, participantVoiceId)) return null;
 
     final existing = await repository.getConversation(connection.id);
-    if (existing != null) return existing;
+    if (existing != null) {
+      if (!_isParticipant(existing, participantVoiceId)) return null;
+      return existing;
+    }
 
     final conversation = ResonanceConversation(
       id: 'conversation_${connection.id}',
@@ -27,8 +30,8 @@ class ResonanceConversationService {
       targetExperienceId: connection.targetId,
       sourceVoiceMark: sourceVoiceMark,
       targetVoiceMark: targetVoiceMark,
-      sourceVoiceId: sourceVoiceId,
-      targetVoiceId: targetVoiceId,
+      sourceVoiceId: connection.sourceVoiceId,
+      targetVoiceId: connection.targetVoiceId,
       createdAt: DateTime.now(),
     );
     await repository.saveConversation(conversation);
@@ -47,6 +50,7 @@ class ResonanceConversationService {
   }) async {
     final trimmed = text.trim();
     if (trimmed.isEmpty) return null;
+    if (!_isParticipant(conversation, senderVoiceId)) return null;
 
     final message = ResonanceMessage(
       id: 'message_${DateTime.now().microsecondsSinceEpoch}',
@@ -58,5 +62,22 @@ class ResonanceConversationService {
     );
     await repository.saveMessage(message);
     return message;
+  }
+
+  bool _isParticipant(Object conversation, String voiceId) {
+    final actor = voiceId.trim();
+    if (actor.isEmpty) return false;
+
+    if (conversation is ResonanceConnection) {
+      return conversation.sourceVoiceId == actor ||
+          conversation.targetVoiceId == actor;
+    }
+
+    if (conversation is ResonanceConversation) {
+      return conversation.sourceVoiceId == actor ||
+          conversation.targetVoiceId == actor;
+    }
+
+    return false;
   }
 }
