@@ -52,7 +52,7 @@ class _RecordingEngine implements ResonanceEngine {
   final List<ResonanceCandidate> indexedCandidates = [];
   @override Future<void> indexCandidate(ResonanceCandidate candidate) async => indexedCandidates.add(candidate);
   @override Future<List<ResonanceCandidate>> discover(ResonanceQuery query) async { lastQuery = query; return const []; }
-  @override Future<ResonanceConnection> createConnection({required String sourceId, required String targetId, required ResonanceConnectionType type, required double strength}) => throw UnimplementedError();
+  @override Future<ResonanceConnection> createConnection({required String sourceId, required String targetId, String? sourceVoiceId, String? targetVoiceId, required ResonanceConnectionType type, required double strength}) => throw UnimplementedError();
   @override Future<ResonanceConnection?> getConnectionBetween(String sourceId, String targetId) => throw UnimplementedError();
   @override Future<List<ResonanceConnection>> getConnectionsInvolving(String id) => throw UnimplementedError();
   @override Future<void> updateConnection(ResonanceConnection connection) => throw UnimplementedError();
