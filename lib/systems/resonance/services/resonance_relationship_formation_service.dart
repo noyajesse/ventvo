@@ -25,20 +25,28 @@ class ResonanceRelationshipFormationService {
       return const ResonanceRelationshipFormationResult.empty();
     }
 
-    final thread = await threadFormationService.formThreadForExperience(
-      experienceId: connection.sourceId,
-      threadId: _buildThreadId(connection),
-      createdAt: connection.createdAt,
-    );
+    ResonanceThread? formedThread;
+    ResonanceMap? formedMap;
 
-    final map = await mapFormationService.formForExperience(
+    for (final experienceId in {
       connection.sourceId,
-      createdAt: connection.createdAt,
-    );
+      connection.targetId,
+    }) {
+      formedThread ??= await threadFormationService.formThreadForExperience(
+        experienceId: experienceId,
+        threadId: _buildThreadId(connection, experienceId),
+        createdAt: connection.createdAt,
+      );
+
+      formedMap ??= await mapFormationService.formForExperience(
+        experienceId,
+        createdAt: connection.createdAt,
+      );
+    }
 
     return ResonanceRelationshipFormationResult(
-      thread: thread,
-      map: map,
+      thread: formedThread,
+      map: formedMap,
     );
   }
 
@@ -47,8 +55,11 @@ class ResonanceRelationshipFormationService {
         connection.state == ResonanceConnectionState.active;
   }
 
-  String _buildThreadId(ResonanceConnection connection) {
-    final ids = [connection.sourceId, connection.targetId]..sort();
+  String _buildThreadId(
+    ResonanceConnection connection,
+    String experienceId,
+  ) {
+    final ids = [experienceId, connection.sourceId, connection.targetId]..sort();
     return 'thread-' + ids.join('-');
   }
 }
