@@ -9,7 +9,7 @@ Branch: development
 - The conversation screen preserves the originating Resonance context and supports ordinary one-to-one text messaging.
 - Active Resonances now open the direct conversation from Your Resonances.
 - Activating an accepted Resonance now continues directly into the conversation.
-- Closing and blocking remain Resonance lifecycle operations; no separate conversation lifecycle was introduced.
+- Closing and blocking remain Resonance lifecycle operations; the conversation returns to its parent screen when that relationship is closed or blocked.
 - Private conversation content is not indexed into public discovery or silently exposed as Resonance discovery material.
 - Threads remain automatic and are not manually created from messages.
 - The local prototype still uses in-memory conversation storage and does not yet represent a real remote second Voice receiving messages.
