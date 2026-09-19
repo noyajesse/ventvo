@@ -1,3 +1,16 @@
+### Honest Local Resonance State
+
+Date: 2026-09-19  
+Branch: development
+
+- Suggested Resonances now distinguish the local target Voice from the local source Voice.
+- A source Voice sees “Waiting for their response”; only the target Voice sees the acceptance action.
+- Accepted/active connections can only be opened from the Your Resonances surface when the local Voice is an explicit participant.
+- The relationship screen only exposes activation when the local Voice participates in the connection.
+- This avoids implying that a local prototype has simulated a second person's acceptance or participation.
+- Missing participant Voice identity prevents acceptance at the service boundary.
+- The prototype still uses local/in-memory state; real recipient delivery and acceptance remain backend responsibilities.
+
 ### Resonance Participant Authorization Boundary
 
 Date: 2026-09-19  
