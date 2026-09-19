@@ -8,6 +8,7 @@ import '../../../systems/resonance/models/resonance_conversation.dart';
 import '../../../systems/resonance/models/resonance_message.dart';
 import '../../../systems/resonance/providers/resonance_conversation_provider.dart';
 import '../../ventvo_voice/providers/voice_provider.dart';
+import 'resonance_relationship_screen.dart';
 
 class ResonanceConversationScreen extends ConsumerStatefulWidget {
   final ResonanceCandidate candidate;
@@ -106,6 +107,20 @@ class _ResonanceConversationScreenState
         backgroundColor: VentvoColors.background,
         elevation: 0,
         title: Text(widget.candidate.voiceMark ?? 'Connection'),
+        actions: [
+          IconButton(
+            tooltip: 'Resonance details',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => ResonanceRelationshipScreen(
+                  candidate: widget.candidate,
+                  connection: widget.connection,
+                ),
+              ),
+            ),
+            icon: const Icon(Icons.waves_rounded),
+          ),
+        ],
       ),
       body: FutureBuilder<_ConversationView?>(
         future: _conversationFuture,
