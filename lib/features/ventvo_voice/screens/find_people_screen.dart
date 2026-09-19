@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/ventvo_colors.dart';
 import '../../../systems/resonance/models/resonance_candidate.dart';
-import '../../../systems/resonance/providers/resonance_provider.dart'
+import '../../../systems/resonance/providers/resonance_provider.dart';
 import '../../feed/widgets/vent_card.dart';
 import 'resonance_connection_screen.dart';
 import '../models/vent.dart';
