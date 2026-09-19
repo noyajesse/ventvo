@@ -5,6 +5,7 @@ import '../../../core/theme/ventvo_colors.dart';
 import '../../../systems/resonance/models/resonance_candidate.dart';
 import '../../../systems/resonance/providers/resonance_provider.dart'
 import '../../feed/widgets/vent_card.dart';
+import 'resonance_connection_screen.dart';
 import '../models/vent.dart';
 import '../providers/vent_provider.dart';
 import '../../spaces/providers/space_provider.dart';
@@ -147,10 +148,43 @@ class _FindPeopleScreenState extends ConsumerState<FindPeopleScreen> {
                             ),
                             const SizedBox(height: 12),
                             ...matches.asMap().entries.map(
-                                  (entry) => VentCard(
-                                    vent: entry.value,
-                                    index: entry.key,
-                                  ),
+                                  (entry) {
+                                    final match = entry.value;
+                                    return Padding(
+                                      padding: const EdgeInsets.only(bottom: 18),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          VentCard(
+                                            vent: match,
+                                            index: entry.key,
+                                          ),
+                                          const SizedBox(height: 2),
+                                          OutlinedButton.icon(
+                                            onPressed: () {
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (_) =>
+                                                      ResonanceConnectionScreen(
+                                                    sourceVent: _selectedVent!,
+                                                    targetVent: match,
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                            icon: const Icon(
+                                              Icons.waves_rounded,
+                                              size: 16,
+                                            ),
+                                            label: const Text(
+                                              'This resonates with me',
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
                                 ),
                           ],
                         );
