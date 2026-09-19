@@ -1,3 +1,18 @@
+### Resonance Participant Authorization Boundary
+
+Date: 2026-09-19  
+Branch: development
+
+- Lifecycle actions now require an actor Voice ID.
+- Only the target Voice can accept a suggested Resonance.
+- Either participating Voice can activate, close, or block a connection.
+- Active conversations now verify that the opening Voice is a participant.
+- Direct messages now verify that the sender Voice belongs to the conversation participants.
+- Connection and conversation participant IDs are derived from the existing Resonance relationship rather than allowing the UI to invent participant identity.
+- The UI now orients an existing connection around the local Voice and its counterpart before opening the relationship or conversation.
+- These checks are prototype-side domain guards; production must enforce the same boundary server-side through authenticated account authorization and RLS.
+- No private conversation content is converted into public discovery or Thread material by this change.
+
 ### Explicit Voice Identity for Resonance Connections
 
 Date: 2026-09-19  
