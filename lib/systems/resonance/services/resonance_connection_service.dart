@@ -50,27 +50,50 @@ class ResonanceConnectionService {
   }
 
   Future<ResonanceConnection?> accept(
-    ResonanceConnection connection,
-  ) async {
+    ResonanceConnection connection, {
+    required String actorVoiceId,
+  }) async {
+    if (!_isTarget(connection, actorVoiceId)) return null;
     return _transition(connection, ResonanceConnectionState.accepted);
   }
 
   Future<ResonanceConnection?> activate(
-    ResonanceConnection connection,
-  ) async {
+    ResonanceConnection connection, {
+    required String actorVoiceId,
+  }) async {
+    if (!_isParticipant(connection, actorVoiceId)) return null;
     return _transition(connection, ResonanceConnectionState.active);
   }
 
   Future<ResonanceConnection?> close(
-    ResonanceConnection connection,
-  ) async {
+    ResonanceConnection connection, {
+    required String actorVoiceId,
+  }) async {
+    if (!_isParticipant(connection, actorVoiceId)) return null;
     return _transition(connection, ResonanceConnectionState.closed);
   }
 
   Future<ResonanceConnection?> block(
-    ResonanceConnection connection,
-  ) async {
+    ResonanceConnection connection, {
+    required String actorVoiceId,
+  }) async {
+    if (!_isParticipant(connection, actorVoiceId)) return null;
     return _transition(connection, ResonanceConnectionState.blocked);
+  }
+
+  bool _isTarget(ResonanceConnection connection, String actorVoiceId) {
+    final actor = actorVoiceId.trim();
+    return actor.isNotEmpty &&
+        connection.targetVoiceId != null &&
+        connection.targetVoiceId == actor;
+  }
+
+  bool _isParticipant(ResonanceConnection connection, String actorVoiceId) {
+    final actor = actorVoiceId.trim();
+    if (actor.isEmpty) return false;
+
+    return connection.sourceVoiceId == actor ||
+        connection.targetVoiceId == actor;
   }
 
   Future<ResonanceConnection?> _transition(
@@ -121,7 +144,8 @@ class ResonanceConnectionService {
       (signal) => signal.type == ResonanceSignalType.experiential,
     );
     final hasContext = signals.any(
-      (signal) => signal.type == ResonanceSignalType.semantic ||
+      (signal) =>
+          signal.type == ResonanceSignalType.semantic ||
           signal.type == ResonanceSignalType.context,
     );
     final hasIntent = signals.any(
