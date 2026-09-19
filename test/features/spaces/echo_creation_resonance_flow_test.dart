@@ -64,6 +64,8 @@ class _FakeEngine implements ResonanceEngine {
       id: '${sourceId}_$targetId',
       sourceId: sourceId,
       targetId: targetId,
+      sourceVoiceId: sourceVoiceId,
+      targetVoiceId: targetVoiceId,
       type: type,
       strength: strength,
       createdAt: DateTime(2026, 1, 1),
