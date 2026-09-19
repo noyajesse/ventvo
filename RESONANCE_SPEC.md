@@ -1,3 +1,14 @@
+## Explicit Voice Identity Boundary
+
+The Resonance domain keeps two identities separate:
+
+- **Experience identity** identifies the Moment/Vent that produced the Resonance and remains the basis for experience-driven Threads and Maps.
+- **Voice identity** identifies the anonymous Voice that owns each experience and participates in the resulting relationship.
+
+Resonance connections and active conversations may therefore retain both the originating experience IDs and explicit participant Voice IDs. This does not turn Voice identity into a public profile or alter Resonance discovery. It provides the participant boundary required for future authorization and multi-Voice persistence.
+
+The current prototype keeps these Voice IDs optional for backward compatibility with older local data. Production persistence should require valid participant Voice identities and enforce that only the participating Voices can accept, activate, enter, or message within the connection.
+
 ## Direct Conversation After Resonance
 
 Once a Resonance is accepted and activated, the relationship may open a normal one-to-one direct conversation. The conversation is anchored to the Resonance connection and keeps the originating experience relationship visible as context. Conversation messages are private relationship data and are not automatically converted into public discovery signals. Existing Thread formation remains automatic; messages do not create Threads manually. The current prototype uses a local in-memory conversation repository. Production persistence must use explicit Voice identities for participants rather than relying on experience IDs alone.
