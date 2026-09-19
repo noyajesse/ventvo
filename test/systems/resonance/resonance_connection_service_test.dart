@@ -155,4 +155,41 @@ void main() {
     expect(updated, isNull);
     expect(engine.updatedConnection, isNull);
   });
+
+  test('only the target Voice can accept a suggested connection', () async {
+    final engine = FakeResonanceEngine();
+    final service = ResonanceConnectionService(engine: engine);
+
+    final denied = await service.accept(
+      _connection(),
+      actorVoiceId: 'voice-3',
+    );
+    expect(denied, isNull);
+    expect(engine.updatedConnection, isNull);
+
+    final accepted = await service.accept(
+      _connection(),
+      actorVoiceId: 'voice-2',
+    );
+    expect(accepted!.state, ResonanceConnectionState.accepted);
+  });
+
+  test('only a connection participant can activate it', () async {
+    final engine = FakeResonanceEngine();
+    final service = ResonanceConnectionService(engine: engine);
+
+    final denied = await service.activate(
+      _connection(state: ResonanceConnectionState.accepted),
+      actorVoiceId: 'voice-3',
+    );
+    expect(denied, isNull);
+    expect(engine.updatedConnection, isNull);
+
+    final activated = await service.activate(
+      _connection(state: ResonanceConnectionState.accepted),
+      actorVoiceId: 'voice-2',
+    );
+    expect(activated!.state, ResonanceConnectionState.active);
+  });
+
 }
