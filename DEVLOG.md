@@ -1,3 +1,49 @@
+## Resonance Connection Continuation
+
+Date: 2026-09-19
+Branch: development
+
+Completed:
+- Added a dedicated Your Resonances screen so a suggested connection no longer ends at the confirmation message.
+- The sender can now see a Resonance connection as a persistent local prototype state while waiting for the other Voice.
+- Added recipient-side acceptance and activation controls to the shared connection-state presentation so the existing suggested → accepted → active lifecycle has a UI boundary ready for multi-Voice persistence.
+- Added Your Resonances to the Resonance hub.
+- After leaving a Resonance, the user can continue directly to Your Resonances instead of being returned only to Find People.
+
+Product flow:
+
+```
+Find People Who Understand
+        ↓
+Discover related experience
+        ↓
+This resonates with me
+        ↓
+Resonance suggested
+        ↓
+Your Resonances
+        ↓
+Waiting for their response
+        ↓
+Accepted
+        ↓
+Active connection
+        ↓
+Future shared connection experience
+```
+
+Important boundary:
+- The current prototype is still local/in-memory and has one local Voice, so it cannot demonstrate a real second user's acceptance yet.
+- No fake recipient or automatic acceptance was introduced.
+- Backend persistence/authentication must later identify the target Voice and deliver the pending Resonance to that Voice.
+- The active connection experience is intentionally not being replaced with a generic DM system; the next product step should be a shared-experience interaction that can feed Threads and later Gatherings.
+
+Next engineering focus:
+- Define the real active-connection experience.
+- Then connect accepted/active relationships to Thread formation without bypassing Resonance rules.
+
+---
+
 ## Resonance Connection Lifecycle
 
 Date: 2026-09-13
