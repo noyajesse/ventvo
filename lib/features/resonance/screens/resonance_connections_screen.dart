@@ -140,6 +140,9 @@ class _ResonanceConnectionsScreenState
               separatorBuilder: (_, _) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final view = connections[index];
+                final isParticipant = view.localVoiceId != null &&
+                    (view.connection.sourceVoiceId == view.localVoiceId ||
+                        view.connection.targetVoiceId == view.localVoiceId);
                 return _ConnectionCard(
                   view: view,
                   onAccept: view.connection.state ==
@@ -153,7 +156,8 @@ class _ResonanceConnectionsScreenState
                               ResonanceConnectionState.accepted ||
                           view.connection.state ==
                               ResonanceConnectionState.active) &&
-                      view.target != null
+                      view.target != null &&
+                      isParticipant
                       ? () => _openConnection(view)
                       : null,
                 );
@@ -194,9 +198,13 @@ class _ConnectionCard extends StatelessWidget {
   String get _status {
     switch (view.connection.state) {
       case ResonanceConnectionState.suggested:
-        return view.target == null
-            ? 'Waiting for their response'
-            : 'A Resonance is waiting for you';
+        if (view.target == null || view.localVoiceId == null) {
+          return 'Waiting for their response';
+        }
+        if (view.connection.targetVoiceId == view.localVoiceId) {
+          return 'A Resonance is waiting for you';
+        }
+        return 'Waiting for their response';
       case ResonanceConnectionState.accepted:
         return 'Connection accepted';
       case ResonanceConnectionState.active:
