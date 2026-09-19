@@ -19,6 +19,7 @@ class Vent {
   final String content;
   final String spaceId;
   final String voiceMark;
+  final String? ownerVoiceId;
   final String? voiceName;
   final String? voiceSeedId;
   final DateTime createdAt;
@@ -32,6 +33,7 @@ class Vent {
     required this.content,
     required this.spaceId,
     required this.voiceMark,
+    this.ownerVoiceId,
     this.voiceName,
     this.voiceSeedId,
     required this.createdAt,
@@ -53,6 +55,7 @@ class Vent {
     String? content,
     String? spaceId,
     String? voiceMark,
+    String? ownerVoiceId,
     String? voiceName,
     String? voiceSeedId,
     DateTime? createdAt,
@@ -66,6 +69,7 @@ class Vent {
       content: content ?? this.content,
       spaceId: spaceId ?? this.spaceId,
       voiceMark: voiceMark ?? this.voiceMark,
+      ownerVoiceId: ownerVoiceId ?? this.ownerVoiceId,
       voiceName: voiceName ?? this.voiceName,
       voiceSeedId: voiceSeedId ?? this.voiceSeedId,
       createdAt: createdAt ?? this.createdAt,
