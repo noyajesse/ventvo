@@ -105,9 +105,6 @@ void main() {
     expect(message, isNull);
     expect(await service.getMessages(conversation.id), isEmpty);
   });
-}
-
-
   test('does not open a conversation for a non-participant', () async {
     final service = ResonanceConversationService(
       repository: LocalResonanceConversationRepository(),
@@ -144,3 +141,5 @@ void main() {
     expect(message, isNull);
     expect(await service.getMessages(conversation.id), isEmpty);
   });
+
+}
