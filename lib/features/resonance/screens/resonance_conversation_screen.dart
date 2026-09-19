@@ -50,6 +50,8 @@ class _ResonanceConversationScreenState
           connection: widget.connection,
           sourceVoiceMark: voice?.mark ?? 'YOUR VOICE',
           targetVoiceMark: widget.candidate.voiceMark ?? 'OTHER VOICE',
+          sourceVoiceId: localVoiceId,
+          targetVoiceId: widget.candidate.voiceId,
         );
     if (conversation == null) return null;
 
