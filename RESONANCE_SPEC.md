@@ -9,6 +9,19 @@ Resonance connections and active conversations may therefore retain both the ori
 
 The current prototype keeps these Voice IDs optional for backward compatibility with older local data. Production persistence should require valid participant Voice identities and enforce that only the participating Voices can accept, activate, enter, or message within the connection.
 
+### Participant authorization
+
+Voice IDs define which anonymous Voices participate in a relationship, but they are not authentication credentials.
+
+The connection service now applies these domain rules:
+- only the target Voice may accept a suggested connection;
+- either participating Voice may activate an accepted connection;
+- either participating Voice may close or block a connection.
+
+The conversation service requires the caller Voice to be a participant before opening an active conversation or sending a message.
+
+These are prototype-side domain guards. Production must repeat the authorization boundary server-side using the authenticated account and database authorization/RLS rather than trusting a client-supplied Voice ID.
+
 ## Direct Conversation After Resonance
 
 Once a Resonance is accepted and activated, the relationship may open a normal one-to-one direct conversation. The conversation is anchored to the Resonance connection and keeps the originating experience relationship visible as context. Conversation messages are private relationship data and are not automatically converted into public discovery signals. Existing Thread formation remains automatic; messages do not create Threads manually. The current prototype uses a local in-memory conversation repository. Production persistence must use explicit Voice identities for participants rather than relying on experience IDs alone.
