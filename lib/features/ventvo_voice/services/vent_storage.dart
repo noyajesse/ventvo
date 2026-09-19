@@ -66,7 +66,7 @@ class VentStorage {
     if (id is! String ||
         content is! String ||
         spaceId is! String ||
-        voiceMark is! String ||
+        voiceMark is! String ||        (ownerVoiceId != null && ownerVoiceId is! String) ||
         (voiceName != null && voiceName is! String) ||
         createdAt is! String) {
       return null;
