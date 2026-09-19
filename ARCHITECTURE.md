@@ -348,9 +348,9 @@ Resonance answers a deeper question:
 
 Resonance Architecture
 
-Resonance sits above individual interactions.
+Resonance sits above individual interactions and owns the connection lifecycle.
 
-The intended architecture is:
+The current product flow is:
 
 ```text
 Voice
@@ -359,12 +359,24 @@ Vent
   ↓
 Space
   ↓
-Resonance
+Resonance discovery
   ↓
-Connection
+Related experience
+  ↓
+This resonates with me
+  ↓
+Suggested connection
+  ↓
+Accepted
+  ↓
+Active connection
+  ↓
+Shared connection experience
 ```
 
-A person may encounter a Vent, experience resonance with it, and eventually discover another Voice through that resonance.
+A person may encounter a Vent, experience resonance with it, and choose to begin a relationship with another Voice through that resonance. Discovery is therefore a beginning, not the endpoint.
+
+The connection is not a generic follower or direct-message relationship. Its active experience should remain grounded in the shared experience that created it.
 
 7. Resonance Threads
 
@@ -569,33 +581,61 @@ The conversion should only happen when the user explicitly chooses it.
 
 13.4 Find People Who Understand
 
-This is a future connection pathway.
+Find People Who Understand is an explicit connection pathway.
 
 The intended experience is not:
 
 "Your algorithmic match is User #123."
 
-Instead, it should feel like:
+Instead, it should surface relevant experiences/Voices that may genuinely understand the user's experience.
 
-"These are people who understand."
+For a public Vent:
 
-The long-term direction is:
+```text
+Vent
+  ↓
+Resonance discovery
+  ↓
+Related experience
+  ↓
+This resonates with me
+  ↓
+Suggested connection
+```
+
+For a private Crash Out, the user may explicitly request understanding without making the Crash Out public:
 
 ```text
 Crash Out
   ↓
-Private Understanding
+Explicit private understanding request
   ↓
-Resonance / Similarity
+Resonance discovery
   ↓
-Small Group
+Relevant public experiences
   ↓
-Connection
+User chooses whether to leave a Resonance
+  ↓
+Suggested connection
 ```
 
-The earlier product direction allows this experience to eventually surface a small number of Voices rather than a large public audience.
+The Crash Out remains private. It is not indexed or exposed as a public source merely because it is used to discover relevant public experiences.
 
-The exact matching system has not yet been implemented.
+After a Resonance is left, the connection follows the shared lifecycle:
+
+```text
+Suggested
+   ↓
+Accepted
+   ↓
+Active
+   ↓
+Shared connection experience
+```
+
+The receiving Voice controls whether the suggested connection is accepted. The active experience should remain grounded in the shared experience that created the connection rather than becoming a generic direct-message system.
+
+The current prototype implements the public Vent discovery → suggested connection step and provides a local Your Resonances state view. Real recipient delivery, multi-Voice acceptance, and backend persistence remain future work.
 
 14. Human Connection System
 
@@ -821,15 +861,15 @@ Product Systems Not Yet Fully Implemented
 
 These are established product directions but require further development:
 
-Resonance
 Resonance Threads
 Resonance Maps
 Echo
 Echo Notes
 Persistent discussions
-Persistent Resonance interactions
+Persistent multi-Voice Resonance interactions
 Crash Out → Vent conversion
-Find People Who Understand
+Private Crash Out → Find People Who Understand integration
+Active shared connection experience
 Small connection groups
 Voice Crash Outs
 Backend persistence
