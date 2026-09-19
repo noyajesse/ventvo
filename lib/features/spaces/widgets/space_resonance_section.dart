@@ -249,7 +249,8 @@ class _ResonanceCardState extends ConsumerState<_ResonanceCard> {
 
   @override
   Widget build(BuildContext context) {
-    final hasResonated = connection != null;\n    final canOpenRelationship = _canOpenRelationship;
+    final hasResonated = connection != null;
+    final canOpenRelationship = _canOpenRelationship;
 
     return Material(
       color: VentvoColors.surface,
