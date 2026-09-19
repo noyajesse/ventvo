@@ -77,8 +77,8 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
     final vent = Vent(
       id: ventId,
       content: content,
-      spaceId: spaceId,
-      voiceMark: voiceMark,
+      spaceId: spaceId,      voiceMark: voiceMark,
+      ownerVoiceId: voice?.voiceId,
       voiceName: voice?.name,
       voiceSeedId: voice?.seedId,
       createdAt: now,
