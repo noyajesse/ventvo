@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/ventvo_colors.dart';
-import '../../../systems/resonance/providers/resonance_provider.dart';
+import '../../../systems/resonance/models/resonance_candidate.dart';
+import '../../../systems/resonance/providers/resonance_provider.dart'
 import '../../feed/widgets/vent_card.dart';
 import '../models/vent.dart';
 import '../providers/vent_provider.dart';
-import '../../spaces/models/space.dart';
 import '../../spaces/providers/space_provider.dart';
 
 class FindPeopleScreen extends ConsumerStatefulWidget {
@@ -26,10 +26,7 @@ class _FindPeopleScreenState extends ConsumerState<FindPeopleScreen> {
     if (space == null || !vent.isDiscoverable) return const [];
 
     final vents = await ref.read(ventProvider.future);
-    final excludedIds = vents
-        .where((item) => item.id == vent.id)
-        .map((item) => item.id)
-        .toSet();
+    final excludedIds = vents.map((item) => item.id).toSet();
 
     final candidates = await ref
         .read(ventResonanceDiscoveryServiceProvider)
@@ -47,7 +44,7 @@ class _FindPeopleScreenState extends ConsumerState<FindPeopleScreen> {
 
     return [
       for (final candidate in candidates)
-        if (candidate.type.name == 'vent')
+        if (candidate.type == ResonanceCandidateType.vent)
           if (ventsById[candidate.id] case final Vent match) match,
     ];
   }
