@@ -101,21 +101,28 @@ class ResonanceThreadFormationPolicy {
     final counterpartVoiceIds = <String>{};
 
     for (final connection in connections) {
-      final counterpartId = _counterpartId(connection, experienceId);
-      if (counterpartId == null) continue;
-
-      final counterpartVoiceId = _counterpartVoiceId(
-        connection,
-        experienceId,
-      );
-      if (counterpartVoiceId == null || counterpartVoiceId.trim().isEmpty) {
-        return null;
-      }
-
-      if (counterpartId == experienceId) {
-        focalVoiceId ??= counterpartVoiceId;
-      } else {
-        counterpartVoiceIds.add(counterpartVoiceId);
+      if (connection.sourceId == experienceId) {
+        final sourceVoiceId = connection.sourceVoiceId;
+        final targetVoiceId = connection.targetVoiceId;
+        if (sourceVoiceId == null ||
+            sourceVoiceId.trim().isEmpty ||
+            targetVoiceId == null ||
+            targetVoiceId.trim().isEmpty) {
+          return null;
+        }
+        focalVoiceId ??= sourceVoiceId;
+        counterpartVoiceIds.add(targetVoiceId);
+      } else if (connection.targetId == experienceId) {
+        final sourceVoiceId = connection.sourceVoiceId;
+        final targetVoiceId = connection.targetVoiceId;
+        if (sourceVoiceId == null ||
+            sourceVoiceId.trim().isEmpty ||
+            targetVoiceId == null ||
+            targetVoiceId.trim().isEmpty) {
+          return null;
+        }
+        focalVoiceId ??= targetVoiceId;
+        counterpartVoiceIds.add(sourceVoiceId);
       }
     }
 
