@@ -6,6 +6,7 @@ import '../../../systems/resonance/models/resonance_candidate.dart';
 import '../../../systems/resonance/models/resonance_connection.dart';
 import '../../../systems/resonance/providers/resonance_provider.dart';
 import 'resonance_threads_screen.dart';
+import 'resonance_conversation_screen.dart';
 
 class ResonanceRelationshipScreen extends ConsumerStatefulWidget {
   final ResonanceCandidate candidate;
@@ -51,6 +52,17 @@ class _ResonanceRelationshipScreenState
       connection = updated;
       saving = false;
     });
+
+    if (updated.state == ResonanceConnectionState.active && mounted) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => ResonanceConversationScreen(
+            candidate: widget.candidate,
+            connection: updated,
+          ),
+        ),
+      );
+    }
   }
 
   Future<void> _finish({required bool block}) async {
