@@ -78,8 +78,8 @@ class VentStorage {
     return Vent(
       id: id,
       content: content,
-      spaceId: spaceId,
-      voiceMark: voiceMark,
+      spaceId: spaceId,      voiceMark: voiceMark,
+      ownerVoiceId: ownerVoiceId as String?,
       voiceName: voiceName as String?,
       createdAt: parsedCreatedAt,
       visibility: _parseVisibility(map['visibility']),
