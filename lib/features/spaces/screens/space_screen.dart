@@ -74,11 +74,21 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
 
     setState(() => sending = true);
 
-    final voice = ref.read(ventvoVoiceProvider).asData?.value;
+    final voice = await ref.read(ventvoVoiceProvider.future);
+    final vents = ref.read(ventProvider).asData?.value ?? const <Vent>[];
+    Vent? origin;
+    for (final vent in vents) {
+      if (vent.id == widget.space.originatingVentId) {
+        origin = vent;
+        break;
+      }
+    }
     final echo = await echoService.leaveEcho(
       space: widget.space,
       content: text,
       voiceMark: voice?.mark ?? '◇',
+      authorVoiceId: voice?.voiceId,
+      sourceVoiceId: origin?.ownerVoiceId,
     );
 
     if (!mounted) return;
