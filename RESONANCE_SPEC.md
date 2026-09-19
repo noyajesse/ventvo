@@ -1,3 +1,7 @@
+## Direct Conversation After Resonance
+
+Once a Resonance is accepted and activated, the relationship may open a normal one-to-one direct conversation. The conversation is anchored to the Resonance connection and keeps the originating experience relationship visible as context. Conversation messages are private relationship data and are not automatically converted into public discovery signals. Existing Thread formation remains automatic; messages do not create Threads manually. The current prototype uses a local in-memory conversation repository. Production persistence must use explicit Voice identities for participants rather than relying on experience IDs alone.
+
 # Ventvo Resonance System Specification v1.2
 
 ## Status
