@@ -44,8 +44,8 @@ class VentStorage {
     return {
       'id': vent.id,
       'content': vent.content,
-      'spaceId': vent.spaceId,
-      'voiceMark': vent.voiceMark,
+      'spaceId': vent.spaceId,      'voiceMark': vent.voiceMark,
+      'ownerVoiceId': vent.ownerVoiceId,
       'voiceName': vent.voiceName,
       'createdAt': vent.createdAt.toIso8601String(),
       'visibility': vent.visibility.name,
