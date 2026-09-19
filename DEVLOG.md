@@ -5,7 +5,7 @@ Branch: development
 
 Completed:
 - Added a dedicated Your Resonances screen so a suggested connection no longer ends at the confirmation message.
-- The sender can now see a Resonance connection as a persistent local prototype state while waiting for the other Voice.
+- The sender can now see a Resonance connection in the local prototype state while waiting for the other Voice.
 - Added recipient-side acceptance and activation controls to the shared connection-state presentation so the existing suggested → accepted → active lifecycle has a UI boundary ready for multi-Voice persistence.
 - Added Your Resonances to the Resonance hub.
 - After leaving a Resonance, the user can continue directly to Your Resonances instead of being returned only to Find People.
