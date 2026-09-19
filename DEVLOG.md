@@ -382,3 +382,23 @@ Boundary:
 - Find People discovers experiences; it does not create a separate matching system.
 - A private Crash Out is never indexed as a public candidate by this flow.
 - Connection creation remains a Resonance responsibility.
+
+
+## Resonance Connection Action
+
+Date: 2026-09-19
+Branch: development
+
+Completed:
+- Added the first user-facing connection step after Find People Who Understand discovers a meaningful public Vent.
+- Added a Resonance connection screen showing the user's source Moment and the discovered Moment before any connection is created.
+- The action re-validates the target through the shared VentResonanceDiscoveryService before creating a connection.
+- Connection creation is delegated to ResonanceConnectionService.suggestConnection, preserving the existing suggested → accepted → active lifecycle.
+- The UI records a suggested Resonance and explains that the other Voice can choose whether to accept it.
+- Existing connections are reused instead of creating duplicates.
+
+Boundary:
+- No new matching algorithm or connection model was introduced.
+- VentCard remains a general Moment presentation widget; the connection action is scoped to discovery results.
+- Private Crash Outs are not used as connection sources, so this step does not expose private Crash Out content through Resonance connections.
+- Backend persistence and the recipient-side acceptance experience remain future work.
