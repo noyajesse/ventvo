@@ -12,11 +12,15 @@ void main() {
     ResonanceConnectionType type = ResonanceConnectionType.sharedExperience,
     double strength = 0.7,
     ResonanceConnectionState state = ResonanceConnectionState.active,
+    String? sourceVoiceId,
+    String? targetVoiceId,
   }) {
     return ResonanceConnection(
       id: id,
       sourceId: 'origin',
       targetId: targetId,
+      sourceVoiceId: sourceVoiceId ?? 'voice-origin',
+      targetVoiceId: targetVoiceId ?? 'voice-$targetId',
       type: type,
       strength: strength,
       state: state,
@@ -39,6 +43,30 @@ void main() {
       containsAll(['origin', 'experience-a', 'experience-b']),
     );
     expect(decision.connections, hasLength(2));
+  });
+
+  test('rejects formation when multiple experiences belong to the same Voice', () {
+    final decision = policy.evaluate(
+      experienceId: 'origin',
+      connections: [
+        connection(
+          id: 'c1',
+          targetId: 'experience-a',
+          targetVoiceId: 'voice-shared',
+        ),
+        connection(
+          id: 'c2',
+          targetId: 'experience-b',
+          targetVoiceId: 'voice-shared',
+        ),
+      ],
+    );
+
+    expect(decision.isEligible, isFalse);
+    expect(
+      decision.reason,
+      ResonanceMapFormationReason.insufficientVoices,
+    );
   });
 
   test('rejects formation with only one counterpart', () {
