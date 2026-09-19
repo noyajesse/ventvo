@@ -174,6 +174,8 @@ ResonanceConnection _liveConnection({
     type: ResonanceConnectionType.sharedExperience,
     strength: 0.9,
     state: ResonanceConnectionState.active,
+    sourceVoiceId: sourceId,
+    targetVoiceId: targetId,
     createdAt: DateTime(2026, 1, 1),
   );
 }
