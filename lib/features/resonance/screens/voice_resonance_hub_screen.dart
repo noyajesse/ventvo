@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/ventvo_colors.dart';
 import '../providers/resonance_maps_provider.dart';
 import '../providers/resonance_threads_provider.dart';
+import 'resonance_connections_screen.dart';
 import 'resonance_gatherings_screen.dart';
 import 'resonance_maps_screen.dart';
 import 'resonance_threads_screen.dart';
@@ -39,6 +40,17 @@ class VoiceResonanceHubScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 28),
           _Entry(
+            icon: Icons.waves_rounded,
+            title: 'Your Resonances',
+            subtitle: 'See connections as they develop.',
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const ResonanceConnectionsScreen(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          _Entry(
             icon: Icons.account_tree_outlined,
             title: 'Threads',
             subtitle: threads.when(
@@ -67,7 +79,7 @@ class VoiceResonanceHubScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 28),
           const Text(
-            'Threads show one connected path. Maps show the wider landscape. Gatherings are opportunities for connected Voices to meet.',
+            'Resonance begins with a shared experience, becomes a connection, and can later grow into Threads, Maps, and Gatherings.',
             style: TextStyle(color: VentvoColors.textMuted, fontSize: 12, height: 1.55),
           ),
         ],
