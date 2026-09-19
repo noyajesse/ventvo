@@ -7,6 +7,7 @@ import '../../../systems/resonance/models/resonance_connection.dart';
 import '../../../systems/resonance/providers/resonance_provider.dart';
 import 'resonance_threads_screen.dart';
 import 'resonance_conversation_screen.dart';
+import '../../ventvo_voice/providers/voice_provider.dart';
 
 class ResonanceRelationshipScreen extends ConsumerStatefulWidget {
   final ResonanceCandidate candidate;
@@ -38,9 +39,16 @@ class _ResonanceRelationshipScreenState
     if (saving) return;
     setState(() => saving = true);
 
+    final voice = await ref.read(ventvoVoiceProvider.future);
+    final actorVoiceId = voice?.voiceId;
+    if (actorVoiceId == null || actorVoiceId.trim().isEmpty) {
+      if (mounted) setState(() => saving = false);
+      return;
+    }
+
     final updated = await ref
         .read(resonanceConnectionServiceProvider)
-        .activate(connection);
+        .activate(connection, actorVoiceId: actorVoiceId);
 
     if (!mounted) return;
     if (updated == null) {
@@ -93,10 +101,17 @@ class _ResonanceRelationshipScreenState
     if (confirmed != true || !mounted) return;
 
     setState(() => saving = true);
+    final voice = await ref.read(ventvoVoiceProvider.future);
+    final actorVoiceId = voice?.voiceId;
+    if (actorVoiceId == null || actorVoiceId.trim().isEmpty) {
+      if (mounted) setState(() => saving = false);
+      return;
+    }
+
     final service = ref.read(resonanceConnectionServiceProvider);
     final updated = block
-        ? await service.block(connection)
-        : await service.close(connection);
+        ? await service.block(connection, actorVoiceId: actorVoiceId)
+        : await service.close(connection, actorVoiceId: actorVoiceId);
 
     if (!mounted) return;
     if (updated == null) {
