@@ -22,6 +22,17 @@ The conversation service requires the caller Voice to be a participant before op
 
 These are prototype-side domain guards. Production must repeat the authorization boundary server-side using the authenticated account and database authorization/RLS rather than trusting a client-supplied Voice ID.
 
+### Local prototype state honesty
+
+The local prototype must not present a suggested connection as though a second Voice has already received or accepted it.
+
+- A source Voice sees that the Resonance is waiting for the other Voice.
+- A target Voice may see the acceptance action only when its Voice ID matches the connection target.
+- Accepted/active relationship entry requires the local Voice to be an explicit participant.
+- Missing participant Voice identity prevents acceptance.
+
+Real recipient delivery, acceptance, and multi-Voice persistence remain backend responsibilities.
+
 ## Direct Conversation After Resonance
 
 Once a Resonance is accepted and activated, the relationship may open a normal one-to-one direct conversation. The conversation is anchored to the Resonance connection and keeps the originating experience relationship visible as context. Conversation messages are private relationship data and are not automatically converted into public discovery signals. Existing Thread formation remains automatic; messages do not create Threads manually. The current prototype uses a local in-memory conversation repository. Production persistence must use explicit Voice identities for participants rather than relying on experience IDs alone.
