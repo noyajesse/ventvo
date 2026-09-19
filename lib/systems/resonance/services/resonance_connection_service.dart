@@ -4,6 +4,7 @@ import '../models/resonance_signal.dart';
 import 'resonance_connection_lifecycle.dart';
 import 'resonance_engine.dart';
 import 'resonance_map_event_service.dart';
+import 'resonance_relationship_formation_service.dart';
 import 'resonance_thread_reconciliation_service.dart';
 
 /// Turns meaningful discovery results into suggested Resonance connections
@@ -13,12 +14,14 @@ class ResonanceConnectionService {
   final ResonanceConnectionLifecycle lifecycle;
   final ResonanceThreadReconciliationService? threadReconciliationService;
   final ResonanceMapEventService? mapEventService;
+  final ResonanceRelationshipFormationService? relationshipFormationService;
 
   const ResonanceConnectionService({
     required this.engine,
     this.lifecycle = const ResonanceConnectionLifecycle(),
     this.threadReconciliationService,
     this.mapEventService,
+    this.relationshipFormationService,
   });
 
   Future<ResonanceConnection?> suggestConnection({
@@ -109,6 +112,7 @@ class ResonanceConnectionService {
 
     await _reconcileThreadsFor(updated);
     await _handleMapEventFor(updated);
+    await _handleRelationshipFormationFor(updated);
     return updated;
   }
 
@@ -127,6 +131,15 @@ class ResonanceConnectionService {
     for (final threadId in threadIds) {
       await service.reconcile(threadId);
     }
+  }
+
+  Future<void> _handleRelationshipFormationFor(
+    ResonanceConnection connection,
+  ) async {
+    final service = relationshipFormationService;
+    if (service == null) return;
+
+    await service.handleConnectionStateChange(connection);
   }
 
   Future<void> _handleMapEventFor(
