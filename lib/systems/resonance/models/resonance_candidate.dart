@@ -11,6 +11,7 @@ class ResonanceCandidate {
   final String id;
   final ResonanceCandidateType type;
   final String? voiceMark;
+  final String? voiceId;
   final double score;
   final List<ResonanceSignal> signals;
   final ResonanceProfile? profile;
@@ -19,6 +20,7 @@ class ResonanceCandidate {
     required this.id,
     required this.type,
     this.voiceMark,
+    this.voiceId,
     required this.score,
     this.signals = const [],
     this.profile,
@@ -28,6 +30,7 @@ class ResonanceCandidate {
     String? id,
     ResonanceCandidateType? type,
     String? voiceMark,
+    String? voiceId,
     double? score,
     List<ResonanceSignal>? signals,
     ResonanceProfile? profile,
@@ -36,6 +39,7 @@ class ResonanceCandidate {
       id: id ?? this.id,
       type: type ?? this.type,
       voiceMark: voiceMark ?? this.voiceMark,
+      voiceId: voiceId ?? this.voiceId,
       score: score ?? this.score,
       signals: signals ?? this.signals,
       profile: profile ?? this.profile,
