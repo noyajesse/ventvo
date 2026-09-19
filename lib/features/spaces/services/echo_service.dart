@@ -25,6 +25,8 @@ class EchoService {
     required Space space,
     required String content,
     required String voiceMark,
+    String? authorVoiceId,
+    String? sourceVoiceId,
   }) async {
     if (!space.isOpenDiscussion) return null;
 
@@ -36,6 +38,7 @@ class EchoService {
       spaceId: space.id,
       ventId: space.originatingVentId,
       voiceMark: voiceMark,
+      authorVoiceId: authorVoiceId,
       content: text,
       createdAt: DateTime.now(),
     );
@@ -44,11 +47,13 @@ class EchoService {
     final echo = _toEcho(response);
 
     final resonanceService = responseResonanceService;
-    if (resonanceService != null) {
+    if (resonanceService != null && authorVoiceId != null) {
       await resonanceService.connectEcho(
         space: space,
         echo: echo,
         sourceExperienceId: space.originatingVentId,
+        sourceVoiceId: sourceVoiceId,
+        actorVoiceId: authorVoiceId,
       );
     }
 
@@ -61,6 +66,7 @@ class EchoService {
       spaceId: response.spaceId,
       ventId: response.ventId,
       voiceMark: response.voiceMark,
+      authorVoiceId: response.authorVoiceId,
       content: response.content,
       createdAt: response.createdAt,
     );
