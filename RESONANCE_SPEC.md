@@ -292,6 +292,60 @@ Invalid transitions are rejected explicitly.
 
 ---
 
+# 10. Active Connection and Direct Conversation
+
+An accepted Resonance can become an active human-to-human connection. Once accepted, the Voices should be able to communicate naturally rather than being forced through a special interaction protocol.
+
+The active connection experience may include normal direct messaging.
+
+The important product boundary is not that messaging is forbidden. The boundary is how access to the conversation is established:
+
+```
+Moment
+   ↓
+Resonance
+   ↓
+Suggested connection
+   ↓
+Recipient accepts
+   ↓
+Active Connection
+   ↓
+Direct conversation
+```
+
+Direct conversation is not a replacement for Resonance. Resonance establishes why the connection exists; messaging is the ordinary communication layer that lets two consenting Voices continue that relationship.
+
+The connection should preserve the originating context so the Voices can still see the Moments/experience that led to the Resonance. This keeps the conversation grounded without forcing users to repeatedly answer structured prompts.
+
+Ventvo must not require users to manually create or manage Threads during conversation. Thread formation remains a Resonance-domain process driven by relationship evidence.
+
+No follower/friend system, popularity mechanism, or arbitrary group chat is implied by an active connection.
+
+## Relationship Evidence
+
+The active conversation can contribute relationship evidence through domain events or other explicitly designed signals. The system should not treat every message as a Thread participant automatically.
+
+Instead:
+
+```
+Active Connection
+      ↓
+Relationship / experience evidence
+      ↓
+Existing Thread Formation / Evolution Policy
+      ↓
+Enough meaningful evidence?
+   ├── NO → keep conversation as conversation
+   └── YES → form or extend Thread
+```
+
+Threads therefore remain an emergent system property. Users experience the conversation normally while Resonance determines, behind the scenes, whether the relationship has become strong enough to form or extend a persistent Thread.
+
+The exact message-to-evidence mechanism remains an implementation decision and must respect privacy, safety, consent, and data-minimization boundaries. Ventvo must not silently turn private conversation content into public discovery material.
+
+---
+
 # 10. Resonance Threads
 
 A Resonance Thread is a developing chain of related experiences connected through Resonance.
@@ -326,7 +380,7 @@ Thread creation is intentionally stricter than ordinary candidate discovery. A T
 
 # 11. Thread Formation
 
-Thread formation is governed by an explicit policy rather than being triggered merely by similarity.
+Thread formation is governed by an explicit policy rather than being triggered merely by similarity. The policy operates behind the scenes; users do not manually create Threads.
 
 ```text
 Experience
@@ -729,7 +783,7 @@ After a Resonance is left, the connection follows the shared lifecycle rather th
 Suggested → Accepted → Active
 ```
 
-The receiving Voice controls whether the suggested connection is accepted. The active connection should remain grounded in the shared experience that created it rather than becoming a generic direct-message shortcut.
+The receiving Voice controls whether the suggested connection is accepted. The active connection may include normal direct messaging while preserving the originating shared experience as context.
 
 ---
 
@@ -997,120 +1051,3 @@ Services receive engines, repositories, and reconciliation dependencies rather t
 ### Query/application boundaries
 
 Product features ask Resonance for valid domain results instead of reproducing filtering rules independently.
-
-### Encapsulation
-
-Internal scores, safety signals, and private identity data remain behind domain boundaries.
-
----
-
-# 29. Testing Requirements and Current Verification
-
-Resonance changes require automated tests for deterministic behavior and architectural boundaries.
-
-Current coverage includes:
-
-- signal generation
-- signal composition
-- candidate/profile integration
-- deterministic scoring
-- candidate discovery
-- privacy/safety filtering
-- Feed and Space discovery orchestration
-- connection creation
-- connection type inference
-- self/invalid connection rejection
-- connection lifecycle transitions
-- invalid lifecycle transition rejection
-- Thread formation approval/rejection
-- Thread formation idempotency
-- Thread evolution rules
-- Thread integrity states
-- blocked/dormant Thread behavior
-- Thread reconciliation
-- lifecycle-triggered Thread reconciliation
-- Thread discovery filtering
-- stale Thread state reconciliation during discovery
-- discovery limits and input validation
-
-Latest verified development milestone:
-
-```text
-git pull origin development
-flutter analyze
-flutter test
-```
-
-Result: **all clean / all tests passed** as confirmed during development.
-
-Future backend and production discovery work must retain equivalent unit and integration coverage.
-
----
-
-# 30. What We Are NOT Implementing Yet
-
-The current Resonance foundation does not attempt to solve everything.
-
-We are not yet implementing:
-
-- production AI matching
-- embeddings/vector infrastructure
-- public Resonance Maps
-- automatic friendship/follow systems
-- large group matching
-- recommendation notifications
-- permanent psychological profiles
-- diagnosis or mental-health classification
-- a second matching system inside Crash Out
-- final Feed/Space animation or presentation polish
-
-These can be evaluated only after the core connection model works.
-
----
-
-# 31. Current Implementation Status
-
-Implemented and verified foundation:
-
-- Resonance signals
-- Resonance profiles/composition
-- deterministic scoring
-- candidate discovery
-- Resonance connections
-- connection lifecycle
-- Thread model
-- Thread formation policy/service
-- Thread evolution policy/service
-- Thread integrity policy
-- Thread reconciliation service
-- lifecycle-triggered reconciliation
-- Thread discovery/query boundary
-- automated tests for the above
-
-Current development priority remains the Resonance/domain layer before returning to Feed and Space animation/UI.
-
-The next architectural work should build on the Thread discovery boundary rather than creating another independent matching or filtering system.
-
----
-
-# 32. Future Expansion
-
-Future Resonance capabilities may include:
-
-- richer Thread discovery filters
-- Resonance Maps
-- Echo-driven relationship strengthening
-- explicit Find People Who Understand experience
-- connection-state and active shared-experience surfaces
-- small-group experiences
-- user-controlled discovery preferences
-- production backend persistence
-- secure authorization and row-level security
-- realtime relationship updates
-- semantic search
-- embeddings
-- AI-assisted discovery
-
-All future additions must preserve the central rule:
-
-> Resonance is the shared human-connection layer. Product features consume it; they do not replace it.
