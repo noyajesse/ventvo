@@ -99,6 +99,23 @@ class _ResonanceConversationScreenState
     super.dispose();
   }
 
+  Future<void> _openDetails() async {
+    final result = await Navigator.of(context).push<ResonanceConnection>(
+      MaterialPageRoute(
+        builder: (_) => ResonanceRelationshipScreen(
+          candidate: widget.candidate,
+          connection: widget.connection,
+        ),
+      ),
+    );
+
+    if (!mounted) return;
+    if (result?.state == ResonanceConnectionState.closed ||
+        result?.state == ResonanceConnectionState.blocked) {
+      Navigator.of(context).pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,14 +127,7 @@ class _ResonanceConversationScreenState
         actions: [
           IconButton(
             tooltip: 'Resonance details',
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => ResonanceRelationshipScreen(
-                  candidate: widget.candidate,
-                  connection: widget.connection,
-                ),
-              ),
-            ),
+            onPressed: _openDetails,
             icon: const Icon(Icons.waves_rounded),
           ),
         ],
