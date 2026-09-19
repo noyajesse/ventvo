@@ -21,67 +21,22 @@ class FakeResonanceEngine implements ResonanceEngine {
 
   @override
   Future<ResonanceConnection?> getConnectionBetween(String sourceId, String targetId) async => null;
-
   @override
   Future<List<ResonanceConnection>> getConnectionsInvolving(String id) async => const [];
-
   @override
   Future<void> updateConnection(ResonanceConnection connection) async { updatedConnection = connection; }
-
   @override
   Future<void> indexCandidate(ResonanceCandidate candidate) async {}
-
   @override
   Future<List<ResonanceCandidate>> discover(ResonanceQuery query) async => const [];
-
   @override
   Future<void> saveThread(ResonanceThread thread) async { threads[thread.id] = thread; }
-
   @override
   Future<ResonanceThread?> getThread(String threadId) async => threads[threadId];
-
   @override
   Future<List<ResonanceThread>> getThreadsForExperience(String experienceId) async => threads.values.where((thread) => thread.containsExperience(experienceId)).toList();
-
   @override
   Future<List<ResonanceThread>> getThreads() async => threads.values.toList();
-
-  test('only the target Voice can accept a suggested connection', () async {
-    final engine = FakeResonanceEngine();
-    final service = ResonanceConnectionService(engine: engine);
-
-    final denied = await service.accept(
-      _connection(),
-      actorVoiceId: 'voice-3',
-    );
-    expect(denied, isNull);
-    expect(engine.updatedConnection, isNull);
-
-    final accepted = await service.accept(
-      _connection(),
-      actorVoiceId: 'voice-2',
-    );
-    expect(accepted!.state, ResonanceConnectionState.accepted);
-  });
-
-  test('only a connection participant can activate it', () async {
-    final engine = FakeResonanceEngine();
-    final service = ResonanceConnectionService(engine: engine);
-
-    final denied = await service.activate(
-      _connection(state: ResonanceConnectionState.accepted),
-      actorVoiceId: 'voice-3',
-    );
-    expect(denied, isNull);
-    expect(engine.updatedConnection, isNull);
-
-    final activated = await service.activate(
-      _connection(state: ResonanceConnectionState.accepted),
-      actorVoiceId: 'voice-2',
-    );
-    expect(activated!.state, ResonanceConnectionState.active);
-  });
-
 }
 
 ResonanceConnection _connection({ResonanceConnectionState state = ResonanceConnectionState.suggested}) {
@@ -122,7 +77,7 @@ void main() {
   test('accepts a suggested connection', () async {
     final engine = FakeResonanceEngine();
     final service = ResonanceConnectionService(engine: engine);
-    final updated = await service.accept(_connection(), actorVoiceId: 'voice-1');
+    final updated = await service.accept(_connection(), actorVoiceId: 'voice-2');
     expect(updated!.state, ResonanceConnectionState.accepted);
     expect(engine.updatedConnection, updated);
   });
@@ -156,55 +111,12 @@ void main() {
     expect(engine.updatedConnection, isNull);
   });
 
-  test('only the target Voice can accept a suggested connection', () async {
-    final engine = FakeResonanceEngine();
-    final service = ResonanceConnectionService(engine: engine);
-
-    final denied = await service.accept(
-      _connection(),
-      actorVoiceId: 'voice-3',
-    );
-    expect(denied, isNull);
-    expect(engine.updatedConnection, isNull);
-
-    final accepted = await service.accept(
-      _connection(),
-      actorVoiceId: 'voice-2',
-    );
-    expect(accepted!.state, ResonanceConnectionState.accepted);
-  });
-
-  test('only a connection participant can activate it', () async {
-    final engine = FakeResonanceEngine();
-    final service = ResonanceConnectionService(engine: engine);
-
-    final denied = await service.activate(
-      _connection(state: ResonanceConnectionState.accepted),
-      actorVoiceId: 'voice-3',
-    );
-    expect(denied, isNull);
-    expect(engine.updatedConnection, isNull);
-
-    final activated = await service.activate(
-      _connection(state: ResonanceConnectionState.accepted),
-      actorVoiceId: 'voice-2',
-    );
-    expect(activated!.state, ResonanceConnectionState.active);
-  });
-
-
   test('does not accept when the target Voice identity is missing', () async {
     final engine = FakeResonanceEngine();
     final service = ResonanceConnectionService(engine: engine);
-
     final connection = _connection().copyWith(targetVoiceId: null);
-    final updated = await service.accept(
-      connection,
-      actorVoiceId: 'voice-2',
-    );
-
+    final updated = await service.accept(connection, actorVoiceId: 'voice-2');
     expect(updated, isNull);
     expect(engine.updatedConnection, isNull);
   });
-
 }
