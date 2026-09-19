@@ -99,11 +99,15 @@ ResonanceConnection _connection({
   ResonanceConnectionType type = ResonanceConnectionType.sharedExperience,
   double strength = 0.8,
   ResonanceConnectionState state = ResonanceConnectionState.active,
+  String? sourceVoiceId,
+  String? targetVoiceId,
 }) {
   return ResonanceConnection(
     id: id,
     sourceId: sourceId,
     targetId: targetId,
+    sourceVoiceId: sourceVoiceId ?? 'voice-$sourceId',
+    targetVoiceId: targetVoiceId ?? 'voice-$targetId',
     type: type,
     strength: strength,
     state: state,
@@ -340,6 +344,34 @@ void main() {
       'vent-new_vent-1',
       'vent-new_vent-2',
     ]);
+  });
+
+  test('does not form a Thread when multiple experiences belong to the same Voice', () async {
+    final repository = FakeResonanceRepository();
+    final service = _service(repository);
+    repository.connections.addAll([
+      _connection(
+        id: 'vent-new_vent-1',
+        sourceId: 'vent-new',
+        targetId: 'vent-1',
+        targetVoiceId: 'voice-shared',
+      ),
+      _connection(
+        id: 'vent-new_vent-2',
+        sourceId: 'vent-new',
+        targetId: 'vent-2',
+        targetVoiceId: 'voice-shared',
+      ),
+    ]);
+
+    final result = await service.formThreadForExperience(
+      experienceId: 'vent-new',
+      threadId: 'thread-new',
+      createdAt: DateTime(2026, 2, 1),
+    );
+
+    expect(result, isNull);
+    expect(repository.threads, isEmpty);
   });
 
   test('does not create a new Thread when formation policy rejects weak evidence', () async {
