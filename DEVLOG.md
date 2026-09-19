@@ -640,3 +640,22 @@ Boundary:
 - VentCard remains a general Moment presentation widget; the connection action is scoped to discovery results.
 - Private Crash Outs are not used as connection sources, so this step does not expose private Crash Out content through Resonance connections.
 - Backend persistence and the recipient-side acceptance experience remain future work.
+
+## Resonance Relationship Formation Boundary
+
+Date: 2026-09-19
+Branch: development
+
+Completed:
+- Added a narrow relationship-formation orchestration service that reacts only to accepted or active Resonance connections.
+- The orchestration checks both connection endpoints so formation can begin around whichever experience has enough evidence.
+- Thread and Map creation remain delegated to their existing formation services and policies.
+- Thread and Map formation now require explicit, distinct Voice identities for the participating experiences; multiple experiences from one Voice cannot manufacture a multi-Voice structure.
+- Added tests for lifecycle gating, automatic formation orchestration, and same-Voice rejection.
+
+Boundary:
+- A single Resonance still cannot create a Thread or Map.
+- Suggested, closed, and blocked connections do not trigger formation.
+- Formation thresholds remain unchanged: meaningful accepted/active evidence, sufficient strength, and the existing privacy/safety vetoes still apply.
+- Thread and Map remain relationship structures, not presentation shortcuts or fixed-size groups.
+- Voice identity is now part of the evidence required to treat multiple experiences as multiple people.
