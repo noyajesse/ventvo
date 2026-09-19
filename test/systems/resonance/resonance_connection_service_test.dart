@@ -60,6 +60,8 @@ void main() {
     expect(connection, isNotNull);
     expect(connection!.type, ResonanceConnectionType.sharedExperience);
     expect(connection.strength, 0.82);
+    expect(connection.sourceVoiceId, 'voice-1');
+    expect(connection.targetVoiceId, 'voice-2');
     expect(engine.createdConnection, connection);
   });
 
