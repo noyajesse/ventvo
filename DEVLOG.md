@@ -1,3 +1,18 @@
+### Explicit Voice Identity for Resonance Connections
+
+Date: 2026-09-19  
+Branch: development
+
+- Added optional explicit Voice ownership to Vent records through `ownerVoiceId`.
+- Vent persistence now retains the owning Voice ID, while older stored Vents remain compatible when the field is absent.
+- Resonance discovery candidates now carry the Voice ID associated with their originating Vent.
+- Resonance connections now preserve both originating experience IDs and the Voice IDs of the participants.
+- Active Resonance conversations now carry the source and target Voice IDs alongside their originating experience IDs.
+- Message-level `senderVoiceId` remains the identity used for local message ownership/alignment.
+- Experience identity and Voice identity remain separate: experiences explain why a Resonance exists; Voice IDs identify the participants in the resulting relationship.
+- Thread formation remains experience/connection based and is not rewritten around Voice IDs.
+- The prototype remains local/in-memory for Resonance and conversation storage; production persistence will enforce participant authorization using these explicit Voice identities.
+
 ### Active Connection: Direct Conversation Foundation
 
 Date: 2026-09-19  
