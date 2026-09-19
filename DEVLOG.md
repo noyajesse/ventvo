@@ -1,3 +1,20 @@
+### Active Connection: Direct Conversation Foundation
+
+Date: 2026-09-19  
+Branch: development
+
+- Added a dedicated Resonance conversation domain boundary with Conversation and Message models.
+- Added a repository/service/provider layer for local in-memory direct conversations.
+- A conversation can only open for an ACTIVE Resonance; accepted connections still pass through activation first.
+- The conversation screen preserves the originating Resonance context and supports ordinary one-to-one text messaging.
+- Active Resonances now open the direct conversation from Your Resonances.
+- Activating an accepted Resonance now continues directly into the conversation.
+- Closing and blocking remain Resonance lifecycle operations; no separate conversation lifecycle was introduced.
+- Private conversation content is not indexed into public discovery or silently exposed as Resonance discovery material.
+- Threads remain automatic and are not manually created from messages.
+- The local prototype still uses in-memory conversation storage and does not yet represent a real remote second Voice receiving messages.
+- Before production persistence, conversation participants need to be backed by explicit Voice identities rather than only experience endpoints.
+
 ## Active Connection: Direct Conversation + Automatic Threads
 
 Date: 2026-09-19
