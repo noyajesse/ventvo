@@ -135,6 +135,7 @@ void main() {
       spaceId: spaceId,
       ventId: 'vent-1',
       voiceMark: '△',
+      authorVoiceId: 'voice-2',
       content: 'I felt this too.',
       createdAt: DateTime(2026, 1, 1),
     );
@@ -162,6 +163,8 @@ void main() {
       space: openDiscussion(),
       echo: echo('space-1'),
       sourceExperienceId: 'vent:vent-1',
+      sourceVoiceId: 'voice-1',
+      actorVoiceId: 'voice-2',
     );
 
     expect(result, isNotNull);
