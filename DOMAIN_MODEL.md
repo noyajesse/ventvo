@@ -231,6 +231,19 @@ The lifecycle is owned by the Resonance connection lifecycle and connection serv
 
 The current local prototype can create and display a suggested connection and expose the lifecycle UI boundary, but it cannot yet simulate a real second Voice receiving and accepting a connection because authentication and multi-Voice backend persistence are not implemented.
 
+### Participant authorization boundary
+
+Voice IDs are participant identifiers, not authentication by themselves.
+
+The connection service now requires a caller Voice ID for lifecycle actions:
+- only the target Voice may accept a suggested connection;
+- either participating Voice may activate an accepted connection;
+- either participating Voice may close or block a connection.
+
+The conversation service also requires the caller Voice to be one of the explicit conversation participants before opening the conversation or sending a message.
+
+These checks establish the domain boundary in the local prototype. Production persistence must enforce the same rules against the authenticated account and server-side authorization/RLS; client-provided Voice IDs must never be treated as proof of identity.
+
 ### Consumers
 - Feed
 - Space
