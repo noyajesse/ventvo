@@ -17,6 +17,8 @@ abstract class ResonanceEngine {
   Future<ResonanceConnection> createConnection({
     required String sourceId,
     required String targetId,
+    String? sourceVoiceId,
+    String? targetVoiceId,
     required ResonanceConnectionType type,
     required double strength,
   });
@@ -123,6 +125,8 @@ class LocalResonanceEngine implements ResonanceEngine, ResonanceMapEngine {
   Future<ResonanceConnection> createConnection({
     required String sourceId,
     required String targetId,
+    String? sourceVoiceId,
+    String? targetVoiceId,
     required ResonanceConnectionType type,
     required double strength,
   }) async {
@@ -135,6 +139,8 @@ class LocalResonanceEngine implements ResonanceEngine, ResonanceMapEngine {
       id: '${sourceId}_$targetId',
       sourceId: sourceId,
       targetId: targetId,
+      sourceVoiceId: sourceVoiceId,
+      targetVoiceId: targetVoiceId,
       type: type,
       strength: strength,
       createdAt: DateTime.now(),
