@@ -5,6 +5,7 @@ import '../../../core/theme/ventvo_colors.dart';
 import '../../../systems/resonance/models/resonance_candidate.dart';
 import '../../../systems/resonance/models/resonance_connection.dart';
 import '../../../systems/resonance/providers/resonance_provider.dart';
+import '../../resonance/screens/resonance_connections_screen.dart';
 import '../../spaces/providers/space_provider.dart';
 import '../models/vent.dart';
 
@@ -200,6 +201,15 @@ class _ResonanceConnectionScreenState
                 ),
               ),
               const SizedBox(height: 18),
+              FilledButton(
+                onPressed: () => Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (_) => const ResonanceConnectionsScreen(),
+                  ),
+                ),
+                child: const Text('View Your Resonances'),
+              ),
+              const SizedBox(height: 10),
               OutlinedButton(
                 onPressed: () => Navigator.of(context).pop(),
                 child: const Text('Back to Find People'),
