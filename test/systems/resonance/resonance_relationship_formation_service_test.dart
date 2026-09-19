@@ -24,23 +24,31 @@ void main() {
     );
 
     final createdAt = DateTime(2026, 9, 19);
-    await engine.createConnection(
-      sourceId: 'vent-origin',
-      targetId: 'vent-a',
-      sourceVoiceId: 'voice-origin',
-      targetVoiceId: 'voice-a',
-      type: ResonanceConnectionType.sharedExperience,
-      strength: 0.8,
-      state: ResonanceConnectionState.accepted,
+    await repository.saveConnection(
+      ResonanceConnection(
+        id: 'vent-origin_vent-a',
+        sourceId: 'vent-origin',
+        targetId: 'vent-a',
+        sourceVoiceId: 'voice-origin',
+        targetVoiceId: 'voice-a',
+        type: ResonanceConnectionType.sharedExperience,
+        strength: 0.8,
+        state: ResonanceConnectionState.accepted,
+        createdAt: createdAt,
+      ),
     );
-    await engine.createConnection(
-      sourceId: 'vent-origin',
-      targetId: 'vent-b',
-      sourceVoiceId: 'voice-origin',
-      targetVoiceId: 'voice-b',
-      type: ResonanceConnectionType.perspective,
-      strength: 0.8,
-      state: ResonanceConnectionState.accepted,
+    await repository.saveConnection(
+      ResonanceConnection(
+        id: 'vent-origin_vent-b',
+        sourceId: 'vent-origin',
+        targetId: 'vent-b',
+        sourceVoiceId: 'voice-origin',
+        targetVoiceId: 'voice-b',
+        type: ResonanceConnectionType.perspective,
+        strength: 0.8,
+        state: ResonanceConnectionState.accepted,
+        createdAt: createdAt,
+      ),
     );
 
     final trigger = ResonanceConnection(
