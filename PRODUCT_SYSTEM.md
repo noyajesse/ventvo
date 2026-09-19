@@ -201,12 +201,38 @@ It represents the feeling that another person's moment connected with something 
 
 The current architecture is deterministic and explainable. It is designed so that future backend or AI-assisted discovery can be added without changing the meaning of the product.
 
-Resonance can lead to:
+Resonance is not the end of the interaction. A meaningful Resonance can become an intentional connection.
 
+The current connection journey is:
+
+```
+Discover related experience
+        ↓
+This resonates with me
+        ↓
+Resonance suggested
+        ↓
+Your Resonances
+        ↓
+Waiting for their response
+        ↓
+Accepted
+        ↓
+Active connection
+        ↓
+Shared connection experience
+        ↓
+Threads / Maps / future Gatherings
+```
+
+A connection is not a follower relationship or an automatic conversation. The receiving Voice remains in control of whether the suggested connection is accepted.
+
+Resonance can lead to:
 - meaningful connections
 - Resonance Threads
 - Resonance Maps
 - future small private connection experiences
+- optional Gatherings emerging from established relationships
 
 ## 8. Feed and Moments
 
@@ -285,10 +311,12 @@ Build depth before breadth.
 ### Immediate
 
 1. Validate the complete first-run journey on device.
-2. Finish Crash Out conversion and private understanding pathways.
-3. Tighten Feed → Space → Resonance continuity.
-4. Remove or isolate obsolete prototype Discussion code.
+2. Finish the Crash Out → Find People Who Understand pathway and connect discovery to the connection lifecycle.
+3. Define and build the active connection experience around shared experiences rather than generic direct messaging.
+4. Tighten Feed → Space → Resonance continuity.
 5. Add tests around the complete user journey and domain transitions.
+
+The current prototype already exposes the first public Resonance → connection step and a local Your Resonances state view. The recipient-side experience remains a prototype boundary until multiple Voices and backend persistence exist.
 
 ### Then
 
