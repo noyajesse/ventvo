@@ -1,3 +1,82 @@
+## Active Connection: Direct Conversation + Automatic Threads
+
+Date: 2026-09-19
+Branch: development
+
+Product decision:
+
+After a Voice accepts a Resonance, the resulting Active Connection may use normal direct messaging. We are not trying to redesign basic human conversation into a special messaging mechanic.
+
+The distinction is how the conversation is reached:
+
+```text
+Moment
+   ↓
+Resonance
+   ↓
+Suggested connection
+   ↓
+Recipient accepts
+   ↓
+Active Connection
+   ↓
+Direct conversation
+```
+
+The user can therefore talk naturally with the other Voice.
+
+The originating Moments/experience remain visible as context so the connection retains the reason the two Voices resonated.
+
+### Thread behavior
+
+Threads remain an automatic Resonance-domain system.
+
+Users do not manually create Threads during conversation.
+
+Instead:
+
+```text
+Active Connection
+      ↓
+Relationship / experience evidence
+      ↓
+Existing Thread Formation / Evolution Policy
+      ↓
+Enough meaningful evidence?
+   ├── NO → conversation remains a conversation
+   └── YES → form or extend Thread
+```
+
+A conversation does not automatically turn every message into a Thread participant. Thread formation/evolution continues to require meaningful evidence, accepted or active relationships, existing privacy/safety rules, and the established Resonance policies.
+
+This preserves the original Ventvo idea:
+
+- Direct conversation is for the people.
+- Resonance explains why the connection exists.
+- Threads emerge behind the scenes from meaningful relationship evidence.
+- Maps can later represent broader landscapes of related Threads.
+- Gatherings remain an optional group experience that can emerge from genuine relationships.
+
+Important boundary:
+
+- Ventvo is not adding a follower/friend system.
+- Resonance is not being replaced by DMs.
+- DMs are not the discovery mechanism.
+- Users are not required to manually create Threads.
+- Private conversation must not silently become public discovery material.
+- No arbitrary group chat or fixed three-person requirement is introduced.
+
+Engineering direction:
+
+The next implementation should inspect the existing active connection, connection model/service, local repository, and Thread formation/reconciliation paths before adding any new code. The goal is to connect a natural conversation layer to the existing Resonance domain rather than building a second messaging or Thread system.
+
+Verification:
+
+- Product decision documented in RESONANCE_SPEC.md.
+- No Flutter verification claimed from GitHub tooling.
+
+---
+
 ## Active Resonance Entry Point
 
 Date: 2026-09-19
