@@ -48,7 +48,7 @@ class FakeResonanceEngine implements ResonanceEngine {
 }
 
 ResonanceConnection _connection({ResonanceConnectionState state = ResonanceConnectionState.suggested}) {
-  return ResonanceConnection(id: 'vent-1_vent-2', sourceId: 'vent-1', targetId: 'vent-2', type: ResonanceConnectionType.sharedExperience, strength: 0.82, state: state, createdAt: DateTime(2026, 1, 1));
+  return ResonanceConnection(id: 'vent-1_vent-2', sourceId: 'vent-1', targetId: 'vent-2', sourceVoiceId: 'voice-1', targetVoiceId: 'voice-2', type: ResonanceConnectionType.sharedExperience, strength: 0.82, state: state, createdAt: DateTime(2026, 1, 1));
 }
 
 void main() {
@@ -85,7 +85,7 @@ void main() {
   test('accepts a suggested connection', () async {
     final engine = FakeResonanceEngine();
     final service = ResonanceConnectionService(engine: engine);
-    final updated = await service.accept(_connection());
+    final updated = await service.accept(_connection(), actorVoiceId: 'voice-1');
     expect(updated!.state, ResonanceConnectionState.accepted);
     expect(engine.updatedConnection, updated);
   });
@@ -93,21 +93,21 @@ void main() {
   test('activates an accepted connection', () async {
     final engine = FakeResonanceEngine();
     final service = ResonanceConnectionService(engine: engine);
-    final updated = await service.activate(_connection(state: ResonanceConnectionState.accepted));
+    final updated = await service.activate(_connection(state: ResonanceConnectionState.accepted), actorVoiceId: 'voice-1');
     expect(updated!.state, ResonanceConnectionState.active);
   });
 
   test('closes an active connection', () async {
     final engine = FakeResonanceEngine();
     final service = ResonanceConnectionService(engine: engine);
-    final updated = await service.close(_connection(state: ResonanceConnectionState.active));
+    final updated = await service.close(_connection(state: ResonanceConnectionState.active), actorVoiceId: 'voice-1');
     expect(updated!.state, ResonanceConnectionState.closed);
   });
 
   test('blocks an active connection', () async {
     final engine = FakeResonanceEngine();
     final service = ResonanceConnectionService(engine: engine);
-    final updated = await service.block(_connection(state: ResonanceConnectionState.active));
+    final updated = await service.block(_connection(state: ResonanceConnectionState.active), actorVoiceId: 'voice-1');
     expect(updated!.state, ResonanceConnectionState.blocked);
   });
 
