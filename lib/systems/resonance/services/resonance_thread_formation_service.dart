@@ -105,7 +105,8 @@ class ResonanceThreadFormationService {
     }
 
     final connections = await engine.getConnectionsInvolving(experienceId);
-    final existing = await findBestThreadForExperience(experienceId);
+    final existingThreads = await engine.getThreadsForExperience(experienceId);
+    final existing = existingThreads.isEmpty ? null : existingThreads.first;
     if (existing != null) {
       final bestConnection = _bestConnectionForThread(
         existing,
