@@ -1,3 +1,56 @@
+## Active Resonance Entry Point
+
+Date: 2026-09-19
+Branch: development
+
+Completed:
+- Connected accepted and active Resonances in Your Resonances to the existing ResonanceRelationshipScreen.
+- Changed Enter Connection so it opens the relationship experience instead of activating the connection immediately.
+- Added an Open Connection action for active Resonances.
+- Kept activation behind the ResonanceConnectionService lifecycle transition.
+- Reused the existing relationship screen's controls for continuing, closing, blocking, and exploring related Threads.
+
+Product flow:
+
+```
+Find People Who Understand
+        ↓
+Discover related experience
+        ↓
+This resonates with me
+        ↓
+Resonance suggested
+        ↓
+Your Resonances
+        ↓
+Accepted
+        ↓
+Enter Connection
+        ↓
+Resonance relationship
+        ↓
+Continue with this Resonance
+        ↓
+Active connection
+        ↓
+Explore related Threads
+```
+
+Boundary:
+- The active experience remains grounded in the shared experiences that created the Resonance.
+- No generic DM system was introduced.
+- Connection activation remains controlled by ResonanceConnectionService and ResonanceConnectionLifecycle.
+- The current local prototype still cannot represent a real second Voice receiving and accepting a connection.
+
+Verification:
+- Source changes were reviewed through the GitHub repository on the development branch.
+- Flutter analyze/test commands have not been claimed as executed through GitHub tooling.
+
+Next engineering focus:
+- Define the deeper shared-experience interaction for an active connection before extending into new Gathering behavior.
+
+---
+
 ## Resonance Connection Continuation
 
 Date: 2026-09-19
