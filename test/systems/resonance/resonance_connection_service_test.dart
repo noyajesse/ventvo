@@ -13,8 +13,8 @@ class FakeResonanceEngine implements ResonanceEngine {
   final Map<String, ResonanceThread> threads = {};
 
   @override
-  Future<ResonanceConnection> createConnection({required String sourceId, required String targetId, required ResonanceConnectionType type, required double strength}) async {
-    final connection = ResonanceConnection(id: '${sourceId}_$targetId', sourceId: sourceId, targetId: targetId, type: type, strength: strength, createdAt: DateTime(2026, 1, 1));
+  Future<ResonanceConnection> createConnection({required String sourceId, required String targetId, String? sourceVoiceId, String? targetVoiceId, required ResonanceConnectionType type, required double strength}) async {
+    final connection = ResonanceConnection(id: '${sourceId}_$targetId', sourceId: sourceId, targetId: targetId, sourceVoiceId: sourceVoiceId, targetVoiceId: targetVoiceId, type: type, strength: strength, createdAt: DateTime(2026, 1, 1));
     createdConnection = connection;
     return connection;
   }
@@ -55,8 +55,8 @@ void main() {
   test('creates a shared-experience connection from a meaningful candidate', () async {
     final engine = FakeResonanceEngine();
     final service = ResonanceConnectionService(engine: engine);
-    const candidate = ResonanceCandidate(id: 'vent-2', type: ResonanceCandidateType.vent, score: 0.82, signals: [ResonanceSignal(type: ResonanceSignalType.experiential, key: 'feeling_stuck', strength: 1), ResonanceSignal(type: ResonanceSignalType.semantic, key: 'university', strength: 0.8)]);
-    final connection = await service.suggestConnection(sourceId: 'vent-1', candidate: candidate);
+    const candidate = ResonanceCandidate(id: 'vent-2', type: ResonanceCandidateType.vent, voiceId: 'voice-2', score: 0.82, signals: [ResonanceSignal(type: ResonanceSignalType.experiential, key: 'feeling_stuck', strength: 1), ResonanceSignal(type: ResonanceSignalType.semantic, key: 'university', strength: 0.8)]);
+    final connection = await service.suggestConnection(sourceId: 'vent-1', sourceVoiceId: 'voice-1', candidate: candidate);
     expect(connection, isNotNull);
     expect(connection!.type, ResonanceConnectionType.sharedExperience);
     expect(connection.strength, 0.82);
