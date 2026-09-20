@@ -51,7 +51,7 @@ class SpaceResonanceSection extends ConsumerWidget {
             const _SectionCaption(),
             const SizedBox(height: 8),
             const Text(
-              'Somewhere else, someone put something like this into words.',
+              'Elsewhere, someone is carrying an experience that may connect with this one.',
               style: TextStyle(
                 color: VentvoColors.textSecondary,
                 fontSize: 13,
@@ -114,7 +114,7 @@ class _SectionCaption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Text(
-      'RESONANCE',
+      'EXPERIENCES THAT MAY RESONATE',
       style: TextStyle(
         color: VentvoColors.textMuted,
         fontSize: 8,
@@ -236,6 +236,7 @@ class _ResonanceCardState extends ConsumerState<_ResonanceCard> {
       case ResonanceConnectionState.blocked:
         return 'Resonance blocked';
       case ResonanceConnectionState.suggested:
+        return 'Resonance sent';
       case null:
         return 'Resonate';
     }
@@ -326,9 +327,11 @@ class _ResonanceCardState extends ConsumerState<_ResonanceCard> {
                             ? null
                             : _resonate,
                 icon: Icon(
-                  hasResonated
-                      ? Icons.check_rounded
-                      : Icons.blur_on_rounded,
+                  connection?.state == ResonanceConnectionState.suggested
+                      ? Icons.schedule_rounded
+                      : hasResonated
+                          ? Icons.check_rounded
+                          : Icons.blur_on_rounded,
                   size: 15,
                 ),
                 label: Text(_actionLabel),
