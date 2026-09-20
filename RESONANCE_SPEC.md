@@ -1116,3 +1116,60 @@ Formation remains conservative:
 - multiple experiences belonging to the same Voice do not count as multiple people.
 
 Voice IDs are participant identifiers rather than authentication credentials. Production authorization must still be enforced server-side.
+
+
+---
+
+# Product Experience Model — Resonance v2
+
+The product redesign now treats Resonance as a human signal of recognition rather than a social connection request.
+
+## Human model
+
+```
+Notice → Resonate → Mutual Resonance → Optional Connection
+```
+
+A user can simply Resonate and leave. One-way Resonance is valid and never creates an obligation.
+
+## User-facing meaning
+
+> “This experience connects with mine.”
+
+Avoid exposing technical lifecycle language such as “suggested → accepted → active” as the primary UX.
+
+Prefer:
+- Resonate / Resonated ∿
+- Someone resonated with this experience.
+- There’s resonance here.
+- You both resonated around this experience.
+- Open a connection.
+
+## Connection boundary
+
+Resonance must never automatically become a relationship.
+
+```
+Moment → Resonance → Mutual Resonance → Optional connection invitation → Active relationship → Conversation
+```
+
+A connection begins around the shared experience, not around a permanent profile.
+
+## Echo distinction
+
+- Echo: “Your experience made me express something of my own.”
+- Resonance: “Your experience connects with something I carry.”
+
+A user may Echo, Resonate, do both, or do neither.
+
+## Visual language
+
+Resonance should feel like a subtle ripple or pulse, not a friend request, checkmark, heart, score, or popularity signal.
+
+## Privacy
+
+Resonance must not expose private identity, private Crash Outs, unrelated Moments, or private conversations. Closing a connection does not invalidate historical Resonance. Blocking prevents future relationship pathways according to safety/privacy rules.
+
+## Principle
+
+> Resonance should feel like recognition, not recruitment.
