@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../systems/resonance/providers/resonance_provider.dart';
 import '../services/echo_resonance_connection_service.dart';
 import '../services/echo_resonance_link_service.dart';
 import '../services/echo_resonance_link_storage.dart';
