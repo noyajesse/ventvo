@@ -676,3 +676,62 @@ Boundary:
 - Formation thresholds remain unchanged: meaningful accepted/active evidence, sufficient strength, and the existing privacy/safety vetoes still apply.
 - Thread and Map remain relationship structures, not presentation shortcuts or fixed-size groups.
 - Voice identity is now part of the evidence required to treat multiple experiences as multiple people.
+
+
+---
+
+## Ventvo Product Architecture — Moments, Echoes, Resonance, Threads, Maps
+
+Date: 2026-09-20  
+Branch: development
+
+Product design milestone:
+
+The core Ventvo experience architecture is now documented as a coherent system:
+
+```
+Moment → Echo → Resonance → Thread → Map
+```
+
+These are layers of meaning, not mandatory user steps.
+
+- **Moment:** “This is what I'm carrying.”
+- **Echo:** “Your experience made me express something of my own.”
+- **Resonance:** “Your experience connects with something I carry.”
+- **Thread:** “These experiences keep finding each other.”
+- **Map:** “There is a larger landscape here.”
+
+### Hybrid Map
+
+Constellation and Text Landscape are two views of the same Map.
+
+- **Constellation:** feel the landscape.
+- **Landscape:** understand the landscape.
+
+The Constellation must feel organic and intimate, not like a scientific network graph or data visualization.
+
+### Product principles locked
+
+- Experiences come before people.
+- No follower graph, likes, popularity rankings, or Resonance scores.
+- Resonance does not automatically create a relationship.
+- Private Crash Outs and private conversations do not silently become public discovery material.
+- Ventvo reveals meaningful patterns rather than manufacturing them.
+- Technical lifecycle state remains internal where possible.
+- AI may assist later, but must not invent psychological meaning or diagnoses.
+
+### Authoritative product documents
+
+- `RESONANCE_SPEC.md` — technical Resonance architecture plus the human Resonance product model.
+- `THREADS_SPEC.md` — Thread product model.
+- `MAPS_SPEC.md` — Map and Hybrid Map product model.
+
+These documents are now part of the `development` branch source of truth for the redesign.
+
+### Engineering note
+
+The existing Resonance foundation should be audited against these product decisions before adding more UI or domain behavior. In particular, the current Echo→response orchestration and any automatic acceptance/activation behavior should be reviewed against the new consent-based Resonance model.
+
+Verification:
+- Documentation changes were written directly to the `development` branch.
+- Flutter analyzer/tests have not been run from GitHub tooling.
