@@ -125,7 +125,7 @@ class _ResonanceRelationshipScreenState
           children: [
             Text(widget.candidate.voiceMark ?? 'RESONANCE', style: const TextStyle(color: VentvoColors.textMuted, fontSize: 10, letterSpacing: 1.1, fontWeight: FontWeight.w700)),
             const SizedBox(height: 10),
-            const Text('There is a connection here.', style: TextStyle(color: VentvoColors.textPrimary, fontSize: 24, fontWeight: FontWeight.w600, height: 1.2)),
+            const Text('There is resonance here.', style: TextStyle(color: VentvoColors.textPrimary, fontSize: 24, fontWeight: FontWeight.w600, height: 1.2)),
             const SizedBox(height: 10),
             Text(_stateDescription(connection.state), style: const TextStyle(color: VentvoColors.textSecondary, fontSize: 14, height: 1.5)),
             const SizedBox(height: 26),
@@ -139,12 +139,12 @@ class _ResonanceRelationshipScreenState
               const Text('Active Resonance can become part of a deeper Thread when enough meaningful experiences connect around it.', style: TextStyle(color: VentvoColors.textMuted, fontSize: 12, height: 1.5)),
             ],
             const SizedBox(height: 30),
-            if (canActivate) _ActionButton(label: 'Continue with this Resonance', onPressed: saving ? null : _activate, primary: true),
+            if (canActivate) _ActionButton(label: 'Open a connection', onPressed: saving ? null : _activate, primary: true),
             if (!isTerminal) ...[
               if (canActivate) const SizedBox(height: 10),
-              _ActionButton(label: 'Close Resonance', onPressed: saving ? null : () => _finish(block: false)),
+              _ActionButton(label: 'Leave this Resonance', onPressed: saving ? null : () => _finish(block: false)),
               const SizedBox(height: 8),
-              _ActionButton(label: 'Block Resonance', onPressed: saving ? null : () => _finish(block: true)),
+              _ActionButton(label: 'Block this Resonance', onPressed: saving ? null : () => _finish(block: true)),
             ],
           ],
         ),
@@ -154,9 +154,9 @@ class _ResonanceRelationshipScreenState
 
   String _stateDescription(ResonanceConnectionState state) {
     switch (state) {
-      case ResonanceConnectionState.suggested: return 'This connection has been discovered but not accepted yet.';
-      case ResonanceConnectionState.accepted: return 'You chose to resonate. You can now decide whether to continue this relationship.';
-      case ResonanceConnectionState.active: return 'This Resonance is active. It can contribute to deeper Threads and Maps.';
+      case ResonanceConnectionState.suggested: return 'This experience has reached yours. You can choose whether it resonates with you.';
+      case ResonanceConnectionState.accepted: return 'You both resonated around this experience. You can choose whether to open a connection.';
+      case ResonanceConnectionState.active: return 'This connection is open. Your shared experience can now become part of a deeper Thread.';
       case ResonanceConnectionState.closed: return 'This Resonance has been closed.';
       case ResonanceConnectionState.blocked: return 'This Resonance has been blocked.';
     }
@@ -164,9 +164,9 @@ class _ResonanceRelationshipScreenState
 
   String _stateLabel(ResonanceConnectionState state) {
     switch (state) {
-      case ResonanceConnectionState.suggested: return 'SUGGESTED';
-      case ResonanceConnectionState.accepted: return 'ACCEPTED';
-      case ResonanceConnectionState.active: return 'ACTIVE';
+      case ResonanceConnectionState.suggested: return 'WAITING';
+      case ResonanceConnectionState.accepted: return 'MUTUAL RESONANCE';
+      case ResonanceConnectionState.active: return 'CONNECTED';
       case ResonanceConnectionState.closed: return 'CLOSED';
       case ResonanceConnectionState.blocked: return 'BLOCKED';
     }
