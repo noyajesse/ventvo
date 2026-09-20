@@ -104,17 +104,20 @@ void main() {
     expect(storage.responses, isEmpty);
   });
 
-  test('creates and persists a valid Echo', () async {
+  test('creates and persists a valid Echo without creating Resonance', () async {
     final echo = await service.leaveEcho(
       space: discussion,
       content: '  This helped me feel less alone.  ',
       voiceMark: '∿',
+      authorVoiceId: 'voice-2',
+      sourceVoiceId: 'voice-1',
     );
 
     expect(echo, isNotNull);
     expect(echo!.spaceId, discussion.id);
     expect(echo.ventId, discussion.originatingVentId);
     expect(echo.voiceMark, '∿');
+    expect(echo.authorVoiceId, 'voice-2');
     expect(echo.content, 'This helped me feel less alone.');
     expect(storage.responses, hasLength(1));
     expect(storage.responses.single.id, echo.id);
