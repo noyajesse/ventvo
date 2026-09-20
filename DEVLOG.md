@@ -792,3 +792,15 @@ Optional connection
 - Existing lifecycle, discovery, privacy, and policy infrastructure remains unchanged.
 
 Next implementation focus: make the Moment's surrounding actions quieter and more explicit, then move into mutual Resonance presentation.
+
+
+## Mutual Resonance presentation pass — 2026-09-20
+
+- Resonance relationship UI now uses the human sequence rather than exposing raw lifecycle language.
+- Waiting state: **Waiting for their resonance** / **Someone resonated with this experience**.
+- Accepted state: **Mutual Resonance**.
+- Activation is presented as the optional **Open a connection** action.
+- Relationship detail copy now explains that mutual Resonance is not itself a relationship; it is the point where both people can choose to continue.
+- Connection list actions now use **Resonate back**, **View mutual Resonance**, and **Open connection**.
+
+This keeps the technical states underneath the experience while preserving the consent model: **Notice → Resonate → Mutual Resonance → Optional connection**.
