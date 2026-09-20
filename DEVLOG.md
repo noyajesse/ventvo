@@ -781,3 +781,14 @@ Mutual Resonance
   ↓
 Optional connection
 ```
+
+
+## Moment-centered Space pass — 2026-09-20
+
+- Reoriented the Space presentation around the originating Moment rather than the Space as the primary object.
+- The Moment is now the visual anchor; the surrounding experience explains that Resonance and Echoes grow from it.
+- Resonance discovery language now describes other experiences that may connect, rather than presenting a people/matching surface.
+- A suggested Resonance now reads as **Resonance sent** instead of implying that the user is already “Resonating”.
+- Existing lifecycle, discovery, privacy, and policy infrastructure remains unchanged.
+
+Next implementation focus: make the Moment's surrounding actions quieter and more explicit, then move into mutual Resonance presentation.
