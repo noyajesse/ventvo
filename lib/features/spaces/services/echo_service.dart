@@ -1,16 +1,20 @@
 import '../models/echo.dart';
 import '../models/space.dart';
 import '../models/space_response.dart';
-import 'echo_response_resonance_service.dart';
 import 'space_response_storage.dart';
 
+/// Creates and loads Echoes.
+///
+/// Echo creation is intentionally separate from Resonance. An Echo is a
+/// person's own experience carried forward by another person's words; it
+/// does not create, accept, or activate a relationship by itself.
+///
+/// Explicit Resonance remains a user action handled by the Resonance system.
 class EchoService {
   final SpaceResponseStorage storage;
-  final EchoResponseResonanceService? responseResonanceService;
 
   const EchoService({
     required this.storage,
-    this.responseResonanceService,
   });
 
   Future<List<Echo>> loadForSpace(String spaceId) async {
@@ -44,20 +48,7 @@ class EchoService {
     );
 
     await storage.add(response);
-    final echo = _toEcho(response);
-
-    final resonanceService = responseResonanceService;
-    if (resonanceService != null && authorVoiceId != null) {
-      await resonanceService.connectEcho(
-        space: space,
-        echo: echo,
-        sourceExperienceId: space.originatingVentId,
-        sourceVoiceId: sourceVoiceId,
-        actorVoiceId: authorVoiceId,
-      );
-    }
-
-    return echo;
+    return _toEcho(response);
   }
 
   Echo _toEcho(SpaceResponse response) {
