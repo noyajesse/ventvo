@@ -199,20 +199,20 @@ class _ConnectionCard extends StatelessWidget {
     switch (view.connection.state) {
       case ResonanceConnectionState.suggested:
         if (view.target == null || view.localVoiceId == null) {
-          return 'Waiting for their response';
+          return 'Waiting for their resonance';
         }
         if (view.connection.targetVoiceId == view.localVoiceId) {
-          return 'A Resonance is waiting for you';
+          return 'Someone resonated with this experience';
         }
         return 'Waiting for their response';
       case ResonanceConnectionState.accepted:
-        return 'Connection accepted';
+        return 'Mutual Resonance';
       case ResonanceConnectionState.active:
-        return 'Connection active';
+        return 'Connection open';
       case ResonanceConnectionState.closed:
-        return 'Connection closed';
+        return 'Resonance closed';
       case ResonanceConnectionState.blocked:
-        return 'Connection blocked';
+        return 'Resonance blocked';
     }
   }
 
@@ -256,7 +256,7 @@ class _ConnectionCard extends StatelessWidget {
           if (onAccept != null) ...[
             const SizedBox(height: 14),
             SizedBox(width: double.infinity, child: FilledButton(
-              onPressed: onAccept, child: const Text('Accept Connection'),
+              onPressed: onAccept, child: const Text('Resonate back'),
             )),
           ],
           if (onOpen != null) ...[
@@ -265,8 +265,8 @@ class _ConnectionCard extends StatelessWidget {
               onPressed: onOpen,
               child: Text(
                 view.connection.state == ResonanceConnectionState.active
-                    ? 'Open Connection'
-                    : 'Enter Connection',
+                    ? 'Open connection'
+                    : 'View mutual Resonance',
               ),
             )),
           ],
