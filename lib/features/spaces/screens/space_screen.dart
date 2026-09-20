@@ -284,7 +284,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
           ),
           const SizedBox(width: 4),
           const Text(
-            'Space',
+            'Moment',
             style: TextStyle(
               color: VentvoColors.textMuted,
               fontSize: 12,
@@ -327,9 +327,9 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
       padding: const EdgeInsets.fromLTRB(24, 12, 24, 70),
       children: [
         _modeHeader(),
-        const SizedBox(height: 34),
+        const SizedBox(height: 28),
         _origin(origin),
-        const SizedBox(height: 42),
+        const SizedBox(height: 30),
         SpaceResonanceSection(
           space: widget.space,
           excludedIds: widget.space.allVentIds,
@@ -359,8 +359,8 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
         const SizedBox(height: 7),
         Text(
           isDiscussion
-              ? 'A space for people who are open to responding.'
-              : 'A space to be heard without needing a conversation.',
+              ? 'You shared this Moment in a space where people can respond.'
+              : 'You shared this Moment without asking anyone to respond.',
           style: const TextStyle(
             color: VentvoColors.textSecondary,
             fontSize: 12,
@@ -400,7 +400,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
             ],
             const Spacer(),
             const Text(
-              'MOMENT',
+              'EXPERIENCE',
               style: TextStyle(
                 color: VentvoColors.textMuted,
                 fontSize: 8,
@@ -426,6 +426,15 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
         ),
         const SizedBox(height: 30),
         Container(width: 34, height: 1, color: VentvoColors.border),
+        const SizedBox(height: 14),
+        const Text(
+          'This is the experience everything else in this Space grows from.',
+          style: TextStyle(
+            color: VentvoColors.textMuted,
+            fontSize: 10,
+            height: 1.45,
+          ),
+        ),
       ],
     );
   }
