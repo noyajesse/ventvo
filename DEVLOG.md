@@ -735,3 +735,26 @@ The existing Resonance foundation should be audited against these product decisi
 Verification:
 - Documentation changes were written directly to the `development` branch.
 - Flutter analyzer/tests have not been run from GitHub tooling.
+
+
+---
+
+## Product Experience Audit — 2026-09-20
+
+Audited the current `development` implementation against the locked Moment → Echo → Resonance → Thread → Map architecture.
+
+### Findings
+- The Resonance/Thread/Map domain foundation is substantial and should be reused rather than rewritten.
+- The largest mismatch is product-layer presentation: the current UI still exposes connection-management concepts instead of experience-first discovery.
+- Echo currently auto-accepts and auto-activates a response Resonance connection; this conflicts with the new consent-based product model and is the first implementation target.
+- Relationship screens should become later-stage destinations after mutual Resonance, not the natural result of one Resonance.
+- Threads need to present shared experience paths rather than technical connection data.
+- Maps already have a useful Constellation foundation, but need the locked Hybrid Map model: Constellation + Landscape as two views of the same Map.
+- Gatherings should not dominate the core Map experience during this redesign.
+- Find People Who Understand should be implemented as experience-first discovery, not people browsing.
+
+### Source of truth
+See `PRODUCT_EXPERIENCE_AUDIT.md` for the detailed audit and implementation order.
+
+### Next implementation target
+Fix Echo → Resonance semantics first, preserving existing lifecycle/policy infrastructure and tests.
