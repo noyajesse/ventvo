@@ -758,3 +758,26 @@ See `PRODUCT_EXPERIENCE_AUDIT.md` for the detailed audit and implementation orde
 
 ### Next implementation target
 Fix Echo → Resonance semantics first, preserving existing lifecycle/policy infrastructure and tests.
+
+
+## Echo → Resonance semantics corrected — 2026-09-20
+
+- Echo creation no longer creates, accepts, or activates a Resonance connection.
+- `EchoService` now owns only Echo persistence/loading.
+- Removed the automatic Echo response-connection orchestration from the runtime path.
+- Removed the obsolete automatic Echo→Resonance flow tests.
+- Explicit Resonance remains a separate user action.
+
+Product sequence:
+
+```
+Moment
+  ↓
+Echo
+  ↓
+Explicit Resonance
+  ↓
+Mutual Resonance
+  ↓
+Optional connection
+```
