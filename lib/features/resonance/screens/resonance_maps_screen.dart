@@ -2,8 +2,10 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/ventvo_colors.dart';
+import '../../../systems/resonance/models/resonance_gathering_candidate.dart';
 import '../../../systems/resonance/models/resonance_map.dart';
 import '../../../systems/resonance/models/resonance_thread.dart';
+import '../../../systems/resonance/services/resonance_gathering_service.dart';
 import '../../spaces/models/space.dart';
 import '../../spaces/providers/space_provider.dart';
 import '../../spaces/screens/space_screen.dart';
@@ -13,6 +15,7 @@ import '../models/resonance_map_experience.dart';
 import '../providers/resonance_map_experience_provider.dart';
 import '../providers/resonance_map_threads_provider.dart';
 import '../providers/resonance_maps_provider.dart';
+import 'resonance_gathering_entry_screen.dart';
 import 'resonance_thread_detail_screen.dart';
 
 class ResonanceMapsScreen extends ConsumerWidget {
@@ -47,6 +50,13 @@ class _ResonanceMapDetailScreenState extends ConsumerState<ResonanceMapDetailScr
   String? _selectedId; bool _constellation = true; late Future<List<ResonanceMapExperience>> _future;
   @override
   void initState() { super.initState(); _future = _resolve(); }
+  ResonanceGatheringCandidate? _gatheringCandidate(List<ResonanceMapExperience> experiences) {
+    final candidates = const ResonanceGatheringService().discoverCandidates(widget.map);
+    if (_selectedId == null) return candidates.length == 1 ? candidates.first : null;
+    for (final candidate in candidates) { if (candidate.containsExperience(_selectedId!)) return candidate; }
+    return null;
+  }
+
   Future<List<ResonanceMapExperience>> _resolve() {
     final spaces = ref.read(spaceProvider).asData?.value ?? const <Space>[];
     return ref.read(resonanceMapExperienceResolverProvider).resolve(experienceIds: widget.map.experienceIds, ventsById: widget.ventsById, spacesById: {for (final s in spaces) s.id: s});
@@ -66,6 +76,14 @@ class _ResonanceMapDetailScreenState extends ConsumerState<ResonanceMapDetailScr
         const SizedBox(height: 18), SegmentedButton<bool>(segments: const [ButtonSegment(value: true, icon: Icon(Icons.auto_awesome_outlined), label: Text('Constellation')), ButtonSegment(value: false, icon: Icon(Icons.view_list_outlined), label: Text('Landscape'))], selected: {_constellation}, onSelectionChanged: (v) => setState(() => _constellation = v.first)),
         const SizedBox(height: 16), AnimatedSwitcher(duration: const Duration(milliseconds: 220), child: _constellation ? Container(key: const ValueKey('sky'), height: 360, decoration: BoxDecoration(color: VentvoColors.surface, borderRadius: BorderRadius.circular(25), border: Border.all(color: VentvoColors.border)), clipBehavior: Clip.antiAlias, child: _InteractiveMap(map: widget.map, experiences: experiences, selectedId: _selectedId, onSelect: (id) => setState(() => _selectedId = id))) : _ExperienceList(key: const ValueKey('list'), experiences: experiences, selectedId: _selectedId, onSelect: (id) => setState(() => _selectedId = id))),
         if (selected != null) ...[const SizedBox(height: 14), _SelectedExperience(experience: selected)],
+        if (_gatheringCandidate(experiences) case final candidate?) ...[
+          const SizedBox(height: 14),
+          _GatheringClusterCard(
+            candidate: candidate,
+            experiences: experiences.where(candidate.containsExperience).toList(growable: false),
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => ResonanceGatheringEntryScreen(candidate: candidate, experiences: experiences.where(candidate.containsExperience).toList(growable: false)))),
+          ),
+        ],
         if (threadAsync.hasValue && threadAsync.value!.isNotEmpty) ...[const SizedBox(height: 22), _Threads(threads: threadAsync.value!, ventsById: widget.ventsById)],
       ]);
     }));
@@ -87,6 +105,12 @@ class _ExperienceList extends StatelessWidget {
 class _SelectedExperience extends StatelessWidget {
  final ResonanceMapExperience experience; const _SelectedExperience({required this.experience});
  @override Widget build(BuildContext context) => Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: VentvoColors.surfaceElevated,borderRadius:BorderRadius.circular(20),border:Border.all(color:VentvoColors.border)), child: Column(crossAxisAlignment:CrossAxisAlignment.start, children: [Text(experience.isEcho ? 'ECHO' : 'MOMENT',style:const TextStyle(color:VentvoColors.textMuted,fontSize:8,fontWeight:FontWeight.w700,letterSpacing:1.1)),const SizedBox(height:8),Text(experience.content,maxLines:5,overflow:TextOverflow.ellipsis,style:const TextStyle(color:VentvoColors.textPrimary,fontSize:14,height:1.55)),if(experience.space != null) Align(alignment:Alignment.centerRight,child:TextButton(onPressed:()=>SpaceScreen.open(context,experience.space!),child:const Text('Open Moment')))]));
+}
+
+class _GatheringClusterCard extends StatelessWidget {
+ final ResonanceGatheringCandidate candidate; final List<ResonanceMapExperience> experiences; final VoidCallback onTap;
+ const _GatheringClusterCard({required this.candidate,required this.experiences,required this.onTap});
+ @override Widget build(BuildContext context) => InkWell(onTap:onTap,borderRadius:BorderRadius.circular(20),child:Container(padding:const EdgeInsets.fromLTRB(16,15,15,15),decoration:BoxDecoration(color:VentvoColors.surface,borderRadius:BorderRadius.circular(20),border:Border.all(color:VentvoColors.border)),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Row(children:[const Expanded(child:Text('THE EXPERIENCES CONVERGE',style:TextStyle(color:VentvoColors.textMuted,fontSize:8,fontWeight:FontWeight.w700,letterSpacing:1.35))),const Icon(Icons.arrow_forward_rounded,size:16,color:VentvoColors.textMuted)]),const SizedBox(height:8),Text('${experiences.length} connected experiences.',style:const TextStyle(color:VentvoColors.textPrimary,fontSize:14,fontWeight:FontWeight.w600)),const SizedBox(height:5),const Text('A small landscape has formed here. The Voices can choose to meet.',style:TextStyle(color:VentvoColors.textMuted,fontSize:11,height:1.5)),const SizedBox(height:10),for(final experience in experiences.take(2)) Padding(padding:const EdgeInsets.only(bottom:5),child:Text('${experience.voiceMark}  ${experience.content}',maxLines:2,overflow:TextOverflow.ellipsis,style:const TextStyle(color:VentvoColors.textSecondary,fontSize:11,height:1.45)))])));
 }
 
 class _Threads extends StatelessWidget {
