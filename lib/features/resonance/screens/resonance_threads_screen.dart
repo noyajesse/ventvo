@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/ventvo_colors.dart';
 import '../../ventvo_voice/models/vent.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
-import '../../../systems/resonance/models/resonance_connection.dart';
 import '../../../systems/resonance/models/resonance_thread.dart';
 import '../providers/resonance_threads_provider.dart';
 import 'resonance_maps_screen.dart';
@@ -13,10 +12,7 @@ import 'resonance_thread_detail_screen.dart';
 class ResonanceThreadsScreen extends ConsumerWidget {
   final String? experienceId;
 
-  const ResonanceThreadsScreen({
-    super.key,
-    this.experienceId,
-  });
+  const ResonanceThreadsScreen({super.key, this.experienceId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,20 +25,16 @@ class ResonanceThreadsScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: VentvoColors.background,
       appBar: AppBar(
-        title: Text(experienceId == null ? 'Resonance' : 'Related Threads'),
+        title: Text(experienceId == null ? 'Threads' : 'Related Threads'),
         centerTitle: true,
         actions: [
           if (experienceId == null)
             IconButton(
-              tooltip: 'Resonance Maps',
+              tooltip: 'Explore Maps',
               icon: const Icon(Icons.hub_outlined),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const ResonanceMapsScreen(),
-                  ),
-                );
-              },
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const ResonanceMapsScreen()),
+              ),
             ),
         ],
       ),
@@ -54,7 +46,7 @@ class ResonanceThreadsScreen extends ConsumerWidget {
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 32),
             child: Text(
-              'Resonance could not be loaded yet.',
+              'Threads could not be loaded yet.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: VentvoColors.textMuted,
@@ -74,8 +66,8 @@ class ResonanceThreadsScreen extends ConsumerWidget {
                   children: [
                     Text(
                       experienceId == null
-                          ? 'Nothing is resonating yet.'
-                          : 'No related Threads yet.',
+                          ? 'No stories have taken shape yet.'
+                          : 'No related stories have taken shape yet.',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         color: VentvoColors.textPrimary,
@@ -86,8 +78,8 @@ class ResonanceThreadsScreen extends ConsumerWidget {
                     const SizedBox(height: 10),
                     Text(
                       experienceId == null
-                          ? 'When experiences remain meaningfully connected, Ventvo can let you encounter that relationship as a Resonance Thread.'
-                          : 'An active Resonance can become part of a deeper Thread when enough meaningful experiences connect around it.',
+                          ? 'Threads emerge when enough experiences meaningfully connect. There is no need to force a story before those connections are there.'
+                          : 'This Moment may become part of a Thread as more meaningful experiences connect around it.',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         color: VentvoColors.textMuted,
@@ -105,12 +97,10 @@ class ResonanceThreadsScreen extends ConsumerWidget {
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(18, 18, 18, 32),
             itemCount: items.length,
-            itemBuilder: (context, index) {
-              return _ThreadCard(
-                thread: items[index],
-                ventsById: ventsById,
-              );
-            },
+            itemBuilder: (context, index) => _ThreadCard(
+              thread: items[index],
+              ventsById: ventsById,
+            ),
           );
         },
       ),
@@ -122,17 +112,10 @@ class _ThreadCard extends StatelessWidget {
   final ResonanceThread thread;
   final Map<String, Vent> ventsById;
 
-  const _ThreadCard({
-    required this.thread,
-    required this.ventsById,
-  });
+  const _ThreadCard({required this.thread, required this.ventsById});
 
   @override
   Widget build(BuildContext context) {
-    final marks = thread.voiceMarks.isEmpty
-        ? 'Voices connected through experience'
-        : thread.voiceMarks.join('  ·  ');
-
     final excerpts = thread.experienceIds
         .map((id) => ventsById[id])
         .whereType<Vent>()
@@ -140,20 +123,16 @@ class _ThreadCard extends StatelessWidget {
         .map((vent) => vent.content)
         .toList();
 
-    final relationshipSummary = _relationshipSummary(thread.connections);
-
     return InkWell(
       borderRadius: BorderRadius.circular(22),
-      onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => ResonanceThreadDetailScreen(
-              thread: thread,
-              ventsById: ventsById,
-            ),
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ResonanceThreadDetailScreen(
+            thread: thread,
+            ventsById: ventsById,
           ),
-        );
-      },
+        ),
+      ),
       child: Container(
         margin: const EdgeInsets.only(bottom: 14),
         padding: const EdgeInsets.fromLTRB(18, 18, 18, 17),
@@ -166,7 +145,7 @@ class _ThreadCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'RESONANCE THREAD',
+              'A STORY TAKING SHAPE',
               style: TextStyle(
                 color: VentvoColors.textMuted,
                 fontSize: 8,
@@ -174,45 +153,48 @@ class _ThreadCard extends StatelessWidget {
                 letterSpacing: 1.4,
               ),
             ),
-            const SizedBox(height: 9),
-            Text(
-              marks,
-              style: const TextStyle(
-                color: VentvoColors.textSecondary,
-                fontSize: 11,
+            const SizedBox(height: 12),
+            if (excerpts.isEmpty)
+              const Text(
+                'Explore the experiences connected here.',
+                style: TextStyle(
+                  color: VentvoColors.textPrimary,
+                  fontSize: 15,
+                  height: 1.45,
+                ),
+              )
+            else
+              Text(
+                excerpts.first,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: VentvoColors.textPrimary,
+                  fontSize: 16,
+                  height: 1.5,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 12),
             Text(
-              '${thread.experienceIds.length} experiences · ${thread.connections.length} connections',
+              '${thread.experienceIds.length} connected experiences',
               style: const TextStyle(
                 color: VentvoColors.textMuted,
                 fontSize: 10,
               ),
             ),
-            if (relationshipSummary != null) ...[
-              const SizedBox(height: 8),
-              Text(
-                relationshipSummary,
-                style: const TextStyle(
-                  color: VentvoColors.textSecondary,
-                  fontSize: 11,
-                  height: 1.45,
-                ),
-              ),
-            ],
-            if (excerpts.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              ...excerpts.map(
+            if (excerpts.length > 1) ...[
+              const SizedBox(height: 15),
+              ...excerpts.skip(1).map(
                 (excerpt) => Padding(
-                  padding: const EdgeInsets.only(bottom: 9),
+                  padding: const EdgeInsets.only(bottom: 8),
                   child: Text(
                     excerpt,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      color: VentvoColors.textPrimary,
-                      fontSize: 14,
+                      color: VentvoColors.textSecondary,
+                      fontSize: 12,
                       height: 1.45,
                     ),
                   ),
@@ -222,45 +204,29 @@ class _ThreadCard extends StatelessWidget {
             const SizedBox(height: 8),
             const Align(
               alignment: Alignment.centerRight,
-              child: Icon(
-                Icons.arrow_forward_rounded,
-                size: 17,
-                color: VentvoColors.textMuted,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Explore story',
+                    style: TextStyle(
+                      color: VentvoColors.textSecondary,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(width: 6),
+                  Icon(
+                    Icons.arrow_forward_rounded,
+                    size: 16,
+                    color: VentvoColors.textMuted,
+                  ),
+                ],
               ),
             ),
           ],
         ),
       ),
     );
-  }
-
-  String? _relationshipSummary(List<ResonanceConnection> connections) {
-    final labels = <String>[];
-    final seenTypes = <ResonanceConnectionType>{};
-
-    for (final connection in connections) {
-      if (!seenTypes.add(connection.type)) continue;
-      labels.add(_labelFor(connection.type));
-      if (labels.length == 2) break;
-    }
-
-    if (labels.isEmpty) return null;
-    if (labels.length == 1) return 'Connected through ${labels.first.toLowerCase()}.';
-    return 'Connected through ${labels[0].toLowerCase()} and ${labels[1].toLowerCase()}.';
-  }
-
-  String _labelFor(ResonanceConnectionType type) {
-    switch (type) {
-      case ResonanceConnectionType.sharedExperience:
-        return 'shared experience';
-      case ResonanceConnectionType.perspective:
-        return 'different perspective';
-      case ResonanceConnectionType.response:
-        return 'response';
-      case ResonanceConnectionType.similarity:
-        return 'similar experience';
-      case ResonanceConnectionType.discovery:
-        return 'discovered connection';
-    }
   }
 }
