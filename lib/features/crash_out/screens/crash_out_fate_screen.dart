@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/crash_out.dart';
 import '../providers/crash_out_provider.dart';
 import '../../ventvo_voice/screens/create_vent_screen.dart';
+import '../../ventvo_voice/screens/find_people_screen.dart';
 import '../../ventvo_voice/screens/voice_space_screen.dart';
 
 class CrashOutFateScreen extends ConsumerWidget {
@@ -54,6 +55,13 @@ class CrashOutFateScreen extends ConsumerWidget {
     );
   }
 
+  void _findPeopleWhoUnderstand(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const FindPeopleScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final canTurnIntoVent =
@@ -76,18 +84,30 @@ class CrashOutFateScreen extends ConsumerWidget {
           child: Column(
             children: [
               const Spacer(),
-              const Icon(Icons.cloud_done_outlined, color: Colors.white70, size: 54),
+              const Icon(
+                Icons.cloud_done_outlined,
+                color: Colors.white70,
+                size: 54,
+              ),
               const SizedBox(height: 30),
               const Text(
                 'You let it out.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 18),
               const Text(
                 'You don’t have to decide what it means right now.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white54, fontSize: 17, height: 1.5),
+                style: TextStyle(
+                  color: Colors.white54,
+                  fontSize: 17,
+                  height: 1.5,
+                ),
               ),
               const Spacer(),
               if (canTurnIntoVent) ...[
@@ -96,11 +116,47 @@ class CrashOutFateScreen extends ConsumerWidget {
                   height: 56,
                   child: ElevatedButton(
                     onPressed: () => _turnIntoVent(context),
-                    child: const Text('Turn into a Vent', style: TextStyle(fontSize: 17)),
+                    child: const Text(
+                      'Turn into a Vent',
+                      style: TextStyle(fontSize: 17),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 14),
               ],
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: () => _findPeopleWhoUnderstand(context),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    side: const BorderSide(color: Colors.white24),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 16,
+                    ),
+                  ),
+                  child: const Column(
+                    children: [
+                      Text(
+                        'Find People Who Understand',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        'Your Crash Out stays private. We’ll start from something you have already shared.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white54,
+                          fontSize: 11,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 14),
               SizedBox(
                 width: double.infinity,
                 height: 56,
@@ -110,7 +166,10 @@ class CrashOutFateScreen extends ConsumerWidget {
                     foregroundColor: Colors.white,
                     side: const BorderSide(color: Colors.white24),
                   ),
-                  child: const Text('Keep Private', style: TextStyle(fontSize: 17)),
+                  child: const Text(
+                    'Keep Private',
+                    style: TextStyle(fontSize: 17),
+                  ),
                 ),
               ),
               const SizedBox(height: 14),
@@ -119,8 +178,13 @@ class CrashOutFateScreen extends ConsumerWidget {
                 height: 52,
                 child: TextButton(
                   onPressed: () => _letGo(context, ref),
-                  style: TextButton.styleFrom(foregroundColor: Colors.white54),
-                  child: const Text('Let it go', style: TextStyle(fontSize: 16)),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.white54,
+                  ),
+                  child: const Text(
+                    'Let it go',
+                    style: TextStyle(fontSize: 16),
+                  ),
                 ),
               ),
               const SizedBox(height: 25),
