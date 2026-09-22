@@ -32,21 +32,19 @@ class ResonanceThreadDetailScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: VentvoColors.background,
       appBar: AppBar(
-        title: const Text('Resonance Thread'),
+        title: const Text('Thread'),
         centerTitle: true,
         actions: [
           IconButton(
-            tooltip: 'Connect to a Map',
+            tooltip: 'Explore this landscape on a Map',
             icon: const Icon(Icons.hub_outlined),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => ResonanceThreadMapIntegrationScreen(
-                    thread: thread,
-                  ),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => ResonanceThreadMapIntegrationScreen(
+                  thread: thread,
                 ),
-              );
-            },
+              ),
+            ),
           ),
         ],
       ),
@@ -63,15 +61,14 @@ class ResonanceThreadDetailScreen extends ConsumerWidget {
             );
           }
 
-          final experiences =
-              snapshot.data ?? const <ResonanceThreadExperience>[];
+          final experiences = snapshot.data ?? const <ResonanceThreadExperience>[];
 
           return ListView(
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(18, 18, 18, 36),
             children: [
               const Text(
-                'RESONANCE THREAD',
+                'A STORY TAKING SHAPE',
                 style: TextStyle(
                   color: VentvoColors.textMuted,
                   fontSize: 8,
@@ -80,11 +77,9 @@ class ResonanceThreadDetailScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              Text(
-                thread.voiceMarks.isEmpty
-                    ? 'Different Voices, connected through experience'
-                    : thread.voiceMarks.join('  ·  '),
-                style: const TextStyle(
+              const Text(
+                'A path through connected experiences',
+                style: TextStyle(
                   color: VentvoColors.textPrimary,
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
@@ -102,7 +97,7 @@ class ResonanceThreadDetailScreen extends ConsumerWidget {
               const SizedBox(height: 26),
               if (experiences.isEmpty)
                 const Text(
-                  'The connected experiences are no longer available here.',
+                  'These connected experiences are no longer available here.',
                   style: TextStyle(
                     color: VentvoColors.textMuted,
                     fontSize: 14,
@@ -135,7 +130,7 @@ class ResonanceThreadDetailScreen extends ConsumerWidget {
                   border: Border.all(color: VentvoColors.border),
                 ),
                 child: const Text(
-                  'Sometimes an experience feels less alone when you discover that someone else put something similar into words.',
+                  'A Thread brings together experiences that have found meaningful connections. It does not ask anyone to join, follow, or keep a conversation going.',
                   style: TextStyle(
                     color: VentvoColors.textSecondary,
                     fontSize: 13,
@@ -222,7 +217,7 @@ class _ExperienceStep extends StatelessWidget {
                       ),
                       const Spacer(),
                       Text(
-                        experience.isEcho ? 'ECHO' : 'VENT',
+                        experience.isEcho ? 'ECHO' : 'MOMENT',
                         style: const TextStyle(
                           color: VentvoColors.textMuted,
                           fontSize: 8,
@@ -250,9 +245,8 @@ class _ExperienceStep extends StatelessWidget {
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
-                        onPressed: () =>
-                            SpaceScreen.open(context, experience.space!),
-                        child: const Text('Open Space'),
+                        onPressed: () => SpaceScreen.open(context, experience.space!),
+                        child: const Text('Open original Moment'),
                       ),
                     ),
                   ],
@@ -273,23 +267,23 @@ class _ConnectionBridge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final label = _labelFor(connection?.type);
+    if (label == null) return const SizedBox(height: 10);
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(44, 0, 18, 8),
       child: Row(
         children: [
-          Container(
-            width: 1,
-            height: 18,
-            color: VentvoColors.border,
-          ),
+          Container(width: 1, height: 18, color: VentvoColors.border),
           const SizedBox(width: 10),
-          Text(
-            _labelFor(connection?.type),
-            style: const TextStyle(
-              color: VentvoColors.textMuted,
-              fontSize: 9,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.7,
+          Expanded(
+            child: Text(
+              label,
+              style: const TextStyle(
+                color: VentvoColors.textMuted,
+                fontSize: 10,
+                height: 1.4,
+              ),
             ),
           ),
         ],
@@ -297,20 +291,18 @@ class _ConnectionBridge extends StatelessWidget {
     );
   }
 
-  String _labelFor(ResonanceConnectionType? type) {
+  String? _labelFor(ResonanceConnectionType? type) {
     switch (type) {
       case ResonanceConnectionType.sharedExperience:
-        return 'SHARED EXPERIENCE';
+        return 'Connected through a shared experience';
       case ResonanceConnectionType.perspective:
-        return 'DIFFERENT PERSPECTIVE';
+        return 'Connected through a different perspective';
       case ResonanceConnectionType.response:
-        return 'RESPONSE';
+        return 'Connected through a response';
       case ResonanceConnectionType.similarity:
-        return 'SIMILAR EXPERIENCE';
       case ResonanceConnectionType.discovery:
-        return 'DISCOVERED CONNECTION';
       case null:
-        return 'CONNECTED THROUGH RESONANCE';
+        return null;
     }
   }
 }
