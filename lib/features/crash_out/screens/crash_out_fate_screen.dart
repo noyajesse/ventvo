@@ -30,7 +30,7 @@ class CrashOutFateScreen extends ConsumerWidget {
         backgroundColor: const Color(0xFF111111),
         elevation: 0,
         title: const Text(
-          'Crash Out',
+          'The Other Side',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -67,13 +67,13 @@ class _OppositeExperienceView extends StatelessWidget {
       children: [
         const Spacer(),
         const Icon(
-          Icons.swap_vertical_circle_outlined,
+          Icons.compare_arrows_rounded,
           color: Colors.white70,
           size: 54,
         ),
         const SizedBox(height: 28),
         const Text(
-          'Your Crash Out met an opposite experience.',
+          'Something on the other side surfaced.',
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white,
@@ -84,7 +84,7 @@ class _OppositeExperienceView extends StatelessWidget {
         ),
         const SizedBox(height: 14),
         const Text(
-          'Not the same story. Not the same feeling. Just another side of something human.',
+          'Not a match. Not a conversation. Just another human experience moving in a different direction.',
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white54,
@@ -94,18 +94,18 @@ class _OppositeExperienceView extends StatelessWidget {
         ),
         const SizedBox(height: 30),
         _ExperienceCard(
-          label: 'YOUR EXPERIENCE',
+          label: 'WHAT YOU LET OUT',
           text: crashOut.textContent ?? '',
         ),
         const SizedBox(height: 12),
         const Icon(
-          Icons.swap_vert_rounded,
+          Icons.compare_arrows_rounded,
           color: Colors.white30,
           size: 22,
         ),
         const SizedBox(height: 12),
         _ExperienceCard(
-          label: 'ANOTHER EXPERIENCE',
+          label: 'ANOTHER SIDE',
           text: experience.content,
         ),
         const Spacer(),
@@ -185,7 +185,7 @@ class _NoOppositeExperience extends StatelessWidget {
         ),
         SizedBox(height: 16),
         Text(
-          'Nothing on the other side surfaced yet.',
+          'Nothing meaningful on the other side surfaced yet.',
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white54,
