@@ -116,28 +116,91 @@ For a new Voice with no Vents, the first action is intentionally clear: release 
 
 ## 4. Crash Out
 
-Crash Out is the private release path.
+Crash Out is a private release path, separate from Vents.
 
-It is not a Vent type and it is not automatically social.
+It asks:
 
-```text
-Voice Space
-    ↓
-Crash Out
-    ↓
-Private release
-    ↓
-Fate
-```
+> What is another side of what I am experiencing?
 
-The user remains in control:
+It is deliberately different from Find People Who Understand, which asks:
 
-- **Let Go** — remove it
-- **Keep Private** — keep it in private storage
-- **Turn into a Vent** — intentionally bring it into the social Vent system
-- **Find People Who Understand** — future private resonance path
+> Who has experienced something like me?
 
-A private Crash Out must never become public merely because a later matching system exists.
+### Core flow
+
+Private Crash Out
+→ Experience Understanding
+→ Human Tension
+→ Position + Direction
+→ Meaningful Opposition
+→ Another Side of the Experience
+
+### Experience Representation
+
+A Crash Out can be understood through:
+
+- Situation
+- Human Tension
+- Position
+- Direction
+- Need / Desire
+- Emotional State
+- Context
+- Intensity
+
+Human Tension + Position + Direction are the primary opposition signals.
+
+A single Crash Out may contain multiple experience atoms. The system should identify the strongest opposition-worthy atom rather than force an entire paragraph into one category.
+
+### Opposition rules
+
+A valid encounter needs:
+
+- a shared human tension;
+- opposing positions or directions;
+- semantic evidence that the relationship is meaningful;
+- contextual support where useful;
+- safety/privacy eligibility;
+- sufficient confidence.
+
+Topic overlap, different emotions, literal antonyms, or random disagreement are not enough.
+
+Ventvo must not manufacture an opposite. No meaningful opposite means no encounter.
+
+### Privacy
+
+The raw Crash Out remains private. It must never be published merely so Ventvo can discover an opposing experience.
+
+Delayed encounters, if introduced later, require a privacy-safe retained representation and an explicit retention/deletion design. Deleting the Crash Out must remove its matching representation.
+
+### Encounter
+
+The encounter should describe the relationship between experiences rather than expose an algorithmic result.
+
+Preferred direction:
+
+> You wanted someone to notice.
+>
+> Someone else wanted to be left alone.
+>
+> Two sides of needing people.
+
+The other person is never described as “your opposite”, and the core encounter does not require follows, likes, messages, comments, or connection requests.
+
+### Product separation
+
+- Find People Who Understand → similarity / understanding.
+- Resonance → meaningful connection.
+- Crash Out → meaningful opposition.
+- Echo → expression caused by another experience.
+
+The current deterministic CrashOutOppositeExperienceService is prototype scaffolding. It should evolve toward:
+
+CrashOutExperienceInterpreter
+→ ExperienceRepresentation
+→ CrashOutOppositionEngine
+→ Candidate Eligibility
+→ CrashOutEncounter
 
 ## 5. Vent
 
