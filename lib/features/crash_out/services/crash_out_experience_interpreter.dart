@@ -15,7 +15,11 @@ class CrashOutExperienceInterpreter {
       return const ExperienceRepresentation();
     }
 
-    final text = crashOut.textContent?.trim().toLowerCase() ?? '';
+    return interpretText(crashOut.textContent);
+  }
+
+  ExperienceRepresentation interpretText(String? rawText) {
+    final text = rawText?.trim().toLowerCase() ?? '';
     if (text.length < 3) {
       return const ExperienceRepresentation();
     }
