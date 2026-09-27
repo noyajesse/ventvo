@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../ventvo_voice/models/vent.dart';
+import '../../ventvo_voice/providers/vent_provider.dart';
 import '../models/crash_out.dart';
-import '../providers/crash_out_provider.dart';
-import '../../ventvo_voice/screens/create_vent_screen.dart';
-import '../../ventvo_voice/screens/find_people_screen.dart';
-import '../../ventvo_voice/screens/voice_space_screen.dart';
+import '../services/crash_out_opposite_experience_service.dart';
 
 class CrashOutFateScreen extends ConsumerWidget {
   final CrashOut crashOut;
@@ -15,58 +14,13 @@ class CrashOutFateScreen extends ConsumerWidget {
     required this.crashOut,
   });
 
-  void _returnToVoiceSpace(BuildContext context) {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const VoiceSpaceScreen()),
-      (route) => false,
-    );
-  }
-
-  Future<void> _keepPrivate(BuildContext context, WidgetRef ref) async {
-    await ref.read(crashOutProvider.notifier).keepPrivate(crashOut.id);
-    if (!context.mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Kept private.')),
-    );
-    _returnToVoiceSpace(context);
-  }
-
-  Future<void> _letGo(BuildContext context, WidgetRef ref) async {
-    await ref.read(crashOutProvider.notifier).deleteCrashOut(crashOut.id);
-    if (!context.mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('You let this moment go.')),
-    );
-    _returnToVoiceSpace(context);
-  }
-
-  void _turnIntoVent(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CreateVentScreen(
-          initialContent: crashOut.textContent,
-          crashOutId: crashOut.id,
-        ),
-      ),
-    );
-  }
-
-  void _findPeopleWhoUnderstand(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const FindPeopleScreen()),
-    );
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final canTurnIntoVent =
-        crashOut.type == CrashOutType.text &&
-        (crashOut.textContent?.trim().length ?? 0) >= 3;
+    final vents = ref.watch(ventProvider).asData?.value ?? const <Vent>[];
+    final match = const CrashOutOppositeExperienceService().find(
+      crashOut: crashOut,
+      experiences: vents,
+    );
 
     return Scaffold(
       backgroundColor: const Color(0xFF111111),
@@ -75,123 +29,170 @@ class CrashOutFateScreen extends ConsumerWidget {
         elevation: 0,
         title: const Text(
           'Crash Out',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
-          child: Column(
-            children: [
-              const Spacer(),
-              const Icon(
-                Icons.cloud_done_outlined,
-                color: Colors.white70,
-                size: 54,
-              ),
-              const SizedBox(height: 30),
-              const Text(
-                'You let it out.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
+          child: match == null
+              ? const _NoOppositeExperience()
+              : _OppositeExperienceView(
+                  crashOut: crashOut,
+                  experience: match.experience,
                 ),
-              ),
-              const SizedBox(height: 18),
-              const Text(
-                'You don’t have to decide what it means right now.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white54,
-                  fontSize: 17,
-                  height: 1.5,
-                ),
-              ),
-              const Spacer(),
-              if (canTurnIntoVent) ...[
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: () => _turnIntoVent(context),
-                    child: const Text(
-                      'Turn into a Vent',
-                      style: TextStyle(fontSize: 17),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 14),
-              ],
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: () => _findPeopleWhoUnderstand(context),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: const BorderSide(color: Colors.white24),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 18,
-                      vertical: 16,
-                    ),
-                  ),
-                  child: const Column(
-                    children: [
-                      Text(
-                        'Find People Who Understand',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        'Your Crash Out stays private. We’ll start from something you have already shared.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white54,
-                          fontSize: 11,
-                          height: 1.4,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 14),
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: OutlinedButton(
-                  onPressed: () => _keepPrivate(context, ref),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: const BorderSide(color: Colors.white24),
-                  ),
-                  child: const Text(
-                    'Keep Private',
-                    style: TextStyle(fontSize: 17),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 14),
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: TextButton(
-                  onPressed: () => _letGo(context, ref),
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.white54,
-                  ),
-                  child: const Text(
-                    'Let it go',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 25),
-            ],
-          ),
         ),
       ),
+    );
+  }
+}
+
+class _OppositeExperienceView extends StatelessWidget {
+  const _OppositeExperienceView({
+    required this.crashOut,
+    required this.experience,
+  });
+
+  final CrashOut crashOut;
+  final Vent experience;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const Spacer(),
+        const Icon(
+          Icons.swap_vertical_circle_outlined,
+          color: Colors.white70,
+          size: 54,
+        ),
+        const SizedBox(height: 28),
+        const Text(
+          'Your Crash Out met an opposite experience.',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            height: 1.2,
+          ),
+        ),
+        const SizedBox(height: 14),
+        const Text(
+          'Not the same story. Not the same feeling. Just another side of something human.',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white54,
+            fontSize: 16,
+            height: 1.5,
+          ),
+        ),
+        const SizedBox(height: 30),
+        _ExperienceCard(
+          label: 'YOUR EXPERIENCE',
+          text: crashOut.textContent ?? '',
+        ),
+        const SizedBox(height: 12),
+        const Icon(
+          Icons.swap_vert_rounded,
+          color: Colors.white30,
+          size: 22,
+        ),
+        const SizedBox(height: 12),
+        _ExperienceCard(
+          label: 'ANOTHER EXPERIENCE',
+          text: experience.content,
+        ),
+        const Spacer(),
+      ],
+    );
+  }
+}
+
+class _ExperienceCard extends StatelessWidget {
+  const _ExperienceCard({
+    required this.label,
+    required this.text,
+  });
+
+  final String label;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white10,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: Colors.white12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              color: Colors.white38,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.2,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            text,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NoOppositeExperience extends StatelessWidget {
+  const _NoOppositeExperience();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      children: [
+        Spacer(),
+        Icon(
+          Icons.cloud_done_outlined,
+          color: Colors.white70,
+          size: 54,
+        ),
+        SizedBox(height: 30),
+        Text(
+          'You let it out.',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 16),
+        Text(
+          'Nothing on the other side surfaced yet.',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white54,
+            fontSize: 17,
+            height: 1.5,
+          ),
+        ),
+        Spacer(),
+      ],
     );
   }
 }
