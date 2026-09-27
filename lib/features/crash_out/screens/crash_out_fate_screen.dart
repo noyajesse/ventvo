@@ -45,6 +45,7 @@ class CrashOutFateScreen extends ConsumerWidget {
               : _OppositeExperienceView(
                   crashOut: crashOut,
                   experience: match.experience,
+                  tension: match.sourceAtom.tension.label,
                 ),
         ),
       ),
@@ -56,10 +57,12 @@ class _OppositeExperienceView extends StatelessWidget {
   const _OppositeExperienceView({
     required this.crashOut,
     required this.experience,
+    required this.tension,
   });
 
   final CrashOut crashOut;
   final Vent experience;
+  final String tension;
 
   @override
   Widget build(BuildContext context) {
@@ -83,12 +86,23 @@ class _OppositeExperienceView extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 14),
+        Text(
+          'Two sides of $tension.',
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: Colors.white70,
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
+            height: 1.4,
+          ),
+        ),
+        const SizedBox(height: 8),
         const Text(
           'Not a match. Not a conversation. Just another human experience moving in a different direction.',
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white54,
-            fontSize: 16,
+            fontSize: 15,
             height: 1.5,
           ),
         ),
