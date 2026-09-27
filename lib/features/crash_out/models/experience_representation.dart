@@ -25,6 +25,33 @@ enum ExperiencePosition {
   uncertain,
 }
 
+extension HumanTensionLabel on HumanTension {
+  String get label {
+    switch (this) {
+      case HumanTension.connection:
+        return 'connection';
+      case HumanTension.attention:
+        return 'being noticed';
+      case HumanTension.dependence:
+        return 'support';
+      case HumanTension.explanation:
+        return 'being understood';
+      case HumanTension.presence:
+        return 'having someone there';
+      case HumanTension.responsibility:
+        return 'carrying responsibility';
+      case HumanTension.recognition:
+        return 'recognition';
+      case HumanTension.control:
+        return 'control';
+      case HumanTension.belonging:
+        return 'belonging';
+      case HumanTension.vulnerability:
+        return 'letting yourself be seen';
+    }
+  }
+}
+
 class ExperienceAtom {
   final HumanTension tension;
   final ExperiencePosition position;
