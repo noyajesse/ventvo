@@ -1,3 +1,39 @@
+## Unreleased - Crash Out Opposition Architecture
+
+### Product
+
+- Reframed Crash Out from a collection of selectable outcomes into a private experience that may surface a meaningful opposing experience.
+- Separated Crash Out from Find People Who Understand.
+- Defined Crash Out as opposition on a shared human tension rather than similarity, topic difference, or literal antonyms.
+- Defined Experience Representation around Situation, Human Tension, Position, Direction, Need/Desire, Emotional State, Context, and Intensity.
+- Established that Human Tension + Position + Direction are the primary Crash Out signals.
+- Established that Crash Out may contain multiple experience atoms.
+- Established that Ventvo must not manufacture an opposite when no meaningful match exists.
+- Defined the encounter as the relationship between experiences rather than an algorithmic match result.
+- Established that people are not described as “opposites”; experiences are.
+
+### Privacy
+
+- Private Crash Out content must not be published or indexed merely to enable opposition discovery.
+- Delayed encounters require an explicit privacy-safe retention design.
+- Deleting a Crash Out must remove any matching representation created for delayed discovery.
+
+### Architecture
+
+- Established a dedicated Crash Out opposition domain separate from Resonance similarity discovery.
+- Kept the existing CrashOutOppositeExperienceService as deterministic prototype scaffolding.
+- Defined the target architecture: CrashOutExperienceInterpreter → ExperienceRepresentation → CrashOutOppositionEngine → Candidate Eligibility → CrashOutEncounter.
+- Find People Who Understand remains the similarity/understanding pathway.
+- Shared safety, privacy, moderation, and repository infrastructure may be reused without making Crash Out a Resonance similarity flow.
+
+### UX
+
+- Crash Out encounter language should describe the human relationship between the two experiences.
+- The encounter should not expose scores or call another person “your opposite”.
+- No automatic social-media actions are part of the core encounter.
+
+---
+
 # Changelog
 
 All notable changes to Ventvo will be documented here.
