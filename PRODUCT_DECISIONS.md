@@ -260,3 +260,61 @@ Spaces must not become:
 Future Resonance or AI-assisted discovery may suggest related Spaces or expressions, but the Voice remains in control of participation.
 
 This decision describes the intended product architecture. It does not claim that shared Spaces, persistent participation, Moments, or Feed-to-Space navigation are already implemented.
+
+
+---
+
+# 9. Crash Out — Meaningful Opposition
+
+**Date:** 2026-09-27
+
+Decision:
+
+Crash Out is defined by **meaningful opposition between experiences**, not by user-selected fates or similarity discovery.
+
+Core flow:
+
+Private Crash Out
+→ Experience Understanding
+→ Human Tension
+→ Position + Direction
+→ Meaningful Opposition
+→ Another Side of the Experience
+
+## Why
+
+Find People Who Understand already serves similarity:
+
+> “Who has experienced something like me?”
+
+Crash Out serves a different need:
+
+> “What is another side of what I'm experiencing?”
+
+## Rules
+
+- Experiences, not people, are opposites.
+- Similarity is not opposition.
+- Different topics are not automatically opposites.
+- Literal antonyms are not enough.
+- Context can support opposition but cannot create it.
+- Multiple experience atoms are allowed.
+- Ventvo must not force a Crash Out match.
+- A private Crash Out must remain private.
+- The encounter should describe the relationship between experiences rather than an algorithmic score.
+- No automatic follow, message, comment, or connection action is required.
+
+## Product separation
+
+| System | Purpose |
+|---|---|
+| Find People Who Understand | Similarity / understanding |
+| Resonance | Meaningful connection |
+| Crash Out | Meaningful opposition |
+| Echo | New expression caused by another experience |
+
+The existing deterministic CrashOutOppositeExperienceService remains useful as prototype scaffolding and test infrastructure. It should evolve toward an experience representation and opposition engine rather than become a large phrase-matching ruleset.
+
+## Future delayed encounters
+
+A delayed Crash Out encounter may be explored later, but only with an explicit privacy-safe representation and retention/deletion policy.
