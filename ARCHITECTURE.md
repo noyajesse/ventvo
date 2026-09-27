@@ -613,30 +613,6 @@ Shared infrastructure may include:
 
 But Crash Out must not inherit Resonance's similarity semantics simply because both systems surface experiences.
 
-18. Feed
-
-Ventvo's connection system is intended to grow from Resonance rather than traditional social networking.
-
-The long-term direction is:
-
-```text
-Expression
-    ↓
-Vent
-    ↓
-Space
-    ↓
-Resonance
-    ↓
-Echo
-    ↓
-Deeper Understanding
-    ↓
-Connection
-```
-
-The goal is meaningful connection rather than maximum engagement.
-
 15. Feed
 
 The Feed is the community discovery layer.
