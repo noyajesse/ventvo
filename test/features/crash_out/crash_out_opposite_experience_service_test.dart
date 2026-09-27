@@ -115,6 +115,63 @@ void main() {
     );
   });
 
+
+  test('recognizes connection without treating loneliness as an emotion match', () {
+    final result = interpreter.interpret(
+      crashOut('I feel lonely. I wish I had someone close.'),
+    );
+
+    expect(
+      result.atoms.any(
+        (atom) =>
+            atom.tension == HumanTension.connection &&
+            atom.direction == ExperienceDirection.toward,
+      ),
+      isTrue,
+    );
+  });
+
+  test('matches belonging with wanting to stay outside the group', () {
+    final match = service.find(
+      crashOut: crashOut('I wish they included me. I feel left out.'),
+      experiences: [
+        vent(
+          'outside',
+          'I do not want to be part of the group. I would rather stay out of it.',
+        ),
+      ],
+    );
+
+    expect(match?.experience.id, 'outside');
+    expect(match?.sourceAtom.tension, HumanTension.belonging);
+  });
+
+  test('normalizes contractions before interpreting meaning', () {
+    final result = interpreter.interpret(
+      crashOut("I don't want to explain myself anymore."),
+    );
+
+    expect(
+      result.atoms.any(
+        (atom) =>
+            atom.tension == HumanTension.explanation &&
+            atom.direction == ExperienceDirection.away,
+      ),
+      isTrue,
+    );
+  });
+
+  test('shared topic with different emotion is not enough', () {
+    final match = service.find(
+      crashOut: crashOut('I am sad about my relationship.'),
+      experiences: [
+        vent('happy', 'I am happy about my relationship.'),
+      ],
+    );
+
+    expect(match, isNull);
+  });
+
   test('ignores private or unsafe experiences', () {
     final privateVent = vent('private', 'Please leave me alone.');
     final unsafeVent = vent('unsafe', 'Please leave me alone.').copyWith(
