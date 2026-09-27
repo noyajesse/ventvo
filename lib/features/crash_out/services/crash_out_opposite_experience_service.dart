@@ -29,12 +29,23 @@ class CrashOutOppositeExperienceService {
       if (!vent.isDiscoverable || excludedIds.contains(vent.id)) continue;
 
       final candidate = interpreter.interpretText(vent.content);
-      final score = _score(source, candidate);
+      final opposition = _bestOpposition(source, candidate);
+      if (opposition == null) continue;
+
+      final score = _score(
+        source,
+        candidate,
+        sourceAtom: opposition.source,
+        candidateAtom: opposition.candidate,
+      );
+
       if (score <= 0) continue;
 
       final match = CrashOutOppositeMatch(
         experience: vent,
         score: score,
+        sourceAtom: opposition.source,
+        candidateAtom: opposition.candidate,
       );
 
       if (best == null || match.score > best.score) {
@@ -45,14 +56,11 @@ class CrashOutOppositeExperienceService {
     return best;
   }
 
-  double _score(
+  _Opposition? _bestOpposition(
     ExperienceRepresentation source,
     ExperienceRepresentation candidate,
   ) {
-    if (!candidate.isMeaningful) return 0;
-
-    var bestOpposition = 0.0;
-    var bestContextBonus = 0.0;
+    _Opposition? best;
 
     for (final sourceAtom in source.atoms) {
       if (sourceAtom.confidence < 0.55 || sourceAtom.intensity < 0.35) {
@@ -66,34 +74,67 @@ class CrashOutOppositeExperienceService {
             sourceAtom.confidence * candidateAtom.confidence;
         final intensity =
             (sourceAtom.intensity + candidateAtom.intensity) / 2;
+        final strength = 0.72 * evidence + 0.28 * intensity;
 
-        // The semantic opposition is the gate. Context is only a small
-        // supporting signal after that gate has been satisfied.
-        final opposition = 0.72 * evidence + 0.28 * intensity;
-        if (opposition > bestOpposition) {
-          bestOpposition = opposition;
+        if (best == null || strength > best.strength) {
+          best = _Opposition(
+            source: sourceAtom,
+            candidate: candidateAtom,
+            strength: strength,
+          );
         }
       }
     }
 
-    if (bestOpposition <= 0) return 0;
+    return best;
+  }
+
+  double _score(
+    ExperienceRepresentation source,
+    ExperienceRepresentation candidate, {
+    required ExperienceAtom sourceAtom,
+    required ExperienceAtom candidateAtom,
+  }) {
+    final opposition =
+        0.72 *
+            (sourceAtom.confidence * candidateAtom.confidence) +
+        0.28 *
+            ((sourceAtom.intensity + candidateAtom.intensity) / 2);
+
+    if (opposition <= 0) return 0;
 
     final sharedContexts =
         source.contexts.intersection(candidate.contexts).length;
-    bestContextBonus = (sharedContexts * 0.04).clamp(0.0, 0.12).toDouble();
-
-    return (bestOpposition + bestContextBonus)
-        .clamp(0.0, 1.0)
+    final contextBonus = (sharedContexts * 0.04)
+        .clamp(0.0, 0.12)
         .toDouble();
+
+    return (opposition + contextBonus).clamp(0.0, 1.0).toDouble();
   }
 }
 
 class CrashOutOppositeMatch {
   final Vent experience;
   final double score;
+  final ExperienceAtom sourceAtom;
+  final ExperienceAtom candidateAtom;
 
   const CrashOutOppositeMatch({
     required this.experience,
     required this.score,
+    required this.sourceAtom,
+    required this.candidateAtom,
+  });
+}
+
+class _Opposition {
+  final ExperienceAtom source;
+  final ExperienceAtom candidate;
+  final double strength;
+
+  const _Opposition({
+    required this.source,
+    required this.candidate,
+    required this.strength,
   });
 }
