@@ -1,11 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ventvo/features/crash_out/models/crash_out.dart';
+import 'package:ventvo/features/crash_out/models/experience_representation.dart';
+import 'package:ventvo/features/crash_out/services/crash_out_experience_interpreter.dart';
 import 'package:ventvo/features/crash_out/services/crash_out_opposite_experience_service.dart';
 import 'package:ventvo/features/ventvo_voice/models/vent.dart';
 
 void main() {
-  const service = CrashOutOppositeExperienceService();
+  const interpreter = CrashOutExperienceInterpreter();
+  const service = CrashOutOppositeExperienceService(interpreter: interpreter);
 
   Vent vent(String id, String content) => Vent(
         id: id,
@@ -43,6 +46,73 @@ void main() {
     );
 
     expect(match, isNull);
+  });
+
+  test('matches dependence with independence', () {
+    final match = service.find(
+      crashOut: crashOut(
+        'I am tired of doing everything myself. I need someone to help.',
+      ),
+      experiences: [
+        vent(
+          'independent',
+          'I do not need anyone. I want to handle everything myself.',
+        ),
+      ],
+    );
+
+    expect(match?.experience.id, 'independent');
+  });
+
+  test('does not treat literal antonyms as meaningful opposition', () {
+    final match = service.find(
+      crashOut: crashOut('I feel sad about what happened.'),
+      experiences: [
+        vent('literal-antonym', 'I feel happy about what happened.'),
+      ],
+    );
+
+    expect(match, isNull);
+  });
+
+  test('does not force a match from shared context alone', () {
+    final match = service.find(
+      crashOut: crashOut('My friends have been distant lately.'),
+      experiences: [
+        vent(
+          'same-topic',
+          'My friends are always around me and I enjoy that.',
+        ),
+      ],
+    );
+
+    expect(match, isNull);
+  });
+
+  test('interpreter can extract multiple experience atoms', () {
+    final result = interpreter.interpret(
+      crashOut(
+        'Nobody notices me, and I am tired of doing everything myself.',
+      ),
+    );
+
+    expect(result.atoms.length, greaterThanOrEqualTo(2));
+    expect(result.isMeaningful, isTrue);
+  });
+
+  test('interprets a human tension with direction', () {
+    final result = interpreter.interpret(
+      crashOut('I wish someone would check on me.'),
+    );
+
+    expect(
+      result.atoms.any(
+        (atom) =>
+            atom.tension == HumanTension.attention &&
+            atom.direction == ExperienceDirection.toward,
+      ),
+      isTrue,
+    );
   });
 
   test('ignores private or unsafe experiences', () {
