@@ -155,25 +155,64 @@ No additional response modes are part of the current product model.
 
 Crash Out is a private-release pathway for expressing something before deciding what, if anything, should happen to it.
 
+Crash Out is separate from the Vent model and is not a Resonance similarity feature.
+
 ### Owns
+
 - Crash Out ID
 - Private expression payload
 - Creation timestamp
 - Lifecycle state
 - Release type
-- Fate decision
+- Encounter state
+- Privacy-safe experience representation only if delayed matching is explicitly implemented
 
-### Possible fate outcomes
-- Let Go
-- Keep Private
-- Turn into Vent
-- Future connection/discovery pathways when designed
+### Core flow
 
-### Critical boundary
+Private Crash Out
+→ Experience Understanding
+→ Human Tension
+→ Position + Direction
+→ Opposition Evaluation
+→ Crash Out Encounter
 
-Crash Out must NOT contain Resonance matching logic.
+### Opposition boundary
 
-If a Crash Out is eligible to discover people who may understand it, Crash Out asks the Resonance system for that experience. The matching engine remains reusable by Feed, Space, Crash Out, and future systems.
+Crash Out looks for a meaningfully opposing experience, not a similar one.
+
+An opposition candidate should share a meaningful human tension while occupying an opposing position/direction. Context can support the relationship but cannot create opposition by itself.
+
+The system must allow no match when no meaningful opposite exists.
+
+### Privacy boundary
+
+The raw Crash Out remains private. It must never be indexed or exposed as a public source merely because it is used to evaluate public experiences.
+
+If delayed encounters are implemented, Ventvo may retain only the minimum privacy-safe representation required for matching, subject to an explicit retention/deletion design. Deleting the Crash Out must remove its matching representation.
+
+### Product relationship
+
+- Find People Who Understand → similarity / understanding.
+- Resonance → meaningful connection.
+- Crash Out → meaningful opposition.
+
+### Prototype implementation
+
+The current CrashOutOppositeExperienceService is deterministic prototype scaffolding. It should evolve toward:
+
+CrashOutExperienceInterpreter
+→ ExperienceRepresentation
+→ CrashOutOppositionEngine
+→ Candidate Eligibility
+→ CrashOutEncounter
+
+### Does not own
+
+- Public Vent content
+- Authentication information
+- Generic social matching
+- Resonance connection lifecycle
+- Follower/like mechanics
 
 ## 6. Resonance
 
@@ -283,10 +322,13 @@ Riverpod providers expose state and coordinate application flows. Domain service
 Repositories provide storage contracts. They should not decide what a Vent means or who resonates with whom.
 
 ### Rule 4 — Resonance is reusable
-Any product surface that needs meaningful human discovery calls Resonance rather than implementing matching locally.
+
+Any product surface that needs meaningful similarity/connection discovery uses Resonance rather than implementing similarity matching locally.
+
+Crash Out opposition is intentionally separate. It may reuse shared safety, privacy, moderation, and repository infrastructure without becoming a Resonance similarity flow.
 
 ### Rule 4a — Discovery does not end the journey
-When a user chooses **This resonates with me**, Resonance creates a suggested connection through the connection service. The connection must then follow the shared lifecycle rather than ending at discovery.
+When a user chooses This resonates with me, Resonance creates a suggested connection through the connection service. The connection must then follow the shared lifecycle rather than ending at discovery.
 
 ### Rule 4b — Connection is relationship state, not a generic chat shortcut
 An active connection should remain grounded in the shared experience that created it. A generic direct-message system must not replace the connection model.
