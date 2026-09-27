@@ -122,26 +122,86 @@ Open Discussion is not intended to become a conventional comment section.
 
 ## Crash Out
 
-Crash Out is a private release path, separate from Vents.
+Crash Out is a **private release path**, separate from Vents.
 
-```text
-Voice Space
-   ↓
-Crash Out
-   ↓
-Release
-   ↓
-Fate
-```
+It is not a diary, notes app, therapist, or generic matching workflow.
 
-The user remains in control of what happens next:
+Crash Out asks:
 
-- **Let Go**
-- **Keep Private**
-- **Turn into a Vent**
-- **Find People Who Understand** — future private connection path
+> **What is another side of what I am experiencing?**
 
-A private Crash Out must never become public merely because matching or discovery occurs later.
+This is intentionally different from **Find People Who Understand**, which asks:
+
+> **Who has experienced something like me?**
+
+### Experience Representation
+
+Ventvo should understand a Crash Out through:
+
+- Situation
+- Human Tension
+- Position
+- Direction
+- Need / Desire
+- Emotional State
+- Context
+- Intensity
+
+The primary Crash Out signals are **Human Tension + Position + Direction**.
+
+A Crash Out may contain multiple experience atoms. Ventvo should identify the strongest opposition-worthy atom instead of forcing an entire paragraph into one category.
+
+### Meaningful Opposition
+
+A valid encounter requires a shared human tension, opposing positions or directions, semantic evidence that the relationship is real, useful contextual support where appropriate, safety/privacy eligibility, and sufficient confidence.
+
+Different topics, different emotions, literal antonyms, or random disagreement are not enough. Context can support opposition but cannot create it.
+
+### No forced match
+
+If no meaningful opposite exists, Ventvo must not manufacture one.
+
+> **You let it out.**  
+> Nothing on the other side surfaced yet.
+
+### Privacy
+
+The raw Crash Out remains private. It must never be published merely so Ventvo can discover an opposing experience.
+
+If delayed encounters are introduced later, only a privacy-safe representation should be retained for matching, subject to an explicit retention/deletion design. Deleting the Crash Out must remove its matching representation.
+
+### Prototype direction
+
+The current CrashOutOppositeExperienceService is prototype scaffolding, not the final intelligence layer.
+
+Target architecture:
+
+CrashOutExperienceInterpreter
+→ ExperienceRepresentation
+→ CrashOutOppositionEngine
+→ Candidate Eligibility
+→ CrashOutEncounter
+
+### Encounter UX
+
+The encounter should describe the relationship rather than expose an algorithmic result.
+
+> **You wanted someone to notice.**
+>
+> Someone else wanted to be left alone.
+>
+> *Two sides of needing people.*
+
+Do not call another person “your opposite”. Do not automatically add follows, likes, messages, comments, or connection requests.
+
+### Product separation
+
+- **Find People Who Understand** → similarity / understanding.
+- **Resonance** → meaningful connection.
+- **Crash Out** → meaningful opposition.
+- **Echo** → expression caused by another experience.
+
+Crash Out may share safety, privacy, moderation, and repository infrastructure with Resonance, but its defining matching semantics are separate.
 
 ## Resonance
 
