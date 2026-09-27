@@ -111,11 +111,15 @@ It is not:
 
 ---
 
-## 7. Temporary Moments Can Matter
+## 7. Private Release Can Matter
 
-Crash Out exists because intense emotions are often temporary.
+Crash Out exists because people sometimes need to release something without immediately turning it into a public expression.
 
-Ventvo creates temporary spaces where people can connect during those moments without creating permanent pressure.
+Crash Out is private by default.
+
+Its purpose is not to manufacture a social interaction. When a meaningful opposite experience exists, Ventvo may let the person encounter another side of the human tension they are carrying.
+
+No opposite should be forced simply to produce an interaction.
 
 ---
 
@@ -184,3 +188,21 @@ Ventvo does not tell a person who they are.
 Over time, a person's accumulated Moments and meaningful connections may reveal patterns in how their Voice changes.
 
 Voice Evolution should help a person notice what they have expressed and how their experiences have developed, rather than assigning personality scores or fixed identities.
+
+
+---
+
+## 14. Crash Out Reveals Another Side
+
+Crash Out is distinct from similarity-based discovery.
+
+- Find People Who Understand → similar experience.
+- Resonance → meaningful connection.
+- Crash Out → meaningful opposition.
+
+Crash Out should look for another experience on the other side of a meaningful human tension.
+
+Experiences are opposites, not people.
+
+The system must prefer no encounter over a manufactured one.
+
