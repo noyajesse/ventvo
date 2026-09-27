@@ -23,7 +23,7 @@ Resonance
   ↓
 Connection
 
-Crash Out is a separate expression pathway:
+Crash Out is a separate private experience:
 
 Voice Space
   ↓
@@ -31,7 +31,11 @@ Crash Out
   ↓
 Private Release
   ↓
-Fate
+Experience Understanding
+  ↓
+Meaningful Opposition
+  ↓
+Another Side of the Experience
 ```
 
 1. Ventvo Voice
@@ -466,178 +470,150 @@ The full Echo Note architecture is still under development.
 
 Crash Out is a separate Ventvo experience.
 
-It is not a Vent type.
+It is not a Vent type, diary, notes application, or generic people-matching workflow.
 
-It is not intended to be:
+Its defining behavior is:
 
-A diary
-A notes application
-A collection of ordinary posts
-
-Crash Out provides a private release pathway.
-
-It allows a person to release something they are carrying before deciding what, if anything, should happen next.
-
-Crash Out Architecture
-
-```text
 Voice Space
-     ↓
-Crash Out
-     ↓
+→ Crash Out
+→ Private Release
+→ Experience Understanding
+→ Meaningful Opposition
+→ Another Side of the Experience
+
+The Crash Out remains private. It is not published merely so Ventvo can find an opposing experience.
+
+12. Crash Out Experience Representation
+
+Before Ventvo can identify an opposing experience, it should interpret the private experience into:
+
+- Situation
+- Human Tension
+- Position
+- Direction
+- Need / Desire
+- Emotional State
+- Context
+- Intensity
+
+The core Crash Out signals are Human Tension + Position + Direction.
+
+A Crash Out may contain multiple experience atoms. The system should identify the strongest opposition-worthy atom instead of forcing an entire paragraph into one category.
+
+13. Crash Out Opposition
+
+Crash Out is intentionally different from Find People Who Understand.
+
+Find People Who Understand asks:
+
+> Who has experienced something like me?
+
+Crash Out asks:
+
+> What is another side of what I am experiencing?
+
+A valid Crash Out encounter requires:
+
+- shared human tension;
+- opposing position/direction;
+- semantic evidence;
+- meaningful contextual support where useful;
+- safety/privacy eligibility;
+- sufficient confidence.
+
+Shared topic, different emotion, literal antonyms, or random disagreement are not sufficient.
+
+Context can support opposition but cannot create it.
+
+The system must allow no encounter when no meaningful opposite exists.
+
+Example:
+
+Private Crash Out:
+
+> “I wish someone would check on me. I feel like I'm always the one checking on everyone else.”
+
+Public experience:
+
+> “I hate when people keep checking on me. Sometimes I just want everyone to leave me alone.”
+
+The people are not opposites. The experiences occupy opposing sides of the same human tension.
+
+Prototype architecture:
+
+CrashOutExperienceInterpreter
+→ ExperienceRepresentation
+→ CrashOutOppositionEngine
+→ Candidate Eligibility
+→ CrashOutEncounter
+
+The current deterministic CrashOutOppositeExperienceService is prototype scaffolding. Its phrase-based tensions should support validation and regression tests rather than grow indefinitely into a hard-coded ruleset.
+
+14. Crash Out Encounter
+
+The encounter should describe the relationship between the experiences rather than expose an algorithmic result.
+
+Preferred direction:
+
+> You wanted someone to notice.
+>
+> Someone else wanted to be left alone.
+>
+> Two sides of needing people.
+
+Do not call another person “your opposite”.
+
+Do not automatically add follows, likes, messages, comments, or connection requests.
+
+The encounter itself is the product outcome.
+
+A Crash Out encounter may naturally lead to an Echo, but an Echo is not required.
+
+15. Crash Out Lifecycle
+
 Release
-     ↓
-Fate
-```
+→ Understand experience
+→ Evaluate eligible public experiences
+→ Strong opposition?
+  → Yes: Encounter
+  → No: No encounter
 
-The Crash Out remains separate from the normal Vent system unless the user explicitly chooses to move it into that system.
+A future delayed-encounter system may allow an opposite experience to surface later. That requires an explicit privacy-safe retention design.
 
-12. Crash Out Model
+If delayed matching is implemented, deleting the private Crash Out must also remove its matching representation.
 
-The current Crash Out model supports:
+16. Find People Who Understand
 
-id
-content
-type
-createdAt
-status
+Find People Who Understand remains the similarity/understanding pathway.
 
-Current statuses include:
+Its conceptual flow is:
 
-released
-keptPrivate
-convertedToVent
+Experience
+→ Similarity discovery
+→ Related experience
+→ Optional Resonance
+→ Suggested connection
 
-The model is intentionally separate from the Vent model.
+It must not be treated as Crash Out with different copy.
 
-13. Crash Out Fate
+17. Human Connection System
 
-After releasing a Crash Out, the user can eventually choose what happens next.
+Ventvo's connection system uses Resonance for meaningful similarity/connection relationships.
 
-The intended outcomes are:
+Crash Out opposition is a separate domain concern.
 
-Let Go
-Keep Private
-Turn into a Vent
-Find People Who Understand
+Shared infrastructure may include:
 
-13.1 Let Go
+- candidate eligibility
+- safety checks
+- privacy checks
+- moderation state
+- repositories
+- experience metadata
 
-Let Go removes the Crash Out from the user's private Crash Out storage.
+But Crash Out must not inherit Resonance's similarity semantics simply because both systems surface experiences.
 
-Current behavior:
-
-```text
-Crash Out
-  ↓
-Let Go
-  ↓
-Deleted
-  ↓
-Voice Space
-```
-
-13.2 Keep Private
-
-Keep Private stores the Crash Out privately.
-
-Current behavior:
-
-```text
-Crash Out
-  ↓
-Keep Private
-  ↓
-Private Crash Outs
-```
-
-Private Crash Outs:
-
-Do not appear in the normal Feed
-Are not normal Vents
-Are accessible only through the user's private space
-
-13.3 Turn into a Vent
-
-This is a future pathway.
-
-Intended architecture:
-
-```text
-Crash Out
-  ↓
-Turn into a Vent
-  ↓
-Vent
-  ↓
-Space
-  ↓
-Feed
-  ↓
-Resonance
-```
-
-The conversion should only happen when the user explicitly chooses it.
-
-13.4 Find People Who Understand
-
-Find People Who Understand is an explicit connection pathway.
-
-The intended experience is not:
-
-"Your algorithmic match is User #123."
-
-Instead, it should surface relevant experiences/Voices that may genuinely understand the user's experience.
-
-For a public Vent:
-
-```text
-Vent
-  ↓
-Resonance discovery
-  ↓
-Related experience
-  ↓
-This resonates with me
-  ↓
-Suggested connection
-```
-
-For a private Crash Out, the user may explicitly request understanding without making the Crash Out public:
-
-```text
-Crash Out
-  ↓
-Explicit private understanding request
-  ↓
-Resonance discovery
-  ↓
-Relevant public experiences
-  ↓
-User chooses whether to leave a Resonance
-  ↓
-Suggested connection
-```
-
-The Crash Out remains private. It is not indexed or exposed as a public source merely because it is used to discover relevant public experiences.
-
-After a Resonance is left, the connection follows the shared lifecycle:
-
-```text
-Suggested
-   ↓
-Accepted
-   ↓
-Active
-   ↓
-Shared connection experience
-```
-
-The receiving Voice controls whether the suggested connection is accepted. The active experience should remain grounded in the shared experience that created the connection rather than becoming a generic direct-message system.
-
-The current prototype implements the public Vent discovery → suggested connection step and provides a local Your Resonances state view. Real recipient delivery, multi-Voice acceptance, and backend persistence remain future work.
-
-14. Human Connection System
+18. Feed
 
 Ventvo's connection system is intended to grow from Resonance rather than traditional social networking.
 
@@ -875,24 +851,31 @@ Voice Crash Outs
 Backend persistence
 AI-assisted similarity discovery
 
-24. AI Matching Direction
+24. AI / Semantic Discovery Direction
 
-AI may eventually assist Ventvo in discovering meaningful similarities between experiences.
+AI or semantic models may eventually assist Ventvo with experience understanding and discovery.
 
-The purpose would be:
+For Resonance, this can support meaningful similarity.
 
-Help people discover others who may genuinely understand their experience.
+For Crash Out, semantic systems may eventually help identify:
 
-AI should not be used to:
+- underlying human tension;
+- position;
+- direction;
+- contextual relationship;
+- meaningful opposition.
 
-Diagnose users
-Provide therapy
-Determine someone's mental health
-Replace human connection
+AI must not be used to:
 
-The system should focus on meaningful similarity and connection.
+- diagnose users;
+- determine mental health;
+- provide therapy as a substitute for human support;
+- expose private Crash Out text;
+- manufacture psychological meaning without sufficient evidence.
 
-AI matching will be developed only after the underlying Resonance and connection architecture is established.
+The product semantics must be proven with deterministic tests before introducing complex AI infrastructure.
+
+Crash Out should evolve from deterministic prototype rules toward semantic understanding only after its domain model and privacy boundaries are stable.
 
 25. Architecture Decision
 
@@ -1118,151 +1101,3 @@ Future Voice-related features must preserve the distinction between:
 Voice Foundation
         ↓
 Voice Seed
-        ↓
-Voice Evolution
-```
-
-The system should not turn into a personality quiz or force users into a permanent identity.
-
----
-
-# Latest Architecture Addition — Shared Space Architecture
-
-## Space Definition
-
-The existing Ventvo foundation remains:
-
-> A Vent creates a Space that communicates how the creator wants that expression to be experienced.
-
-This remains true.
-
-The architecture is now clarified so that a Space is not limited to the first Vent and is not a container for unrelated content.
-
-A Space can become a shared experience where multiple Voices meet expressions that genuinely belong within that Space.
-
-The core relationship is:
-
-```text
-Voice
-  ↓
-Vent
-  ↓
-Space
-  ↓
-Voices meet expressions
-  ↓
-Space activity
-  ↓
-Moments
-  ↓
-Feed
-  ↓
-tap Moment
-  ↓
-its Space
-```
-
-The first Vent establishes the initial context of the Space. A later Voice may enter the Space and contribute an expression when it genuinely belongs within that experience.
-
-Participation does not mean joining a traditional social-media community. A Voice enters a Space to meet what is happening there.
-
-## Space Is Not a Traditional Social Platform Structure
-
-Space must not become:
-
-- A subreddit
-- A Facebook-style group
-- A Discord-style channel
-- A follower-based community
-- A popularity feed
-- A generic topic forum
-
-A Space exists to organize **how Voices meet expression**, not simply where content is stored.
-
-The defining question is:
-
-> How should people meet this expression?
-
-not:
-
-> How can we organize more content?
-
-## Space Modes
-
-Ventvo currently has only two Space modes.
-
-### Just Listen
-
-Just Listen exists when the creator wants to be heard without advice, solutions, or open discussion.
-
-```text
-Expression
-  ↓
-Presence
-  ↓
-Heard
-```
-
-Just Listen protects the creator's intention. Normal comments, advice, Echo Notes, and open discussion do not belong in this experience.
-
-The meaningful interaction remains:
-
-> I heard you.
-
-### Open Discussion
-
-Open Discussion exists when the creator welcomes perspectives and conversation around the expression.
-
-```text
-Expression
-  ↓
-Perspective
-  ↓
-Echo / Echo Note
-  ↓
-Understanding
-```
-
-Open Discussion should not become a conventional comment thread. Responses should contribute perspective and preserve the intentional nature of the Space.
-
-## Space Participation
-
-A Space may contain expressions from multiple Voices.
-
-Ventvo must not automatically force a Vent into a Space merely because the subject matter appears similar.
-
-Future Resonance or AI-assisted discovery may suggest that a Voice may resonate with an existing Space, but the Voice remains in control of whether they enter or contribute.
-
-## Space Activity and Moments
-
-Space activity represents what happens when Voices express and meet one another inside a Space.
-
-A Moment is a meaningful glimpse of Space activity.
-
-The Feed surfaces Moments from Spaces.
-
-The Feed therefore does not replace the Space and is not a separate social-media destination for consuming generic posts.
-
-When a Voice encounters a Moment in the Feed and taps it, the intended destination is the Space from which that Moment came so the Voice can experience the surrounding context.
-
-```text
-Space
-  ↓
-Space activity
-  ↓
-Moment
-  ↓
-Feed
-  ↓
-tap Moment
-  ↓
-return to its Space
-```
-
-## Current Implementation Boundary
-
-This is an architecture and product decision. It does **not** claim that shared Spaces, persistent multi-Voice participation, Moments, or Feed-to-Space navigation are already implemented.
-
-The existing prototype remains the implementation baseline until these systems are deliberately built and validated.
-
-The existing Just Listen and Open Discussion semantics remain the foundation of the implementation and should not be replaced with generic social-media interactions.
