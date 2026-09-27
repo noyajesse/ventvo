@@ -1,3 +1,108 @@
+# Ventvo Development Log
+
+## 2026-09-27 — Crash Out Product Architecture Reframed
+
+Branch: development
+
+Crash Out has been formally reframed as a **private experience that may surface a meaningful opposing experience**.
+
+### Core model
+
+Private Crash Out
+→ Experience Understanding
+→ Human Tension
+→ Position + Direction
+→ Opposition Evaluation
+→ Another Side of the Experience
+
+### Product distinction
+
+- Find People Who Understand → similarity.
+- Resonance → meaningful connection.
+- Crash Out → meaningful opposition.
+- Echo → expression caused by another experience.
+
+### Experience representation
+
+- Situation
+- Human Tension
+- Position
+- Direction
+- Need / Desire
+- Emotional State
+- Context
+- Intensity
+
+The primary Crash Out signals are Human Tension + Position + Direction.
+
+A single Crash Out may contain multiple experience atoms. The system should identify the strongest opposition-worthy atom rather than force an entire text into one category.
+
+### Opposition rules
+
+A valid Crash Out encounter requires:
+
+1. Shared human tension.
+2. Opposing position/direction.
+3. Semantic evidence that the relationship is meaningful.
+4. Useful contextual support where appropriate.
+5. Candidate safety/privacy eligibility.
+6. Sufficient confidence.
+
+Similarity, topic overlap, different emotions, literal antonyms, or random disagreement are not enough.
+
+No meaningful opposite means no encounter.
+
+### Privacy boundary
+
+Crash Out text remains private.
+
+It must never be published merely to find an opposite experience.
+
+If delayed encounters are introduced later, the retained representation must be privacy-safe and deleting the Crash Out must remove its matching representation.
+
+### Engineering direction
+
+The current deterministic CrashOutOppositeExperienceService remains useful as prototype scaffolding.
+
+Target architecture:
+
+CrashOutExperienceInterpreter
+→ ExperienceRepresentation
+→ CrashOutOppositionEngine
+→ Candidate Eligibility
+→ CrashOutEncounter
+
+The current phrase-based tension rules should be used for tests and validation rather than expanded indefinitely.
+
+### UX direction
+
+The encounter should describe the relationship between the experiences.
+
+> **You wanted someone to notice.**
+>
+> Someone else wanted to be left alone.
+>
+> *Two sides of needing people.*
+
+The other person is never described as “your opposite”.
+
+No automatic follow, message, comment, or connection is required.
+
+### Implementation order
+
+1. Stabilize the Experience Representation domain model.
+2. Build a deterministic prototype interpreter.
+3. Build the opposition engine.
+4. Add candidate eligibility and safety/privacy checks.
+5. Introduce a Crash Out Encounter domain model.
+6. Redesign the Crash Out encounter UI.
+7. Move Find People Who Understand out of the Crash Out core flow.
+8. Test positive, negative, and ambiguous examples.
+9. Consider semantic/AI assistance only after deterministic semantics are proven.
+10. Consider delayed encounters only after the privacy retention model is explicitly designed.
+
+---
+
 ### Echo Voice Ownership and Lifecycle Fix
 
 Date: 2026-09-19  
