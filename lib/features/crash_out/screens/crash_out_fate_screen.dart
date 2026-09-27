@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../ventvo_voice/models/vent.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
 import '../models/crash_out.dart';
-import '../services/crash_out_opposite_experience_service.dart';
+import '../providers/crash_out_provider.dart';
 
 class CrashOutFateScreen extends ConsumerWidget {
   final CrashOut crashOut;
@@ -17,10 +17,12 @@ class CrashOutFateScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final vents = ref.watch(ventProvider).asData?.value ?? const <Vent>[];
-    final match = const CrashOutOppositeExperienceService().find(
-      crashOut: crashOut,
-      experiences: vents,
-    );
+    final match = ref
+        .read(crashOutOppositeExperienceServiceProvider)
+        .find(
+          crashOut: crashOut,
+          experiences: vents,
+        );
 
     return Scaffold(
       backgroundColor: const Color(0xFF111111),
