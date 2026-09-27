@@ -374,9 +374,9 @@ Build depth before breadth.
 ### Immediate
 
 1. Validate the complete first-run journey on device.
-2. Finish the Crash Out → Find People Who Understand pathway and connect discovery to the connection lifecycle.
-3. Define and build the active connection experience around shared experiences rather than generic direct messaging.
-4. Tighten Feed → Space → Resonance continuity.
+2. Define and build the Crash Out opposition pathway, beginning with Experience Representation and the deterministic opposition prototype.
+3. Separate Find People Who Understand from Crash Out and preserve similarity discovery as its own Resonance pathway.
+4. Redesign the Crash Out encounter around the relationship between experiences rather than algorithmic match language.
 5. Add tests around the complete user journey and domain transitions.
 
 The current prototype already exposes the first public Resonance → connection step and a local Your Resonances state view. The recipient-side experience remains a prototype boundary until multiple Voices and backend persistence exist.
