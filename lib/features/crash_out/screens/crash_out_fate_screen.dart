@@ -2,28 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../ventvo_voice/models/vent.dart';
-import '../../ventvo_voice/providers/vent_provider.dart';
 import '../models/crash_out.dart';
-import '../providers/crash_out_provider.dart';
+import '../services/crash_out_opposite_experience_service.dart';
 
 class CrashOutFateScreen extends ConsumerWidget {
   final CrashOut crashOut;
+  final CrashOutOppositeMatch? match;
 
   const CrashOutFateScreen({
     super.key,
     required this.crashOut,
+    required this.match,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final vents = ref.watch(ventProvider).asData?.value ?? const <Vent>[];
-    final match = ref
-        .read(crashOutOppositeExperienceServiceProvider)
-        .find(
-          crashOut: crashOut,
-          experiences: vents,
-        );
-
     return Scaffold(
       backgroundColor: const Color(0xFF111111),
       appBar: AppBar(
@@ -44,8 +37,8 @@ class CrashOutFateScreen extends ConsumerWidget {
               ? const _NoOppositeExperience()
               : _OppositeExperienceView(
                   crashOut: crashOut,
-                  experience: match.experience,
-                  tension: match.sourceAtom.tension.label,
+                  experience: match!.experience,
+                  tension: match!.sourceAtom.tension.label,
                 ),
         ),
       ),
