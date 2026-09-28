@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/crash_out.dart';
 import '../providers/crash_out_provider.dart';
-import 'crash_out_fate_screen.dart';
+import 'crash_out_processing_screen.dart';
 
 class CrashOutScreen extends ConsumerStatefulWidget {
   const CrashOutScreen({super.key});
@@ -46,7 +46,9 @@ class _CrashOutScreenState extends ConsumerState<CrashOutScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CrashOutFateScreen(crashOut: crashOut),
+        builder: (context) => CrashOutProcessingScreen(
+          crashOut: crashOut,
+        ),
       ),
     );
   }
@@ -74,7 +76,8 @@ class _CrashOutScreenState extends ConsumerState<CrashOutScreen> {
             children: [
               const SizedBox(height: 25),
               const Text(
-                "You don't have to make\nsense of it yet.",
+                "You don't have to make
+sense of it yet.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white,
