@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../ventvo_voice/models/vent.dart';
 import '../models/crash_out.dart';
+import '../models/experience_representation.dart';
 import '../services/crash_out_opposite_experience_service.dart';
 
 class CrashOutFateScreen extends ConsumerWidget {
