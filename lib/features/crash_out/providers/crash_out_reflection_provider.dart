@@ -12,9 +12,21 @@ class CrashOutReflectionNotifier
     return _storage.load();
   }
 
+  CrashOutReflection? reflectionForThread(String threadId) {
+    final current = state.asData?.value ?? const <CrashOutReflection>[];
+    for (final reflection in current) {
+      if (reflection.threadId == threadId) return reflection;
+    }
+    return null;
+  }
+
   Future<void> addReflection(CrashOutReflection reflection) async {
     final current = state.asData?.value ?? const <CrashOutReflection>[];
-    final next = [...current, reflection];
+    final next = [
+      for (final item in current)
+        if (item.threadId != reflection.threadId) item,
+      reflection,
+    ];
     state = AsyncData(next);
     await _storage.save(next);
   }
