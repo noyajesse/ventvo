@@ -369,3 +369,54 @@ Depth comes before breadth.
 ## North Star
 
 > **Build something people can trust with their thoughts.**
+
+## Crash Out Experience Threads
+
+Crash Out now has a deeper product direction beyond a single opposite encounter.
+
+A Crash Out may become the starting point of an **Experience Thread**: a living collection of related human experiences that emerge around the tension revealed by the Crash Out.
+
+An Experience Thread is deliberately **not**:
+- a group
+- a room
+- a comment section
+- a conventional chat
+- a people-matching surface
+- a public profile relationship
+
+It should feel conversational because people can respond to experiences, but the object being exchanged is always the **experience itself**.
+
+A thread may unfold like:
+
+```
+Crash Out
+    ↓
+Opposite Experience
+    ↓
+Response Experience
+    ↓
+Related Crash Out
+    ↓
+Another Response
+    ↓
+...
+```
+
+People do not need to know one another personally. The system should let experiences find and respond to other experiences while keeping the human relationship secondary.
+
+The experience chain, not a room or member list, is the primary object.
+
+### Crash Out Interaction Boundary
+
+Crash Out should not become an option-heavy workflow. After an opposing experience appears, the product should create room for the experiences to continue encountering one another rather than asking the user to choose from a menu of actions.
+
+Responses should feel like texting because they are direct and sequential, but they should not turn Crash Out into a conventional messaging product.
+
+The intended distinction is:
+
+- **Find People Who Understand** → discover people/experiences through similarity.
+- **Crash Out** → fall into experiences through meaningful opposition.
+- **Experience Thread** → let related and opposing experiences continue to meet.
+- **Resonance** → a separate expression of meaningful connection.
+
+The product should preserve anonymity, privacy, consent, and the absence of popularity mechanics while this direction is explored.
