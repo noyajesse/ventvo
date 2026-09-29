@@ -31,23 +31,21 @@ class _CrashOutReflectionScreenState
   void initState() {
     super.initState();
     _controller.addListener(_onChanged);
-  }
-
-  void _onChanged() => setState(() {});
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final existing = ref
-        .read(crashOutReflectionProvider.notifier)
-        .reflectionForThread(widget.thread.id);
-    if (existing != null && _controller.text.isEmpty) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await ref.read(crashOutReflectionProvider.future);
+      if (!mounted || _controller.text.isNotEmpty) return;
+      final existing = ref
+          .read(crashOutReflectionProvider.notifier)
+          .reflectionForThread(widget.thread.id);
+      if (existing == null) return;
       _controller.text = existing.content;
       _controller.selection = TextSelection.collapsed(
         offset: _controller.text.length,
       );
-    }
+    });
   }
+
+  void _onChanged() => setState(() {});
 
   @override
   void dispose() {
