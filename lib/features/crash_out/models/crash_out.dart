@@ -4,9 +4,7 @@ enum CrashOutType {
 }
 
 enum CrashOutStatus {
-  released,
   keptPrivate,
-  convertedToVent,
 }
 
 class CrashOut {
