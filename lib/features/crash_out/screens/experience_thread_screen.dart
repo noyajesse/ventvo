@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../ventvo_voice/providers/voice_provider.dart';
 import '../models/crash_out.dart';
 import '../models/experience_thread.dart';
 import '../providers/experience_thread_provider.dart';
@@ -23,7 +24,6 @@ class ExperienceThreadScreen extends ConsumerStatefulWidget {
 class _ExperienceThreadScreenState
     extends ConsumerState<ExperienceThreadScreen> {
   final TextEditingController _controller = TextEditingController();
-
   String? _replyToId;
 
   bool get _hasText => _controller.text.trim().isNotEmpty;
@@ -44,59 +44,58 @@ class _ExperienceThreadScreenState
     super.dispose();
   }
 
-  Future<void> _continueExperience() async {
+  Future<void> _send() async {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
 
-    final now = DateTime.now();
-    final current = ref.read(experienceThreadProvider).asData?.value;
-    final thread = current?.firstWhere(
+    final stored =
+        ref.read(experienceThreadProvider).asData?.value ?? const [];
+    final thread = stored.firstWhere(
       (item) => item.id == widget.thread.id,
       orElse: () => widget.thread,
     );
+    final voice = ref.read(ventvoVoiceProvider).asData?.value;
 
-    final replyToId = _replyToId ??
-        (thread?.contributions.isNotEmpty == true
-            ? thread!.contributions.last.id
-            : null);
-
+    final now = DateTime.now();
     final contribution = ExperienceContribution(
       id: now.microsecondsSinceEpoch.toString(),
-      threadId: widget.thread.id,
+      threadId: thread.id,
       content: text,
       type: ExperienceContributionType.response,
       createdAt: now,
-      replyToId: replyToId,
+      replyToId: _replyToId,
+      voiceName: voice?.name,
+      voiceMark: voice?.mark,
     );
 
     await ref.read(experienceThreadProvider.notifier).addContribution(
-          threadId: widget.thread.id,
+          threadId: thread.id,
           contribution: contribution,
         );
 
     if (!mounted) return;
     _controller.clear();
-    _clearReplyTarget();
+    setState(() => _replyToId = null);
+  }
+
+  void _setReply(ExperienceContribution contribution) {
+    setState(() => _replyToId = contribution.id);
   }
 
   @override
   Widget build(BuildContext context) {
-    final storedThreads =
+    final stored =
         ref.watch(experienceThreadProvider).asData?.value ?? const [];
-    var activeThread = widget.thread;
-
-    for (final storedThread in storedThreads) {
-      if (storedThread.id == widget.thread.id) {
-        activeThread = storedThread;
-        break;
-      }
-    }
+    final activeThread = stored.firstWhere(
+      (item) => item.id == widget.thread.id,
+      orElse: () => widget.thread,
+    );
 
     ExperienceContribution? replyTarget;
     if (_replyToId != null) {
-      for (final contribution in activeThread.contributions) {
-        if (contribution.id == _replyToId) {
-          replyTarget = contribution;
+      for (final item in activeThread.contributions) {
+        if (item.id == _replyToId) {
+          replyTarget = item;
           break;
         }
       }
@@ -107,9 +106,8 @@ class _ExperienceThreadScreenState
       appBar: AppBar(
         backgroundColor: const Color(0xFF0E0E0E),
         elevation: 0,
-        centerTitle: true,
         title: const Text(
-          'Experience',
+          'Crash Out',
           style: TextStyle(
             color: Colors.white,
             fontSize: 17,
@@ -122,38 +120,38 @@ class _ExperienceThreadScreenState
           children: [
             Expanded(
               child: ListView.builder(
-                padding: const EdgeInsets.fromLTRB(20, 18, 20, 30),
-                itemCount: activeThread.contributions.length + 1,
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+                itemCount: activeThread.contributions.length,
                 itemBuilder: (context, index) {
-                  if (index == activeThread.contributions.length) {
-                    return const _ContinuePrompt();
+                  final contribution = activeThread.contributions[index];
+                  ExperienceContribution? repliedTo;
+
+                  if (contribution.replyToId != null) {
+                    for (final item in activeThread.contributions) {
+                      if (item.id == contribution.replyToId) {
+                        repliedTo = item;
+                        break;
+                      }
+                    }
                   }
 
-                  final contribution = activeThread.contributions[index];
-                  final isFirst = index == 0;
-                  final isLast = index ==
-                      activeThread.contributions.length - 1;
-
-                  return _ExperienceStep(
+                  return _ConversationMessage(
                     contribution: contribution,
-                    isFirst: isFirst,
-                    isLast: isLast,
-                    isSelected: contribution.id == _replyToId,
-                    onContinue: () => _selectReplyTarget(contribution),
+                    repliedTo: repliedTo,
+                    onReply: () => _setReply(contribution),
                   );
                 },
               ),
             ),
             if (replyTarget != null)
-              _ReplyContext(
+              _ReplyBar(
                 contribution: replyTarget,
-                onClear: _clearReplyTarget,
+                onCancel: () => setState(() => _replyToId = null),
               ),
             _Composer(
               controller: _controller,
               enabled: _hasText,
-              onSend: _continueExperience,
-              isReplying: replyTarget != null,
+              onSend: _send,
             ),
           ],
         ),
@@ -162,237 +160,145 @@ class _ExperienceThreadScreenState
   }
 }
 
-class _ExperienceStep extends StatelessWidget {
-  const _ExperienceStep({
+class _ConversationMessage extends StatelessWidget {
+  const _ConversationMessage({
     required this.contribution,
-    required this.isFirst,
-    required this.isLast,
-    required this.isSelected,
-    required this.onContinue,
+    required this.repliedTo,
+    required this.onReply,
   });
 
   final ExperienceContribution contribution;
-  final bool isFirst;
-  final bool isLast;
-  final bool isSelected;
-  final VoidCallback onContinue;
+  final ExperienceContribution? repliedTo;
+  final VoidCallback onReply;
 
   @override
   Widget build(BuildContext context) {
-    final isOrigin =
-        contribution.type == ExperienceContributionType.origin;
-    final isOpposite =
-        contribution.type == ExperienceContributionType.opposite;
+    final voiceName = contribution.voiceName?.trim().isNotEmpty == true
+        ? contribution.voiceName!.trim()
+        : 'VOICE';
+    final mark = contribution.voiceMark?.trim();
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 26,
-            child: Column(
-              children: [
-                _TimelineDot(isOrigin: isOrigin, isOpposite: isOpposite),
-                if (!isLast)
-                  Container(
-                    width: 1,
-                    height: 74,
-                    margin: const EdgeInsets.only(top: 6),
-                    color: Colors.white12,
-                  ),
+      padding: const EdgeInsets.only(bottom: 18),
+      child: InkWell(
+        onLongPress: onReply,
+        borderRadius: BorderRadius.circular(10),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 3),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (repliedTo != null) ...[
+                _ReplyPreview(contribution: repliedTo!),
+                const SizedBox(height: 7),
               ],
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(
-                top: isFirst ? 0 : 2,
-                bottom: isLast ? 24 : 18,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
                 children: [
-                  if (isOrigin)
-                    const _StepLabel('WHAT YOU LET OUT')
-                  else if (isOpposite)
-                    const _StepLabel('ANOTHER SIDE')
-                  else if (contribution.type ==
-                      ExperienceContributionType.related)
-                    const _StepLabel('ANOTHER EXPERIENCE')
-                  else
-                    const _StepLabel('AN EXPERIENCE'),
-                  const SizedBox(height: 8),
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 180),
-                    width: double.infinity,
-                    padding: const EdgeInsets.fromLTRB(18, 16, 18, 17),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? Colors.white.withValues(alpha: 0.09)
-                          : isOrigin
-                              ? Colors.white.withValues(alpha: 0.08)
-                              : Colors.white.withValues(alpha: 0.045),
-                      borderRadius: BorderRadius.circular(18),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 
-                          isOrigin ? 0.12 : 0.08,
-                        ),
-                      ),
-                    ),
-                    child: Text(
-                      contribution.content,
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.94),
-                        fontSize: 17,
-                        height: 1.55,
-                        fontWeight:
-                            isOrigin ? FontWeight.w500 : FontWeight.w400,
-                      ),
+                  Text(
+                    mark == null || mark.isEmpty
+                        ? voiceName
+                        : '$mark  $voiceName',
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 9),
-                  TextButton(
-                    onPressed: onContinue,
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 2,
-                        vertical: 4,
-                      ),
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    child: Text(
-                      isSelected
-                          ? 'Continuing from this experience'
-                          : 'Continue from this experience',
-                      style: TextStyle(
-                        color: Colors.white.withValues(
-                          alpha: isSelected ? 0.62 : 0.32,
-                        ),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
+                  const SizedBox(width: 8),
+                  Text(
+                    _time(contribution.createdAt),
+                    style: const TextStyle(
+                      color: Colors.white24,
+                      fontSize: 10.5,
                     ),
                   ),
-                  if (!isLast) ...[
-                    const SizedBox(height: 13),
-                    Text(
-                      isOrigin
-                          ? 'Then another experience appeared.'
-                          : 'And the experience continues.',
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.30),
-                        fontSize: 12.5,
-                        height: 1.4,
-                      ),
-                    ),
-                  ],
                 ],
               ),
-            ),
+              const SizedBox(height: 5),
+              Text(
+                contribution.content,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 3),
+              GestureDetector(
+                onTap: onReply,
+                child: const Text(
+                  'Reply',
+                  style: TextStyle(
+                    color: Colors.white30,
+                    fontSize: 11.5,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
+
+  static String _time(DateTime value) {
+    final hour = value.hour % 12 == 0 ? 12 : value.hour % 12;
+    final minute = value.minute.toString().padLeft(2, '0');
+    final suffix = value.hour >= 12 ? 'PM' : 'AM';
+    return '$hour:$minute $suffix';
+  }
 }
 
-class _TimelineDot extends StatelessWidget {
-  const _TimelineDot({
-    required this.isOrigin,
-    required this.isOpposite,
-  });
+class _ReplyPreview extends StatelessWidget {
+  const _ReplyPreview({required this.contribution});
 
-  final bool isOrigin;
-  final bool isOpposite;
+  final ExperienceContribution contribution;
 
   @override
   Widget build(BuildContext context) {
+    final name = contribution.voiceName?.trim().isNotEmpty == true
+        ? contribution.voiceName!.trim()
+        : 'VOICE';
+
     return Container(
-      width: 10,
-      height: 10,
-      margin: const EdgeInsets.only(top: 5),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: isOrigin
-            ? Colors.white
-            : isOpposite
-                ? Colors.white70
-                : Colors.white38,
+      padding: const EdgeInsets.fromLTRB(10, 6, 10, 6),
+      decoration: const BoxDecoration(
+        border: Border(
+          left: BorderSide(color: Colors.white24, width: 2),
+        ),
+      ),
+      child: Text(
+        '$name  ·  ${contribution.content}',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(
+          color: Colors.white30,
+          fontSize: 11.5,
+        ),
       ),
     );
   }
 }
 
-class _StepLabel extends StatelessWidget {
-  const _StepLabel(this.text);
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(
-        color: Colors.white38,
-        fontSize: 10.5,
-        fontWeight: FontWeight.w700,
-        letterSpacing: 1.2,
-      ),
-    );
-  }
-}
-
-class _ContinuePrompt extends StatelessWidget {
-  const _ContinuePrompt();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 40, top: 2, bottom: 18),
-      child: Row(
-        children: [
-          Container(
-            width: 7,
-            height: 7,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white24,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Text(
-            'Your experience can continue here.',
-            style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.36),
-              fontSize: 13,
-              height: 1.4,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ReplyContext extends StatelessWidget {
-  const _ReplyContext({
+class _ReplyBar extends StatelessWidget {
+  const _ReplyBar({
     required this.contribution,
-    required this.onClear,
+    required this.onCancel,
   });
 
   final ExperienceContribution contribution;
-  final VoidCallback onClear;
+  final VoidCallback onCancel;
 
   @override
   Widget build(BuildContext context) {
+    final name = contribution.voiceName?.trim().isNotEmpty == true
+        ? contribution.voiceName!.trim()
+        : 'VOICE';
+
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(18, 9, 12, 9),
+      padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
       decoration: const BoxDecoration(
-        color: Color(0xFF171717),
+        color: Color(0xFF151515),
         border: Border(
           top: BorderSide(color: Colors.white10),
         ),
@@ -401,20 +307,16 @@ class _ReplyContext extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
-              'Continuing from: “' + contribution.content + '”',
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+              'Replying to $name',
               style: const TextStyle(
                 color: Colors.white54,
-                fontSize: 12.5,
-                height: 1.35,
+                fontSize: 12,
               ),
             ),
           ),
           IconButton(
-            tooltip: 'Clear',
-            onPressed: onClear,
-            icon: const Icon(Icons.close_rounded, size: 18),
+            onPressed: onCancel,
+            icon: const Icon(Icons.close_rounded, size: 17),
             color: Colors.white38,
           ),
         ],
@@ -428,18 +330,16 @@ class _Composer extends StatelessWidget {
     required this.controller,
     required this.enabled,
     required this.onSend,
-    required this.isReplying,
   });
 
   final TextEditingController controller;
   final bool enabled;
   final VoidCallback onSend;
-  final bool isReplying;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 10, 12, 12),
+      padding: const EdgeInsets.fromLTRB(12, 8, 10, 10),
       decoration: const BoxDecoration(
         color: Color(0xFF141414),
         border: Border(
@@ -454,33 +354,30 @@ class _Composer extends StatelessWidget {
               controller: controller,
               minLines: 1,
               maxLines: 5,
-              textInputAction: TextInputAction.newline,
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 16,
+                fontSize: 15.5,
                 height: 1.4,
               ),
               decoration: InputDecoration(
-                hintText: isReplying
-                    ? 'What does this experience bring up for you?'
-                    : 'Add your experience...',
+                hintText: 'Say something...',
                 hintStyle: const TextStyle(color: Colors.white30),
                 filled: true,
                 fillColor: Colors.white.withValues(alpha: 0.055),
                 contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
+                  horizontal: 15,
+                  vertical: 11,
                 ),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(22),
+                  borderRadius: BorderRadius.circular(20),
                   borderSide: BorderSide.none,
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 6),
           IconButton(
-            tooltip: 'Continue',
+            tooltip: 'Send',
             onPressed: enabled ? onSend : null,
             icon: const Icon(Icons.arrow_upward_rounded),
             color: Colors.white,
