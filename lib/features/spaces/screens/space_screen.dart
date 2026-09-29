@@ -41,6 +41,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
   Map<String, List<EchoNote>> echoNotes = const {};
   bool composerOpen = false;
   bool sending = false;
+  String selectedEchoKind = 'lived_something_similar';
 
   @override
   void initState() {
@@ -89,6 +90,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
       voiceMark: voice?.mark ?? '◇',
       authorVoiceId: voice?.voiceId,
       sourceVoiceId: origin?.ownerVoiceId,
+      kind: selectedEchoKind,
     );
 
     if (!mounted) return;
@@ -98,6 +100,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
         echoes = [...echoes, echo];
         controller.clear();
         composerOpen = false;
+        selectedEchoKind = 'lived_something_similar';
       });
       focusNode.unfocus();
     }
@@ -217,6 +220,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     setState(() {
       composerOpen = false;
       controller.clear();
+      selectedEchoKind = 'lived_something_similar';
     });
     focusNode.unfocus();
   }
@@ -497,6 +501,15 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                     ),
                     const SizedBox(height: 7),
                     Text(
+                      _echoKindLabel(echo.kind),
+                      style: const TextStyle(
+                        color: VentvoColors.textMuted,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 7),
+                    Text(
                       echo.content,
                       style: const TextStyle(
                         color: VentvoColors.textSecondary,
@@ -569,6 +582,17 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
         ],
       ),
     );
+  }
+
+  String _echoKindLabel(String kind) {
+    switch (kind) {
+      case 'see_it_differently':
+        return 'SAW IT DIFFERENTLY';
+      case 'brought_something_forward':
+        return 'BROUGHT SOMETHING FORWARD';
+      default:
+        return 'LIVED SOMETHING SIMILAR';
+    }
   }
 
   Widget _echoComposer() {
@@ -664,6 +688,32 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                 ),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _echoKindChip(String kind, String label) {
+    final selected = selectedEchoKind == kind;
+    return GestureDetector(
+      onTap: sending ? null : () => setState(() => selectedEchoKind = kind),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
+        decoration: BoxDecoration(
+          color: selected ? VentvoColors.primary.withValues(alpha: 0.12) : VentvoColors.surfaceElevated,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: selected ? VentvoColors.primary.withValues(alpha: 0.55) : VentvoColors.border,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: selected ? VentvoColors.textPrimary : VentvoColors.textMuted,
+            fontSize: 10,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ),
