@@ -76,8 +76,7 @@ class _CrashOutScreenState extends ConsumerState<CrashOutScreen> {
             children: [
               const SizedBox(height: 25),
               const Text(
-                "You don't have to make
-sense of it yet.",
+                "You don't have to make\nsense of it yet.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white,
