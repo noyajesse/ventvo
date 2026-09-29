@@ -7,7 +7,6 @@ import '../providers/crash_out_provider.dart';
 import '../providers/experience_thread_provider.dart';
 import '../models/experience_thread.dart';
 import 'experience_thread_screen.dart';
-import 'crash_out_fate_screen.dart';
 import '../services/crash_out_opposite_experience_service.dart';
 import 'crash_out_fate_screen.dart';
 
