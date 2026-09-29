@@ -318,3 +318,38 @@ The existing deterministic CrashOutOppositeExperienceService remains useful as p
 ## Future delayed encounters
 
 A delayed Crash Out encounter may be explored later, but only with an explicit privacy-safe representation and retention/deletion policy.
+
+## Decision #10 — Crash Out Experience Threads
+
+**Date:** 2026-09-29  
+**Status:** Product direction locked for exploration
+
+### Decision
+
+Crash Out will evolve beyond a single opposite encounter toward an **Experience Thread** model.
+
+An Experience Thread is a collection of related and/or opposing human experiences that emerge from a Crash Out and continue to encounter one another.
+
+### Why
+
+A one-shot opposite experience is meaningful, but it risks becoming a dead end if the user simply reads it and leaves.
+
+The product needs something to happen next without turning Crash Out into a conventional social feature.
+
+### Rules
+
+1. The experience is the primary object, not the person.
+2. A thread is not a room, group, comment section, feed, or conventional chat.
+3. Responses should feel conversational but remain grounded in lived experience.
+4. A thread does not require participants to know one another.
+5. The system must not create a member/follower relationship simply because two experiences meet.
+6. New contributions should enter because they meaningfully relate to the experience chain.
+7. Meaningful opposition remains the defining entry point for Crash Out.
+8. The system must not manufacture experiences or connections merely to keep a thread active.
+9. Privacy, anonymity, moderation, and consent remain first-class boundaries.
+10. Find People Who Understand remains a separate similarity-based discovery system.
+11. Resonance remains a separate meaningful-connection system.
+
+### Product test
+
+If an Experience Thread starts to feel like a group chat, Reddit thread, anonymous inbox, or people directory, the design has crossed the intended boundary.
