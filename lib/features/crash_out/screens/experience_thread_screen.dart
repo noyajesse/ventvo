@@ -121,7 +121,7 @@ class _ExperienceThreadScreenState
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
-                itemCount: activeThread.contributions.length + 1,
+                itemCount: activeThread.contributions.length,
                 itemBuilder: (context, index) {
                   final contribution = activeThread.contributions[index];
                   ExperienceContribution? repliedTo;
