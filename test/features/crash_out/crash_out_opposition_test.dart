@@ -102,7 +102,7 @@ void main() {
 
   test('private or unsafe candidates cannot surface', () {
     final result = service.find(
-      crashOut('I wish someone would check on me. I feel invisible.'),
+      crashOut: crashOut('I wish someone would check on me. I feel invisible.'),
       experiences: [
         vent(
           'I hate when people keep checking on me. Leave me alone.',
