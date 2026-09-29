@@ -49,7 +49,3 @@ final crashOutProvider =
   CrashOutNotifier.new,
 );
 
-final crashOutOppositeExperienceServiceProvider =
-    Provider<CrashOutOppositeExperienceService>((ref) {
-  return const CrashOutOppositeExperienceService();
-});
