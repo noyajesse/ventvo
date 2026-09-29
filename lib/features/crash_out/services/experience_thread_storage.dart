@@ -68,7 +68,9 @@ class ExperienceThreadStorage {
     final rawContributions = map['contributions'];
 
     if (id is! String ||
+        id.trim().isEmpty ||
         originCrashOutId is! String ||
+        originCrashOutId.trim().isEmpty ||
         createdAt is! String ||
         rawContributions is! List) {
       return null;
@@ -80,7 +82,10 @@ class ExperienceThreadStorage {
     final contributions = <ExperienceContribution>[];
 
     for (final item in rawContributions.whereType<Map<String, dynamic>>()) {
-      final contribution = _contributionFromMap(item);
+      final contribution = _contributionFromMap(
+        item,
+        expectedThreadId: id,
+      );
       if (contribution != null) contributions.add(contribution);
     }
 
@@ -93,8 +98,9 @@ class ExperienceThreadStorage {
   }
 
   ExperienceContribution? _contributionFromMap(
-    Map<String, dynamic> map,
-  ) {
+    Map<String, dynamic> map, {
+    required String expectedThreadId,
+  }) {
     final id = map['id'];
     final threadId = map['threadId'];
     final content = map['content'];
@@ -102,8 +108,11 @@ class ExperienceThreadStorage {
     final createdAt = map['createdAt'];
 
     if (id is! String ||
+        id.trim().isEmpty ||
         threadId is! String ||
+        threadId != expectedThreadId ||
         content is! String ||
+        content.trim().isEmpty ||
         type is! String ||
         createdAt is! String) {
       return null;
@@ -117,16 +126,22 @@ class ExperienceThreadStorage {
       orElse: () => ExperienceContributionType.response,
     );
 
+    final replyToId = map['replyToId'];
+    final sourceExperienceId = map['sourceExperienceId'];
+    final voiceName = map['voiceName'];
+    final voiceMark = map['voiceMark'];
+
     return ExperienceContribution(
       id: id,
       threadId: threadId,
       content: content,
       type: contributionType,
       createdAt: parsedCreatedAt,
-      replyToId: map['replyToId'] as String?,
-      sourceExperienceId: map['sourceExperienceId'] as String?,
-      voiceName: map['voiceName'] as String?,
-      voiceMark: map['voiceMark'] as String?,
+      replyToId: replyToId is String ? replyToId : null,
+      sourceExperienceId:
+          sourceExperienceId is String ? sourceExperienceId : null,
+      voiceName: voiceName is String ? voiceName : null,
+      voiceMark: voiceMark is String ? voiceMark : null,
     );
   }
 }
