@@ -145,32 +145,21 @@ Do not assume that every Vent belongs directly in the Feed.
 
 ---
 
-# 6. Crash Out → Find People Who Understand
+# 6. Find People Who Understand
 
-This is one of Ventvo's most important differentiators.
+Find People Who Understand is a separate similarity/resonance pathway.
 
-The initial concept is a **three-Voice connection**.
+Its purpose is:
 
-The purpose is not:
+> Who has experienced something like me?
 
-> Find three people with the exact same problem.
+It must remain separate from Crash Out, whose defining question is:
 
-The purpose is:
+> What is another side of what I'm experiencing?
 
-> Find a small group of people who may genuinely understand and resonate with one another.
+A future understanding/resonance system may consider multiple signals, including experiences, emotional needs, interests, life experiences, shared circumstances, communication preferences, and other meaningful signals.
 
-The system should eventually consider multiple forms of resonance, including:
-
-- experiences
-- emotional needs
-- what kind of connection the person wants
-- interests
-- life experiences
-- shared circumstances
-- communication preferences
-- other meaningful signals
-
-Matching should be based on **resonance**, not simple keyword similarity.
+Matching should be based on meaningful resonance, not simple keyword similarity.
 
 ---
 
@@ -219,15 +208,11 @@ They should be based on Ventvo's resonance philosophy.
 
 ---
 
-# 9. Three-Voice Connection
+# 9. Small Private Connections
 
-The initial matching concept is deliberately small.
+Private connections are a future Resonance capability, not the defining output of Crash Out.
 
-A Crash Out can lead to a private connection involving approximately three Voices.
-
-The purpose of the small group is to avoid turning vulnerable sharing into another massive public comment section.
-
-The connection should feel:
+When a connection system is introduced, it should be:
 
 - private
 - intentional
@@ -235,24 +220,20 @@ The connection should feel:
 - human
 - natural
 
-The three-Voice concept is the beginning of the matching system, not necessarily its permanent technical limitation.
-
-Future versions may expand the concept carefully.
+The connection must emerge from meaningful interaction and user control. Crash Out must not automatically create a connection merely because an opposing experience surfaced.
 
 ---
 
 # 10. Private Connection
 
-When people are matched through Crash Out, the resulting interaction should be private.
-
-It should not automatically become:
+Future private connections must not automatically become:
 
 - a public Vent
 - a Feed item
 - a public Space
-- a public profile activity
+- public profile activity
 
-The participants should control what happens to the connection afterward.
+Participants should control what happens to the connection afterward.
 
 Privacy must eventually be enforced by backend authorization, not merely by Flutter UI filtering.
 
@@ -262,27 +243,25 @@ Privacy must eventually be enforced by backend authorization, not merely by Flut
 
 Crash Outs are private by default.
 
-Current intended lifecycle:
-
-### Let Go
-
-The Crash Out disappears.
+Current lifecycle:
 
 ### Keep Private
 
 The Crash Out remains accessible only to its owner.
 
-### Turn into a Vent
+### Let Go
 
-The user intentionally converts the private release into a social Vent.
+The Crash Out and its related private frontend data are deleted.
 
-The resulting Vent should follow normal Vent rules, including Space and response mode.
+### Meaningful Opposition
 
-### Find People Who Understand
+Ventvo may surface another public experience that represents a meaningful opposite, but the original Crash Out remains private. This is not similarity matching and does not automatically create a follow, message, comment, or connection.
 
-The Crash Out becomes the starting point for a private resonance/matching process.
+### Experience Thread
 
-Do not expose the original private Crash Out publicly simply because matching occurs.
+When an opposing experience surfaces, the experiences may continue through a private, conversation-like Experience Thread. The experience remains the primary object.
+
+Do not expose the original private Crash Out publicly merely to discover an opposing experience.
 
 ---
 
