@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/ventvo_colors.dart';
 import '../../../systems/resonance/providers/resonance_provider.dart';
-import '../../crash_out/providers/crash_out_provider.dart';
 import '../../spaces/models/space.dart';
 import '../../spaces/providers/space_provider.dart';
 import '../../spaces/screens/space_screen.dart';
