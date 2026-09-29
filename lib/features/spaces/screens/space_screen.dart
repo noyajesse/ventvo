@@ -217,7 +217,6 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     setState(() {
       composerOpen = false;
       controller.clear();
-      selectedEchoKind = 'lived_something_similar';
     });
     focusNode.unfocus();
   }
