@@ -642,49 +642,87 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
           color: VentvoColors.surface,
           borderRadius: BorderRadius.circular(20),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(14, 10, 10, 10),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+            padding: const EdgeInsets.fromLTRB(14, 12, 10, 10),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: TextField(
-                    controller: controller,
-                    focusNode: focusNode,
-                    minLines: 1,
-                    maxLines: 4,
-                    textCapitalization: TextCapitalization.sentences,
-                    style: const TextStyle(
-                      color: VentvoColors.textPrimary,
-                      fontSize: 13,
-                      height: 1.45,
-                    ),
-                    decoration: const InputDecoration(
-                      hintText: 'What do you want to leave here?',
-                      hintStyle: TextStyle(
-                        color: VentvoColors.textMuted,
-                        fontSize: 12,
-                      ),
-                      border: InputBorder.none,
-                    ),
+                const Text(
+                  'WHAT DID THIS MOMENT DO FOR YOU?',
+                  style: TextStyle(
+                    color: VentvoColors.textMuted,
+                    fontSize: 8,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.2,
                   ),
                 ),
-                IconButton(
-                  onPressed: sending ? null : _closeComposer,
-                  icon: const Icon(Icons.close_rounded, size: 18),
-                  color: VentvoColors.textMuted,
-                  tooltip: 'Close',
+                const SizedBox(height: 8),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _echoKindChip(
+                        'lived_something_similar',
+                        'I have lived something like this',
+                      ),
+                      const SizedBox(width: 7),
+                      _echoKindChip(
+                        'see_it_differently',
+                        'This made me see it differently',
+                      ),
+                      const SizedBox(width: 7),
+                      _echoKindChip(
+                        'brought_something_forward',
+                        'This brought something forward for me',
+                      ),
+                    ],
+                  ),
                 ),
-                IconButton(
-                  onPressed: sending ? null : _leaveEcho,
-                  icon: sending
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 1.5),
-                        )
-                      : const Icon(Icons.arrow_upward_rounded, size: 18),
-                  color: VentvoColors.textSecondary,
-                  tooltip: 'Leave Echo',
+                const SizedBox(height: 8),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: controller,
+                        focusNode: focusNode,
+                        minLines: 1,
+                        maxLines: 4,
+                        textCapitalization: TextCapitalization.sentences,
+                        style: const TextStyle(
+                          color: VentvoColors.textPrimary,
+                          fontSize: 13,
+                          height: 1.45,
+                        ),
+                        decoration: const InputDecoration(
+                          hintText: 'Tell your own experience or perspective…',
+                          hintStyle: TextStyle(
+                            color: VentvoColors.textMuted,
+                            fontSize: 12,
+                          ),
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: sending ? null : _closeComposer,
+                      icon: const Icon(Icons.close_rounded, size: 18),
+                      color: VentvoColors.textMuted,
+                      tooltip: 'Close',
+                    ),
+                    IconButton(
+                      onPressed: sending ? null : _leaveEcho,
+                      icon: sending
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 1.5),
+                            )
+                          : const Icon(Icons.arrow_upward_rounded, size: 18),
+                      color: VentvoColors.textSecondary,
+                      tooltip: 'Leave Echo',
+                    ),
+                  ],
                 ),
               ],
             ),
