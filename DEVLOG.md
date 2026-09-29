@@ -998,7 +998,6 @@ The current implementation was reviewed against the latest Crash Out product dec
 - Other Side encounter
 - private Experience Thread with conversational replies
 - existing Ventvo Voice identities on thread contributions
-- private Reflection and local persistence
 - reopening an existing encounter from the Private area
 
 **Removed as stale/conflicting:**
@@ -1011,7 +1010,7 @@ The current implementation was reviewed against the latest Crash Out product dec
 1. Voice Crash Out input and the corresponding interpretation path.
 2. Edge cases and safety/eligibility behavior around opposition discovery.
 3. Reliable encounter lifecycle and return/re-entry behavior.
-4. Finalize the boundary between private Reflection and future Echo.
+4. Finalize the Crash Out encounter lifecycle and future Echo boundary.
 5. Expand Crash Out tests for interpretation, opposition, lifecycle, storage migration, deletion, and threads.
 
 ### Engineering order
@@ -1034,6 +1033,6 @@ Removed from the current Crash Out scope:
 
 Current Crash Out scope remains:
 
-Crash Out → Experience Understanding → Meaningful Opposition → Other Side → Experience Thread → Private Reflection
+Crash Out → Experience Understanding → Meaningful Opposition → Other Side → Experience Thread
 
 The current engineering work should finish this path instead of restoring retired features.
