@@ -1007,11 +1007,27 @@ The current implementation was reviewed against the latest Crash Out product dec
 
 ### Remaining Crash Out work
 
-1. Voice Crash Out input and the corresponding interpretation path.
-2. Edge cases and safety/eligibility behavior around opposition discovery.
-3. Reliable encounter lifecycle and return/re-entry behavior.
-4. Finalize the Crash Out encounter lifecycle and future Echo boundary.
-5. Expand Crash Out tests for interpretation, opposition, lifecycle, storage migration, deletion, and threads.
+1. Final UI/UX cleanup and edge-case validation.
+2. Expand Crash Out tests around interpretation, opposition, lifecycle, storage, deletion, and threads.
+3. Finalize the Crash Out encounter lifecycle and the boundary between Crash Out and future Echo.
+4. Remove any remaining stale references from the retired Crash Out designs.
+5. Mark Crash Out complete before moving to Echo.
+
+### Latest lifecycle hardening — 2026-09-29
+
+The local Experience Thread lifecycle was hardened before moving on:
+
+- A Crash Out can own at most one Experience Thread.
+- Duplicate thread IDs are rejected.
+- Empty thread/Crash Out identifiers are ignored.
+- Contributions must target an existing thread and carry the same thread ID.
+- Duplicate contribution IDs are rejected.
+- Empty contribution content is ignored.
+- Stored contributions are validated against their parent thread ID.
+- Malformed optional metadata no longer causes storage parsing to fail.
+- Deleting a Crash Out remains a thread-first deletion cascade.
+
+These are local frontend safeguards only. Backend ownership, authorization, moderation, retention, and realtime rules remain deferred until the backend phase.
 
 ### Engineering order
 
