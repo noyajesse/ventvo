@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
 import '../../ventvo_voice/providers/voice_provider.dart';
 import '../models/crash_out.dart';
-import '../providers/crash_out_provider.dart';
+import '../services/crash_out_opposite_experience_service.dart';
 import '../providers/experience_thread_provider.dart';
 import '../models/experience_thread.dart';
 import 'experience_thread_screen.dart';
@@ -35,9 +35,7 @@ class _CrashOutProcessingScreenState
     final experiences = await ref.read(ventProvider.future);
     if (!mounted) return;
 
-    final match = ref
-        .read(crashOutOppositeExperienceServiceProvider)
-        .find(
+    final match = CrashOutOppositeExperienceService().find(
           crashOut: widget.crashOut,
           experiences: experiences,
         );
