@@ -4,6 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
 import '../models/crash_out.dart';
 import '../providers/crash_out_provider.dart';
+import '../providers/experience_thread_provider.dart';
+import '../models/experience_thread.dart';
+import 'experience_thread_screen.dart';
+import 'crash_out_fate_screen.dart';
 import '../services/crash_out_opposite_experience_service.dart';
 import 'crash_out_fate_screen.dart';
 
@@ -47,11 +51,51 @@ class _CrashOutProcessingScreenState
 
     if (!mounted) return;
 
+    if (match == null) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => CrashOutFateScreen(
+            crashOut: widget.crashOut,
+            match: match,
+          ),
+        ),
+      );
+      return;
+    }
+
+    final now = DateTime.now();
+    final threadId = 'thread_${now.microsecondsSinceEpoch}';
+    final thread = ExperienceThread(
+      id: threadId,
+      originCrashOutId: widget.crashOut.id,
+      createdAt: now,
+      contributions: [
+        ExperienceContribution(
+          id: '${threadId}_origin',
+          threadId: threadId,
+          content: widget.crashOut.textContent ?? '',
+          type: ExperienceContributionType.origin,
+          createdAt: widget.crashOut.createdAt,
+        ),
+        ExperienceContribution(
+          id: '${threadId}_opposite_${match.experience.id}',
+          threadId: threadId,
+          content: match.experience.content,
+          type: ExperienceContributionType.opposite,
+          createdAt: match.experience.createdAt,
+          sourceExperienceId: match.experience.id,
+        ),
+      ],
+    );
+
+    await ref.read(experienceThreadProvider.notifier).createThread(thread);
+    if (!mounted) return;
+
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (_) => CrashOutFateScreen(
+        builder: (_) => ExperienceThreadScreen(
           crashOut: widget.crashOut,
-          match: match,
+          thread: thread,
         ),
       ),
     );
