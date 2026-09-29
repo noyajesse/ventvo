@@ -1101,3 +1101,57 @@ Crash Out is now considered complete for the current frontend/prototype phase.
 **Next product phase: Echo.**
 
 Backend persistence, authentication/authorization enforcement, moderation, retention, and production semantic infrastructure remain intentionally deferred.
+
+
+## 2026-09-29 — Echo product pass
+
+The existing Echo foundation was audited before continuing from the completed Crash Out milestone.
+
+### Product correction
+
+Echo was already present inside Space, but its composer was too close to a generic comment box. The implementation has now been tightened around the locked product model:
+
+> An Echo is something another Voice expresses because the original Moment caused something of their own to surface.
+
+### Implemented
+
+- Added an explicit Echo response meaning:
+  - I have lived something like this
+  - This made me see it differently
+  - This brought something forward for me
+- The Echo composer now asks what the Moment did for the responder before the text is released.
+- Echo cards display the response meaning rather than presenting every Echo as an undifferentiated comment.
+- Echo creation rejects a response from the same Voice that owns the originating Moment.
+- Echo author Voice IDs are now persisted correctly in local response storage.
+- Echo meaning is persisted with backward-compatible parsing for older local responses.
+- Existing Echo Notes remain a separate deeper layer and were not turned into a generic reflection system.
+- Echo creation remains separate from Resonance; creating an Echo does not automatically create or activate a connection.
+
+### Boundary
+
+Echo is still not:
+- a comment system;
+- a chat room;
+- a like/reaction;
+- an automatic Resonance;
+- a people-matching feature.
+
+The current flow is:
+
+```
+Moment
+  ↓
+Echo
+  ↓
+Explicit Resonance
+  ↓
+Mutual Resonance
+  ↓
+Optional connection
+```
+
+### Verification
+
+The existing Echo service tests were extended for the new response meaning and originating-Voice boundary.
+
+Flutter tests and analyzer should be run locally before the next Echo implementation pass.
