@@ -54,6 +54,8 @@ class ExperienceThreadStorage {
             'createdAt': contribution.createdAt.toIso8601String(),
             'replyToId': contribution.replyToId,
             'sourceExperienceId': contribution.sourceExperienceId,
+            'voiceName': contribution.voiceName,
+            'voiceMark': contribution.voiceMark,
           },
       ],
     };
@@ -123,6 +125,8 @@ class ExperienceThreadStorage {
       createdAt: parsedCreatedAt,
       replyToId: map['replyToId'] as String?,
       sourceExperienceId: map['sourceExperienceId'] as String?,
+      voiceName: map['voiceName'] as String?,
+      voiceMark: map['voiceMark'] as String?,
     );
   }
 }
