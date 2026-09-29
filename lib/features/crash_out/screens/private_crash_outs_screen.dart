@@ -145,7 +145,7 @@ class _PrivateCrashOutCard extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           Text(
-            crashOut.textContent ?? 'Voice Crash Out',
+            crashOut.textContent ?? 'Crash Out',
             style: const TextStyle(color: Colors.white, fontSize: 17, height: 1.5),
           ),
           const SizedBox(height: 20),
