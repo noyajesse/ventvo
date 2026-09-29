@@ -104,6 +104,19 @@ void main() {
     expect(storage.responses, isEmpty);
   });
 
+  test('rejects an Echo from the originating Voice', () async {
+    final echo = await service.leaveEcho(
+      space: discussion,
+      content: 'I am responding to my own Moment.',
+      voiceMark: '◇',
+      authorVoiceId: 'voice-1',
+      sourceVoiceId: 'voice-1',
+    );
+
+    expect(echo, isNull);
+    expect(storage.responses, isEmpty);
+  });
+
   test('creates and persists a valid Echo without creating Resonance', () async {
     final echo = await service.leaveEcho(
       space: discussion,
@@ -118,6 +131,7 @@ void main() {
     expect(echo.ventId, discussion.originatingVentId);
     expect(echo.voiceMark, '∿');
     expect(echo.authorVoiceId, 'voice-2');
+    expect(echo.kind, 'lived_something_similar');
     expect(echo.content, 'This helped me feel less alone.');
     expect(storage.responses, hasLength(1));
     expect(storage.responses.single.id, echo.id);
