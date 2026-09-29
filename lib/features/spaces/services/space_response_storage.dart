@@ -113,7 +113,12 @@ class SpaceResponseStorage {
 
     EchoKind? parsedEchoKind;
     if (echoKind != null) {
-      parsedEchoKind = EchoKind.values.where((kind) => kind.name == echoKind).firstOrNull;
+      for (final kind in EchoKind.values) {
+        if (kind.name == echoKind) {
+          parsedEchoKind = kind;
+          break;
+        }
+      }
     }
 
     return SpaceResponse(
