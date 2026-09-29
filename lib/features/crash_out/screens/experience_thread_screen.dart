@@ -5,6 +5,7 @@ import '../../ventvo_voice/providers/voice_provider.dart';
 import '../models/crash_out.dart';
 import '../models/experience_thread.dart';
 import '../providers/experience_thread_provider.dart';
+import 'crash_out_reflection_screen.dart';
 
 class ExperienceThreadScreen extends ConsumerStatefulWidget {
   final CrashOut crashOut;
@@ -121,8 +122,23 @@ class _ExperienceThreadScreenState
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
-                itemCount: activeThread.contributions.length,
+                itemCount: activeThread.contributions.length + 1,
                 itemBuilder: (context, index) {
+                  if (index == activeThread.contributions.length) {
+                    return _ReflectionPrompt(
+                      onReflect: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => CrashOutReflectionScreen(
+                              crashOut: widget.crashOut,
+                              thread: activeThread,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
+
                   final contribution = activeThread.contributions[index];
                   ExperienceContribution? repliedTo;
 
@@ -391,6 +407,63 @@ class _Composer extends StatelessWidget {
             disabledColor: Colors.white24,
           ),
         ],
+      ),
+    );
+  }
+}
+
+
+class _ReflectionPrompt extends StatelessWidget {
+  const _ReflectionPrompt({required this.onReflect});
+
+  final VoidCallback onReflect;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8, bottom: 12),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.035),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Something came up?',
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 5),
+            const Text(
+              'Take a moment to reflect on what you just saw.',
+              style: TextStyle(
+                color: Colors.white38,
+                fontSize: 12.5,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 10),
+            GestureDetector(
+              onTap: onReflect,
+              child: const Text(
+                'Reflect',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
