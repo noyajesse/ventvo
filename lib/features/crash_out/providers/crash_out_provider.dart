@@ -32,16 +32,6 @@ class CrashOutNotifier extends AsyncNotifier<List<CrashOut>> {
     ]);
   }
 
-  Future<void> markConvertedToVent(String id) async {
-    final current = state.asData?.value ?? const <CrashOut>[];
-    await _persist([
-      for (final crashOut in current)
-        crashOut.id == id
-            ? crashOut.copyWith(status: CrashOutStatus.convertedToVent)
-            : crashOut,
-    ]);
-  }
-
   Future<void> deleteCrashOut(String id) async {
     final current = state.asData?.value ?? const <CrashOut>[];
     await _persist(
