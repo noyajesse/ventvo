@@ -497,15 +497,6 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                     ),
                     const SizedBox(height: 7),
                     Text(
-                      _echoKindLabel(echo.kind),
-                      style: const TextStyle(
-                        color: VentvoColors.textMuted,
-                        fontSize: 9,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 7),
-                    Text(
                       echo.content,
                       style: const TextStyle(
                         color: VentvoColors.textSecondary,
