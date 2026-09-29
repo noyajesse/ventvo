@@ -95,9 +95,6 @@ class _CreateVentScreenState extends ConsumerState<CreateVentScreen> {
     if (!mounted) return;
 
     if (widget.crashOutId != null) {
-      await ref
-          .read(crashOutProvider.notifier)
-          .markConvertedToVent(widget.crashOutId!);
       if (!mounted) return;
 
       Navigator.pushAndRemoveUntil(
