@@ -1103,55 +1103,42 @@ Crash Out is now considered complete for the current frontend/prototype phase.
 Backend persistence, authentication/authorization enforcement, moderation, retention, and production semantic infrastructure remain intentionally deferred.
 
 
-## 2026-09-29 — Echo product pass
+## 2026-09-29 — Echo product audit and correction
 
-The existing Echo foundation was audited before continuing from the completed Crash Out milestone.
+The existing Echo foundation was audited against the authoritative Ventvo product documentation before further implementation.
 
-### Product correction
+### Audit result
 
-Echo was already present inside Space, but its composer was too close to a generic comment box. The implementation has now been tightened around the locked product model:
+Echo was already present inside Space, and **Echo Notes were already present**. No new Echo Note system was created.
 
-> An Echo is something another Voice expresses because the original Moment caused something of their own to surface.
+The earlier implementation pass introduced a three-choice Echo categorization UI. That was not supported by the documented Ventvo interaction philosophy, which explicitly favors natural interaction and avoiding forced prompts or artificial engagement mechanics.
 
-### Implemented
+That categorization has been removed.
 
-- Added an explicit Echo response meaning:
-  - I have lived something like this
-  - This made me see it differently
-  - This brought something forward for me
-- The Echo composer now asks what the Moment did for the responder before the text is released.
-- Echo cards display the response meaning rather than presenting every Echo as an undifferentiated comment.
-- Echo creation rejects a response from the same Voice that owns the originating Moment.
-- Echo author Voice IDs are now persisted correctly in local response storage.
-- Echo meaning is persisted with backward-compatible parsing for older local responses.
-- Existing Echo Notes remain a separate deeper layer and were not turned into a generic reflection system.
-- Echo creation remains separate from Resonance; creating an Echo does not automatically create or activate a connection.
+### Current Echo direction
 
-### Boundary
+Echo remains:
 
-Echo is still not:
-- a comment system;
-- a chat room;
-- a like/reaction;
-- an automatic Resonance;
-- a people-matching feature.
+> An experience caused by encountering another person's Moment, where the responder expresses something of their own.
 
-The current flow is:
+The user is not required to classify their response before writing it.
 
-```
-Moment
-  ↓
-Echo
-  ↓
-Explicit Resonance
-  ↓
-Mutual Resonance
-  ↓
-Optional connection
-```
+Current Echo behavior retains the product boundaries supported by the existing architecture:
 
-### Verification
+- Echo is an experience/perspective response, not a generic social-media comment.
+- The originating Voice cannot respond to its own Moment as an Echo.
+- Echo author Voice identity is preserved.
+- Echo creation does not automatically create Resonance.
+- Existing Echo Notes remain a separate, already-existing layer.
+- Echo remains distinct from Crash Out, Find People Who Understand, Resonance, and conventional chat.
 
-The existing Echo service tests were extended for the new response meaning and originating-Voice boundary.
+### Engineering rule reinforced
 
-Flutter tests and analyzer should be run locally before the next Echo implementation pass.
+Before implementing further Echo behavior:
+
+1. Read the authoritative product documentation.
+2. Inspect the existing Echo and Echo Note implementation.
+3. Separate documented requirements from proposals.
+4. Do not introduce forced interaction patterns without an explicit product decision.
+
+Flutter tests and analyzer should be run locally after this correction.
