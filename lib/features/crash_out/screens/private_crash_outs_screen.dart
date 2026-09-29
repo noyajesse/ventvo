@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/crash_out.dart';
 import '../providers/crash_out_provider.dart';
+import '../providers/crash_out_reflection_provider.dart';
 import '../providers/experience_thread_provider.dart';
 import 'experience_thread_screen.dart';
 
@@ -14,6 +15,12 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
     WidgetRef ref,
     CrashOut crashOut,
   ) async {
+    await ref
+        .read(experienceThreadProvider.notifier)
+        .deleteThreadForCrashOut(crashOut.id);
+    await ref
+        .read(crashOutReflectionProvider.notifier)
+        .deleteReflectionsForCrashOut(crashOut.id);
     await ref.read(crashOutProvider.notifier).deleteCrashOut(crashOut.id);
     if (!context.mounted) return;
 
