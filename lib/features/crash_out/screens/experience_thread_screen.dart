@@ -77,11 +77,16 @@ class _ExperienceThreadScreenState
 
   @override
   Widget build(BuildContext context) {
-    final thread = ref.watch(experienceThreadProvider).asData?.value
-        .where((item) => item.id == widget.thread.id)
-        .firstOrNull;
+    final storedThreads =
+        ref.watch(experienceThreadProvider).asData?.value ?? const [];
+    var activeThread = widget.thread;
 
-    final activeThread = thread ?? widget.thread;
+    for (final storedThread in storedThreads) {
+      if (storedThread.id == widget.thread.id) {
+        activeThread = storedThread;
+        break;
+      }
+    }
 
     return Scaffold(
       backgroundColor: const Color(0xFF111111),
