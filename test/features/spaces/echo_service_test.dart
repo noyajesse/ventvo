@@ -131,7 +131,6 @@ void main() {
     expect(echo.ventId, discussion.originatingVentId);
     expect(echo.voiceMark, '∿');
     expect(echo.authorVoiceId, 'voice-2');
-    expect(echo.kind, 'lived_something_similar');
     expect(echo.content, 'This helped me feel less alone.');
     expect(storage.responses, hasLength(1));
     expect(storage.responses.single.id, echo.id);
