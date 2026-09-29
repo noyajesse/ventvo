@@ -26,9 +26,17 @@ Ventvo Voice
       └──────────────► Crash Out
                            │
                            ▼
-                         Fate
+                 Experience Understanding
                            │
-                    Turn into Vent ─────► Vent
+                           ▼
+                 Meaningful Opposition
+                           │
+                 ┌─────────┴─────────┐
+                 │                   │
+              Encounter          No encounter
+                 │
+                 ▼
+          Experience Thread
 ```
 
 Resonance is the central human-connection system. It is not a property of Crash Out, Feed, Space, or any single matching experience.
