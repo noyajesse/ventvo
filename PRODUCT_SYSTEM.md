@@ -23,28 +23,23 @@ Ventvo gives a person a private place to release what they are carrying, an anon
                  │                     │
           private release        intentional release
                  │                     │
-          ┌──────┴──────┐        Space is created
-          │             │               │
-      Keep Private   Turn into Vent     │
-          │             │               │
-          └─────────────┴───────┐       │
-                                ▼       ▼
-                              Space
-                                │
-                    ┌───────────┴───────────┐
-                    │                       │
-               Just Listen          Open Discussion
-                    │                       │
-                 Heard                 Echo / Echo Note
-                    │                       │
-                    └───────────┬───────────┘
-                                ▼
-                           Resonance
-                                │
-                    Threads / Maps / Connection
-                                │
-                                ▼
-                         Voice Evolution
+     Experience Understanding   Space is created
+                 │                     │
+     Meaningful Opposition      ┌──────┴──────┐
+                 │              │             │
+      Encounter / No encounter  Just Listen  Open Discussion
+                 │                            │
+        Experience Thread                    Echo
+                                              │
+                                          Echo Note
+                                              │
+                                              ▼
+                                          Resonance
+                                              │
+                                  Threads / Maps / Connection
+                                              │
+                                              ▼
+                                       Voice Evolution
 ```
 
 The important point is that these are not isolated features. Each layer exists because of the layer before it.
