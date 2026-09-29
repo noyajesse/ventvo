@@ -25,7 +25,9 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final crashOutState = ref.watch(crashOutProvider);
-    final threadState = ref.watch(experienceThreadProvider);
+    ref.watch(experienceThreadProvider);
+
+    return Scaffold(
       backgroundColor: const Color(0xFF111111),
       appBar: AppBar(
         backgroundColor: const Color(0xFF111111),
@@ -67,13 +69,9 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
               itemCount: privateCrashOuts.length,
               itemBuilder: (context, index) {
                 final crashOut = privateCrashOuts[index];
-                final thread = threadState.asData?.value
-                    .where((item) => item.originCrashOutId == crashOut.id)
-                    .cast<ExperienceThread?>()
-                    .firstWhere(
-                      (item) => item != null,
-                      orElse: () => null,
-                    );
+                final thread = ref
+                    .read(experienceThreadProvider.notifier)
+                    .threadForCrashOut(crashOut.id);
                 return _PrivateCrashOutCard(
                   crashOut: crashOut,
                   onOpenEncounter: thread == null
