@@ -101,8 +101,7 @@ class SpaceResponseStorage {
         content is! String ||
         createdAt is! String ||
         (isMoment != null && isMoment is! bool) ||
-        (isHeard != null && isHeard is! bool) ||
-        (echoKind != null && echoKind is! String)) {
+        (isHeard != null && isHeard is! bool)) {
       return null;
     }
 
