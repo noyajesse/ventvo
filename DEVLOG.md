@@ -1078,3 +1078,26 @@ The active model now reflects:
 Crash Out → Experience Understanding → Meaningful Opposition → Encounter / No encounter → Experience Thread
 
 Historical DEVLOG entries remain as project history and are not treated as current product behavior.
+
+### Crash Out frontend milestone complete — 2026-09-29
+
+The current Crash Out frontend/domain milestone is complete.
+
+Implemented and reconciled:
+- private text-only release flow;
+- experience interpretation using Human Tension + Position + Direction;
+- meaningful-opposition discovery with no forced encounter;
+- focused no-encounter state;
+- Experience Thread creation and reopening;
+- Voice identity on thread contributions;
+- conversation-style responses;
+- private Crash Out deletion with related thread cleanup;
+- lifecycle/storage validation and regression tests;
+- removal of retired Fate, conversion, similarity-discovery, Voice Crash Out, and Reflection behavior;
+- active product and domain documentation aligned with the implementation.
+
+Crash Out is now considered complete for the current frontend/prototype phase.
+
+**Next product phase: Echo.**
+
+Backend persistence, authentication/authorization enforcement, moderation, retention, and production semantic infrastructure remain intentionally deferred.
