@@ -1019,3 +1019,21 @@ The current implementation was reviewed against the latest Crash Out product dec
 Finish the Crash Out frontend/domain behavior first → define/build the user-facing Echo flow → align Echo with Resonance → finish Vent/Space/Moment UX → finish Feed/Moment discovery → establish privacy/ownership/security boundaries → implement the backend/Supabase layer → production hardening.
 
 Backend/auth/database/realtime work remains intentionally deferred.
+
+
+## 2026-09-29 — Crash Out roadmap correction
+
+The earlier implementation review carried forward a few requirements from the retired Crash Out design. Those are now explicitly removed from the current roadmap.
+
+Removed from the current Crash Out scope:
+- Voice Crash Out as a required feature
+- Crash Out → Vent conversion
+- Crash Out → Find People Who Understand
+- Crash Out → Resonance similarity discovery
+- fate-based Crash Out branching
+
+Current Crash Out scope remains:
+
+Crash Out → Experience Understanding → Meaningful Opposition → Other Side → Experience Thread → Private Reflection
+
+The current engineering work should finish this path instead of restoring retired features.
