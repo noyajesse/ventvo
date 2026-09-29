@@ -982,3 +982,40 @@ The exact persistence, permissions, retention, moderation, and realtime architec
 The user should feel like they are witnessing experiences talk to one another, not entering a social room.
 
 This is the next major Crash Out product direction.
+
+
+## 2026-09-29 — Crash Out engineering reconciliation
+
+The current implementation was reviewed against the latest Crash Out product decisions before continuing feature work.
+
+### Current implementation status
+
+**Implemented:**
+- private text Crash Out release and local persistence
+- Human Tension + Position + Direction representation
+- deterministic meaningful-opposition prototype
+- no-forced-match behavior
+- Other Side encounter
+- private Experience Thread with conversational replies
+- existing Ventvo Voice identities on thread contributions
+- private Reflection and local persistence
+- reopening an existing encounter from the Private area
+
+**Removed as stale/conflicting:**
+- Crash Out similarity/Resonance discovery
+- Crash Out → Vent conversion lifecycle
+- fate/arrow-style encounter visualization
+
+### Remaining Crash Out work
+
+1. Voice Crash Out input and the corresponding interpretation path.
+2. Edge cases and safety/eligibility behavior around opposition discovery.
+3. Reliable encounter lifecycle and return/re-entry behavior.
+4. Finalize the boundary between private Reflection and future Echo.
+5. Expand Crash Out tests for interpretation, opposition, lifecycle, storage migration, deletion, and threads.
+
+### Engineering order
+
+Finish the Crash Out frontend/domain behavior first → define/build the user-facing Echo flow → align Echo with Resonance → finish Vent/Space/Moment UX → finish Feed/Moment discovery → establish privacy/ownership/security boundaries → implement the backend/Supabase layer → production hardening.
+
+Backend/auth/database/realtime work remains intentionally deferred.
