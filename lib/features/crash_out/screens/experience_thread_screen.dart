@@ -295,9 +295,12 @@ class _ReplyBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = contribution.voiceName?.trim().isNotEmpty == true
-        ? contribution.voiceName!.trim()
-        : 'VOICE';
+    final name = contribution.voiceName?.trim();
+    final mark = contribution.voiceMark?.trim();
+    final identity = [
+      if (mark != null && mark.isNotEmpty) mark,
+      if (name != null && name.isNotEmpty) name,
+    ].join('  ');
 
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
