@@ -1063,3 +1063,18 @@ Current Crash Out scope remains:
 Crash Out → Experience Understanding → Meaningful Opposition → Other Side → Experience Thread
 
 The current engineering work should finish this path instead of restoring retired features.
+
+### Crash Out documentation reconciliation — 2026-09-29
+
+Reconciled active product/domain documentation with the current Crash Out implementation.
+
+Removed the retired Crash Out lifecycle from active diagrams:
+- Fate-based branching
+- Crash Out → Vent conversion
+- the old Keep Private / Turn into Vent split
+
+The active model now reflects:
+
+Crash Out → Experience Understanding → Meaningful Opposition → Encounter / No encounter → Experience Thread
+
+Historical DEVLOG entries remain as project history and are not treated as current product behavior.
