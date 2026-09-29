@@ -22,6 +22,16 @@ class ExperienceThreadNotifier
     await _persist([...current, thread]);
   }
 
+  ExperienceThread? threadForCrashOut(String crashOutId) {
+    final current = state.asData?.value ?? const <ExperienceThread>[];
+    for (final thread in current) {
+      if (thread.originCrashOutId == crashOutId) {
+        return thread;
+      }
+    }
+    return null;
+  }
+
   Future<void> addContribution({
     required String threadId,
     required ExperienceContribution contribution,
