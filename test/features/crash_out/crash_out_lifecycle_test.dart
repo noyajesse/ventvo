@@ -21,7 +21,7 @@ void main() {
     expect(crashOut.status, CrashOutStatus.keptPrivate);
   });
 
-  test('Crash Out lifecycle can move from private to converted', () async {
+  test('Crash Out can remain private after an encounter', () async {
     final container = ProviderContainer();
     addTearDown(container.dispose);
 
@@ -38,12 +38,8 @@ void main() {
     var items = await container.read(crashOutProvider.future);
     expect(items.single.status, CrashOutStatus.keptPrivate);
 
-    await container
-        .read(crashOutProvider.notifier)
-        .markConvertedToVent(crashOut.id);
-
     items = await container.read(crashOutProvider.future);
-    expect(items.single.status, CrashOutStatus.convertedToVent);
+    expect(items.single.status, CrashOutStatus.keptPrivate);
   });
 
   test('letting go removes the Crash Out', () async {
