@@ -804,7 +804,7 @@ Open Discussion prototype
 Discussion prototype
 Crash Out entry
 Crash Out release
-Crash Out Fate
+Crash Out Other Side
 Let Go
 Keep Private
 Private Crash Out storage
@@ -819,13 +819,10 @@ Echo
 Echo Notes
 Persistent discussions
 Persistent multi-Voice Resonance interactions
-Crash Out → Vent conversion
-Private Crash Out → Find People Who Understand integration
 Active shared connection experience
 Small connection groups
-Voice Crash Outs
 Backend persistence
-AI-assisted similarity discovery
+AI-assisted semantic discovery
 
 24. AI / Semantic Discovery Direction
 
