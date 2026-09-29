@@ -408,3 +408,51 @@ These are implementation gaps, not reasons to change the domain boundaries.
 Threads and Maps represent relationships among experiences and therefore must not treat multiple experiences from one Voice as multiple independent people. Formation requires explicit Voice identities and enough distinct participating Voices to satisfy the structure's existing evidence thresholds.
 
 The formation boundary is orchestrated only after an accepted or active Resonance connection. Suggested, closed, and blocked relationships cannot trigger formation. The existing Thread and Map formation policies remain responsible for strength, meaningful relationship type, evidence, and privacy/safety decisions.
+
+## Crash Out Experience Thread
+
+Crash Out now has a proposed domain object beyond the initial encounter: the **Experience Thread**.
+
+An Experience Thread is a collection of experience contributions that emerge from a Crash Out and continue through meaningful relationships between experiences.
+
+It is not a group of people.
+
+It is not a chat room.
+
+It is not a comment section.
+
+It is not a permanent social relationship.
+
+### Conceptual model
+
+```
+CrashOut
+  ↓
+CrashOutEncounter
+  ↓
+ExperienceContribution
+  ↓
+ExperienceThread
+  ↓
+more ExperienceContributions
+```
+
+An ExperienceContribution should represent an experience or response grounded in the contributor's own perspective.
+
+A future ExperienceThread may contain:
+- thread ID;
+- origin Crash Out reference;
+- ordered experience contributions;
+- semantic relationship metadata;
+- privacy and safety state;
+- lifecycle timestamps.
+
+Participant identity should remain secondary to the experiences. The domain should not require a stable social relationship between contributors.
+
+### Important invariant
+
+The thread exists because the **experiences relate**.
+
+It must not exist merely because the same people are present.
+
+This keeps Crash Out distinct from conventional messaging and from Find People Who Understand.
