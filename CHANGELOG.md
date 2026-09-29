@@ -267,3 +267,13 @@ No additional Space modes were introduced.
 ### Validation
 
 - `flutter analyze` passes with no issues.
+
+## Unreleased — Crash Out Experience Threads
+
+### Product direction
+- Extended Crash Out from a one-shot opposite encounter toward an Experience Thread model.
+- Defined Experience Threads as collections of related/opposing experiences rather than rooms, groups, comments, or conventional chats.
+- Established the principle that experiences are the conversation object.
+- Preserved the separation between Crash Out opposition, Find People Who Understand similarity, and Resonance connection.
+- Defined conversational responses as experience-grounded contributions rather than generic messages.
+- Preserved privacy, anonymity, consent, and no-popularity boundaries.
