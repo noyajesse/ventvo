@@ -206,3 +206,24 @@ Experiences are opposites, not people.
 
 The system must prefer no encounter over a manufactured one.
 
+## 15. Experiences Are the Conversation
+
+Crash Out can create an Experience Thread: a living collection of related and opposing experiences.
+
+An Experience Thread is not:
+- a chat room
+- a comment section
+- a group
+- a feed
+- a follower relationship
+- a people directory
+
+The interface may feel like texting because experiences can respond to experiences, but the thing being exchanged is always grounded in lived experience.
+
+The thread belongs to the **experiences**, not to a group of people.
+
+Participants do not need to know one another, and the system should not manufacture social relationships merely because their experiences crossed paths.
+
+Crash Out remains meaningful opposition first. Find People Who Understand remains similarity discovery. Resonance remains meaningful connection.
+
+The product should preserve the feeling that **experiences are finding each other and speaking**, rather than making the user operate a conventional social feature.
