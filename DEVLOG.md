@@ -909,3 +909,76 @@ Next implementation focus: make the Moment's surrounding actions quieter and mor
 - Connection list actions now use **Resonate back**, **View mutual Resonance**, and **Open connection**.
 
 This keeps the technical states underneath the experience while preserving the consent model: **Notice → Resonate → Mutual Resonance → Optional connection**.
+
+## Crash Out Experience Threads — 2026-09-29
+
+### Product direction
+
+Crash Out was reviewed beyond the initial "show me the other side" encounter.
+
+The new direction is an **Experience Thread**: a collection of human experiences that forms when a Crash Out encounters an opposite experience and the resulting experiences continue to relate to one another.
+
+The important discovery is that the product does not need to choose between:
+- a one-shot encounter, or
+- a conventional chat.
+
+There is a third model.
+
+The interface can feel conversational because people can respond to experiences, while the domain remains experience-first.
+
+### Locked boundaries
+
+An Experience Thread is not:
+- a room;
+- a group;
+- a comment section;
+- a feed;
+- a follower graph;
+- a people-matching surface;
+- a conventional messaging inbox.
+
+The relationship belongs primarily to the experiences.
+
+### Example
+
+```
+Crash Out:
+"I wish someone would check on me."
+
+        ↓
+
+Opposite Experience:
+"I hate when people check on me."
+
+        ↓
+
+Experience Response:
+"That's crazy because being checked on is exactly what I want."
+
+        ↓
+
+Related Experience:
+"I hate asking for help. I'd rather deal with things myself."
+
+        ↓
+
+...
+```
+
+The chain can contain different people and different experiences. The system should not assume that every contribution is a direct two-person conversation.
+
+### Engineering implication
+
+Do not prematurely implement this as a generic ChatMessage or ChatRoom.
+
+The likely future model is closer to:
+
+CrashOut → Encounter → ExperienceContribution → ExperienceThread
+
+The exact persistence, permissions, retention, moderation, and realtime architecture must be designed before implementation.
+
+### Product principle
+
+The user should feel like they are witnessing experiences talk to one another, not entering a social room.
+
+This is the next major Crash Out product direction.
