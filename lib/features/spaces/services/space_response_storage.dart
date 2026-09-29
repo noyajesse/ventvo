@@ -74,10 +74,12 @@ class SpaceResponseStorage {
       'spaceId': response.spaceId,
       'ventId': response.ventId,
       'voiceMark': response.voiceMark,
+      'authorVoiceId': response.authorVoiceId,
       'content': response.content,
       'createdAt': response.createdAt.toIso8601String(),
       'isMoment': response.isMoment,
       'isHeard': response.isHeard,
+      'echoKind': response.echoKind?.name,
     };
   }
 
@@ -86,34 +88,45 @@ class SpaceResponseStorage {
     final spaceId = map['spaceId'];
     final ventId = map['ventId'];
     final voiceMark = map['voiceMark'];
+    final authorVoiceId = map['authorVoiceId'];
     final content = map['content'];
     final createdAt = map['createdAt'];
     final isMoment = map['isMoment'];
     final isHeard = map['isHeard'];
+    final echoKind = map['echoKind'];
 
     if (id is! String ||
         spaceId is! String ||
         (ventId != null && ventId is! String) ||
         voiceMark is! String ||
+        (authorVoiceId != null && authorVoiceId is! String) ||
         content is! String ||
         createdAt is! String ||
         (isMoment != null && isMoment is! bool) ||
-        (isHeard != null && isHeard is! bool)) {
+        (isHeard != null && isHeard is! bool) ||
+        (echoKind != null && echoKind is! String)) {
       return null;
     }
 
     final parsedCreatedAt = DateTime.tryParse(createdAt);
     if (parsedCreatedAt == null) return null;
 
+    EchoKind? parsedEchoKind;
+    if (echoKind != null) {
+      parsedEchoKind = EchoKind.values.where((kind) => kind.name == echoKind).firstOrNull;
+    }
+
     return SpaceResponse(
       id: id,
       spaceId: spaceId,
       ventId: ventId as String?,
       voiceMark: voiceMark,
+      authorVoiceId: authorVoiceId as String?,
       content: content,
       createdAt: parsedCreatedAt,
       isMoment: isMoment as bool? ?? false,
       isHeard: isHeard as bool? ?? false,
+      echoKind: parsedEchoKind,
     );
   }
 }
