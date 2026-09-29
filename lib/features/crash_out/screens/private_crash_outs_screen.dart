@@ -3,22 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/crash_out.dart';
 import '../providers/crash_out_provider.dart';
-import '../../ventvo_voice/screens/create_vent_screen.dart';
+import '../providers/experience_thread_provider.dart';
+import 'experience_thread_screen.dart';
 
 class PrivateCrashOutsScreen extends ConsumerWidget {
   const PrivateCrashOutsScreen({super.key});
-
-  void _turnIntoVent(BuildContext context, CrashOut crashOut) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CreateVentScreen(
-          initialContent: crashOut.textContent,
-          crashOutId: crashOut.id,
-        ),
-      ),
-    );
-  }
 
   Future<void> _letGo(
     BuildContext context,
@@ -79,9 +68,24 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
               itemCount: privateCrashOuts.length,
               itemBuilder: (context, index) {
                 final crashOut = privateCrashOuts[index];
+                final thread = ref
+                    .read(experienceThreadProvider.notifier)
+                    .threadForCrashOut(crashOut.id);
                 return _PrivateCrashOutCard(
                   crashOut: crashOut,
-                  onTurnIntoVent: () => _turnIntoVent(context, crashOut),
+                  onOpenEncounter: thread == null
+                      ? null
+                      : () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ExperienceThreadScreen(
+                                crashOut: crashOut,
+                                thread: thread,
+                              ),
+                            ),
+                          );
+                        },
                   onLetGo: () => _letGo(context, ref, crashOut),
                 );
               },
@@ -137,23 +141,32 @@ class _PrivateCrashOutCard extends StatelessWidget {
             style: const TextStyle(color: Colors.white, fontSize: 17, height: 1.5),
           ),
           const SizedBox(height: 20),
+          if (onOpenEncounter == null)
+            const Padding(
+              padding: EdgeInsets.only(bottom: 14),
+              child: Text(
+                'No other side has surfaced yet.',
+                style: TextStyle(color: Colors.white38, fontSize: 12.5),
+              ),
+            ),
           Row(
             children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: onTurnIntoVent,
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: const BorderSide(color: Colors.white24),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+              if (onOpenEncounter != null)
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: onOpenEncounter,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      side: const BorderSide(color: Colors.white24),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                     ),
+                    child: const Text('Open encounter'),
                   ),
-                  child: const Text('Turn into Vent'),
                 ),
-              ),
-              const SizedBox(width: 10),
+              if (onOpenEncounter != null) const SizedBox(width: 10),
               IconButton(
                 onPressed: onLetGo,
                 tooltip: 'Let go',
