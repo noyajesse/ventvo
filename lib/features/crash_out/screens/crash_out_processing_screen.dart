@@ -7,7 +7,6 @@ import '../providers/crash_out_provider.dart';
 import '../providers/experience_thread_provider.dart';
 import '../models/experience_thread.dart';
 import 'experience_thread_screen.dart';
-import '../services/crash_out_opposite_experience_service.dart';
 import 'crash_out_fate_screen.dart';
 
 /// The quiet transition between releasing a Crash Out and seeing whether
@@ -145,7 +144,7 @@ class _ProcessingMessage extends StatelessWidget {
           'Let’s see what’s on the other side.',
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: Colors.white.withOpacity(0.54),
+            color: Colors.white.withValues(alpha: 0.54),
             fontSize: 17,
             height: 1.5,
           ),
