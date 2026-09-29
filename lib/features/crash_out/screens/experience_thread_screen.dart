@@ -201,11 +201,11 @@ class _ExperienceStep extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(18, 16, 18, 17),
                     decoration: BoxDecoration(
                       color: isOrigin
-                          ? Colors.white.withOpacity(0.08)
-                          : Colors.white.withOpacity(0.045),
+                          ? Colors.white.withValues(alpha: 0.08)
+                          : Colors.white.withValues(alpha: 0.045),
                       borderRadius: BorderRadius.circular(18),
                       border: Border.all(
-                        color: Colors.white.withOpacity(
+                        color: Colors.white.withValues(alpha: 
                           isOrigin ? 0.12 : 0.08,
                         ),
                       ),
@@ -213,7 +213,7 @@ class _ExperienceStep extends StatelessWidget {
                     child: Text(
                       contribution.content,
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.94),
+                        color: Colors.white.withValues(alpha: 0.94),
                         fontSize: 17,
                         height: 1.55,
                         fontWeight:
@@ -228,7 +228,7 @@ class _ExperienceStep extends StatelessWidget {
                           ? 'Then another experience appeared.'
                           : 'And the experience continues.',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.30),
+                        color: Colors.white.withValues(alpha: 0.30),
                         fontSize: 12.5,
                         height: 1.4,
                       ),
@@ -311,7 +311,7 @@ class _ContinuePrompt extends StatelessWidget {
           Text(
             'Your experience can continue here.',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.36),
+              color: Colors.white.withValues(alpha: 0.36),
               fontSize: 13,
               height: 1.4,
             ),
@@ -361,7 +361,7 @@ class _Composer extends StatelessWidget {
                 hintText: 'Continue the experience...',
                 hintStyle: const TextStyle(color: Colors.white30),
                 filled: true,
-                fillColor: Colors.white.withOpacity(0.055),
+                fillColor: Colors.white.withValues(alpha: 0.055),
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 12,
