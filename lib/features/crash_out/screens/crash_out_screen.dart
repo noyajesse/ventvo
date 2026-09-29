@@ -34,7 +34,7 @@ class _CrashOutScreenState extends ConsumerState<CrashOutScreen> {
 
     final now = DateTime.now();
     final crashOut = CrashOut(
-      id: now.millisecondsSinceEpoch.toString(),
+      id: now.microsecondsSinceEpoch.toString(),
       textContent: _controller.text.trim(),
       type: CrashOutType.text,
       createdAt: now,
@@ -122,23 +122,6 @@ class _CrashOutScreenState extends ConsumerState<CrashOutScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: null,
-                  icon: const Icon(Icons.mic_none),
-                  label: const Text('Voice release is not available yet'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: const BorderSide(color: Colors.white24),
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 15),
               SizedBox(
                 width: double.infinity,
                 height: 55,
