@@ -29,7 +29,6 @@ class EchoService {
     required String voiceMark,
     String? authorVoiceId,
     String? sourceVoiceId,
-    String kind = 'lived_something_similar',
   }) async {
     if (!space.isOpenDiscussion) return null;
 
@@ -51,8 +50,7 @@ class EchoService {
       voiceMark: voiceMark,
       authorVoiceId: authorVoiceId,
       content: text,
-      createdAt: DateTime.now(),
-      echoKind: _parseKind(kind),
+      createdAt: DateTime.now()
     );
 
     await storage.add(response);
@@ -66,16 +64,9 @@ class EchoService {
       ventId: response.ventId,
       voiceMark: response.voiceMark,
       authorVoiceId: response.authorVoiceId,
-      content: response.content,
-      kind: response.echoKind?.name ?? 'lived_something_similar',
+      content: response.content
       createdAt: response.createdAt,
     );
   }
 
-  EchoKind _parseKind(String value) {
-    for (final kind in EchoKind.values) {
-      if (kind.name == value) return kind;
-    }
-    return EchoKind.livedSomethingSimilar;
-  }
 }
