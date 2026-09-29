@@ -79,7 +79,6 @@ class SpaceResponseStorage {
       'createdAt': response.createdAt.toIso8601String(),
       'isMoment': response.isMoment,
       'isHeard': response.isHeard,
-      'echoKind': response.echoKind?.name,
     };
   }
 
@@ -93,7 +92,6 @@ class SpaceResponseStorage {
     final createdAt = map['createdAt'];
     final isMoment = map['isMoment'];
     final isHeard = map['isHeard'];
-    final echoKind = map['echoKind'];
 
     if (id is! String ||
         spaceId is! String ||
@@ -111,16 +109,6 @@ class SpaceResponseStorage {
     final parsedCreatedAt = DateTime.tryParse(createdAt);
     if (parsedCreatedAt == null) return null;
 
-    EchoKind? parsedEchoKind;
-    if (echoKind != null) {
-      for (final kind in EchoKind.values) {
-        if (kind.name == echoKind) {
-          parsedEchoKind = kind;
-          break;
-        }
-      }
-    }
-
     return SpaceResponse(
       id: id,
       spaceId: spaceId,
@@ -131,7 +119,6 @@ class SpaceResponseStorage {
       createdAt: parsedCreatedAt,
       isMoment: isMoment as bool? ?? false,
       isHeard: isHeard as bool? ?? false,
-      echoKind: parsedEchoKind,
     );
   }
 }
