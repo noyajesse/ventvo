@@ -18,11 +18,28 @@ class ExperienceThreadNotifier
   }
 
   Future<void> createThread(ExperienceThread thread) async {
+    if (thread.id.trim().isEmpty || thread.originCrashOutId.trim().isEmpty) {
+      return;
+    }
+
     final current = state.asData?.value ?? const <ExperienceThread>[];
+
+    // A Crash Out owns at most one encounter thread. This also makes
+    // re-entry safe if processing is triggered more than once.
+    if (current.any(
+      (item) =>
+          item.id == thread.id ||
+          item.originCrashOutId == thread.originCrashOutId,
+    )) {
+      return;
+    }
+
     await _persist([...current, thread]);
   }
 
   ExperienceThread? threadForCrashOut(String crashOutId) {
+    if (crashOutId.trim().isEmpty) return null;
+
     final current = state.asData?.value ?? const <ExperienceThread>[];
     for (final thread in current) {
       if (thread.originCrashOutId == crashOutId) {
@@ -33,10 +50,14 @@ class ExperienceThreadNotifier
   }
 
   Future<void> deleteThreadForCrashOut(String crashOutId) async {
+    if (crashOutId.trim().isEmpty) return;
+
     final current = state.asData?.value ?? const <ExperienceThread>[];
     final next = current
         .where((thread) => thread.originCrashOutId != crashOutId)
         .toList();
+
+    if (next.length == current.length) return;
     await _persist(next);
   }
 
@@ -44,7 +65,24 @@ class ExperienceThreadNotifier
     required String threadId,
     required ExperienceContribution contribution,
   }) async {
+    if (threadId.trim().isEmpty ||
+        contribution.id.trim().isEmpty ||
+        contribution.threadId != threadId ||
+        contribution.content.trim().isEmpty) {
+      return;
+    }
+
     final current = state.asData?.value ?? const <ExperienceThread>[];
+    final targetExists = current.any((thread) => thread.id == threadId);
+    if (!targetExists) return;
+
+    // Contribution IDs are unique within the local thread store.
+    if (current.any(
+      (thread) =>
+          thread.contributions.any((item) => item.id == contribution.id),
+    )) {
+      return;
+    }
 
     final updated = [
       for (final thread in current)
