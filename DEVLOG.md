@@ -1029,6 +1029,17 @@ The local Experience Thread lifecycle was hardened before moving on:
 
 These are local frontend safeguards only. Backend ownership, authorization, moderation, retention, and realtime rules remain deferred until the backend phase.
 
+### Crash Out lifecycle test coverage — 2026-09-29
+
+Added deterministic Flutter tests covering:
+- one-thread-per-Crash-Out ownership;
+- duplicate thread rejection;
+- contribution thread ownership validation;
+- duplicate contribution rejection;
+- Crash Out encounter-thread deletion.
+
+The tests are committed to the repository but have **not** been executed from GitHub tooling.
+
 ### Engineering order
 
 Finish the Crash Out frontend/domain behavior first → define/build the user-facing Echo flow → align Echo with Resonance → finish Vent/Space/Moment UX → finish Feed/Moment discovery → establish privacy/ownership/security boundaries → implement the backend/Supabase layer → production hardening.
