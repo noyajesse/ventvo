@@ -401,3 +401,92 @@ The current prototype already exposes the first public Resonance → connection 
 - Feed is discovery, not the product's purpose.
 - Private means private architecturally, not merely hidden in UI.
 - No feature is added simply because another social platform has it.
+
+## Crash Out Experience Threads
+
+The next Crash Out product direction is an **Experience Thread**.
+
+The Experience Thread is not a room, group, comment section, feed, or ordinary messaging thread. It is a collection of human experiences that naturally grows from a Crash Out and the experiences it encounters.
+
+### Core idea
+
+```
+My Experience
+      ↓
+Opposite Experience
+      ↓
+Response
+      ↓
+Related Experience
+      ↓
+Response
+      ↓
+...
+```
+
+Each contribution remains an experience rather than becoming a conventional message.
+
+The interaction should therefore **feel like texting without being a messaging app**.
+
+A person can respond to an experience, but the response should remain grounded in their own lived experience. The system should not encourage profile-building, introductions, follower relationships, or generic social conversation.
+
+### Thread semantics
+
+An Experience Thread:
+- has no member list;
+- has no room identity;
+- has no popularity count;
+- has no comments section;
+- has no follower relationship;
+- has no requirement that participants know one another;
+- has no assumption that every contribution comes from the same two people;
+- can grow as new related or opposing experiences enter the chain.
+
+The thread is about the **relationship between experiences**, not the relationship between people.
+
+### Discovery inside the thread
+
+The next experience should not be selected merely because it shares a topic.
+
+Strong candidates should be connected through meaningful human tension, position, direction, context, or another validated experience relationship.
+
+A thread may move:
+
+```
+wanting to be noticed
+        ↕
+wanting to be left alone
+        ↓
+not knowing how to ask for help
+        ↓
+preferring to handle problems alone
+        ↓
+...
+```
+
+The chain is allowed to develop organically. Ventvo should not force a predetermined sequence or manufacture contributions to keep a thread active.
+
+### Conversation boundary
+
+The experience itself is the message.
+
+A response such as:
+
+> "That's the exact opposite of how I feel."
+
+can exist, but the stronger form is an experience that continues the thought:
+
+> "I hate asking for help. I'd rather struggle quietly than feel like I'm depending on someone."
+
+This keeps the interaction human and experiential instead of turning it into ordinary chat.
+
+### Product boundary
+
+This direction does not replace Find People Who Understand.
+
+- **Find People Who Understand** moves toward similarity.
+- **Crash Out** moves toward meaningful opposition.
+- **Experience Thread** is the evolving chain created when experiences continue to meet.
+- **Resonance** remains the separate system for meaningful connection.
+
+No follower graph, likes, public popularity, or generic messaging inbox should be introduced merely to support Experience Threads.
