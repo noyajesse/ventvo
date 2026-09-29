@@ -50,7 +50,7 @@ class EchoService {
       voiceMark: voiceMark,
       authorVoiceId: authorVoiceId,
       content: text,
-      createdAt: DateTime.now()
+      createdAt: DateTime.now(),
     );
 
     await storage.add(response);
@@ -64,7 +64,7 @@ class EchoService {
       ventId: response.ventId,
       voiceMark: response.voiceMark,
       authorVoiceId: response.authorVoiceId,
-      content: response.content
+      content: response.content,
       createdAt: response.createdAt,
     );
   }
