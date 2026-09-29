@@ -44,18 +44,22 @@ Its philosophy:
 
 > You don't have to make sense of it yet. Just let it out.
 
-A Crash Out is not automatically a public post.
+A Crash Out is never a public Vent by default.
 
-After releasing a Crash Out, the user decides what happens to it.
+The current Crash Out direction is **meaningful opposition**, not similarity matching or user-selected fates:
 
-Current intended fates:
+Private Crash Out
+→ Experience Understanding
+→ Human Tension
+→ Position + Direction
+→ Meaningful Opposition
+→ Another Side of the Experience
+→ Experience Thread
+→ Private Reflection
 
-1. Let Go
-2. Keep Private
-3. Turn into a Vent
-4. Find People Who Understand
+A Crash Out remains private throughout this flow. An encounter is about experiences, not people, and the system must never manufacture an opposite experience just to produce a result.
 
-Crash Out should remain a low-pressure environment where the user can express themselves before deciding whether they want interaction.
+Crash Out should remain low-pressure and should not become a diary, notes app, therapist, conventional chat, or social comment system.
 
 ---
 
@@ -494,9 +498,9 @@ Important upcoming areas include:
 
 1. domain model cleanup
 2. ownership and visibility
-3. Crash Out state transitions
-4. proper Turn into Vent flow
-5. resonance/matching architecture
+3. Crash Out state transitions and experience lifecycle
+4. Crash Out opposition/Experience Thread completion
+5. Echo semantics and interaction architecture
 6. private three-Voice connection architecture
 7. authentication/session architecture
 8. backend/repository/service boundaries
