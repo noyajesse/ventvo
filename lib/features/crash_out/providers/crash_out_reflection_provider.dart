@@ -19,6 +19,16 @@ class CrashOutReflectionNotifier
     await _storage.save(next);
   }
 
+  Future<void> deleteReflectionsForCrashOut(String crashOutId) async {
+    final current =
+        state.asData?.value ?? const <CrashOutReflection>[];
+    final next = current
+        .where((reflection) => reflection.crashOutId != crashOutId)
+        .toList();
+    state = AsyncData(next);
+    await _storage.save(next);
+  }
+
   Future<void> clearReflections() async {
     await _storage.clear();
     state = const AsyncData([]);
