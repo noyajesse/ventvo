@@ -8,7 +8,7 @@ import '../providers/crash_out_provider.dart';
 import '../providers/experience_thread_provider.dart';
 import '../models/experience_thread.dart';
 import 'experience_thread_screen.dart';
-import 'crash_out_fate_screen.dart';
+import 'crash_out_no_encounter_screen.dart';
 
 class CrashOutProcessingScreen extends ConsumerStatefulWidget {
   final CrashOut crashOut;
@@ -47,10 +47,7 @@ class _CrashOutProcessingScreenState
     if (match == null) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (_) => CrashOutFateScreen(
-            crashOut: widget.crashOut,
-            match: match,
-          ),
+          builder: (_) => const CrashOutNoEncounterScreen(),
         ),
       );
       return;
