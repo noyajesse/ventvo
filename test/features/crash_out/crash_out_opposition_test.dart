@@ -122,7 +122,7 @@ void main() {
 
   test('a legacy Vent derived from the same Crash Out cannot surface', () {
     final result = service.find(
-      crashOut(
+      crashOut: crashOut(
         'I wish someone would check on me. I feel invisible.',
         id: 'crash-legacy',
       ),
