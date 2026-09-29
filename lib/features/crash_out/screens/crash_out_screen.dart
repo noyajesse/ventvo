@@ -125,15 +125,9 @@ class _CrashOutScreenState extends ConsumerState<CrashOutScreen> {
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Voice release is coming next.'),
-                      ),
-                    );
-                  },
+                  onPressed: null,
                   icon: const Icon(Icons.mic_none),
-                  label: const Text('Say it instead'),
+                  label: const Text('Voice release is not available yet'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.white,
                     side: const BorderSide(color: Colors.white24),
