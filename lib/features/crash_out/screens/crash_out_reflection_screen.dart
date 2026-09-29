@@ -36,6 +36,20 @@ class _CrashOutReflectionScreenState
   void _onChanged() => setState(() {});
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final existing = ref
+        .read(crashOutReflectionProvider.notifier)
+        .reflectionForThread(widget.thread.id);
+    if (existing != null && _controller.text.isEmpty) {
+      _controller.text = existing.content;
+      _controller.selection = TextSelection.collapsed(
+        offset: _controller.text.length,
+      );
+    }
+  }
+
+  @override
   void dispose() {
     _controller
       ..removeListener(_onChanged)
@@ -142,7 +156,11 @@ class _CrashOutReflectionScreenState
                     disabledForegroundColor: Colors.white24,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                  child: const Text('Save reflection'),
+                  child: Text(
+                    ref.read(crashOutReflectionProvider.notifier).reflectionForThread(widget.thread.id) == null
+                        ? 'Save reflection'
+                        : 'Update reflection',
+                  ),
                 ),
               ),
             ],
