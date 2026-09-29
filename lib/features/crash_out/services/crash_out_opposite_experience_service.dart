@@ -26,7 +26,11 @@ class CrashOutOppositeExperienceService {
     CrashOutOppositeMatch? best;
 
     for (final vent in experiences) {
-      if (!vent.isDiscoverable || excludedIds.contains(vent.id)) continue;
+      if (!vent.isDiscoverable ||
+          excludedIds.contains(vent.id) ||
+          vent.originatingCrashOutId == crashOut.id) {
+        continue;
+      }
 
       final candidate = interpreter.interpretText(vent.content);
       final opposition = _bestOpposition(source, candidate);
