@@ -54,9 +54,23 @@ class CrashOutStorage {
       id: json['id'] as String,
       textContent: json['textContent'] as String?,
       audioPath: json['audioPath'] as String?,
-      type: CrashOutType.values.byName(json['type'] as String),
+      type: _parseType(json['type']),
       createdAt: DateTime.parse(json['createdAt'] as String),
-      status: CrashOutStatus.values.byName(json['status'] as String),
+      status: _parseStatus(json['status']),
+    );
+  }
+
+  CrashOutType _parseType(Object? value) {
+    return CrashOutType.values.firstWhere(
+      (type) => type.name == value,
+      orElse: () => CrashOutType.text,
+    );
+  }
+
+  CrashOutStatus _parseStatus(Object? value) {
+    return CrashOutStatus.values.firstWhere(
+      (status) => status.name == value,
+      orElse: () => CrashOutStatus.keptPrivate,
     );
   }
 }
