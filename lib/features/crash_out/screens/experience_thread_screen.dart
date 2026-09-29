@@ -173,10 +173,12 @@ class _ConversationMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final voiceName = contribution.voiceName?.trim().isNotEmpty == true
-        ? contribution.voiceName!.trim()
-        : 'VOICE';
+    final voiceName = contribution.voiceName?.trim();
     final mark = contribution.voiceMark?.trim();
+    final identity = [
+      if (mark != null && mark.isNotEmpty) mark,
+      if (voiceName != null && voiceName.isNotEmpty) voiceName,
+    ].join('  ');
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 18),
@@ -194,11 +196,10 @@ class _ConversationMessage extends StatelessWidget {
               ],
               Row(
                 children: [
-                  Text(
-                    mark == null || mark.isEmpty
-                        ? voiceName
-                        : '$mark  $voiceName',
-                    style: const TextStyle(
+                  if (identity.isNotEmpty)
+                    Text(
+                      identity,
+                      style: const TextStyle(
                       color: Colors.white70,
                       fontSize: 12.5,
                       fontWeight: FontWeight.w600,
@@ -256,9 +257,12 @@ class _ReplyPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = contribution.voiceName?.trim().isNotEmpty == true
-        ? contribution.voiceName!.trim()
-        : 'VOICE';
+    final name = contribution.voiceName?.trim();
+    final mark = contribution.voiceMark?.trim();
+    final identity = [
+      if (mark != null && mark.isNotEmpty) mark,
+      if (name != null && name.isNotEmpty) name,
+    ].join('  ');
 
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 6, 10, 6),
@@ -268,7 +272,7 @@ class _ReplyPreview extends StatelessWidget {
         ),
       ),
       child: Text(
-        '$name  ·  ${contribution.content}',
+        '${identity.isEmpty ? 'Reply' : identity}  ·  ${contribution.content}',
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: const TextStyle(
@@ -307,7 +311,7 @@ class _ReplyBar extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
-              'Replying to $name',
+              'Replying to ${identity.isEmpty ? 'this message' : identity}',
               style: const TextStyle(
                 color: Colors.white54,
                 fontSize: 12,
