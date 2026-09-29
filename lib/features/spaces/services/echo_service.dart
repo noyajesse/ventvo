@@ -5,11 +5,9 @@ import 'space_response_storage.dart';
 
 /// Creates and loads Echoes.
 ///
-/// Echo creation is intentionally separate from Resonance. An Echo is a
-/// person's own experience carried forward by another person's words; it
-/// does not create, accept, or activate a relationship by itself.
-///
-/// Explicit Resonance remains a user action handled by the Resonance system.
+/// An Echo is a response caused by encountering another person's Moment.
+/// It must carry the responder's own experience or perspective rather than
+/// acting as a generic comment. Echo creation does not create Resonance.
 class EchoService {
   final SpaceResponseStorage storage;
 
@@ -31,11 +29,20 @@ class EchoService {
     required String voiceMark,
     String? authorVoiceId,
     String? sourceVoiceId,
+    String kind = 'lived_something_similar',
   }) async {
     if (!space.isOpenDiscussion) return null;
 
     final text = content.trim();
     if (text.isEmpty) return null;
+
+    // An Echo is a response from another Voice, not a second expression
+    // from the Voice that created the originating Moment.
+    if (authorVoiceId != null &&
+        sourceVoiceId != null &&
+        authorVoiceId == sourceVoiceId) {
+      return null;
+    }
 
     final response = SpaceResponse(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
@@ -45,6 +52,7 @@ class EchoService {
       authorVoiceId: authorVoiceId,
       content: text,
       createdAt: DateTime.now(),
+      echoKind: _parseKind(kind),
     );
 
     await storage.add(response);
@@ -59,7 +67,15 @@ class EchoService {
       voiceMark: response.voiceMark,
       authorVoiceId: response.authorVoiceId,
       content: response.content,
+      kind: response.echoKind?.name ?? 'lived_something_similar',
       createdAt: response.createdAt,
     );
+  }
+
+  EchoKind _parseKind(String value) {
+    for (final kind in EchoKind.values) {
+      if (kind.name == value) return kind;
+    }
+    return EchoKind.livedSomethingSimilar;
   }
 }
