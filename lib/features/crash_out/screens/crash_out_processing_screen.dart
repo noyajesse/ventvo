@@ -32,6 +32,26 @@ class _CrashOutProcessingScreenState
   }
 
   Future<void> _process() async {
+    await ref.read(experienceThreadProvider.future);
+    if (!mounted) return;
+
+    final existingThread =
+        ref.read(experienceThreadProvider.notifier).threadForCrashOut(
+              widget.crashOut.id,
+            );
+
+    if (existingThread != null) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => ExperienceThreadScreen(
+            crashOut: widget.crashOut,
+            thread: existingThread,
+          ),
+        ),
+      );
+      return;
+    }
+
     final experiences = await ref.read(ventProvider.future);
     if (!mounted) return;
 
