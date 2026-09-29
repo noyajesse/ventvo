@@ -5,6 +5,7 @@ class Echo {
   final String voiceMark;
   final String? authorVoiceId;
   final String content;
+  final String kind;
   final DateTime createdAt;
 
   const Echo({
@@ -14,6 +15,7 @@ class Echo {
     required this.voiceMark,
     this.authorVoiceId,
     required this.content,
+    this.kind = 'lived_something_similar',
     required this.createdAt,
   });
 }
