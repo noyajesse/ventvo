@@ -24,6 +24,8 @@ class _ExperienceThreadScreenState
     extends ConsumerState<ExperienceThreadScreen> {
   final TextEditingController _controller = TextEditingController();
 
+  String? _replyToId;
+
   bool get _hasText => _controller.text.trim().isNotEmpty;
 
   @override
@@ -53,9 +55,10 @@ class _ExperienceThreadScreenState
       orElse: () => widget.thread,
     );
 
-    final replyToId = thread?.contributions.isNotEmpty == true
-        ? thread!.contributions.last.id
-        : null;
+    final replyToId = _replyToId ??
+        (thread?.contributions.isNotEmpty == true
+            ? thread!.contributions.last.id
+            : null);
 
     final contribution = ExperienceContribution(
       id: now.microsecondsSinceEpoch.toString(),
@@ -73,6 +76,7 @@ class _ExperienceThreadScreenState
 
     if (!mounted) return;
     _controller.clear();
+    _clearReplyTarget();
   }
 
   @override
@@ -85,6 +89,16 @@ class _ExperienceThreadScreenState
       if (storedThread.id == widget.thread.id) {
         activeThread = storedThread;
         break;
+      }
+    }
+
+    ExperienceContribution? replyTarget;
+    if (_replyToId != null) {
+      for (final contribution in activeThread.contributions) {
+        if (contribution.id == _replyToId) {
+          replyTarget = contribution;
+          break;
+        }
       }
     }
 
@@ -124,14 +138,22 @@ class _ExperienceThreadScreenState
                     contribution: contribution,
                     isFirst: isFirst,
                     isLast: isLast,
+                    isSelected: contribution.id == _replyToId,
+                    onContinue: () => _selectReplyTarget(contribution),
                   );
                 },
               ),
             ),
+            if (replyTarget != null)
+              _ReplyContext(
+                contribution: replyTarget,
+                onClear: _clearReplyTarget,
+              ),
             _Composer(
               controller: _controller,
               enabled: _hasText,
               onSend: _continueExperience,
+              isReplying: replyTarget != null,
             ),
           ],
         ),
@@ -145,11 +167,15 @@ class _ExperienceStep extends StatelessWidget {
     required this.contribution,
     required this.isFirst,
     required this.isLast,
+    required this.isSelected,
+    required this.onContinue,
   });
 
   final ExperienceContribution contribution;
   final bool isFirst;
   final bool isLast;
+  final bool isSelected;
+  final VoidCallback onContinue;
 
   @override
   Widget build(BuildContext context) {
@@ -194,15 +220,20 @@ class _ExperienceStep extends StatelessWidget {
                     const _StepLabel('ANOTHER SIDE')
                   else if (contribution.type ==
                       ExperienceContributionType.related)
-                    const _StepLabel('ANOTHER EXPERIENCE'),
+                    const _StepLabel('ANOTHER EXPERIENCE')
+                  else
+                    const _StepLabel('AN EXPERIENCE'),
                   const SizedBox(height: 8),
-                  Container(
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
                     width: double.infinity,
                     padding: const EdgeInsets.fromLTRB(18, 16, 18, 17),
                     decoration: BoxDecoration(
-                      color: isOrigin
-                          ? Colors.white.withValues(alpha: 0.08)
-                          : Colors.white.withValues(alpha: 0.045),
+                      color: isSelected
+                          ? Colors.white.withValues(alpha: 0.09)
+                          : isOrigin
+                              ? Colors.white.withValues(alpha: 0.08)
+                              : Colors.white.withValues(alpha: 0.045),
                       borderRadius: BorderRadius.circular(18),
                       border: Border.all(
                         color: Colors.white.withValues(alpha: 
@@ -218,6 +249,30 @@ class _ExperienceStep extends StatelessWidget {
                         height: 1.55,
                         fontWeight:
                             isOrigin ? FontWeight.w500 : FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 9),
+                  TextButton(
+                    onPressed: onContinue,
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 2,
+                        vertical: 4,
+                      ),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Text(
+                      isSelected
+                          ? 'Continuing from this experience'
+                          : 'Continue from this experience',
+                      style: TextStyle(
+                        color: Colors.white.withValues(
+                          alpha: isSelected ? 0.62 : 0.32,
+                        ),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
@@ -322,16 +377,64 @@ class _ContinuePrompt extends StatelessWidget {
   }
 }
 
+class _ReplyContext extends StatelessWidget {
+  const _ReplyContext({
+    required this.contribution,
+    required this.onClear,
+  });
+
+  final ExperienceContribution contribution;
+  final VoidCallback onClear;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(18, 9, 12, 9),
+      decoration: const BoxDecoration(
+        color: Color(0xFF171717),
+        border: Border(
+          top: BorderSide(color: Colors.white10),
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              'Continuing from: “' + contribution.content + '”',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Colors.white54,
+                fontSize: 12.5,
+                height: 1.35,
+              ),
+            ),
+          ),
+          IconButton(
+            tooltip: 'Clear',
+            onPressed: onClear,
+            icon: const Icon(Icons.close_rounded, size: 18),
+            color: Colors.white38,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _Composer extends StatelessWidget {
   const _Composer({
     required this.controller,
     required this.enabled,
     required this.onSend,
+    required this.isReplying,
   });
 
   final TextEditingController controller;
   final bool enabled;
   final VoidCallback onSend;
+  final bool isReplying;
 
   @override
   Widget build(BuildContext context) {
@@ -358,7 +461,9 @@ class _Composer extends StatelessWidget {
                 height: 1.4,
               ),
               decoration: InputDecoration(
-                hintText: 'Continue the experience...',
+                hintText: isReplying
+                    ? 'What does this experience bring up for you?'
+                    : 'Add your experience...',
                 hintStyle: const TextStyle(color: Colors.white30),
                 filled: true,
                 fillColor: Colors.white.withValues(alpha: 0.055),
