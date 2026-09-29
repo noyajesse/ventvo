@@ -32,6 +32,14 @@ class ExperienceThreadNotifier
     return null;
   }
 
+  Future<void> deleteThreadForCrashOut(String crashOutId) async {
+    final current = state.asData?.value ?? const <ExperienceThread>[];
+    final next = current
+        .where((thread) => thread.originCrashOutId != crashOutId)
+        .toList();
+    await _persist(next);
+  }
+
   Future<void> addContribution({
     required String threadId,
     required ExperienceContribution contribution,
