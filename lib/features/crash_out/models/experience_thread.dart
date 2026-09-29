@@ -13,6 +13,8 @@ class ExperienceContribution {
   final DateTime createdAt;
   final String? replyToId;
   final String? sourceExperienceId;
+  final String? voiceName;
+  final String? voiceMark;
 
   const ExperienceContribution({
     required this.id,
@@ -22,6 +24,8 @@ class ExperienceContribution {
     required this.createdAt,
     this.replyToId,
     this.sourceExperienceId,
+    this.voiceName,
+    this.voiceMark,
   });
 }
 
