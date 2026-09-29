@@ -1077,3 +1077,64 @@ Future Voice-related features must preserve the distinction between:
 Voice Foundation
         ↓
 Voice Seed
+
+## Crash Out Experience Thread Architecture
+
+Crash Out now has a product-level direction beyond a one-shot opposite encounter.
+
+An **Experience Thread** is a dynamic chain of related experiences originating from a Crash Out. It is not modeled as a group, room, comment section, follower graph, or ordinary chat.
+
+### Architectural boundary
+
+```
+CrashOut
+   ↓
+ExperienceRepresentation
+   ↓
+Opposition / Relationship Discovery
+   ↓
+CrashOutEncounter
+   ↓
+ExperienceResponse
+   ↓
+ExperienceThread
+```
+
+The important boundary is that the thread stores and presents **experience contributions**, not a social membership relationship.
+
+### Experience-first conversation
+
+The UI may use conversational visual language, but the domain must not collapse into a generic message model.
+
+A future contribution should preserve:
+- originating experience;
+- semantic relationship to the prior experience;
+- privacy/visibility eligibility;
+- anonymous Voice boundary;
+- authoring time;
+- moderation/safety state;
+- thread membership.
+
+The exact persistence model remains open until the privacy and lifecycle rules are implemented.
+
+### Thread formation
+
+A thread may grow when:
+- an opposing experience is discovered;
+- a person intentionally responds with another experience;
+- a later experience is semantically related to the existing tension;
+- safety and privacy rules allow the contribution.
+
+The system must not manufacture an experience just to keep the thread alive.
+
+### Non-goals
+
+Experience Threads must not become:
+- Discord-style rooms;
+- Reddit-style comment trees;
+- anonymous DMs;
+- follower-based social graphs;
+- public popularity feeds;
+- generic group chats.
+
+Find People Who Understand remains a separate similarity/discovery path. Crash Out remains defined by meaningful opposition first.
