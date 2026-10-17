@@ -358,7 +358,7 @@ Currently connected foundations include:
 - Resonance Maps
 - Feed foundation
 - Crash Out release and private storage
-- Crash Out opposition prototype (single-opposite → private ExperienceThread; not yet Crash Out Space)
+- Crash Out opposition prototype and Crash Out Space frontend (local experiences/replies; no backend or realtime sharing)
 
 The prototype still uses local persistence and mock/in-memory boundaries. Production authentication, backend authorization, moderation infrastructure, realtime data, and server-side privacy enforcement are not yet connected.
 
@@ -455,5 +455,5 @@ The earlier temporary/private-chat concept is not part of this opposition featur
 
 ### Engineering direction
 
-The current implementation that finds one opposite Vent and creates one private Experience Thread does **not** complete this product direction. Before building the new UI, define a dedicated Crash Out Space domain model and its identity, participation, reply, and lifecycle rules. Reuse the opposition engine as the doorway/discovery step, not as the community itself.
+The current frontend now routes the initial opposite experience into a dedicated Crash Out Space screen, gathers discoverable experiences tied to the same human tension, and supports locally persisted replies to individual experiences. This is still a local prototype: its source experiences are existing discoverable Vents, and replies are not shared or realtime across users. The legacy ExperienceThread remains separate and is not the destination for this flow.
 
