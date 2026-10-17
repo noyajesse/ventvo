@@ -55,9 +55,9 @@ Crash Out
 → Encounter many experiences on opposing sides of the same human tension
 → Open, ongoing replies between experiences
 
-A Crash Out Space is a dedicated, ongoing community-like environment organized around a meaningful human tension and its opposing sides. It can contain many separate Crash Out experiences and replies; it is not a private two-person Experience Thread. The initial opposite experience is the doorway into this broader space, not the end of the journey.
+A Crash Out Space is a dedicated, ongoing community-like environment organized around a meaningful human tension and its opposing sides. It can contain many experiences and replies; it is not a temporary private chat or a one-to-one Experience Thread. The initial opposite experience is the doorway into this broader space, not the end of the journey.
 
-The original Crash Out remains private unless the user explicitly chooses to share it. The space must be populated by experiences eligible for shared discovery; matching must never silently publish a private Crash Out. An encounter is about experiences, not people, and the system must never manufacture an opposite experience just to produce a result.
+Do not carry the earlier temporary/private-chat concept into this opposition feature. Keep the focus on the opposing experiences, the broader community, and ongoing replies. An encounter is about experiences, not people, and the system must never manufacture an opposite experience just to produce a result.
 
 Crash Out should remain low-pressure and should not become a diary, therapist, conventional direct-message inbox, or generic topic subreddit. Replies are allowed and should help the conversation continue naturally around the experiences.
 
@@ -259,9 +259,7 @@ Ventvo may surface another public experience that represents a meaningful opposi
 
 ### Crash Out Space
 
-When an opposing experience surfaces, the user enters a broader Crash Out Space containing many experiences that relate to the same human tension from different sides. People can reply to individual experiences and continue the conversation over time. The space is not a private one-to-one thread, and it does not require participants to know one another.
-
-The user's original Crash Out remains private unless they explicitly choose to share it. Do not expose the original private Crash Out merely to discover an opposing experience. Keep any private encounter metadata and public/shared contributions separated.
+When an opposing experience surfaces, the user enters a broader Crash Out Space containing many experiences that relate to the same human tension from different sides. People can reply to individual experiences and continue the conversation over time. The space is a community in its own right, not a temporary private chat or a one-to-one thread. Participants do not need to know one another.
 
 ---
 
