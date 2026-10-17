@@ -1169,10 +1169,16 @@ The current code finds one opposite public Vent and creates a private `Experienc
 
 The earlier temporary/private-chat concept does not apply to this opposition feature. The intended destination is a community-like Crash Out Space containing experiences on opposing sides of the same human tension and replies that can continue over time. Do not build this as a private one-to-one chat. Backend/auth/realtime remain deferred.
 
-### Next engineering steps
+### Initial frontend implementation
 
-1. Define the Crash Out Space domain boundaries and lifecycle.
-2. Define Space participation and reply lifecycle.
-3. Map the current models/providers/screens to the new domain and identify what can be reused or retired.
-4. Implement the frontend-only Space domain and UI in small steps, preserving local persistence.
-5. Ask the user to run the relevant Flutter tests and `flutter analyze` after code changes; GitHub tooling has not executed Flutter tests.
+- Added a dedicated Crash Out Space screen; the initial opposite experience is highlighted as the doorway into the wider Space.
+- The Space gathers discoverable experiences that share the same interpreted human tension, rather than opening the legacy one-thread-per-Crash-Out ExperienceThread.
+- Added local persistence for replies to individual experiences, retaining Ventvo Voice identity.
+- Updated Crash Out processing to route into the Space after meaningful opposition is found.
+- The existing prototype only has local discoverable Vent data, so the Space currently uses those experiences as its available source. Local replies are not shared/realtime across users; backend/auth/realtime remain deferred.
+
+### Verification needed
+
+1. Run `flutter test test/features/crash_out/`.
+2. Run `flutter analyze`.
+3. Fix any reported issues before extending the Space further. GitHub tooling has not executed Flutter tests or the analyzer.
