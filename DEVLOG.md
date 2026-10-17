@@ -1165,16 +1165,14 @@ A Crash Out Space is community-like and organized around the human tension and i
 
 The current code finds one opposite public Vent and creates a private `ExperienceThread` owned by one Crash Out. That is **not** the intended final Crash Out Space. The existing opposition engine may serve as the doorway/discovery step, but the one-thread-per-Crash-Out model must not be mistaken for the community architecture.
 
-### Privacy decision still required before UI implementation
+### Product clarification
 
-The original raw Crash Out remains private by default. Matching or entering a Space must not silently publish it. The product must distinguish a private Crash Out from an explicitly shared/discoverable Crash Out experience and from replies posted in a Crash Out Space.
-
-The consent path for sharing a user's own Crash Out into the shared Space must be defined before code assumes that the text can appear publicly. Backend/auth/realtime remain deferred.
+The earlier temporary/private-chat concept does not apply to this opposition feature. The intended destination is a community-like Crash Out Space containing experiences on opposing sides of the same human tension and replies that can continue over time. Do not build this as a private one-to-one chat. Backend/auth/realtime remain deferred.
 
 ### Next engineering steps
 
 1. Define the Crash Out Space domain boundaries and lifecycle.
-2. Define explicit visibility/consent rules for experiences and replies.
+2. Define Space participation and reply lifecycle.
 3. Map the current models/providers/screens to the new domain and identify what can be reused or retired.
-4. Implement the frontend-only domain and UI in small steps, preserving local persistence and privacy boundaries.
+4. Implement the frontend-only Space domain and UI in small steps, preserving local persistence.
 5. Ask the user to run the relevant Flutter tests and `flutter analyze` after code changes; GitHub tooling has not executed Flutter tests.
