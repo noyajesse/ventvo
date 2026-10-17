@@ -476,7 +476,7 @@ Important upcoming areas include:
 1. domain model cleanup
 2. ownership and visibility
 3. Crash Out state transitions and experience lifecycle
-4. Crash Out opposition/Experience Thread completion
+4. Crash Out opposition and Crash Out Space completion
 5. Echo semantics and interaction architecture
 6. private three-Voice connection architecture
 7. authentication/session architecture
