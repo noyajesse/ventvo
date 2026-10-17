@@ -457,3 +457,8 @@ The earlier temporary/private-chat concept is not part of this opposition featur
 
 The current frontend now routes the initial opposite experience into a dedicated Crash Out Space screen, gathers discoverable experiences tied to the same human tension, and supports locally persisted replies to individual experiences. This is still a local prototype: its source experiences are existing discoverable Vents, and replies are not shared or realtime across users. The legacy ExperienceThread remains separate and is not the destination for this flow.
 
+## Crash Out Space — Frontend Data Boundary
+
+The Crash Out Space screen uses a dedicated `CrashOutSpaceExperience` model and local provider. An eligible public Vent may supply the initial opposing experience that opens the Space, but the public Vent collection is not used as the Space's ongoing content collection. The discovered doorway is copied into the local Space model, scoped to its human-tension Space, and replies target that Space experience.
+
+This is a frontend-only prototype. Experiences and replies stored locally are not shared between users and do not sync in realtime. Do not add backend, authentication, database, API, or realtime work without explicit approval.
