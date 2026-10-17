@@ -403,7 +403,7 @@ These are implementation gaps, not reasons to change the domain boundaries.
 2. Stabilize repository contracts.
 3. Complete deterministic Resonance engine and tests.
 4. Refactor Space around shared-experience semantics.
-5. Formalize Crash Out lifecycle and conversion.
+5. Define and implement the Crash Out Space domain and its visibility/reply lifecycle.
 6. Build Vent experience signal generation.
 7. Connect Feed, Space, and Crash Out to Resonance.
 8. Replace prototype local persistence with secure backend persistence.
