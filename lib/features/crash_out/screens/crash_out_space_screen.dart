@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../ventvo_voice/models/vent.dart';
+import '../models/crash_out_space_experience.dart';
 import '../../ventvo_voice/providers/voice_provider.dart';
 import '../models/experience_representation.dart';
 import '../providers/crash_out_space_provider.dart';
@@ -9,7 +9,7 @@ import '../services/crash_out_experience_interpreter.dart';
 
 class CrashOutSpaceScreen extends ConsumerStatefulWidget {
   final HumanTension tension;
-  final List<Vent> experiences;
+  final List<CrashOutSpaceExperience> experiences;
   final String matchedExperienceId;
 
   const CrashOutSpaceScreen({
@@ -246,7 +246,7 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
 }
 
 class _ExperienceCard extends StatelessWidget {
-  final Vent experience;
+  final CrashOutSpaceExperience experience;
   final List<CrashOutSpaceReply> replies;
   final bool isMatched;
   final String direction;
