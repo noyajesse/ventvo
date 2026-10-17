@@ -29,7 +29,7 @@ Ventvo gives a person a private place to release what they are carrying, an anon
                  │              │             │
       Encounter / No encounter  Just Listen  Open Discussion
                  │                            │
-        Experience Thread                    Echo
+        Crash Out Space                    Echo
                                               │
                                           Echo Note
                                               │
@@ -358,7 +358,7 @@ Currently connected foundations include:
 - Resonance Maps
 - Feed foundation
 - Crash Out release and private storage
-- Crash Out → Vent conversion path
+- Crash Out opposition prototype (single-opposite → private ExperienceThread; not yet Crash Out Space)
 
 The prototype still uses local persistence and mock/in-memory boundaries. Production authentication, backend authorization, moderation infrastructure, realtime data, and server-side privacy enforcement are not yet connected.
 
@@ -369,10 +369,10 @@ Build depth before breadth.
 ### Immediate
 
 1. Validate the complete first-run journey on device.
-2. Define and build the Crash Out opposition pathway, beginning with Experience Representation and the deterministic opposition prototype.
-3. Separate Find People Who Understand from Crash Out and preserve similarity discovery as its own Resonance pathway.
-4. Redesign the Crash Out encounter around the relationship between experiences rather than algorithmic match language.
-5. Add tests around the complete user journey and domain transitions.
+2. Define the Crash Out Space domain, visibility/consent boundaries, and reply lifecycle.
+3. Reuse the deterministic opposition prototype as the discovery doorway into a Crash Out Space.
+4. Build the frontend-only Crash Out Space containing many opposing experiences and ongoing replies.
+5. Add tests around Space ownership, eligible experiences, replies, deletion, and privacy boundaries.
 
 The current prototype already exposes the first public Resonance → connection step and a local Your Resonances state view. The recipient-side experience remains a prototype boundary until multiple Voices and backend persistence exist.
 
