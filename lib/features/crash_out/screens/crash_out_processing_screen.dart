@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
 import '../models/crash_out.dart';
 import '../services/crash_out_opposite_experience_service.dart';
-import '../services/crash_out_experience_interpreter.dart';
+import '../providers/crash_out_space_experience_provider.dart';
 import 'crash_out_space_screen.dart';
 import 'crash_out_no_encounter_screen.dart';
 
@@ -49,35 +49,26 @@ class _CrashOutProcessingScreenState
       return;
     }
 
-    // The opposite is the doorway, not the destination. Build the broader
-    // Space from discoverable experiences connected to the same human tension.
-    const interpreter = CrashOutExperienceInterpreter();
-    final spaceExperiences = experiences.where((experience) {
-      if (!experience.isDiscoverable ||
-          experience.originatingCrashOutId == widget.crashOut.id) {
-        return false;
-      }
+    // The opposite is the doorway, not the destination. Store that doorway
+    // in the dedicated local Space model; do not use the public Vent list as
+    // the Space's ongoing content collection.
+    await ref.read(crashOutSpaceExperienceProvider.future);
+    final spaceNotifier = ref.read(crashOutSpaceExperienceProvider.notifier);
+    final doorway = await spaceNotifier.ensureFromVent(
+      spaceId: match.sourceAtom.tension.name,
+      vent: match.experience,
+    );
+    final spaceExperiences =
+        spaceNotifier.experiencesFor(match.sourceAtom.tension.name);
 
-      final representation = interpreter.interpretText(experience.content);
-      return representation.atoms.any(
-        (atom) =>
-            atom.tension == match.sourceAtom.tension &&
-            atom.confidence >= 0.55 &&
-            atom.intensity >= 0.35,
-      );
-    }).toList()
-      ..sort((a, b) {
-        if (a.id == match.experience.id) return -1;
-        if (b.id == match.experience.id) return 1;
-        return b.createdAt.compareTo(a.createdAt);
-      });
+    if (!mounted) return;
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (_) => CrashOutSpaceScreen(
           tension: match.sourceAtom.tension,
           experiences: spaceExperiences,
-          matchedExperienceId: match.experience.id,
+          matchedExperienceId: doorway.id,
         ),
       ),
     );
