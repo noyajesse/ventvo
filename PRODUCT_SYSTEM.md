@@ -369,10 +369,10 @@ Build depth before breadth.
 ### Immediate
 
 1. Validate the complete first-run journey on device.
-2. Define the Crash Out Space domain, visibility/consent boundaries, and reply lifecycle.
+2. Define the Crash Out Space domain, participation and reply lifecycle.
 3. Reuse the deterministic opposition prototype as the discovery doorway into a Crash Out Space.
 4. Build the frontend-only Crash Out Space containing many opposing experiences and ongoing replies.
-5. Add tests around Space ownership, eligible experiences, replies, deletion, and privacy boundaries.
+5. Add tests around Space identity, eligible experiences, replies, and deletion.
 
 The current prototype already exposes the first public Resonance → connection step and a local Your Resonances state view. The recipient-side experience remains a prototype boundary until multiple Voices and backend persistence exist.
 
@@ -399,7 +399,7 @@ The current prototype already exposes the first public Resonance → connection 
 
 ## Crash Out Spaces — Current Product Direction
 
-Crash Out is not meant to stop at one opposite experience or open a private two-person Experience Thread. The opposite experience is the entry point into a broader, ongoing **Crash Out Space**.
+Crash Out is not meant to stop at one opposite experience or open a temporary private chat or one-to-one Experience Thread. The opposite experience is the entry point into a broader, ongoing **Crash Out Space**.
 
 ### Core journey
 
@@ -441,16 +441,9 @@ The Space can contain many independent Crash Outs and replies. A person who ente
 - The interface should feel like a living community of experiences, not a private chat, a conventional comment feed, or a one-to-one message thread.
 - The experiences and the tension remain central; participants do not need to know one another.
 
-### Privacy boundary
+### Keep the concepts separate
 
-A private Crash Out is private by default. Finding an opposite must not silently publish the user's original text.
-
-The product must distinguish:
-1. the user's private Crash Out, used to understand what opposing side may be meaningful;
-2. the eligible/shared experiences that appear in the Crash Out Space;
-3. replies made inside that Space.
-
-The exact consent step for contributing a user's own Crash Out to a shared Space must be designed before implementation. Until that decision is specified, the system must not assume that entering the Space grants permission to publish the original private text.
+The earlier temporary/private-chat concept is not part of this opposition feature. A Crash Out Space is the community destination around a human tension, opposing experiences, and ongoing replies—not a private conversation opened between two people.
 
 ### Distinction from existing concepts
 
@@ -462,5 +455,5 @@ The exact consent step for contributing a user's own Crash Out to a shared Space
 
 ### Engineering direction
 
-The current implementation that finds one opposite Vent and creates one private Experience Thread does **not** complete this product direction. Before building the new UI, define a dedicated Crash Out Space domain model and its ownership, visibility, participation, reply, and lifecycle rules. Reuse the opposition engine as the doorway/discovery step, not as the community itself.
+The current implementation that finds one opposite Vent and creates one private Experience Thread does **not** complete this product direction. Before building the new UI, define a dedicated Crash Out Space domain model and its identity, participation, reply, and lifecycle rules. Reuse the opposition engine as the doorway/discovery step, not as the community itself.
 
