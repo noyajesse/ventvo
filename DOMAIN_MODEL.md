@@ -469,3 +469,21 @@ Do not expand the one-thread-per-Crash-Out model into the community system by si
 ### Privacy and backend boundary
 
 The current frontend uses local persistence and cannot enforce cross-user access control. Before backend work, the domain and security model must specify who can read a Space, who can publish a Crash Out experience there, who can reply, how deletion affects shared content/replies, and how reports/moderation work. Backend remains deferred; this specification does not authorize introducing it now.
+
+## 11. Crash Out Space (Frontend Prototype)
+
+### Definition
+
+A Crash Out Space is an ongoing, experience-first collection organized around a shared human tension and its opposing sides. It is not a private one-to-one thread, generic group chat, or comment section.
+
+### Frontend model boundary
+
+- `CrashOutSpaceExperience` is the domain model rendered inside a Crash Out Space.
+- The discovered opposite experience is the doorway into the Space.
+- The doorway may originate from an eligible public Vent, but the Space screen and local Space collection use the dedicated `CrashOutSpaceExperience` model rather than treating the entire public Vent list as Space content.
+- Local prototype experiences are stored separately from Vents and are scoped by Space ID.
+- Replies remain attached to a specific Space experience.
+
+### Current prototype limitations
+
+The current Flutter prototype can locally retain the discovered doorway and replies on one installation. It does not create shared community contributions between users. The local store is not a backend, and local persistence must not be described as realtime or cross-user persistence. Backend, authentication, authorization, moderation, and realtime work remain deferred until explicitly approved.
