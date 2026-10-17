@@ -81,12 +81,14 @@ class CrashOutSpaceNotifier
       final result = <String, List<CrashOutSpaceReply>>{};
       for (final entry in decoded.entries) {
         if (entry.key is! String || entry.value is! List) continue;
-        result[entry.key as String] = [
-          for (final item in (entry.value as List))
-            if (item is Map<String, dynamic>)
-              if (CrashOutSpaceReply.fromMap(item) case final reply?)
-                reply,
-        ];
+        final replies = <CrashOutSpaceReply>[];
+        for (final item in entry.value as List) {
+          if (item is Map<String, dynamic>) {
+            final reply = CrashOutSpaceReply.fromMap(item);
+            if (reply != null) replies.add(reply);
+          }
+        }
+        result[entry.key as String] = replies;
       }
       return result;
     } catch (_) {
