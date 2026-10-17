@@ -1182,3 +1182,21 @@ The earlier temporary/private-chat concept does not apply to this opposition fea
 1. Run `flutter test test/features/crash_out/`.
 2. Run `flutter analyze`.
 3. Fix any reported issues before extending the Space further. GitHub tooling has not executed Flutter tests or the analyzer.
+
+## 2026-10-17 — Crash Out Space domain separation
+
+### Implemented on `development`
+
+- Added a dedicated `CrashOutSpaceExperience` model, separate from the public `Vent` model.
+- Added a local-only `CrashOutSpaceExperienceNotifier` backed by SharedPreferences.
+- Updated Crash Out processing so the discovered opposite remains the doorway, then is stored in the dedicated local Space collection.
+- Updated the Space screen to render `CrashOutSpaceExperience` objects rather than Vent objects directly.
+- Added tests for local Space scoping, repeat doorway discovery, and invalid content handling.
+
+### Boundaries
+
+The public Vent list is still used only by the existing opposition discovery prototype to find an eligible doorway. It is no longer passed wholesale into the Space screen as the Space's content collection. This does not create shared community data: Space experiences and replies are local to one installation. Backend, authentication, database, API, and realtime work remain deferred.
+
+### Validation
+
+The repository changes are committed, but Flutter tests and `flutter analyze` must be run locally after pulling the latest `development` branch. Do not treat earlier checks as validation of these new changes.
