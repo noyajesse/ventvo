@@ -36,7 +36,7 @@ Ventvo Voice
               Encounter          No encounter
                  │
                  ▼
-          Experience Thread
+          Crash Out Space
 ```
 
 Resonance is the central human-connection system. It is not a property of Crash Out, Feed, Space, or any single matching experience.
@@ -403,7 +403,7 @@ These are implementation gaps, not reasons to change the domain boundaries.
 2. Stabilize repository contracts.
 3. Complete deterministic Resonance engine and tests.
 4. Refactor Space around shared-experience semantics.
-5. Define and implement the Crash Out Space domain and its visibility/reply lifecycle.
+5. Define and implement the Crash Out Space domain and its participation/reply lifecycle.
 6. Build Vent experience signal generation.
 7. Connect Feed, Space, and Crash Out to Resonance.
 8. Replace prototype local persistence with secure backend persistence.
@@ -421,7 +421,7 @@ The formation boundary is orchestrated only after an accepted or active Resonanc
 
 A **Crash Out Space** is the shared, ongoing environment a person enters after Ventvo surfaces a meaningful opposite experience. It gathers many eligible experiences that relate to the same underlying human tension and allows people to reply to individual experiences over time.
 
-It is not a private thread owned by one Crash Out, and it is not defined by a fixed pair of participants.
+It is an ongoing community around the human tension, not a temporary private chat or a one-to-one thread. It is not defined by a fixed pair of participants.
 
 ### Conceptual model
 
@@ -443,10 +443,10 @@ Ongoing conversation
 
 ### Core objects to define before implementation
 
-- **CrashOutSpace**: stable identity for a meaningful human tension and its opposing sides; includes a display title/description, lifecycle, and visibility policy.
-- **CrashOutExperience**: a separately owned experience eligible to appear in a Crash Out Space. It must distinguish private raw Crash Outs from explicitly shared/discoverable content.
+- **CrashOutSpace**: stable identity for a meaningful human tension and its opposing sides; includes a display title/description and lifecycle.
+- **CrashOutExperience**: an experience that appears in a Crash Out Space, tied to a human tension and one of its opposing sides.
 - **CrashOutReply**: a response to a specific eligible experience, authored through a Ventvo Voice, with creation time and reply relationship.
-- **CrashOutSpaceMembership/Entry**: only add if needed for actual product behavior; entering or viewing a Space must not silently publish a user's private content.
+- **CrashOutSpaceMembership/Entry**: only add if needed for actual participation behavior.
 
 These are proposed domain boundaries, not a claim that the models already exist in the codebase.
 
@@ -456,7 +456,6 @@ These are proposed domain boundaries, not a claim that the models already exist 
 2. **Opposition defines discovery:** a Space relates experiences through meaningful human tension and opposing sides. Topic overlap alone is insufficient.
 3. **Replies are first-class:** eligible participants can reply to individual experiences, and replies can continue over time.
 4. **No forced activity:** the system does not invent experiences or replies to keep a Space active.
-5. **Privacy is explicit:** the raw private Crash Out is not published by matching or by entering a Space. Shared experiences require an explicit, documented visibility/consent path.
 6. **Voice identity:** shared contributions use Ventvo Voice identity, not private account identity.
 7. **No automatic relationship:** participation or replying does not automatically create Resonance, a private connection, or a direct-message relationship.
 8. **Not a normal Vent Space:** this domain is organized around the opposing sides of a human tension, rather than a single intentionally published Vent and its chosen interaction mode.
@@ -465,7 +464,7 @@ These are proposed domain boundaries, not a claim that the models already exist 
 
 The current `ExperienceThread` model is owned by one Crash Out and stores an origin plus an initial opposite contribution and later replies. That implementation is a prototype of continued experience interaction, but it is **not** the intended user-facing Crash Out Space architecture.
 
-Do not expand the one-thread-per-Crash-Out model into the community system by simply adding more messages. First define the Crash Out Space, shared-experience visibility, reply ownership, and lifecycle boundaries. Existing opposition interpretation can remain a discovery input.
+Do not expand the one-thread-per-Crash-Out model into the community system by simply adding more messages. The Crash Out Space is a community around a human tension, opposing experiences, and ongoing replies. Existing opposition interpretation can remain a discovery input.
 
 ### Privacy and backend boundary
 
