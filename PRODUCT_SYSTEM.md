@@ -397,91 +397,70 @@ The current prototype already exposes the first public Resonance → connection 
 - Private means private architecturally, not merely hidden in UI.
 - No feature is added simply because another social platform has it.
 
-## Crash Out Experience Threads
+## Crash Out Spaces — Current Product Direction
 
-The next Crash Out product direction is an **Experience Thread**.
+Crash Out is not meant to stop at one opposite experience or open a private two-person Experience Thread. The opposite experience is the entry point into a broader, ongoing **Crash Out Space**.
 
-The Experience Thread is not a room, group, comment section, feed, or ordinary messaging thread. It is a collection of human experiences that naturally grows from a Crash Out and the experiences it encounters.
-
-### Core idea
+### Core journey
 
 ```
-My Experience
-      ↓
-Opposite Experience
-      ↓
-Response
-      ↓
-Related Experience
-      ↓
-Response
-      ↓
-...
+Person releases a private Crash Out
+              ↓
+Ventvo understands the human tension
+              ↓
+A meaningful opposite experience surfaces
+              ↓
+Person enters the relevant Crash Out Space
+              ↓
+Many experiences from opposing sides are visible
+              ↓
+People reply to individual experiences
+              ↓
+The conversation keeps growing naturally
 ```
 
-Each contribution remains an experience rather than becoming a conventional message.
+### What a Crash Out Space is
 
-The interaction should therefore **feel like texting without being a messaging app**.
+A Crash Out Space is a community-like environment organized around a meaningful human tension and its opposing sides, not merely around a topic or interest.
 
-A person can respond to an experience, but the response should remain grounded in their own lived experience. The system should not encourage profile-building, introductions, follower relationships, or generic social conversation.
+For example, a tension around **needing support vs needing space** might contain experiences from people who:
+- feel exhausted from always helping others;
+- feel overwhelmed when people depend on them;
+- struggle to ask for help;
+- need independence because they are already carrying too much;
+- want support but feel guilty requesting it.
 
-### Thread semantics
+The Space can contain many independent Crash Outs and replies. A person who enters through one opposite experience should be able to encounter other relevant experiences and join the ongoing discussion where appropriate.
 
-An Experience Thread:
-- has no member list;
-- has no room identity;
-- has no popularity count;
-- has no comments section;
-- has no follower relationship;
-- has no requirement that participants know one another;
-- has no assumption that every contribution comes from the same two people;
-- can grow as new related or opposing experiences enter the chain.
+### Interaction
 
-The thread is about the **relationship between experiences**, not the relationship between people.
+- Anyone eligible to participate in the Space can reply to an individual experience.
+- Replies should preserve Ventvo Voice identity and remain grounded in the person's own perspective.
+- The conversation may continue through replies and further experiences; it should not be artificially limited to two people.
+- No forced prompts, categories, matches, introductions, follows, likes, or connection requests are required.
+- The interface should feel like a living community of experiences, not a private chat, a conventional comment feed, or a one-to-one message thread.
+- The experiences and the tension remain central; participants do not need to know one another.
 
-### Discovery inside the thread
+### Privacy boundary
 
-The next experience should not be selected merely because it shares a topic.
+A private Crash Out is private by default. Finding an opposite must not silently publish the user's original text.
 
-Strong candidates should be connected through meaningful human tension, position, direction, context, or another validated experience relationship.
+The product must distinguish:
+1. the user's private Crash Out, used to understand what opposing side may be meaningful;
+2. the eligible/shared experiences that appear in the Crash Out Space;
+3. replies made inside that Space.
 
-A thread may move:
+The exact consent step for contributing a user's own Crash Out to a shared Space must be designed before implementation. Until that decision is specified, the system must not assume that entering the Space grants permission to publish the original private text.
 
-```
-wanting to be noticed
-        ↕
-wanting to be left alone
-        ↓
-not knowing how to ask for help
-        ↓
-preferring to handle problems alone
-        ↓
-...
-```
+### Distinction from existing concepts
 
-The chain is allowed to develop organically. Ventvo should not force a predetermined sequence or manufacture contributions to keep a thread active.
+- **Crash Out Space**: an ongoing community-like environment around a meaningful human tension and opposing experiences.
+- **Normal Space**: an interaction environment created around an intentionally shared Vent and its selected response mode.
+- **Experience Thread**: the current prototype's one-Crash-Out-owned contribution chain. It is not the intended user-facing Crash Out community and should not be treated as the final product architecture.
+- **Find People Who Understand**: similarity and understanding.
+- **Resonance**: meaningful connection that may emerge from interaction, not an automatic consequence of entering a Crash Out Space.
 
-### Conversation boundary
+### Engineering direction
 
-The experience itself is the message.
+The current implementation that finds one opposite Vent and creates one private Experience Thread does **not** complete this product direction. Before building the new UI, define a dedicated Crash Out Space domain model and its ownership, visibility, participation, reply, and lifecycle rules. Reuse the opposition engine as the doorway/discovery step, not as the community itself.
 
-A response such as:
-
-> "That's the exact opposite of how I feel."
-
-can exist, but the stronger form is an experience that continues the thought:
-
-> "I hate asking for help. I'd rather struggle quietly than feel like I'm depending on someone."
-
-This keeps the interaction human and experiential instead of turning it into ordinary chat.
-
-### Product boundary
-
-This direction does not replace Find People Who Understand.
-
-- **Find People Who Understand** moves toward similarity.
-- **Crash Out** moves toward meaningful opposition.
-- **Experience Thread** is the evolving chain created when experiences continue to meet.
-- **Resonance** remains the separate system for meaningful connection.
-
-No follower graph, likes, public popularity, or generic messaging inbox should be introduced merely to support Experience Threads.
