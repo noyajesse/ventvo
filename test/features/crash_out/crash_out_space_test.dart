@@ -137,7 +137,7 @@ void main() {
     final notifier =
         container.read(crashOutSpaceExperienceProvider.notifier);
     await notifier.addExperience(
-      const CrashOutSpaceExperience(
+      CrashOutSpaceExperience(
         id: 'empty',
         spaceId: 'attention',
         content: '   ',
