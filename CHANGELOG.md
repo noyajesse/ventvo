@@ -277,3 +277,13 @@ No additional Space modes were introduced.
 - Preserved the separation between Crash Out opposition, Find People Who Understand similarity, and Resonance connection.
 - Defined conversational responses as experience-grounded contributions rather than generic messages.
 - Preserved privacy, anonymity, consent, and no-popularity boundaries.
+
+## Unreleased — Crash Out Space domain separation
+
+- Added a dedicated `CrashOutSpaceExperience` model separate from public Vents.
+- Added local SharedPreferences persistence and Space-scoped retrieval for Crash Out Space experiences.
+- Changed the discovered opposite to become the initial doorway stored in the local Space collection.
+- Changed the Space UI to render the dedicated model rather than a filtered list of public Vents.
+- Added regression tests for Space scoping, duplicate doorway prevention, and invalid experience content.
+- Confirmed scope remains frontend-only; no backend, auth, database, API, or realtime changes are included.
+- Local Flutter validation is required after pulling these commits.
