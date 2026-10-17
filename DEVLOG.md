@@ -1142,3 +1142,39 @@ Before implementing further Echo behavior:
 4. Do not introduce forced interaction patterns without an explicit product decision.
 
 Flutter tests and analyzer should be run locally after this correction.
+
+
+## 2026-10-17 — Crash Out Space direction corrected
+
+The product direction has been clarified: **Crash Out must lead into a broader, ongoing Crash Out Space, not stop at one opposite experience and a private Experience Thread.**
+
+### Intended experience
+
+```
+Crash Out
+  → meaningful opposite experience
+  → enter the relevant Crash Out Space
+  → see many experiences on opposing sides of the human tension
+  → reply to individual experiences
+  → ongoing community conversation
+```
+
+A Crash Out Space is community-like and organized around the human tension and its opposing sides. It may contain many eligible Crash Out experiences and replies. People can reply to individual experiences and continue conversations over time; the interaction is not limited to two people and does not require them to know one another.
+
+### Current implementation gap
+
+The current code finds one opposite public Vent and creates a private `ExperienceThread` owned by one Crash Out. That is **not** the intended final Crash Out Space. The existing opposition engine may serve as the doorway/discovery step, but the one-thread-per-Crash-Out model must not be mistaken for the community architecture.
+
+### Privacy decision still required before UI implementation
+
+The original raw Crash Out remains private by default. Matching or entering a Space must not silently publish it. The product must distinguish a private Crash Out from an explicitly shared/discoverable Crash Out experience and from replies posted in a Crash Out Space.
+
+The consent path for sharing a user's own Crash Out into the shared Space must be defined before code assumes that the text can appear publicly. Backend/auth/realtime remain deferred.
+
+### Next engineering steps
+
+1. Define the Crash Out Space domain boundaries and lifecycle.
+2. Define explicit visibility/consent rules for experiences and replies.
+3. Map the current models/providers/screens to the new domain and identify what can be reused or retired.
+4. Implement the frontend-only domain and UI in small steps, preserving local persistence and privacy boundaries.
+5. Ask the user to run the relevant Flutter tests and `flutter analyze` after code changes; GitHub tooling has not executed Flutter tests.
