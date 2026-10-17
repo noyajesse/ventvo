@@ -5,7 +5,6 @@ import '../../ventvo_voice/providers/vent_provider.dart';
 import '../models/crash_out.dart';
 import '../services/crash_out_opposite_experience_service.dart';
 import '../services/crash_out_experience_interpreter.dart';
-import '../models/experience_representation.dart';
 import 'crash_out_space_screen.dart';
 import 'crash_out_no_encounter_screen.dart';
 
