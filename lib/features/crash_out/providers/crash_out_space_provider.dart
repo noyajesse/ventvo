@@ -100,7 +100,7 @@ class CrashOutSpaceNotifier
       '$spaceId::$experienceId';
 
   List<CrashOutSpaceReply> repliesFor(String spaceId, String experienceId) {
-    final current = state.asData?.value ?? const {};
+    final current = state.asData?.value ?? const <String, List<CrashOutSpaceReply>>{};
     return current[_key(spaceId, experienceId)] ?? const [];
   }
 
@@ -141,7 +141,7 @@ class CrashOutSpaceNotifier
   Future<void> clearReplies() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_storageKey);
-    state = const AsyncData({});
+    state = const AsyncData(<String, List<CrashOutSpaceReply>>{});
   }
 }
 
