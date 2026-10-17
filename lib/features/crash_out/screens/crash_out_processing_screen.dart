@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../ventvo_voice/providers/vent_provider.dart';
-import '../../ventvo_voice/providers/voice_provider.dart';
 import '../models/crash_out.dart';
 import '../services/crash_out_opposite_experience_service.dart';
-import '../providers/experience_thread_provider.dart';
-import '../models/experience_thread.dart';
-import 'experience_thread_screen.dart';
+import '../services/crash_out_experience_interpreter.dart';
+import '../models/experience_representation.dart';
+import 'crash_out_space_screen.dart';
 import 'crash_out_no_encounter_screen.dart';
 
 class CrashOutProcessingScreen extends ConsumerStatefulWidget {
@@ -32,33 +31,13 @@ class _CrashOutProcessingScreenState
   }
 
   Future<void> _process() async {
-    await ref.read(experienceThreadProvider.future);
-    if (!mounted) return;
-
-    final existingThread =
-        ref.read(experienceThreadProvider.notifier).threadForCrashOut(
-              widget.crashOut.id,
-            );
-
-    if (existingThread != null) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (_) => ExperienceThreadScreen(
-            crashOut: widget.crashOut,
-            thread: existingThread,
-          ),
-        ),
-      );
-      return;
-    }
-
     final experiences = await ref.read(ventProvider.future);
     if (!mounted) return;
 
     final match = CrashOutOppositeExperienceService().find(
-          crashOut: widget.crashOut,
-          experiences: experiences,
-        );
+      crashOut: widget.crashOut,
+      experiences: experiences,
+    );
 
     if (!mounted) return;
 
@@ -71,45 +50,35 @@ class _CrashOutProcessingScreenState
       return;
     }
 
-    final now = DateTime.now();
-    final threadId = 'thread_${now.microsecondsSinceEpoch}';
-    final ownVoice = ref.read(ventvoVoiceProvider).asData?.value;
+    // The opposite is the doorway, not the destination. Build the broader
+    // Space from discoverable experiences connected to the same human tension.
+    const interpreter = CrashOutExperienceInterpreter();
+    final spaceExperiences = experiences.where((experience) {
+      if (!experience.isDiscoverable ||
+          experience.originatingCrashOutId == widget.crashOut.id) {
+        return false;
+      }
 
-    final thread = ExperienceThread(
-      id: threadId,
-      originCrashOutId: widget.crashOut.id,
-      createdAt: now,
-      contributions: [
-        ExperienceContribution(
-          id: '${threadId}_origin',
-          threadId: threadId,
-          content: widget.crashOut.textContent ?? '',
-          type: ExperienceContributionType.origin,
-          createdAt: widget.crashOut.createdAt,
-          voiceName: ownVoice?.name,
-          voiceMark: ownVoice?.mark,
-        ),
-        ExperienceContribution(
-          id: '${threadId}_opposite_${match.experience.id}',
-          threadId: threadId,
-          content: match.experience.content,
-          type: ExperienceContributionType.opposite,
-          createdAt: match.experience.createdAt,
-          sourceExperienceId: match.experience.id,
-          voiceName: match.experience.voiceName,
-          voiceMark: match.experience.voiceMark,
-        ),
-      ],
-    );
-
-    await ref.read(experienceThreadProvider.notifier).createThread(thread);
-    if (!mounted) return;
+      final representation = interpreter.interpretText(experience.content);
+      return representation.atoms.any(
+        (atom) =>
+            atom.tension == match.sourceAtom.tension &&
+            atom.confidence >= 0.55 &&
+            atom.intensity >= 0.35,
+      );
+    }).toList()
+      ..sort((a, b) {
+        if (a.id == match.experience.id) return -1;
+        if (b.id == match.experience.id) return 1;
+        return b.createdAt.compareTo(a.createdAt);
+      });
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (_) => ExperienceThreadScreen(
-          crashOut: widget.crashOut,
-          thread: thread,
+        builder: (_) => CrashOutSpaceScreen(
+          tension: match.sourceAtom.tension,
+          experiences: spaceExperiences,
+          matchedExperienceId: match.experience.id,
         ),
       ),
     );
