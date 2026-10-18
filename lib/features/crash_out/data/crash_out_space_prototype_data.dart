@@ -1,6 +1,6 @@
 import '../models/crash_out_space_experience.dart';
-import '../providers/crash_out_space_provider.dart';
 import '../models/experience_representation.dart';
+import '../providers/crash_out_space_provider.dart';
 
 /// Clearly-labelled local examples used to preview a populated Crash Out Space.
 ///
@@ -77,6 +77,7 @@ class CrashOutSpacePrototypeData {
           createdAt: now.subtract(Duration(minutes: i * 7)),
         ),
     ];
+  }
 
   static List<CrashOutSpaceReply> repliesForTension(HumanTension tension) {
     final examples = switch (tension) {
@@ -134,6 +135,5 @@ class CrashOutSpacePrototypeData {
           createdAt: now.subtract(Duration(minutes: i * 5)),
         ),
     ];
-  }
   }
 }
