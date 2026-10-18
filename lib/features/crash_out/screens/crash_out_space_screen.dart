@@ -27,6 +27,7 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
   final TextEditingController _controller = TextEditingController();
   String? _replyingToExperienceId;
   String? _replyingToReplyId;
+  bool _isSending = false;
 
   bool get _hasText => _controller.text.trim().isNotEmpty;
 
@@ -50,30 +51,42 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
     final experienceId = _replyingToExperienceId;
     final content = _controller.text.trim();
     final replyToId = _replyingToReplyId;
-    if (experienceId == null || content.isEmpty) return;
+    if (_isSending || experienceId == null || content.isEmpty) return;
 
-    final voice = ref.read(ventvoVoiceProvider).asData?.value;
-    final now = DateTime.now();
-    await ref.read(crashOutSpaceProvider.notifier).addReply(
-          spaceId: widget.tension.name,
-          experienceId: experienceId,
-          reply: CrashOutSpaceReply(
-            id: 'space_reply_${now.microsecondsSinceEpoch}',
+    setState(() => _isSending = true);
+    try {
+      final voice = ref.read(ventvoVoiceProvider).asData?.value;
+      final now = DateTime.now();
+      await ref.read(crashOutSpaceProvider.notifier).addReply(
+            spaceId: widget.tension.name,
             experienceId: experienceId,
-            content: content,
-            createdAt: now,
-            voiceName: voice?.name,
-            voiceMark: voice?.mark,
-            replyToId: replyToId,
-          ),
-        );
+            reply: CrashOutSpaceReply(
+              id: 'space_reply_${now.microsecondsSinceEpoch}',
+              experienceId: experienceId,
+              content: content,
+              createdAt: now,
+              voiceName: voice?.name,
+              voiceMark: voice?.mark,
+              replyToId: replyToId,
+            ),
+          );
 
-    if (!mounted) return;
-    _controller.clear();
-    setState(() {
-      _replyingToExperienceId = null;
-      _replyingToReplyId = null;
-    });
+      if (!mounted) return;
+      _controller.clear();
+      setState(() {
+        _replyingToExperienceId = null;
+        _replyingToReplyId = null;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Could not save that reply. Your text is still here.'),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isSending = false);
+    }
   }
 
   @override
@@ -232,14 +245,29 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.fromLTRB(18, 9, 18, 5),
                 color: const Color(0xFF19181F),
-                child: Text(
-                  _replyingToReplyId == null
-                      ? 'Replying to ${_experienceName(_replyingToExperienceId!)}'
-                      : 'Continuing a reply in ${_experienceName(_replyingToExperienceId!)}',
-                  style: const TextStyle(
-                    color: Color(0xFFC7B4F4),
-                    fontSize: 12,
-                  ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _replyingToReplyId == null
+                            ? 'Replying to ${_experienceName(_replyingToExperienceId!)}'
+                            : 'Continuing a reply in ${_experienceName(_replyingToExperienceId!)}',
+                        style: const TextStyle(
+                          color: Color(0xFFC7B4F4),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: _isSending
+                          ? null
+                          : () => setState(() {
+                                _replyingToExperienceId = null;
+                                _replyingToReplyId = null;
+                              }),
+                      child: const Text('Cancel reply'),
+                    ),
+                  ],
                 ),
               ),
             Container(
@@ -280,11 +308,21 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
                   ),
                   const SizedBox(width: 8),
                   IconButton(
-                    onPressed:
-                        _hasText && _replyingToExperienceId != null
-                            ? _sendReply
-                            : null,
-                    icon: const Icon(Icons.arrow_upward_rounded),
+                    onPressed: _hasText &&
+                            _replyingToExperienceId != null &&
+                            !_isSending
+                        ? _sendReply
+                        : null,
+                    icon: _isSending
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Color(0xFF17161C),
+                            ),
+                          )
+                        : const Icon(Icons.arrow_upward_rounded),
                     color: const Color(0xFF17161C),
                     disabledColor: const Color(0xFF777480),
                     style: IconButton.styleFrom(
