@@ -73,8 +73,7 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
   @override
   Widget build(BuildContext context) {
     ref.watch(crashOutSpaceProvider);
-    final title = widget.tension.label[0].toUpperCase() +
-        widget.tension.label.substring(1);
+    final title = _spaceTitle(widget.tension);
 
     return Scaffold(
       backgroundColor: const Color(0xFF101014),
@@ -97,7 +96,7 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
                 padding: const EdgeInsets.fromLTRB(18, 8, 18, 20),
                 children: [
                   Text(
-                    'A HUMAN TENSION',
+                    'WHAT PEOPLE ARE CARRYING',
                     style: const TextStyle(
                       color: Color(0xFFC7B4F4),
                       fontSize: 10,
@@ -117,7 +116,7 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
                   ),
                   const SizedBox(height: 10),
                   const Text(
-                    'People can carry this differently. These experiences can sit beside each other, and the conversation can grow from there.',
+                    'There is not one way to live through this. Read what others are carrying, and reply when something speaks to you.',
                     style: TextStyle(
                       color: Color(0xFFB5B3BE),
                       fontSize: 14,
@@ -288,6 +287,31 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
         ),
       ),
     );
+  }
+
+  String _spaceTitle(HumanTension tension) {
+    switch (tension) {
+      case HumanTension.connection:
+        return 'People and closeness';
+      case HumanTension.attention:
+        return 'Being noticed';
+      case HumanTension.dependence:
+        return 'Asking for help';
+      case HumanTension.explanation:
+        return 'Being understood';
+      case HumanTension.presence:
+        return 'Staying and leaving';
+      case HumanTension.responsibility:
+        return 'Carrying too much';
+      case HumanTension.recognition:
+        return 'Being seen';
+      case HumanTension.control:
+        return 'Having a say';
+      case HumanTension.belonging:
+        return 'Finding your place';
+      case HumanTension.vulnerability:
+        return 'Letting someone in';
+    }
   }
 
   String _experienceName(String id) {
