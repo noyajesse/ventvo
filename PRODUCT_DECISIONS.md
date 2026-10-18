@@ -353,3 +353,26 @@ The product needs something to happen next without turning Crash Out into a conv
 ### Product test
 
 If an Experience Thread starts to feel like a group chat, Reddit thread, anonymous inbox, or people directory, the design has crossed the intended boundary.
+
+## Decision #11 — The wider Crash Out Space
+
+**Date:** 2026-10-18  
+**Status:** Approved frontend direction
+
+### Decision
+
+The Crash Out destination is the wider, ongoing Space organized around a recognized human tension, not a private one-to-one encounter with a single opposite experience. An actual meaningful opposite can serve as a doorway and may be highlighted when found, but it is not the whole destination.
+
+If the prototype recognizes the human tension but finds no eligible opposing public experience, it may still open that tension's Space. It must not pretend that a match was found or manufacture an opposite to justify entry.
+
+### Prototype behavior
+
+- Use clearly labelled fictional sample experiences to make the wider Space visibly populated while the backend is deferred.
+- Sample Voices and replies must be identified as prototype/local-only content, never presented as actual cross-user activity.
+- Replies remain attached to the experience they respond to.
+- The original private Crash Out remains private and is not inserted into the Space as a public contribution.
+- No backend, database, API, authentication, server, or realtime changes are authorized by this decision.
+
+### Product test
+
+The destination should feel like an ongoing place where many experiences meet and replies can continue, without becoming a conventional group chat, comment section, or subreddit.
