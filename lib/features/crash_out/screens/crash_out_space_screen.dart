@@ -353,6 +353,16 @@ class _ExperienceCard extends StatelessWidget {
     required this.onReplyToReply,
   });
 
+  String _replyContext(CrashOutSpaceReply reply) {
+    for (final candidate in replies) {
+      if (candidate.id == reply.replyToId) {
+        final name = candidate.voiceName?.trim();
+        return 'In reply to ${name == null || name.isEmpty ? 'another Voice' : name}';
+      }
+    }
+    return 'In reply to an earlier reply';
+  }
+
   @override
   Widget build(BuildContext context) {
     final voiceName = experience.voiceName?.trim();
@@ -470,6 +480,16 @@ class _ExperienceCard extends StatelessWidget {
                                   fontSize: 11,
                                 ),
                               ),
+                              if (reply.replyToId != null) ...[
+                                const SizedBox(height: 3),
+                                Text(
+                                  _replyContext(reply),
+                                  style: const TextStyle(
+                                    color: Color(0xFF918C9F),
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ],
                               const SizedBox(height: 4),
                               Text(
                                 reply.content,
