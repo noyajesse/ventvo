@@ -155,7 +155,7 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
                               ),
                               SizedBox(height: 4),
                               Text(
-                                'Sample experiences are shown so you can explore the idea. They are not posts from real users, and replies are saved only on this device.',
+                                'Sample experiences and replies are shown so you can explore the idea. They are fictional, not real user activity. Any reply you write is saved only on this device.',
                                 style: TextStyle(
                                   color: Color(0xFFB5B3BE),
                                   fontSize: 12,
