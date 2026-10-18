@@ -344,7 +344,7 @@ The product needs something to happen next without turning Crash Out into a conv
 4. A thread does not require participants to know one another.
 5. The system must not create a member/follower relationship simply because two experiences meet.
 6. New contributions should enter because they meaningfully relate to the experience chain.
-7. Meaningful opposition remains the defining entry point for Crash Out.
+7. Meaningful opposition remains the defining discovery idea, but a recognized human tension can open the wider Space even when no individual opposing experience is found. Never claim a match that was not found.
 8. The system must not manufacture experiences or connections merely to keep a thread active.
 9. Privacy, anonymity, moderation, and consent remain first-class boundaries.
 10. Find People Who Understand remains a separate similarity-based discovery system.
