@@ -367,7 +367,7 @@ If the prototype recognizes the human tension but finds no eligible opposing pub
 
 ### Prototype behavior
 
-- Use clearly labelled fictional sample experiences to make the wider Space visibly populated while the backend is deferred.
+- Use clearly labelled fictional sample experiences and replies to make the wider Space visibly populated and conversational while the backend is deferred.
 - Sample Voices and replies must be identified as prototype/local-only content, never presented as actual cross-user activity.
 - Replies remain attached to the experience they respond to.
 - The original private Crash Out remains private and is not inserted into the Space as a public contribution.
