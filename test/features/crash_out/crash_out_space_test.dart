@@ -4,6 +4,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:ventvo/features/crash_out/providers/crash_out_space_provider.dart';
 import 'package:ventvo/features/crash_out/models/crash_out_space_experience.dart';
+import 'package:ventvo/features/crash_out/models/crash_out.dart';
+import 'package:ventvo/features/crash_out/models/experience_representation.dart';
+import 'package:ventvo/features/crash_out/services/crash_out_experience_interpreter.dart';
+import 'package:ventvo/features/crash_out/data/crash_out_space_prototype_data.dart';
 import 'package:ventvo/features/crash_out/providers/crash_out_space_experience_provider.dart';
 import 'package:ventvo/features/ventvo_voice/models/vent.dart';
 
@@ -146,6 +150,50 @@ void main() {
     );
 
     expect(notifier.experiencesFor('attention'), isEmpty);
+  });
+
+
+  test('prototype experiences populate a Space without duplicate entries', () async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    await container.read(crashOutSpaceExperienceProvider.future);
+    final notifier =
+        container.read(crashOutSpaceExperienceProvider.notifier);
+    final examples =
+        CrashOutSpacePrototypeData.forTension(HumanTension.connection);
+
+    await notifier.ensurePrototypeExperiences(examples);
+    await notifier.ensurePrototypeExperiences(examples);
+
+    expect(notifier.experiencesFor('connection'), hasLength(3));
+    expect(
+      notifier.experiencesFor('connection').every(
+            (experience) => experience.id.startsWith('prototype_'),
+          ),
+      isTrue,
+    );
+    expect(notifier.experiencesFor('attention'), isEmpty);
+  });
+
+  test('interprets “I hate people” as a connection tension without inventing a match', () {
+    final representation = const CrashOutExperienceInterpreter().interpret(
+      CrashOut(
+        id: 'private-crash-out',
+        textContent: 'I hate people',
+        type: CrashOutType.text,
+        createdAt: DateTime(2026, 10, 18),
+      ),
+    );
+
+    expect(
+      representation.atoms.any(
+        (atom) =>
+            atom.tension == HumanTension.connection &&
+            atom.direction == ExperienceDirection.away,
+      ),
+      isTrue,
+    );
   });
 
 }
