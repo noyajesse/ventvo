@@ -104,6 +104,47 @@ class CrashOutSpaceNotifier
     return current[_key(spaceId, experienceId)] ?? const [];
   }
 
+  /// Adds missing fictional preview replies without replacing local replies.
+  /// The UI discloses that these examples are not real user activity.
+  Future<void> ensurePrototypeReplies({
+    required String spaceId,
+    required List<CrashOutSpaceReply> prototypes,
+  }) async {
+    if (spaceId.trim().isEmpty || prototypes.isEmpty) return;
+
+    final current =
+        state.asData?.value ?? const <String, List<CrashOutSpaceReply>>{};
+    final updated = <String, List<CrashOutSpaceReply>>{
+      for (final entry in current.entries) entry.key: [...entry.value],
+    };
+    var changed = false;
+
+    for (final reply in prototypes) {
+      if (reply.id.trim().isEmpty ||
+          reply.experienceId.trim().isEmpty ||
+          reply.content.trim().isEmpty) {
+        continue;
+      }
+      final key = _key(spaceId, reply.experienceId);
+      final existing = updated[key] ?? const <CrashOutSpaceReply>[];
+      if (existing.any((item) => item.id == reply.id)) continue;
+      updated[key] = [...existing, reply];
+      changed = true;
+    }
+
+    if (!changed) return;
+    state = AsyncData(updated);
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      _storageKey,
+      jsonEncode({
+        for (final entry in updated.entries)
+          entry.key: entry.value.map((item) => item.toMap()).toList(),
+      }),
+    );
+  }
+
   Future<void> addReply({
     required String spaceId,
     required String experienceId,
