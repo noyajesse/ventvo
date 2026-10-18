@@ -26,6 +26,7 @@ class CrashOutSpaceScreen extends ConsumerStatefulWidget {
 class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
   final TextEditingController _controller = TextEditingController();
   String? _replyingToExperienceId;
+  String? _replyingToReplyId;
 
   bool get _hasText => _controller.text.trim().isNotEmpty;
 
@@ -48,6 +49,7 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
   Future<void> _sendReply() async {
     final experienceId = _replyingToExperienceId;
     final content = _controller.text.trim();
+    final replyToId = _replyingToReplyId;
     if (experienceId == null || content.isEmpty) return;
 
     final voice = ref.read(ventvoVoiceProvider).asData?.value;
@@ -62,12 +64,16 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
             createdAt: now,
             voiceName: voice?.name,
             voiceMark: voice?.mark,
+            replyToId: replyToId,
           ),
         );
 
     if (!mounted) return;
     _controller.clear();
-    setState(() => _replyingToExperienceId = null);
+    setState(() {
+      _replyingToExperienceId = null;
+      _replyingToReplyId = null;
+    });
   }
 
   @override
@@ -208,9 +214,14 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
                           .repliesFor(widget.tension.name, experience.id),
                       isMatched:
                           experience.id == widget.matchedExperienceId,
-                      onReply: () => setState(
-                        () => _replyingToExperienceId = experience.id,
-                      ),
+                      onReply: () => setState(() {
+                        _replyingToExperienceId = experience.id;
+                        _replyingToReplyId = null;
+                      }),
+                      onReplyToReply: (replyId) => setState(() {
+                        _replyingToExperienceId = experience.id;
+                        _replyingToReplyId = replyId;
+                      }),
                     ),
                   const SizedBox(height: 8),
                 ],
@@ -222,7 +233,9 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
                 padding: const EdgeInsets.fromLTRB(18, 9, 18, 5),
                 color: const Color(0xFF19181F),
                 child: Text(
-                  'Replying to ${_experienceName(_replyingToExperienceId!)}',
+                  _replyingToReplyId == null
+                      ? 'Replying to ${_experienceName(_replyingToExperienceId!)}'
+                      : 'Continuing a reply in ${_experienceName(_replyingToExperienceId!)}',
                   style: const TextStyle(
                     color: Color(0xFFC7B4F4),
                     fontSize: 12,
@@ -330,12 +343,14 @@ class _ExperienceCard extends StatelessWidget {
   final List<CrashOutSpaceReply> replies;
   final bool isMatched;
   final VoidCallback onReply;
+  final ValueChanged<String> onReplyToReply;
 
   const _ExperienceCard({
     required this.experience,
     required this.replies,
     required this.isMatched,
     required this.onReply,
+    required this.onReplyToReply,
   });
 
   @override
@@ -417,51 +432,72 @@ class _ExperienceCard extends StatelessWidget {
             for (final reply in replies)
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: Row(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      width: 2,
-                      height: 34,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF76658F),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 2,
+                          height: 34,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF76658F),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                [
+                                  if (reply.voiceMark?.isNotEmpty ?? false)
+                                    reply.voiceMark!,
+                                  if (reply.voiceName?.isNotEmpty ?? false)
+                                    reply.voiceName!,
+                                ].join('  ').isEmpty
+                                    ? 'Ventvo Voice'
+                                    : [
+                                        if (reply.voiceMark?.isNotEmpty ?? false)
+                                          reply.voiceMark!,
+                                        if (reply.voiceName?.isNotEmpty ?? false)
+                                          reply.voiceName!,
+                                      ].join('  '),
+                                style: const TextStyle(
+                                  color: Color(0xFFAAA6B5),
+                                  fontSize: 11,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                reply.content,
+                                style: const TextStyle(
+                                  color: Color(0xFFD8D5DF),
+                                  fontSize: 13,
+                                  height: 1.45,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            [
-                              if (reply.voiceMark?.isNotEmpty ?? false)
-                                reply.voiceMark!,
-                              if (reply.voiceName?.isNotEmpty ?? false)
-                                reply.voiceName!,
-                            ].join('  ').isEmpty
-                                ? 'Ventvo Voice'
-                                : [
-                                    if (reply.voiceMark?.isNotEmpty ?? false)
-                                      reply.voiceMark!,
-                                    if (reply.voiceName?.isNotEmpty ?? false)
-                                      reply.voiceName!,
-                                  ].join('  '),
-                            style: const TextStyle(
-                              color: Color(0xFFAAA6B5),
-                              fontSize: 11,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            reply.content,
-                            style: const TextStyle(
-                              color: Color(0xFFD8D5DF),
-                              fontSize: 13,
-                              height: 1.45,
-                            ),
-                          ),
-                        ],
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () => onReplyToReply(reply.id),
+                        style: TextButton.styleFrom(
+                          foregroundColor: const Color(0xFFAAA6B5),
+                          visualDensity: VisualDensity.compact,
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          minimumSize: const Size(0, 28),
+                        ),
+                        child: const Text(
+                          'Reply to this',
+                          style: TextStyle(fontSize: 11),
+                        ),
                       ),
                     ),
                   ],
