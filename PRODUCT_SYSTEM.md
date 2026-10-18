@@ -462,3 +462,9 @@ The current frontend now routes the initial opposite experience into a dedicated
 The Crash Out Space screen uses a dedicated `CrashOutSpaceExperience` model and local provider. An eligible public Vent may supply the initial opposing experience that opens the Space, but the public Vent collection is not used as the Space's ongoing content collection. The discovered doorway is copied into the local Space model, scoped to its human-tension Space, and replies target that Space experience.
 
 This is a frontend-only prototype. Experiences and replies stored locally are not shared between users and do not sync in realtime. Do not add backend, authentication, database, API, or realtime work without explicit approval.
+
+### Populated preview and entry behavior
+
+A detected human tension identifies the broader Crash Out Space. A meaningful opposite public experience may be highlighted as an initial doorway when the prototype finds one, but the Space is not a one-match destination. If the tension is understood but no opposing public Vent is found, the frontend may still open the relevant Space without claiming an opposite was found.
+
+Until shared data exists, the Space uses explicitly labelled fictional prototype experiences to demonstrate the intended multi-experience environment and replies. These fixtures are not real users, do not represent actual community activity, and must not be mistaken for a matching result. The original private Crash Out is never displayed as a public Space experience.
