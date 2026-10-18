@@ -1244,3 +1244,16 @@ Boundaries:
 Verification:
 - Updated source was written to the `development` branch through GitHub.
 - Flutter analyzer and tests have not been run from this environment. Run `flutter analyze` and `flutter test` locally before treating this change as validated.
+
+
+## 2026-10-18 — Crash Out Reply Integrity
+
+Branch: development
+
+- Continued-reply submissions now validate that the referenced reply already exists under the same Space and experience.
+- Orphaned reply references and reply IDs belonging to another experience are rejected at the local provider boundary.
+- Replies remain attached to their originating experience, and existing local persistence is unchanged.
+- This is a frontend prototype integrity check, not a substitute for server-side authorization or moderation.
+
+Verification:
+- Flutter analyzer and tests have not been run from this environment. Run `flutter analyze` and `flutter test` locally after this update.
