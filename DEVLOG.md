@@ -1224,3 +1224,23 @@ The sample experiences are fictional fixtures used to evaluate the front-end exp
 ### Validation
 
 Flutter tests and `flutter analyze` have not been run in the GitHub editing environment. Pull the latest `development` branch and run the checks locally before treating this change as validated.
+
+
+## 2026-10-18 — Crash Out Space Reply Continuation
+
+Branch: development
+
+Completed:
+- Extended the local Crash Out Space reply flow so a Voice can reply either to an experience or directly to an existing reply on that experience.
+- Persisted the optional `replyToId` on newly written replies, using the existing reply model field.
+- Added a small reply action to each displayed reply and a contextual label for replies that continue an earlier reply.
+- Kept every reply attached to its original experience and Space; this is not a separate direct-message conversation.
+- Kept the original private Crash Out out of the public Space.
+
+Boundaries:
+- Replies remain local to this device through the existing SharedPreferences prototype provider. This does not create cross-user delivery or realtime conversation.
+- The visual redesign remains deferred until Crash Out functionality is further along.
+
+Verification:
+- Updated source was written to the `development` branch through GitHub.
+- Flutter analyzer and tests have not been run from this environment. Run `flutter analyze` and `flutter test` locally before treating this change as validated.
