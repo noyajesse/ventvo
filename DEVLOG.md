@@ -1270,3 +1270,18 @@ Branch: development
 
 Verification:
 - Flutter analyzer and tests have not been run from this environment. Run `flutter analyze` and `flutter test` locally after this update.
+
+
+## 2026-10-18 — Crash Out Reply Submission Lifecycle
+
+Branch: development
+
+- Prevented repeated reply submissions while a local save is in progress.
+- Added a sending indicator and disabled the submit action during the save.
+- Added a way to cancel the currently selected experience/reply target without sending.
+- If local persistence throws, the screen keeps the draft and shows an error instead of clearing the user's text.
+- Kept reply storage local-only; no backend or realtime behavior was introduced.
+
+Verification:
+- Updated on the `development` branch through GitHub.
+- Flutter analyzer and tests have not been run from this environment. Run `flutter analyze` and `flutter test` locally before treating this change as verified.
