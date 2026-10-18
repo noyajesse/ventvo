@@ -74,14 +74,21 @@ class CrashOutSpaceExperienceNotifier
     List<CrashOutSpaceExperience> prototypes,
   ) async {
     final current = state.asData?.value ?? const <CrashOutSpaceExperience>[];
-    final existingIds = current.map((item) => item.id).toSet();
-    final additions = prototypes
-        .where((item) =>
-            item.id.trim().isNotEmpty &&
-            item.spaceId.trim().isNotEmpty &&
-            item.content.trim().isNotEmpty &&
-            !existingIds.contains(item.id))
-        .toList();
+    final knownIds = current.map((item) => item.id).toSet();
+    final additions = <CrashOutSpaceExperience>[];
+
+    // Track IDs as each item is accepted so duplicates inside the same fixture
+    // batch cannot be appended twice.
+    for (final item in prototypes) {
+      if (item.id.trim().isEmpty ||
+          item.spaceId.trim().isEmpty ||
+          item.content.trim().isEmpty ||
+          !knownIds.add(item.id)) {
+        continue;
+      }
+      additions.add(item);
+    }
+
     if (additions.isEmpty) return;
     await _persist([...current, ...additions]);
   }
@@ -101,12 +108,12 @@ class CrashOutSpaceExperienceNotifier
   }
 
   Future<void> _persist(List<CrashOutSpaceExperience> experiences) async {
-    state = AsyncData(experiences);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
       _storageKey,
       jsonEncode(experiences.map((item) => item.toMap()).toList()),
     );
+    state = AsyncData(experiences);
   }
 
   Future<void> clearExperiences() async {
