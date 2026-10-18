@@ -133,7 +133,6 @@ class CrashOutSpaceNotifier
     }
 
     if (!changed) return;
-    state = AsyncData(updated);
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
@@ -143,6 +142,7 @@ class CrashOutSpaceNotifier
           entry.key: entry.value.map((item) => item.toMap()).toList(),
       }),
     );
+    state = AsyncData(updated);
   }
 
   Future<void> addReply({
@@ -175,8 +175,6 @@ class CrashOutSpaceNotifier
       ...current,
       key: [...existing, reply],
     };
-    state = AsyncData(updated);
-
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
       _storageKey,
@@ -185,6 +183,7 @@ class CrashOutSpaceNotifier
           entry.key: entry.value.map((item) => item.toMap()).toList(),
       }),
     );
+    state = AsyncData(updated);
   }
 
   Future<void> clearReplies() async {
