@@ -125,10 +125,11 @@ It is deliberately different from Find People Who Understand, which asks:
 
 Private Crash Out
 → Experience Understanding
-→ Human Tension
-→ Position + Direction
-→ Meaningful Opposition
-→ Another Side of the Experience
+→ Recognized Human Tension
+→ Enter the wider Crash Out Space
+→ Encounter many experiences and ongoing replies
+
+A meaningful opposite may be highlighted when one is found, but the wider Space is not limited to a single match. If the human tension is recognized and no opposing public experience is found, the prototype can still open the relevant Space without claiming an encounter.
 
 ### Experience Representation
 
