@@ -161,7 +161,7 @@ A valid encounter needs:
 
 Topic overlap, different emotions, literal antonyms, or random disagreement are not enough.
 
-Ventvo must not manufacture an opposite. No meaningful opposite means no encounter.
+Ventvo must not manufacture an opposite. No meaningful opposite means no encounter; when a human tension is still recognized, that does not by itself prevent entry into the wider Space.
 
 ### Privacy
 
