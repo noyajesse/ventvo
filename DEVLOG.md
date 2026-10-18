@@ -1210,8 +1210,8 @@ The first Space implementation still felt like a single-match result and became 
 
 ### Implemented on `development`
 
-- Added a dedicated fixture source with three clearly fictional sample experiences for each supported human tension.
-- Added idempotent local seeding so prototype experiences populate a Space without duplicate entries.
+- Added a dedicated fixture source with three clearly fictional sample experiences and two sample replies for each supported human tension.
+- Added idempotent local seeding so prototype experiences and sample replies populate a Space without duplicate entries.
 - Changed Crash Out processing to open a recognized tension's Space even when no opposing public Vent is available; no match is claimed in that case.
 - Added basic recognition for phrases such as “I hate people” as social withdrawal under the connection tension.
 - Redesigned the Space screen around a readable experience collection, clear prototype disclosure, and replies attached to individual experiences.
