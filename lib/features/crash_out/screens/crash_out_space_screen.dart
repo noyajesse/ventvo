@@ -98,8 +98,8 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
                 children: [
                   Text(
                     'A HUMAN TENSION',
-                    style: TextStyle(
-                      color: const Color(0xFFC7B4F4),
+                    style: const TextStyle(
+                      color: Color(0xFFC7B4F4),
                       fontSize: 10,
                       letterSpacing: 1.7,
                       fontWeight: FontWeight.w700,
