@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../ventvo_voice/providers/vent_provider.dart';
 import '../models/crash_out.dart';
+import '../models/experience_representation.dart';
+import '../services/crash_out_experience_interpreter.dart';
+import '../data/crash_out_space_prototype_data.dart';
 import '../services/crash_out_opposite_experience_service.dart';
 import '../providers/crash_out_space_experience_provider.dart';
 import 'crash_out_space_screen.dart';
@@ -38,9 +41,18 @@ class _CrashOutProcessingScreenState
       experiences: experiences,
     );
 
+    // A real opposite is a useful doorway when one exists, but the wider
+    // Space is not conditional on finding one. Use the interpreted human
+    // tension to open its broader experience collection without claiming a
+    // match that the prototype could not establish.
+    final representation =
+        const CrashOutExperienceInterpreter().interpret(widget.crashOut);
+    final sourceAtom = match?.sourceAtom ??
+        _firstMeaningfulAtom(representation.atoms);
+
     if (!mounted) return;
 
-    if (match == null) {
+    if (sourceAtom == null) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (_) => const CrashOutNoEncounterScreen(),
@@ -49,29 +61,45 @@ class _CrashOutProcessingScreenState
       return;
     }
 
-    // The opposite is the doorway, not the destination. Store that doorway
-    // in the dedicated local Space model; do not use the public Vent list as
-    // the Space's ongoing content collection.
+    final tension = sourceAtom.tension;
     await ref.read(crashOutSpaceExperienceProvider.future);
     final spaceNotifier = ref.read(crashOutSpaceExperienceProvider.notifier);
-    final doorway = await spaceNotifier.ensureFromVent(
-      spaceId: match.sourceAtom.tension.name,
-      vent: match.experience,
+
+    await spaceNotifier.ensurePrototypeExperiences(
+      CrashOutSpacePrototypeData.forTension(tension),
     );
-    final spaceExperiences =
-        spaceNotifier.experiencesFor(match.sourceAtom.tension.name);
+
+    String? matchedExperienceId;
+    if (match != null) {
+      final doorway = await spaceNotifier.ensureFromVent(
+        spaceId: tension.name,
+        vent: match.experience,
+      );
+      matchedExperienceId = doorway.id;
+    }
+
+    final spaceExperiences = spaceNotifier.experiencesFor(tension.name);
 
     if (!mounted) return;
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (_) => CrashOutSpaceScreen(
-          tension: match.sourceAtom.tension,
+          tension: tension,
           experiences: spaceExperiences,
-          matchedExperienceId: doorway.id,
+          matchedExperienceId: matchedExperienceId,
         ),
       ),
     );
+  }
+
+  ExperienceAtom? _firstMeaningfulAtom(List<ExperienceAtom> atoms) {
+    for (final atom in atoms) {
+      if (atom.confidence >= 0.55 && atom.intensity >= 0.35) {
+        return atom;
+      }
+    }
+    return null;
   }
 
   @override
