@@ -139,7 +139,7 @@ class _CrashOutProcessingScreenState
                 ),
                 SizedBox(height: 14),
                 Text(
-                  'Let’s see what’s on the other side.',
+                  'Finding the wider space around this experience.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.white54,
