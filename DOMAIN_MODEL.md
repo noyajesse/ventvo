@@ -487,3 +487,5 @@ A Crash Out Space is an ongoing, experience-first collection organized around a 
 ### Current prototype limitations
 
 The current Flutter prototype can locally retain the discovered doorway and replies on one installation. It does not create shared community contributions between users. The local store is not a backend, and local persistence must not be described as realtime or cross-user persistence. Backend, authentication, authorization, moderation, and realtime work remain deferred until explicitly approved.
+
+A human-tension Space can be opened in the frontend preview even when no opposing public Vent is found, provided the Crash Out interpreter recognizes a meaningful tension. In that case, no match is claimed or highlighted. Clearly labelled fictional prototype experiences populate the preview so the wider experience-led environment can be evaluated before shared backend data exists.
