@@ -176,7 +176,7 @@ void main() {
     expect(notifier.experiencesFor('attention'), isEmpty);
   });
 
-  test('interprets “I hate people” as a connection tension without inventing a match', () {
+  test('interprets “I hate people” as a connection tension', () {
     final representation = const CrashOutExperienceInterpreter().interpret(
       CrashOut(
         id: 'private-crash-out',
