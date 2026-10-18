@@ -326,6 +326,11 @@ class CrashOutExperienceInterpreter {
         _Signal.phrase('better off alone'),
         _Signal.phrase('do not want a relationship'),
         _Signal.phrase('do not want to get attached'),
+        _Signal.phrase('hate people'),
+        _Signal.phrase('cannot stand people'),
+        _Signal.phrase('sick of people'),
+        _Signal.phrase('tired of people'),
+        _Signal.phrase('people are exhausting'),
       ],
     ),
     _TensionRule(
