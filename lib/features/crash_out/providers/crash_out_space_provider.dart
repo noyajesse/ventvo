@@ -161,6 +161,14 @@ class CrashOutSpaceNotifier
     final current = state.asData?.value ?? const <String, List<CrashOutSpaceReply>>{};
     final key = _key(spaceId, experienceId);
     final existing = current[key] ?? const <CrashOutSpaceReply>[];
+
+    // A continued reply must point to a reply already attached to this same
+    // experience. Reject orphaned references and cross-experience reply IDs.
+    final replyToId = reply.replyToId;
+    if (replyToId != null &&
+        !existing.any((item) => item.id == replyToId)) {
+      return;
+    }
     if (existing.any((item) => item.id == reply.id)) return;
 
     final updated = <String, List<CrashOutSpaceReply>>{
