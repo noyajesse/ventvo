@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../ventvo_voice/providers/vent_provider.dart';
+import '../data/crash_out_space_prototype_data.dart';
 import '../models/crash_out.dart';
 import '../models/experience_representation.dart';
-import '../services/crash_out_experience_interpreter.dart';
-import '../data/crash_out_space_prototype_data.dart';
-import '../services/crash_out_opposite_experience_service.dart';
 import '../providers/crash_out_space_experience_provider.dart';
-import 'crash_out_space_screen.dart';
+import '../services/crash_out_experience_interpreter.dart';
+import '../services/crash_out_opposite_experience_service.dart';
 import 'crash_out_no_encounter_screen.dart';
+import 'crash_out_space_screen.dart';
 
 class CrashOutProcessingScreen extends ConsumerStatefulWidget {
   final CrashOut crashOut;
@@ -79,6 +79,13 @@ class _CrashOutProcessingScreenState
     }
 
     final spaceExperiences = spaceNotifier.experiencesFor(tension.name);
+    if (matchedExperienceId != null) {
+      spaceExperiences.sort((a, b) {
+        if (a.id == matchedExperienceId) return -1;
+        if (b.id == matchedExperienceId) return 1;
+        return b.createdAt.compareTo(a.createdAt);
+      });
+    }
 
     if (!mounted) return;
 
