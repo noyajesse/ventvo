@@ -1200,3 +1200,27 @@ The public Vent list is still used only by the existing opposition discovery pro
 ### Validation
 
 The repository changes are committed, but Flutter tests and `flutter analyze` must be run locally after pulling the latest `development` branch. Do not treat earlier checks as validation of these new changes.
+
+
+## 2026-10-18 — Crash Out Space experience-led preview
+
+### Product correction
+
+The first Space implementation still felt like a single-match result and became a dead end when no opposite public Vent was found. The intended destination is the wider Space around a recognized human tension, not the one matching experience.
+
+### Implemented on `development`
+
+- Added a dedicated fixture source with three clearly fictional sample experiences for each supported human tension.
+- Added idempotent local seeding so prototype experiences populate a Space without duplicate entries.
+- Changed Crash Out processing to open a recognized tension's Space even when no opposing public Vent is available; no match is claimed in that case.
+- Added basic recognition for phrases such as “I hate people” as social withdrawal under the connection tension.
+- Redesigned the Space screen around a readable experience collection, clear prototype disclosure, and replies attached to individual experiences.
+- Added regression tests for sample seeding and the “I hate people” interpretation.
+
+### Boundaries
+
+The sample experiences are fictional fixtures used to evaluate the front-end experience. They are not actual user content and are not shared across devices. Replies remain local to the installation. The private Crash Out is not displayed in the Space. No backend, database, API, authentication, server, or realtime work was performed.
+
+### Validation
+
+Flutter tests and `flutter analyze` have not been run in the GitHub editing environment. Pull the latest `development` branch and run the checks locally before treating this change as validated.
