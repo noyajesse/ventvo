@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/crash_out_space_experience.dart';
 import '../../ventvo_voice/providers/voice_provider.dart';
+import '../models/crash_out_space_experience.dart';
 import '../models/experience_representation.dart';
 import '../providers/crash_out_space_provider.dart';
-import '../services/crash_out_experience_interpreter.dart';
 
 class CrashOutSpaceScreen extends ConsumerStatefulWidget {
   final HumanTension tension;
   final List<CrashOutSpaceExperience> experiences;
-  final String matchedExperienceId;
+  final String? matchedExperienceId;
 
   const CrashOutSpaceScreen({
     super.key,
     required this.tension,
     required this.experiences,
-    required this.matchedExperienceId,
+    this.matchedExperienceId,
   });
 
   @override
@@ -78,98 +77,164 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
         widget.tension.label.substring(1);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF101010),
+      backgroundColor: const Color(0xFF101014),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF101010),
+        backgroundColor: const Color(0xFF101014),
+        foregroundColor: Colors.white,
         elevation: 0,
+        titleSpacing: 4,
         title: const Text(
           'Crash Out Space',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(18, 8, 18, 20),
                 children: [
+                  Text(
+                    'A HUMAN TENSION',
+                    style: TextStyle(
+                      color: const Color(0xFFC7B4F4),
+                      fontSize: 10,
+                      letterSpacing: 1.7,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
                   Text(
                     title,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 30,
+                      fontWeight: FontWeight.w700,
+                      height: 1.12,
                     ),
                   ),
-                  const SizedBox(height: 7),
+                  const SizedBox(height: 10),
                   const Text(
-                    'Different experiences. Opposing sides. One place to understand what is underneath them.',
+                    'People can carry this differently. These experiences can sit beside each other, and the conversation can grow from there.',
                     style: TextStyle(
-                      color: Colors.white54,
+                      color: Color(0xFFB5B3BE),
                       fontSize: 14,
-                      height: 1.45,
+                      height: 1.55,
                     ),
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 18),
+                  Container(
+                    padding: const EdgeInsets.all(13),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1C1A24),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: const Color(0xFF393346)),
+                    ),
+                    child: const Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.visibility_outlined,
+                          size: 18,
+                          color: Color(0xFFC7B4F4),
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Prototype preview',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'Sample experiences are shown so you can explore the idea. They are not posts from real users, and replies are saved only on this device.',
+                                style: TextStyle(
+                                  color: Color(0xFFB5B3BE),
+                                  fontSize: 12,
+                                  height: 1.45,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 23),
                   Row(
                     children: [
-                      const Icon(Icons.forum_outlined,
-                          color: Colors.white38, size: 16),
-                      const SizedBox(width: 7),
-                      Text(
-                        '${widget.experiences.length} experiences',
-                        style: const TextStyle(
-                          color: Colors.white38,
-                          fontSize: 12,
+                      const Text(
+                        'Experiences',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF292633),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          '${widget.experiences.length}',
+                          style: const TextStyle(
+                            color: Color(0xFFD9D1EA),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
-            const Divider(height: 1, color: Colors.white10),
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
-                itemCount: widget.experiences.length,
-                itemBuilder: (context, index) {
-                  final experience = widget.experiences[index];
-                  final replies = ref
-                      .read(crashOutSpaceProvider.notifier)
-                      .repliesFor(widget.tension.name, experience.id);
-                  final isMatched =
-                      experience.id == widget.matchedExperienceId;
-                  final direction = _directionFor(experience.content);
-                  return _ExperienceCard(
-                    experience: experience,
-                    replies: replies,
-                    isMatched: isMatched,
-                    direction: direction,
-                    onReply: () => setState(
-                      () => _replyingToExperienceId = experience.id,
+                  const SizedBox(height: 12),
+                  for (final experience in widget.experiences)
+                    _ExperienceCard(
+                      experience: experience,
+                      replies: ref
+                          .read(crashOutSpaceProvider.notifier)
+                          .repliesFor(widget.tension.name, experience.id),
+                      isMatched:
+                          experience.id == widget.matchedExperienceId,
+                      onReply: () => setState(
+                        () => _replyingToExperienceId = experience.id,
+                      ),
                     ),
-                  );
-                },
+                  const SizedBox(height: 8),
+                ],
               ),
             ),
             if (_replyingToExperienceId != null)
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.fromLTRB(16, 9, 16, 5),
-                color: const Color(0xFF171717),
+                padding: const EdgeInsets.fromLTRB(18, 9, 18, 5),
+                color: const Color(0xFF19181F),
                 child: Text(
                   'Replying to ${_experienceName(_replyingToExperienceId!)}',
-                  style: const TextStyle(color: Colors.white54, fontSize: 12),
+                  style: const TextStyle(
+                    color: Color(0xFFC7B4F4),
+                    fontSize: 12,
+                  ),
                 ),
               ),
             Container(
-              padding: const EdgeInsets.fromLTRB(12, 8, 10, 10),
+              padding: const EdgeInsets.fromLTRB(14, 10, 12, 12),
               decoration: const BoxDecoration(
-                color: Color(0xFF151515),
-                border: Border(top: BorderSide(color: Colors.white10)),
+                color: Color(0xFF17161C),
+                border: Border(top: BorderSide(color: Color(0xFF302E37))),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -179,15 +244,17 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
                       controller: _controller,
                       minLines: 1,
                       maxLines: 4,
-                      style: const TextStyle(color: Colors.white, fontSize: 15),
+                      style: const TextStyle(color: Colors.white, fontSize: 14),
                       decoration: InputDecoration(
                         hintText: _replyingToExperienceId == null
                             ? 'Choose an experience to reply to'
-                            : 'Write your reply...',
-                        hintStyle:
-                            const TextStyle(color: Colors.white30, fontSize: 13),
+                            : 'Write what you want to say...',
+                        hintStyle: const TextStyle(
+                          color: Color(0xFF888591),
+                          fontSize: 13,
+                        ),
                         filled: true,
-                        fillColor: Colors.white.withValues(alpha: 0.05),
+                        fillColor: const Color(0xFF24222B),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(18),
                           borderSide: BorderSide.none,
@@ -206,10 +273,12 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
                             ? _sendReply
                             : null,
                     icon: const Icon(Icons.arrow_upward_rounded),
-                    color: Colors.white,
-                    disabledColor: Colors.white24,
+                    color: const Color(0xFF17161C),
+                    disabledColor: const Color(0xFF777480),
                     style: IconButton.styleFrom(
-                      backgroundColor: Colors.white12,
+                      backgroundColor: _hasText && _replyingToExperienceId != null
+                          ? const Color(0xFFC7B4F4)
+                          : const Color(0xFF302E37),
                     ),
                   ),
                 ],
@@ -230,33 +299,18 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
     }
     return 'this experience';
   }
-
-  String _directionFor(String content) {
-    final representation =
-        const CrashOutExperienceInterpreter().interpretText(content);
-    for (final atom in representation.atoms) {
-      if (atom.tension == widget.tension) {
-        return atom.direction == ExperienceDirection.toward
-            ? 'Moving toward'
-            : 'Moving away';
-      }
-    }
-    return 'Another perspective';
-  }
 }
 
 class _ExperienceCard extends StatelessWidget {
   final CrashOutSpaceExperience experience;
   final List<CrashOutSpaceReply> replies;
   final bool isMatched;
-  final String direction;
   final VoidCallback onReply;
 
   const _ExperienceCard({
     required this.experience,
     required this.replies,
     required this.isMatched,
-    required this.direction,
     required this.onReply,
   });
 
@@ -269,13 +323,15 @@ class _ExperienceCard extends StatelessWidget {
     ].join('  ');
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(17),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.fromLTRB(16, 15, 14, 9),
       decoration: BoxDecoration(
-        color: isMatched ? const Color(0xFF202020) : const Color(0xFF171717),
+        color: const Color(0xFF1A191F),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: isMatched ? Colors.white24 : Colors.white10,
+          color: isMatched
+              ? const Color(0xFF76658F)
+              : const Color(0xFF302E37),
         ),
       ),
       child: Column(
@@ -283,11 +339,32 @@ class _ExperienceCard extends StatelessWidget {
         children: [
           Row(
             children: [
+              Container(
+                width: 30,
+                height: 30,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2C2836),
+                  borderRadius: BorderRadius.circular(11),
+                ),
+                child: Text(
+                  experience.voiceMark.trim().isEmpty
+                      ? '◇'
+                      : experience.voiceMark.trim(),
+                  style: const TextStyle(
+                    color: Color(0xFFD5C7F2),
+                    fontSize: 15,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 9),
               Expanded(
                 child: Text(
-                  identity.isEmpty ? 'Ventvo Voice' : identity,
+                  voiceName == null || voiceName.isEmpty
+                      ? 'Ventvo Voice'
+                      : voiceName,
                   style: const TextStyle(
-                    color: Colors.white70,
+                    color: Color(0xFFCECBD5),
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
@@ -295,45 +372,44 @@ class _ExperienceCard extends StatelessWidget {
               ),
               if (isMatched)
                 const Text(
-                  'THE OTHER SIDE',
+                  'A DIFFERENT SIDE',
                   style: TextStyle(
-                    color: Colors.white54,
+                    color: Color(0xFFC7B4F4),
                     fontSize: 9,
-                    letterSpacing: 1,
-                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.7,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
             ],
           ),
-          const SizedBox(height: 7),
-          Text(
-            direction,
-            style: const TextStyle(color: Colors.white38, fontSize: 11),
-          ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 13),
           Text(
             experience.content,
             style: const TextStyle(
-              color: Colors.white,
-              fontSize: 15.5,
-              height: 1.5,
+              color: Color(0xFFF2F0F6),
+              fontSize: 15,
+              height: 1.55,
             ),
           ),
           if (replies.isNotEmpty) ...[
             const SizedBox(height: 14),
-            const Divider(color: Colors.white10, height: 1),
-            const SizedBox(height: 11),
+            const Divider(color: Color(0xFF302E37), height: 1),
+            const SizedBox(height: 12),
             for (final reply in replies)
               Padding(
-                padding: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.only(bottom: 12),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.only(top: 2, right: 8),
-                      child: Icon(Icons.subdirectory_arrow_right,
-                          size: 14, color: Colors.white30),
+                    Container(
+                      width: 2,
+                      height: 34,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF76658F),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
                     ),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -353,17 +429,17 @@ class _ExperienceCard extends StatelessWidget {
                                       reply.voiceName!,
                                   ].join('  '),
                             style: const TextStyle(
-                              color: Colors.white54,
+                              color: Color(0xFFAAA6B5),
                               fontSize: 11,
                             ),
                           ),
-                          const SizedBox(height: 3),
+                          const SizedBox(height: 4),
                           Text(
                             reply.content,
                             style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 13.5,
-                              height: 1.4,
+                              color: Color(0xFFD8D5DF),
+                              fontSize: 13,
+                              height: 1.45,
                             ),
                           ),
                         ],
@@ -380,8 +456,11 @@ class _ExperienceCard extends StatelessWidget {
               icon: const Icon(Icons.reply_rounded, size: 16),
               label: const Text('Reply'),
               style: TextButton.styleFrom(
-                foregroundColor: Colors.white60,
-                textStyle: const TextStyle(fontSize: 12),
+                foregroundColor: const Color(0xFFC7B4F4),
+                textStyle: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
