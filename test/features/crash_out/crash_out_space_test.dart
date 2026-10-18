@@ -166,7 +166,28 @@ void main() {
     await notifier.ensurePrototypeExperiences(examples);
     await notifier.ensurePrototypeExperiences(examples);
 
+    await container.read(crashOutSpaceProvider.future);
+    final replyNotifier = container.read(crashOutSpaceProvider.notifier);
+    final sampleReplies =
+        CrashOutSpacePrototypeData.repliesForTension(HumanTension.connection);
+    await replyNotifier.ensurePrototypeReplies(
+      spaceId: 'connection',
+      prototypes: sampleReplies,
+    );
+    await replyNotifier.ensurePrototypeReplies(
+      spaceId: 'connection',
+      prototypes: sampleReplies,
+    );
+
     expect(notifier.experiencesFor('connection'), hasLength(3));
+    expect(
+      replyNotifier.repliesFor('connection', 'prototype_connection_01'),
+      hasLength(1),
+    );
+    expect(
+      replyNotifier.repliesFor('connection', 'prototype_connection_02'),
+      hasLength(1),
+    );
     expect(
       notifier.experiencesFor('connection').every(
             (experience) => experience.id.startsWith('prototype_'),
