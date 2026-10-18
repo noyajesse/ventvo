@@ -1285,3 +1285,17 @@ Branch: development
 Verification:
 - Updated on the `development` branch through GitHub.
 - Flutter analyzer and tests have not been run from this environment. Run `flutter analyze` and `flutter test` locally before treating this change as verified.
+
+
+## 2026-10-18 — Crash Out Space Continuity and Idempotency
+
+Branch: development
+
+- Made prototype experience seeding deduplicate IDs both against saved experiences and within the incoming fixture batch.
+- Changed local experience and reply mutations to update Riverpod state only after SharedPreferences confirms the write, so a failed persistence operation does not present an unsaved change as successfully stored.
+- Applied persist-before-state to prototype reply seeding and normal reply submissions as well as experience updates.
+- Kept the existing local-only storage boundary and did not change the private Crash Out flow or visual design.
+
+Verification:
+- Source changes were committed to the `development` branch through GitHub.
+- Flutter analyzer and tests have not been run from this environment. Run `flutter analyze` and `flutter test` locally.
