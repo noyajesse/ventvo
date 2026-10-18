@@ -293,7 +293,7 @@ No additional Space modes were introduced.
 
 - Reworked the destination around a broader Space of experiences instead of a single matching result.
 - Allowed a recognized human tension to open its Space even when no eligible opposing public Vent is found; the UI does not claim an unverified match.
-- Added three explicitly fictional local preview experiences for each supported human tension.
+- Added three explicitly fictional local preview experiences and two sample replies for each supported human tension.
 - Redesigned the Space layout and added a clear disclosure that sample experiences are not real user posts and replies are local-only.
 - Added tests for idempotent preview seeding and recognition of “I hate people” as a connection-withdrawal signal.
 - Kept all changes frontend-only; no backend, auth, database, API, server, or realtime work was introduced.
