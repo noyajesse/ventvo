@@ -6,6 +6,7 @@ import '../data/crash_out_space_prototype_data.dart';
 import '../models/crash_out.dart';
 import '../models/experience_representation.dart';
 import '../providers/crash_out_space_experience_provider.dart';
+import '../providers/crash_out_space_provider.dart';
 import '../services/crash_out_experience_interpreter.dart';
 import '../services/crash_out_opposite_experience_service.dart';
 import 'crash_out_no_encounter_screen.dart';
@@ -68,6 +69,12 @@ class _CrashOutProcessingScreenState
     await spaceNotifier.ensurePrototypeExperiences(
       CrashOutSpacePrototypeData.forTension(tension),
     );
+
+    await ref.read(crashOutSpaceProvider.future);
+    await ref.read(crashOutSpaceProvider.notifier).ensurePrototypeReplies(
+          spaceId: tension.name,
+          prototypes: CrashOutSpacePrototypeData.repliesForTension(tension),
+        );
 
     String? matchedExperienceId;
     if (match != null) {
