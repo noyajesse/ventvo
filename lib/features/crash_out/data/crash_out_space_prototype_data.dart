@@ -1,4 +1,5 @@
 import '../models/crash_out_space_experience.dart';
+import '../providers/crash_out_space_provider.dart';
 import '../models/experience_representation.dart';
 
 /// Clearly-labelled local examples used to preview a populated Crash Out Space.
@@ -76,5 +77,63 @@ class CrashOutSpacePrototypeData {
           createdAt: now.subtract(Duration(minutes: i * 7)),
         ),
     ];
+
+  static List<CrashOutSpaceReply> repliesForTension(HumanTension tension) {
+    final examples = switch (tension) {
+      HumanTension.connection => const [
+          ('connection_reply_01', 'connection_01', 'I tell myself that too, especially when I feel like I am the only one trying.', 'Sample Voice 04'),
+          ('connection_reply_02', 'connection_02', 'I think I sometimes confuse closeness with having to give up my own space.', 'Sample Voice 05'),
+        ],
+      HumanTension.attention => const [
+          ('attention_reply_01', 'attention_01', 'It is hard having to ask for the care you hoped someone would notice you needed.', 'Sample Voice 04'),
+          ('attention_reply_02', 'attention_02', 'I pull away too, even when part of me wants them to check in.', 'Sample Voice 05'),
+        ],
+      HumanTension.dependence => const [
+          ('dependence_reply_01', 'dependence_01', 'Asking is the hardest part for me. I rehearse it and then do it alone.', 'Sample Voice 04'),
+          ('dependence_reply_02', 'dependence_02', 'I hear you. Help can feel like a debt even when nobody says it is.', 'Sample Voice 05'),
+        ],
+      HumanTension.explanation => const [
+          ('explanation_reply_01', 'explanation_01', 'After a while, silence feels easier than being misunderstood again.', 'Sample Voice 04'),
+          ('explanation_reply_02', 'explanation_02', 'I try to ask one more question before I decide what someone meant.', 'Sample Voice 05'),
+        ],
+      HumanTension.presence => const [
+          ('presence_reply_01', 'presence_01', 'Consistency means more to me than someone always knowing the perfect thing to say.', 'Sample Voice 04'),
+          ('presence_reply_02', 'presence_02', 'Sometimes leaving is not about not caring. It is about reaching your limit.', 'Sample Voice 05'),
+        ],
+      HumanTension.responsibility => const [
+          ('responsibility_reply_01', 'responsibility_01', 'People see that you can handle things and forget to ask whether you should have to.', 'Sample Voice 04'),
+          ('responsibility_reply_02', 'responsibility_02', 'I keep comparing my pace to everyone else and it never helps.', 'Sample Voice 05'),
+        ],
+      HumanTension.recognition => const [
+          ('recognition_reply_01', 'recognition_01', 'Being noticed for the effort would mean more than being praised for the result.', 'Sample Voice 04'),
+          ('recognition_reply_02', 'recognition_02', 'I avoid attention too, but sometimes I still want people to see the work.', 'Sample Voice 05'),
+        ],
+      HumanTension.control => const [
+          ('control_reply_01', 'control_01', 'I want advice sometimes, but I still need the final decision to be mine.', 'Sample Voice 04'),
+          ('control_reply_02', 'control_02', 'It is exhausting being the person everyone waits on to decide.', 'Sample Voice 05'),
+        ],
+      HumanTension.belonging => const [
+          ('belonging_reply_01', 'belonging_01', 'I want to be included without having to perform a version of myself.', 'Sample Voice 04'),
+          ('belonging_reply_02', 'belonging_02', 'Leaving first can feel safer than waiting to find out if you fit.', 'Sample Voice 05'),
+        ],
+      HumanTension.vulnerability => const [
+          ('vulnerability_reply_01', 'vulnerability_01', 'You do not have to tell everything at once for it to count as opening up.', 'Sample Voice 04'),
+          ('vulnerability_reply_02', 'vulnerability_02', 'Keeping things in protects you until it starts feeling lonely too.', 'Sample Voice 05'),
+        ],
+    };
+
+    final now = DateTime.now();
+    return [
+      for (var i = 0; i < examples.length; i++)
+        CrashOutSpaceReply(
+          id: 'prototype_reply_${examples[i].$1}',
+          experienceId: 'prototype_${examples[i].$2}',
+          content: examples[i].$3,
+          voiceName: examples[i].$4,
+          voiceMark: '◇',
+          createdAt: now.subtract(Duration(minutes: i * 5)),
+        ),
+    ];
+  }
   }
 }
