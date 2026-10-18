@@ -65,6 +65,27 @@ class CrashOutSpaceExperienceNotifier
     return experience;
   }
 
+  /// Adds missing local preview examples without duplicating existing content.
+  ///
+  /// These examples make the Space's intended multi-experience layout testable
+  /// before shared backend data exists. They are visibly identified as samples
+  /// in the UI and must never be treated as real user contributions.
+  Future<void> ensurePrototypeExperiences(
+    List<CrashOutSpaceExperience> prototypes,
+  ) async {
+    final current = state.asData?.value ?? const <CrashOutSpaceExperience>[];
+    final existingIds = current.map((item) => item.id).toSet();
+    final additions = prototypes
+        .where((item) =>
+            item.id.trim().isNotEmpty &&
+            item.spaceId.trim().isNotEmpty &&
+            item.content.trim().isNotEmpty &&
+            !existingIds.contains(item.id))
+        .toList();
+    if (additions.isEmpty) return;
+    await _persist([...current, ...additions]);
+  }
+
   Future<void> addExperience(CrashOutSpaceExperience experience) async {
     if (experience.id.trim().isEmpty ||
         experience.spaceId.trim().isEmpty ||
