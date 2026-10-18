@@ -341,11 +341,6 @@ class _ExperienceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final voiceName = experience.voiceName?.trim();
-    final identity = [
-      if (experience.voiceMark.trim().isNotEmpty) experience.voiceMark.trim(),
-      if (voiceName != null && voiceName.isNotEmpty) voiceName,
-    ].join('  ');
-
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.fromLTRB(16, 15, 14, 9),
