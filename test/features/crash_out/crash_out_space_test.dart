@@ -242,6 +242,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('The existing reply.'), findsOneWidget);
+      await tester.ensureVisible(find.text('Reply to this'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Reply to this'));
       await tester.pump();
       expect(find.text('Continuing a reply in Sample Voice'), findsOneWidget);
@@ -251,7 +253,10 @@ void main() {
       await tester.tap(find.byIcon(Icons.arrow_upward_rounded));
       await tester.pumpAndSettle();
 
-      expect(tester.widget<TextField>(find.byType(TextField)).controller!.text, draft);
+      expect(
+        tester.widget<TextField>(find.byType(TextField)).controller!.text,
+        draft,
+      );
       expect(find.text('Continuing a reply in Sample Voice'), findsOneWidget);
       expect(
         find.text('Could not save that reply. Your text is still here.'),
@@ -263,13 +268,18 @@ void main() {
       expect(repliesAfterFailure, hasLength(1));
       expect(repliesAfterFailure.single.id, parentReplyId);
 
-      // Retry with the same selected target to prove the reply-to-reply
-      // reference survived the failed write, not just its display label.
+      // Let the failure feedback finish before retrying through the same
+      // composer and selected reply-to-reply target.
+      await tester.pump(const Duration(seconds: 5));
+      await tester.pumpAndSettle();
       store.throwOnWrite = false;
       await tester.tap(find.byIcon(Icons.arrow_upward_rounded));
       await tester.pumpAndSettle();
 
-      expect(tester.widget<TextField>(find.byType(TextField)).controller!.text, isEmpty);
+      expect(
+        tester.widget<TextField>(find.byType(TextField)).controller!.text,
+        isEmpty,
+      );
       expect(find.text('Continuing a reply in Sample Voice'), findsNothing);
       final persisted = jsonDecode(store.values[storageKey] as String)
           as Map<String, dynamic>;
@@ -421,6 +431,7 @@ void main() {
   });
 
 }
+
 class _FailingSharedPreferencesStore extends SharedPreferencesStorePlatform {
   _FailingSharedPreferencesStore(Map<String, Object> initialValues)
       : values = Map<String, Object>.of(initialValues);
