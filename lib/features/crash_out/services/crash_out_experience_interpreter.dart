@@ -452,10 +452,24 @@ class _Signal {
   const _Signal._(this.label, this._matcher);
 
   factory _Signal.phrase(String phrase) {
-    return _Signal._(
-      phrase,
-      (text) => text.contains(phrase),
-    );
+    return _Signal._(phrase, (text) {
+      var start = text.indexOf(phrase);
+      while (start >= 0) {
+        final prefix = text.substring(0, start);
+        final negatedBeforeSignal = RegExp(
+          r'\b(?:do not|does not|did not|will not|cannot|not|never|no longer)\s+(?:\w+\s+){0,2}$',
+        ).hasMatch(prefix);
+        final signalExpressesNegation =
+            RegExp(r'\b(?:do not|does not|did not|will not|cannot|not|never)\b')
+                .hasMatch(phrase);
+
+        if (!negatedBeforeSignal || signalExpressesNegation) {
+          return true;
+        }
+        start = text.indexOf(phrase, start + 1);
+      }
+      return false;
+    });
   }
 
   factory _Signal.pattern(RegExp pattern, String label) {

@@ -161,6 +161,40 @@ void main() {
     );
   });
 
+  test('negated attention-seeking phrase does not create a toward signal', () {
+    final result = interpreter.interpret(
+      crashOut("I don't want someone to check on me."),
+    );
+
+    expect(
+      result.atoms.where((atom) => atom.tension == HumanTension.attention),
+      isEmpty,
+    );
+  });
+
+  test('negated help-seeking phrase does not create a toward signal', () {
+    final result = interpreter.interpret(
+      crashOut("I don't need help. I want to handle everything myself."),
+    );
+
+    expect(
+      result.atoms.any(
+        (atom) =>
+            atom.tension == HumanTension.dependence &&
+            atom.direction == ExperienceDirection.toward,
+      ),
+      isFalse,
+    );
+    expect(
+      result.atoms.any(
+        (atom) =>
+            atom.tension == HumanTension.dependence &&
+            atom.direction == ExperienceDirection.away,
+      ),
+      isTrue,
+    );
+  });
+
   test('shared topic with different emotion is not enough', () {
     final match = service.find(
       crashOut: crashOut('I am sad about my relationship.'),

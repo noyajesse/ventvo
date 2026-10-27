@@ -1299,3 +1299,12 @@ Branch: development
 Verification:
 - Source changes were committed to the `development` branch through GitHub.
 - Flutter analyzer and tests have not been run from this environment. Run `flutter analyze` and `flutter test` locally.
+
+
+## 2026-10-27 — Crash Out negation handling (Finding 2)
+
+- Reconstructed the negation fix from the current interpreter and existing regression suites; this is not claimed to be byte-identical to the unavailable reviewed patch.
+- Phrase signals now avoid matching a positive signal when a nearby preceding negation reverses it, while preserving explicit negation-bearing signals such as “do not want to explain”.
+- Added regression coverage for negated attention-seeking and help-seeking phrases, including preservation of the intended away-direction signal.
+- Scope is limited to the Crash Out interpreter, its existing service regression suite, and this development log. No backend, authentication, database, API, realtime, or UI styling changes.
+- Flutter tests and analysis were not run through the GitHub connector; local verification remains required.
