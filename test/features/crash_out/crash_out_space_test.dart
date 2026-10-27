@@ -66,12 +66,13 @@ void main() {
       experienceId: 'experience-1',
       reply: reply,
     );
-    await notifier.addReply(
+    final duplicateAccepted = await notifier.addReply(
       spaceId: 'attention',
       experienceId: 'experience-1',
       reply: reply,
     );
 
+    expect(duplicateAccepted, isFalse);
     expect(
       notifier.repliesFor('attention', 'experience-1'),
       hasLength(1),
