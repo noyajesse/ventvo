@@ -161,6 +161,7 @@ void main() {
 
   test('accepted replies survive a provider reload', () async {
     final container = ProviderContainer();
+    addTearDown(container.dispose);
     await container.read(crashOutSpaceProvider.future);
     final notifier = container.read(crashOutSpaceProvider.notifier);
 
@@ -177,10 +178,7 @@ void main() {
     expect(accepted, isTrue);
 
     final restoredContainer = ProviderContainer();
-    addTearDown(() {
-      container.dispose();
-      restoredContainer.dispose();
-    });
+    addTearDown(restoredContainer.dispose);
     await restoredContainer.read(crashOutSpaceProvider.future);
 
     expect(
