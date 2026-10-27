@@ -267,6 +267,13 @@ void main() {
           .repliesFor(spaceId, experienceId);
       expect(repliesAfterFailure, hasLength(1));
       expect(repliesAfterFailure.single.id, parentReplyId);
+      expect(store.writeAttempts, 1);
+      final storedAfterFailure = jsonDecode(store.values[storageKey] as String)
+          as Map<String, dynamic>;
+      expect(
+        storedAfterFailure['$spaceId::$experienceId'] as List,
+        hasLength(1),
+      );
 
       // Let the failure feedback finish before retrying through the same
       // composer and selected reply-to-reply target.
@@ -281,6 +288,7 @@ void main() {
         isEmpty,
       );
       expect(find.text('Continuing a reply in Sample Voice'), findsNothing);
+      expect(store.writeAttempts, 2);
       final persisted = jsonDecode(store.values[storageKey] as String)
           as Map<String, dynamic>;
       final savedReplies = (persisted['$spaceId::$experienceId'] as List)
@@ -438,12 +446,14 @@ class _FailingSharedPreferencesStore extends SharedPreferencesStorePlatform {
 
   final Map<String, Object> values;
   bool throwOnWrite = true;
+  int writeAttempts = 0;
 
   @override
   Future<Map<String, Object>> getAll() async => Map<String, Object>.of(values);
 
   @override
   Future<bool> setValue(String valueType, String key, Object value) async {
+    writeAttempts++;
     if (throwOnWrite) {
       throw StateError('simulated local persistence failure');
     }
