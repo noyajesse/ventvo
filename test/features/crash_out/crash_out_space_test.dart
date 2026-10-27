@@ -100,6 +100,64 @@ void main() {
     expect(notifier.repliesFor('attention', 'experience-1'), isEmpty);
   });
 
+  test('reply-to-reply stays within its original experience', () async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    await container.read(crashOutSpaceProvider.future);
+    final notifier = container.read(crashOutSpaceProvider.notifier);
+
+    expect(
+      await notifier.addReply(
+        spaceId: 'attention',
+        experienceId: 'experience-1',
+        reply: CrashOutSpaceReply(
+          id: 'parent-reply',
+          experienceId: 'experience-1',
+          content: 'The parent reply.',
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      ),
+      isTrue,
+    );
+
+    expect(
+      await notifier.addReply(
+        spaceId: 'attention',
+        experienceId: 'experience-2',
+        reply: CrashOutSpaceReply(
+          id: 'cross-experience-reply',
+          experienceId: 'experience-2',
+          content: 'This must not attach to another experience.',
+          createdAt: DateTime(2026, 1, 1),
+          replyToId: 'parent-reply',
+        ),
+      ),
+      isFalse,
+    );
+
+    expect(
+      await notifier.addReply(
+        spaceId: 'attention',
+        experienceId: 'experience-1',
+        reply: CrashOutSpaceReply(
+          id: 'child-reply',
+          experienceId: 'experience-1',
+          content: 'A valid continued reply.',
+          createdAt: DateTime(2026, 1, 1),
+          replyToId: 'parent-reply',
+        ),
+      ),
+      isTrue,
+    );
+
+    expect(
+      notifier.repliesFor('attention', 'experience-1').map((reply) => reply.id),
+      ['parent-reply', 'child-reply'],
+    );
+    expect(notifier.repliesFor('attention', 'experience-2'), isEmpty);
+  });
+
   test('accepted replies survive a provider reload', () async {
     final container = ProviderContainer();
     await container.read(crashOutSpaceProvider.future);
