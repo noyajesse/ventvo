@@ -1,6 +1,13 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+// The store platform is the narrowest seam for simulating a real write failure.
+// ignore: depend_on_referenced_packages
+import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 
 import 'package:ventvo/features/crash_out/data/crash_out_space_prototype_data.dart';
 import 'package:ventvo/features/crash_out/models/crash_out.dart';
@@ -190,6 +197,90 @@ void main() {
     );
   });
 
+  testWidgets(
+    'preserves draft and reply target when local reply persistence throws',
+    (tester) async {
+      const spaceId = 'attention';
+      const experienceId = 'experience-1';
+      const parentReplyId = 'parent-reply';
+      const storageKey = 'flutter.ventvo_crash_out_space_replies';
+      const draft = '  Keep this exact draft.  ';
+      final parentReply = CrashOutSpaceReply(
+        id: parentReplyId,
+        experienceId: experienceId,
+        content: 'The existing reply.',
+        createdAt: DateTime(2026, 1, 1),
+      );
+      final store = _FailingSharedPreferencesStore({
+        storageKey: jsonEncode({
+          '$spaceId::$experienceId': [parentReply.toMap()],
+        }),
+      });
+      SharedPreferencesStorePlatform.instance = store;
+
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            home: CrashOutSpaceScreen(
+              tension: HumanTension.attention,
+              experiences: [
+                CrashOutSpaceExperience(
+                  id: experienceId,
+                  spaceId: spaceId,
+                  content: 'The experience being replied to.',
+                  voiceName: 'Sample Voice',
+                  createdAt: DateTime(2026, 1, 1),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('The existing reply.'), findsOneWidget);
+      await tester.tap(find.text('Reply to this'));
+      await tester.pump();
+      expect(find.text('Continuing a reply in Sample Voice'), findsOneWidget);
+
+      await tester.enterText(find.byType(TextField), draft);
+      await tester.pump();
+      await tester.tap(find.byIcon(Icons.arrow_upward_rounded));
+      await tester.pumpAndSettle();
+
+      expect(tester.widget<TextField>(find.byType(TextField)).controller!.text, draft);
+      expect(find.text('Continuing a reply in Sample Voice'), findsOneWidget);
+      expect(
+        find.text('Could not save that reply. Your text is still here.'),
+        findsOneWidget,
+      );
+      final repliesAfterFailure = container
+          .read(crashOutSpaceProvider.notifier)
+          .repliesFor(spaceId, experienceId);
+      expect(repliesAfterFailure, hasLength(1));
+      expect(repliesAfterFailure.single.id, parentReplyId);
+
+      // Retry with the same selected target to prove the reply-to-reply
+      // reference survived the failed write, not just its display label.
+      store.throwOnWrite = false;
+      await tester.tap(find.byIcon(Icons.arrow_upward_rounded));
+      await tester.pumpAndSettle();
+
+      expect(tester.widget<TextField>(find.byType(TextField)).controller!.text, isEmpty);
+      expect(find.text('Continuing a reply in Sample Voice'), findsNothing);
+      final persisted = jsonDecode(store.values[storageKey] as String)
+          as Map<String, dynamic>;
+      final savedReplies = (persisted['$spaceId::$experienceId'] as List)
+          .cast<Map<String, dynamic>>();
+      expect(savedReplies, hasLength(2));
+      expect(savedReplies.last['content'], draft.trim());
+      expect(savedReplies.last['replyToId'], parentReplyId);
+    },
+  );
+
   test('Space experiences are stored independently from the Vent model', () async {
     final container = ProviderContainer();
     addTearDown(container.dispose);
@@ -329,4 +420,32 @@ void main() {
     );
   });
 
+}
+class _FailingSharedPreferencesStore extends SharedPreferencesStorePlatform {
+  _FailingSharedPreferencesStore(Map<String, Object> initialValues)
+      : values = Map<String, Object>.of(initialValues);
+
+  final Map<String, Object> values;
+  bool throwOnWrite = true;
+
+  @override
+  Future<Map<String, Object>> getAll() async => Map<String, Object>.of(values);
+
+  @override
+  Future<bool> setValue(String valueType, String key, Object value) async {
+    if (throwOnWrite) {
+      throw StateError('simulated local persistence failure');
+    }
+    values[key] = value;
+    return true;
+  }
+
+  @override
+  Future<bool> remove(String key) async => values.remove(key) != null;
+
+  @override
+  Future<bool> clear() async {
+    values.clear();
+    return true;
+  }
 }
