@@ -169,7 +169,7 @@ class CrashOutSpaceNotifier
         !existing.any((item) => item.id == replyToId)) {
       return false;
     }
-    if (existing.any((item) => item.id == reply.id)) return;
+    if (existing.any((item) => item.id == reply.id)) return false;
 
     final updated = <String, List<CrashOutSpaceReply>>{
       ...current,
