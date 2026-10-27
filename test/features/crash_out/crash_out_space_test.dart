@@ -78,6 +78,61 @@ void main() {
     );
   });
 
+  test('rejected reply-to-reply references report failure without saving', () async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    await container.read(crashOutSpaceProvider.future);
+    final notifier = container.read(crashOutSpaceProvider.notifier);
+    final accepted = await notifier.addReply(
+      spaceId: 'attention',
+      experienceId: 'experience-1',
+      reply: CrashOutSpaceReply(
+        id: 'orphan-reply',
+        experienceId: 'experience-1',
+        content: 'This should not be saved.',
+        createdAt: DateTime(2026, 1, 1),
+        replyToId: 'missing-parent',
+      ),
+    );
+
+    expect(accepted, isFalse);
+    expect(notifier.repliesFor('attention', 'experience-1'), isEmpty);
+  });
+
+  test('accepted replies survive a provider reload', () async {
+    final container = ProviderContainer();
+    await container.read(crashOutSpaceProvider.future);
+    final notifier = container.read(crashOutSpaceProvider.notifier);
+
+    final accepted = await notifier.addReply(
+      spaceId: 'attention',
+      experienceId: 'experience-1',
+      reply: CrashOutSpaceReply(
+        id: 'persisted-reply',
+        experienceId: 'experience-1',
+        content: 'This reply should remain after reload.',
+        createdAt: DateTime(2026, 1, 1),
+      ),
+    );
+    expect(accepted, isTrue);
+
+    final restoredContainer = ProviderContainer();
+    addTearDown(() {
+      container.dispose();
+      restoredContainer.dispose();
+    });
+    await restoredContainer.read(crashOutSpaceProvider.future);
+
+    expect(
+      restoredContainer
+          .read(crashOutSpaceProvider.notifier)
+          .repliesFor('attention', 'experience-1')
+          .map((reply) => reply.content),
+      contains('This reply should remain after reload.'),
+    );
+  });
+
   test('Space experiences are stored independently from the Vent model', () async {
     final container = ProviderContainer();
     addTearDown(container.dispose);
