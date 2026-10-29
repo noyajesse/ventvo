@@ -15,6 +15,7 @@ import 'package:ventvo/features/crash_out/models/crash_out_space_experience.dart
 import 'package:ventvo/features/crash_out/models/experience_representation.dart';
 import 'package:ventvo/features/crash_out/providers/crash_out_space_experience_provider.dart';
 import 'package:ventvo/features/crash_out/providers/crash_out_space_provider.dart';
+import 'package:ventvo/features/crash_out/screens/crash_out_space_screen.dart';
 import 'package:ventvo/features/crash_out/services/crash_out_experience_interpreter.dart';
 import 'package:ventvo/features/ventvo_voice/models/vent.dart';
 
