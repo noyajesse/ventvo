@@ -1,3 +1,10 @@
+## 2026-10-27 — Crash Out reply persistence acceptance
+
+- Changed `CrashOutSpaceNotifier.addReply()` to report whether a reply was accepted and persisted locally.
+- The composer now clears only after a successful save; rejected replies and save failures leave the draft text and reply target intact.
+- Added regression coverage for rejected reply-to-reply references and local persistence across provider reloads.
+- Scope remains frontend/local-only. No backend, authentication, database, API, or realtime changes.
+
 # Ventvo Development Log
 
 ## 2026-09-27 — Crash Out Product Architecture Reframed

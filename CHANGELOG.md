@@ -1,5 +1,13 @@
 ## Unreleased - Crash Out Opposition Architecture
 
+## Unreleased — Crash Out reply persistence
+
+### Fixed
+- Keep reply composer text when a reply is rejected or local saving fails.
+- Clear the composer only after the local reply save is accepted.
+- Cover rejected reply references and persistence across provider reloads.
+
+
 ### Product
 
 - Reframed Crash Out from a collection of selectable outcomes into a private experience that may surface a meaningful opposing experience.
