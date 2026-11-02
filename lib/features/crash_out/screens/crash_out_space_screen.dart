@@ -57,7 +57,7 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
     try {
       final voice = ref.read(ventvoVoiceProvider).asData?.value;
       final now = DateTime.now();
-      await ref.read(crashOutSpaceProvider.notifier).addReply(
+      final accepted = await ref.read(crashOutSpaceProvider.notifier).addReply(
             spaceId: widget.tension.name,
             experienceId: experienceId,
             reply: CrashOutSpaceReply(
@@ -72,6 +72,14 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
           );
 
       if (!mounted) return;
+      if (!accepted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not save that reply. Your text is still here.'),
+          ),
+        );
+        return;
+      }
       _controller.clear();
       setState(() {
         _replyingToExperienceId = null;
