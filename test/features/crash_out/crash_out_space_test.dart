@@ -212,7 +212,7 @@ void main() {
       storageKey: jsonEncode({
         '$spaceId::$experienceId': [existingReply.toMap()],
       }),
-    });
+    })..delayInitialLoad = true;
     SharedPreferencesStorePlatform.instance = store;
 
     final container = ProviderContainer();
@@ -572,6 +572,7 @@ class _DelayedSharedPreferencesStore extends SharedPreferencesStorePlatform {
   final Map<String, Object> values;
   final Completer<void> _initialLoad = Completer<void>();
   Completer<void>? _pendingWrite;
+  bool delayInitialLoad = false;
   bool delayWrites = false;
   bool getAllStarted = false;
   int writeAttempts = 0;
@@ -588,7 +589,7 @@ class _DelayedSharedPreferencesStore extends SharedPreferencesStorePlatform {
   @override
   Future<Map<String, Object>> getAll() async {
     getAllStarted = true;
-    await _initialLoad.future;
+    if (delayInitialLoad) await _initialLoad.future;
     return Map<String, Object>.of(values);
   }
 
