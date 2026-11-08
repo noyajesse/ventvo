@@ -86,6 +86,8 @@ class _CrashOutProcessingScreenState
       matchedExperienceId = doorway.id;
     }
 
+    if (!mounted) return;
+
     await ref
         .read(crashOutProvider.notifier)
         .markSpaceEntered(widget.crashOut.id);

@@ -109,4 +109,32 @@ void main() {
       expect(items.single.status.isPrivate, isTrue);
     },
   );
+
+  test(
+    'an early add preserves Crash Outs while the initial local load is pending',
+    () async {
+      SharedPreferences.setMockInitialValues({
+        'ventvo_crash_outs':
+            '[{"id":"saved-1","textContent":"Already saved","type":"text","createdAt":"2026-01-05T00:00:00.000","status":"keptPrivate"}]',
+      });
+
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      final notifier = container.read(crashOutProvider.notifier);
+
+      await notifier.addCrashOut(
+        CrashOut(
+          id: 'new-1',
+          ownerVoiceId: 'voice-1',
+          textContent: 'New entry',
+          type: CrashOutType.text,
+          createdAt: DateTime(2026, 1, 6),
+        ),
+      );
+
+      final items = await container.read(crashOutProvider.future);
+      expect(items.map((item) => item.id), containsAll(['saved-1', 'new-1']));
+      expect(items, hasLength(2));
+    },
+  );
 }
