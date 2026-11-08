@@ -41,6 +41,7 @@ class CrashOutStorage {
   Map<String, dynamic> _toJson(CrashOut crashOut) {
     return {
       'id': crashOut.id,
+      'ownerVoiceId': crashOut.ownerVoiceId,
       'textContent': crashOut.textContent,
       'audioPath': crashOut.audioPath,
       'type': crashOut.type.name,
@@ -52,6 +53,9 @@ class CrashOutStorage {
   CrashOut _fromJson(Map<String, dynamic> json) {
     return CrashOut(
       id: json['id'] as String,
+      ownerVoiceId: json['ownerVoiceId'] is String
+          ? json['ownerVoiceId'] as String
+          : null,
       textContent: json['textContent'] as String?,
       audioPath: json['audioPath'] as String?,
       type: _parseType(json['type']),

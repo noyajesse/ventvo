@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../ventvo_voice/providers/voice_provider.dart';
 import '../models/crash_out.dart';
 import '../providers/crash_out_provider.dart';
 import 'crash_out_processing_screen.dart';
@@ -33,8 +34,19 @@ class _CrashOutScreenState extends ConsumerState<CrashOutScreen> {
     if (!hasText) return;
 
     final now = DateTime.now();
+    final voiceNotifier = ref.read(ventvoVoiceProvider.notifier);
+    final voice = await voiceNotifier.ensureVoice();
+    if (!mounted) return;
+
+    var ownerVoiceId = voice.voiceId?.trim();
+    if (ownerVoiceId == null || ownerVoiceId.isEmpty) {
+      ownerVoiceId = 'voice_${now.microsecondsSinceEpoch}';
+      await voiceNotifier.setVoice(voice.copyWith(voiceId: ownerVoiceId));
+    }
+
     final crashOut = CrashOut(
       id: now.microsecondsSinceEpoch.toString(),
+      ownerVoiceId: ownerVoiceId,
       textContent: _controller.text.trim(),
       type: CrashOutType.text,
       createdAt: now,

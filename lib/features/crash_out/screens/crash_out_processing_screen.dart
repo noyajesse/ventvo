@@ -5,6 +5,7 @@ import '../../ventvo_voice/providers/vent_provider.dart';
 import '../data/crash_out_space_prototype_data.dart';
 import '../models/crash_out.dart';
 import '../models/experience_representation.dart';
+import '../providers/crash_out_provider.dart';
 import '../providers/crash_out_space_experience_provider.dart';
 import '../providers/crash_out_space_provider.dart';
 import '../services/crash_out_experience_interpreter.dart';
@@ -84,6 +85,10 @@ class _CrashOutProcessingScreenState
       );
       matchedExperienceId = doorway.id;
     }
+
+    await ref
+        .read(crashOutProvider.notifier)
+        .markSpaceEntered(widget.crashOut.id);
 
     final spaceExperiences = spaceNotifier.experiencesFor(tension.name);
     if (matchedExperienceId != null) {

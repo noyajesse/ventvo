@@ -1308,3 +1308,15 @@ Verification:
 - Added regression coverage for negated attention-seeking and help-seeking phrases, including preservation of the intended away-direction signal.
 - Scope is limited to the Crash Out interpreter, its existing service regression suite, and this development log. No backend, authentication, database, API, realtime, or UI styling changes.
 - Flutter tests and analysis were not run through the GitHub connector; local verification remains required.
+
+
+## 2026-11-08 — Crash Out ownership and lifecycle foundation
+
+- Added an explicit optional owner Voice ID to the private Crash Out model; newly created Crash Outs attach to the current local Ventvo Voice.
+- Preserved compatibility with existing local Crash Out records that predate Voice ownership metadata.
+- Added a distinct `spaceEntered` lifecycle marker. It records entry into the wider tension Space without changing the original Crash Out's private status or claiming that an opposing experience was found.
+- Kept both lifecycle states in the owner's Private list.
+- Made Crash Out mutations wait for initial local storage loading so an early action cannot replace existing saved Crash Outs with an empty list.
+- Kept Let Go as deletion; no public copy of the original Crash Out is created.
+- This is local prototype ownership metadata, not authentication or server-side authorization. No backend, database, API, or realtime work was introduced.
+- Flutter tests and analysis must be run locally after pulling this branch.
