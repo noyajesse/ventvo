@@ -290,6 +290,7 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
                   Expanded(
                     child: TextField(
                       controller: _controller,
+                      enabled: !_isSending,
                       minLines: 1,
                       maxLines: 4,
                       style: const TextStyle(color: Colors.white, fontSize: 14),

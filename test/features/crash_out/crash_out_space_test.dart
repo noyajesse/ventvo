@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -196,6 +197,130 @@ void main() {
       contains('This reply should remain after reload.'),
     );
   });
+
+  test('addReply waits for delayed initial load before updating persisted replies', () async {
+    const storageKey = 'flutter.ventvo_crash_out_space_replies';
+    const spaceId = 'attention';
+    const experienceId = 'experience-1';
+    final existingReply = CrashOutSpaceReply(
+      id: 'existing-reply',
+      experienceId: experienceId,
+      content: 'Already persisted before initialization.',
+      createdAt: DateTime(2026, 1, 1),
+    );
+    final store = _DelayedSharedPreferencesStore({
+      storageKey: jsonEncode({
+        '$spaceId::$experienceId': [existingReply.toMap()],
+      }),
+    });
+    SharedPreferencesStorePlatform.instance = store;
+
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    final notifier = container.read(crashOutSpaceProvider.notifier);
+    final addReply = notifier.addReply(
+      spaceId: spaceId,
+      experienceId: experienceId,
+      reply: CrashOutSpaceReply(
+        id: 'new-reply',
+        experienceId: experienceId,
+        content: 'Submitted while initialization is pending.',
+        createdAt: DateTime(2026, 1, 2),
+      ),
+    );
+
+    await Future<void>.delayed(Duration.zero);
+    expect(store.getAllStarted, isTrue);
+    expect(store.writeAttempts, 0);
+
+    store.completeInitialLoad();
+    expect(await addReply, isTrue);
+
+    final persisted = jsonDecode(store.values[storageKey] as String)
+        as Map<String, dynamic>;
+    final replies = (persisted['$spaceId::$experienceId'] as List)
+        .cast<Map<String, dynamic>>();
+    expect(replies.map((reply) => reply['id']),
+        ['existing-reply', 'new-reply']);
+  });
+
+  testWidgets(
+    'disables the reply composer while a delayed save is in progress',
+    (tester) async {
+      const spaceId = 'attention';
+      const experienceId = 'experience-1';
+      const parentReplyId = 'parent-reply';
+      const storageKey = 'flutter.ventvo_crash_out_space_replies';
+      const draft = 'A reply waiting to be saved.';
+      final parentReply = CrashOutSpaceReply(
+        id: parentReplyId,
+        experienceId: experienceId,
+        content: 'The existing reply.',
+        createdAt: DateTime(2026, 1, 1),
+      );
+      final store = _DelayedSharedPreferencesStore({
+        storageKey: jsonEncode({
+          '$spaceId::$experienceId': [parentReply.toMap()],
+        }),
+      })..delayWrites = true;
+      SharedPreferencesStorePlatform.instance = store;
+
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            home: CrashOutSpaceScreen(
+              tension: HumanTension.attention,
+              experiences: [
+                CrashOutSpaceExperience(
+                  id: experienceId,
+                  spaceId: spaceId,
+                  content: 'The experience being replied to.',
+                  voiceName: 'Sample Voice',
+                  createdAt: DateTime(2026, 1, 1),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Reply to this'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Reply to this'));
+      await tester.pump();
+      expect(find.text('Continuing a reply in Sample Voice'), findsOneWidget);
+
+      await tester.enterText(find.byType(TextField), draft);
+      await tester.pump();
+      await tester.tap(find.byIcon(Icons.arrow_upward_rounded));
+      await tester.pump();
+
+      final composer = tester.widget<TextField>(find.byType(TextField));
+      expect(composer.enabled, isFalse);
+      expect(composer.controller!.text, draft);
+      expect(find.text('Continuing a reply in Sample Voice'), findsOneWidget);
+      expect(store.writeAttempts, 1);
+
+      store.completePendingWrite();
+      await tester.pumpAndSettle();
+
+      final savedComposer = tester.widget<TextField>(find.byType(TextField));
+      expect(savedComposer.enabled, isTrue);
+      expect(savedComposer.controller!.text, isEmpty);
+      expect(find.text('Continuing a reply in Sample Voice'), findsNothing);
+      final persisted = jsonDecode(store.values[storageKey] as String)
+          as Map<String, dynamic>;
+      final savedReplies = (persisted['$spaceId::$experienceId'] as List)
+          .cast<Map<String, dynamic>>();
+      expect(savedReplies, hasLength(2));
+      expect(savedReplies.last['content'], draft);
+      expect(savedReplies.last['replyToId'], parentReplyId);
+    },
+  );
 
   testWidgets(
     'preserves draft and reply target when local reply persistence throws',
@@ -438,6 +563,54 @@ void main() {
     );
   });
 
+}
+
+class _DelayedSharedPreferencesStore extends SharedPreferencesStorePlatform {
+  _DelayedSharedPreferencesStore(Map<String, Object> initialValues)
+      : values = Map<String, Object>.of(initialValues);
+
+  final Map<String, Object> values;
+  final Completer<void> _initialLoad = Completer<void>();
+  Completer<void>? _pendingWrite;
+  bool delayWrites = false;
+  bool getAllStarted = false;
+  int writeAttempts = 0;
+
+  void completeInitialLoad() {
+    if (!_initialLoad.isCompleted) _initialLoad.complete();
+  }
+
+  void completePendingWrite() {
+    final pending = _pendingWrite;
+    if (pending != null && !pending.isCompleted) pending.complete();
+  }
+
+  @override
+  Future<Map<String, Object>> getAll() async {
+    getAllStarted = true;
+    await _initialLoad.future;
+    return Map<String, Object>.of(values);
+  }
+
+  @override
+  Future<bool> setValue(String valueType, String key, Object value) async {
+    writeAttempts++;
+    if (delayWrites) {
+      _pendingWrite = Completer<void>();
+      await _pendingWrite!.future;
+    }
+    values[key] = value;
+    return true;
+  }
+
+  @override
+  Future<bool> remove(String key) async => values.remove(key) != null;
+
+  @override
+  Future<bool> clear() async {
+    values.clear();
+    return true;
+  }
 }
 
 class _FailingSharedPreferencesStore extends SharedPreferencesStorePlatform {
