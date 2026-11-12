@@ -5,10 +5,21 @@ enum CrashOutType {
 
 enum CrashOutStatus {
   keptPrivate,
+  spaceEntered,
+}
+
+extension CrashOutStatusPrivacy on CrashOutStatus {
+  /// Both lifecycle states retain the original Crash Out as private data.
+  bool get isPrivate =>
+      this == CrashOutStatus.keptPrivate ||
+      this == CrashOutStatus.spaceEntered;
 }
 
 class CrashOut {
   final String id;
+
+  /// Owning anonymous Voice. Null is retained only for legacy local records.
+  final String? ownerVoiceId;
 
   /// Text content when the user types their Crash Out.
   final String? textContent;
@@ -25,6 +36,7 @@ class CrashOut {
 
   const CrashOut({
     required this.id,
+    this.ownerVoiceId,
     this.textContent,
     this.audioPath,
     required this.type,
@@ -34,6 +46,7 @@ class CrashOut {
 
   CrashOut copyWith({
     String? id,
+    String? ownerVoiceId,
     String? textContent,
     String? audioPath,
     CrashOutType? type,
@@ -42,6 +55,7 @@ class CrashOut {
   }) {
     return CrashOut(
       id: id ?? this.id,
+      ownerVoiceId: ownerVoiceId ?? this.ownerVoiceId,
       textContent: textContent ?? this.textContent,
       audioPath: audioPath ?? this.audioPath,
       type: type ?? this.type,

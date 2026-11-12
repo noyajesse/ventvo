@@ -51,7 +51,7 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
           ),
           data: (crashOuts) {
             final privateCrashOuts = crashOuts
-                .where((crashOut) => crashOut.status == CrashOutStatus.keptPrivate)
+                .where((crashOut) => crashOut.status.isPrivate)
                 .toList();
 
             if (privateCrashOuts.isEmpty) {
