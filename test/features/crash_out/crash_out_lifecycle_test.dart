@@ -37,7 +37,7 @@ void main() {
 
     final notifier = container.read(crashOutProvider.notifier);
     await notifier.addCrashOut(crashOut);
-    await notifier.markSpaceEntered(crashOut.id);
+    await notifier.markSpaceEntered(crashOut.id, spaceId: 'attention');
     await notifier.keepPrivate(crashOut.id);
 
     final items = await container.read(crashOutProvider.future);
@@ -80,18 +80,26 @@ void main() {
       );
 
       await notifier.addCrashOut(crashOut);
-      await notifier.markSpaceEntered(crashOut.id);
+      await notifier.markSpaceEntered(
+        crashOut.id,
+        spaceId: 'attention',
+        matchedExperienceId: 'opposing-experience-1',
+      );
 
       final items = await container.read(crashOutProvider.future);
       expect(items.single.status, CrashOutStatus.spaceEntered);
       expect(items.single.status.isPrivate, isTrue);
       expect(items.single.ownerVoiceId, 'voice-owner-1');
+      expect(items.single.spaceId, 'attention');
+      expect(items.single.matchedExperienceId, 'opposing-experience-1');
 
       final reloadedContainer = ProviderContainer();
       addTearDown(reloadedContainer.dispose);
       final reloaded = await reloadedContainer.read(crashOutProvider.future);
       expect(reloaded.single.status, CrashOutStatus.spaceEntered);
       expect(reloaded.single.ownerVoiceId, 'voice-owner-1');
+      expect(reloaded.single.spaceId, 'attention');
+      expect(reloaded.single.matchedExperienceId, 'opposing-experience-1');
     },
   );
 
