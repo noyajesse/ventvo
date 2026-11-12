@@ -9,7 +9,6 @@ import '../providers/crash_out_space_provider.dart';
 import '../providers/experience_thread_provider.dart';
 import '../services/crash_out_experience_interpreter.dart';
 import 'crash_out_space_screen.dart';
-import 'experience_thread_screen.dart';
 
 class PrivateCrashOutsScreen extends ConsumerWidget {
   const PrivateCrashOutsScreen({super.key});
@@ -89,7 +88,6 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final crashOutState = ref.watch(crashOutProvider);
-    ref.watch(experienceThreadProvider);
 
     return Scaffold(
       backgroundColor: const Color(0xFF111111),
@@ -133,9 +131,6 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
               itemCount: privateCrashOuts.length,
               itemBuilder: (context, index) {
                 final crashOut = privateCrashOuts[index];
-                final thread = ref
-                    .read(experienceThreadProvider.notifier)
-                    .threadForCrashOut(crashOut.id);
                 final tension = _spaceTensionFor(crashOut);
                 final hasEnteredSpace =
                     crashOut.status == CrashOutStatus.spaceEntered &&
@@ -145,19 +140,7 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
                   hasEnteredSpace: hasEnteredSpace,
                   onOpen: hasEnteredSpace
                       ? () => _openSpace(context, ref, crashOut, tension)
-                      : thread == null
-                          ? null
-                          : () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => ExperienceThreadScreen(
-                                    crashOut: crashOut,
-                                    thread: thread,
-                                  ),
-                                ),
-                              );
-                            },
+                      : null,
                   onLetGo: () => _letGo(context, ref, crashOut),
                 );
               },
@@ -227,7 +210,7 @@ class _PrivateCrashOutCard extends StatelessWidget {
             const Padding(
               padding: EdgeInsets.only(bottom: 14),
               child: Text(
-                'No other side has surfaced yet.',
+                'No wider Space has been entered yet.',
                 style: TextStyle(color: Colors.white38, fontSize: 12.5),
               ),
             ),
