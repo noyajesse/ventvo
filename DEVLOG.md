@@ -1342,3 +1342,14 @@ Branch: feat/crash-out-domain-lifecycle
 Verification:
 - Source and tests were updated on the feature branch through GitHub.
 - Flutter tests and analysis have not been run in this environment. Run the focused lifecycle and Crash Out Space tests, then the full Flutter test suite and analyzer locally before treating this change as verified.
+
+## 2026-11-12 — Crash Out Space persistence integrity
+
+- Serialized Crash Out Space experience and reply mutations so concurrent local actions cannot overwrite one another.
+- Made experience and reply mutations wait for their initial local storage reads before taking a snapshot.
+- Publish provider state only after SharedPreferences confirms the write; failed writes remain failures.
+- Check local deletion results before publishing cleared state.
+- Added regression coverage for concurrent experience/reply additions and failed local writes.
+- Updated README and architecture lifecycle wording to match the approved wider Crash Out Space direction: a recognized tension may open its Space even when no individual opposite is found, without claiming a match.
+- The Crash Out Space remains a local frontend prototype with clearly disclosed fictional examples; no backend, authentication, API, database, or realtime infrastructure was introduced.
+
