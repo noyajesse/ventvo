@@ -68,6 +68,19 @@ class CrashOutSpaceNotifier
     extends AsyncNotifier<Map<String, List<CrashOutSpaceReply>>> {
   static const _storageKey = 'ventvo_crash_out_space_replies';
 
+  // Serialize mutations so simultaneous replies cannot overwrite one another.
+  Future<void> _mutationQueue = Future<void>.value();
+
+  Future<T> _runMutation<T>(Future<T> Function() mutation) {
+    final result = _mutationQueue.then((_) => mutation());
+    // A failed write must not block later attempts.
+    _mutationQueue = result.then<void>(
+      (_) {},
+      onError: (Object error, StackTrace stackTrace) {},
+    );
+    return result;
+  }
+
   @override
   Future<Map<String, List<CrashOutSpaceReply>>> build() async {
     final prefs = await SharedPreferences.getInstance();
@@ -96,12 +109,35 @@ class CrashOutSpaceNotifier
     }
   }
 
+  Future<Map<String, List<CrashOutSpaceReply>>> _currentReplies() async {
+    final current = state.asData?.value;
+    if (current != null) return current;
+    return future;
+  }
+
   String _key(String spaceId, String experienceId) =>
       '$spaceId::$experienceId';
 
   List<CrashOutSpaceReply> repliesFor(String spaceId, String experienceId) {
-    final current = state.asData?.value ?? const <String, List<CrashOutSpaceReply>>{};
+    final current =
+        state.asData?.value ?? const <String, List<CrashOutSpaceReply>>{};
     return current[_key(spaceId, experienceId)] ?? const [];
+  }
+
+  Future<bool> _persist(
+    Map<String, List<CrashOutSpaceReply>> replies,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = await prefs.setString(
+      _storageKey,
+      jsonEncode({
+        for (final entry in replies.entries)
+          entry.key: entry.value.map((item) => item.toMap()).toList(),
+      }),
+    );
+    if (!saved) return false;
+    state = AsyncData(replies);
+    return true;
   }
 
   /// Adds missing fictional preview replies without replacing local replies.
@@ -109,95 +145,84 @@ class CrashOutSpaceNotifier
   Future<void> ensurePrototypeReplies({
     required String spaceId,
     required List<CrashOutSpaceReply> prototypes,
-  }) async {
-    if (spaceId.trim().isEmpty || prototypes.isEmpty) return;
-
-    final current =
-        state.asData?.value ?? const <String, List<CrashOutSpaceReply>>{};
-    final updated = <String, List<CrashOutSpaceReply>>{
-      for (final entry in current.entries) entry.key: [...entry.value],
-    };
-    var changed = false;
-
-    for (final reply in prototypes) {
-      if (reply.id.trim().isEmpty ||
-          reply.experienceId.trim().isEmpty ||
-          reply.content.trim().isEmpty) {
-        continue;
-      }
-      final key = _key(spaceId, reply.experienceId);
-      final existing = updated[key] ?? const <CrashOutSpaceReply>[];
-      if (existing.any((item) => item.id == reply.id)) continue;
-      updated[key] = [...existing, reply];
-      changed = true;
+  }) {
+    if (spaceId.trim().isEmpty || prototypes.isEmpty) {
+      return Future<void>.value();
     }
 
-    if (!changed) return;
+    return _runMutation(() async {
+      final current = await _currentReplies();
+      final updated = <String, List<CrashOutSpaceReply>>{
+        for (final entry in current.entries) entry.key: [...entry.value],
+      };
+      var changed = false;
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(
-      _storageKey,
-      jsonEncode({
-        for (final entry in updated.entries)
-          entry.key: entry.value.map((item) => item.toMap()).toList(),
-      }),
-    );
-    state = AsyncData(updated);
+      for (final reply in prototypes) {
+        if (reply.id.trim().isEmpty ||
+            reply.experienceId.trim().isEmpty ||
+            reply.content.trim().isEmpty) {
+          continue;
+        }
+        final key = _key(spaceId, reply.experienceId);
+        final existing = updated[key] ?? const <CrashOutSpaceReply>[];
+        if (existing.any((item) => item.id == reply.id)) continue;
+        updated[key] = [...existing, reply];
+        changed = true;
+      }
+
+      if (!changed) return;
+      if (!await _persist(updated)) {
+        throw StateError('Failed to persist Crash Out Space replies locally.');
+      }
+    });
   }
 
   Future<bool> addReply({
     required String spaceId,
     required String experienceId,
     required CrashOutSpaceReply reply,
-  }) async {
-    if (spaceId.trim().isEmpty ||
-        experienceId.trim().isEmpty ||
-        reply.id.trim().isEmpty ||
-        reply.experienceId != experienceId ||
-        reply.content.trim().isEmpty) {
-      return false;
-    }
+  }) {
+    return _runMutation(() async {
+      if (spaceId.trim().isEmpty ||
+          experienceId.trim().isEmpty ||
+          reply.id.trim().isEmpty ||
+          reply.experienceId != experienceId ||
+          reply.content.trim().isEmpty) {
+        return false;
+      }
 
-    // Wait for the initial SharedPreferences read before taking a snapshot.
-    // Treating AsyncLoading as an empty map could overwrite replies already
-    // persisted for other experiences.
-    // Await this notifier's own build result directly. Reading the provider
-    // through ref here would create a forbidden self-dependency.
-    await future;
-    final current = state.requireValue;
-    final key = _key(spaceId, experienceId);
-    final existing = current[key] ?? const <CrashOutSpaceReply>[];
+      // Wait for initial storage loading before taking a snapshot.
+      final current = await _currentReplies();
+      final key = _key(spaceId, experienceId);
+      final existing = current[key] ?? const <CrashOutSpaceReply>[];
 
-    // A continued reply must point to a reply already attached to this same
-    // experience. Reject orphaned references and cross-experience reply IDs.
-    final replyToId = reply.replyToId;
-    if (replyToId != null &&
-        !existing.any((item) => item.id == replyToId)) {
-      return false;
-    }
-    if (existing.any((item) => item.id == reply.id)) return false;
+      // Continued replies must point to a reply on this same experience.
+      final replyToId = reply.replyToId;
+      if (replyToId != null &&
+          !existing.any((item) => item.id == replyToId)) {
+        return false;
+      }
+      if (existing.any((item) => item.id == reply.id)) return false;
 
-    final updated = <String, List<CrashOutSpaceReply>>{
-      ...current,
-      key: [...existing, reply],
-    };
-    final prefs = await SharedPreferences.getInstance();
-    final saved = await prefs.setString(
-      _storageKey,
-      jsonEncode({
-        for (final entry in updated.entries)
-          entry.key: entry.value.map((item) => item.toMap()).toList(),
-      }),
-    );
-    if (!saved) return false;
-    state = AsyncData(updated);
-    return true;
+      final updated = <String, List<CrashOutSpaceReply>>{
+        ...current,
+        key: [...existing, reply],
+      };
+      return _persist(updated);
+    });
   }
 
-  Future<void> clearReplies() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_storageKey);
-    state = const AsyncData(<String, List<CrashOutSpaceReply>>{});
+  Future<void> clearReplies() {
+    return _runMutation(() async {
+      await _currentReplies();
+      final prefs = await SharedPreferences.getInstance();
+      final existed = prefs.containsKey(_storageKey);
+      final removed = await prefs.remove(_storageKey);
+      if (existed && !removed) {
+        throw StateError('Failed to clear Crash Out Space replies locally.');
+      }
+      state = const AsyncData(<String, List<CrashOutSpaceReply>>{});
+    });
   }
 }
 
