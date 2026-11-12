@@ -35,10 +35,11 @@ class EchoService {
     final text = content.trim();
     if (text.isEmpty) return null;
 
-    // An Echo is a response from another Voice, not a second expression
-    // from the Voice that created the originating Moment.
-    if (authorVoiceId != null &&
-        sourceVoiceId != null &&
+    // An Echo must come from a known Voice other than the Voice that
+    // created the originating Moment. Missing identity is not proof of
+    // eligibility, so fail closed rather than allowing an unverifiable Echo.
+    if (authorVoiceId == null ||
+        sourceVoiceId == null ||
         authorVoiceId == sourceVoiceId) {
       return null;
     }
