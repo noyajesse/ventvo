@@ -15,8 +15,9 @@ class CrashOutNotifier extends AsyncNotifier<List<CrashOut>> {
     final current = state.asData?.value;
     if (current != null) return current;
 
-    // Do not let an early lifecycle action overwrite data while storage loads.
-    return ref.read(crashOutProvider.future);
+    // Await this notifier's build result directly. Reading crashOutProvider
+    // through ref here would create a forbidden self-dependency.
+    return future;
   }
 
   Future<void> _persist(List<CrashOut> crashOuts) async {
@@ -82,4 +83,3 @@ final crashOutProvider =
     AsyncNotifierProvider<CrashOutNotifier, List<CrashOut>>(
   CrashOutNotifier.new,
 );
-
