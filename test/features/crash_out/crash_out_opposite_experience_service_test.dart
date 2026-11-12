@@ -161,6 +161,17 @@ void main() {
     );
   });
 
+  test('negated nobody-notices pattern does not create a toward signal', () {
+    final result = interpreter.interpret(
+      crashOut('I do not believe nobody notices me.'),
+    );
+
+    expect(
+      result.atoms.where((atom) => atom.tension == HumanTension.attention),
+      isEmpty,
+    );
+  });
+
   test('negated attention-seeking phrase does not create a toward signal', () {
     final result = interpreter.interpret(
       crashOut("I don't want someone to check on me."),
