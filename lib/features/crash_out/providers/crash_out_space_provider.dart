@@ -161,7 +161,9 @@ class CrashOutSpaceNotifier
     // Wait for the initial SharedPreferences read before taking a snapshot.
     // Treating AsyncLoading as an empty map could overwrite replies already
     // persisted for other experiences.
-    await ref.read(crashOutSpaceProvider.future);
+    // Await this notifier's own build result directly. Reading the provider
+    // through ref here would create a forbidden self-dependency.
+    await future;
     final current = state.requireValue;
     final key = _key(spaceId, experienceId);
     final existing = current[key] ?? const <CrashOutSpaceReply>[];
