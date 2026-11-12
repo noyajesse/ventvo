@@ -134,65 +134,32 @@ This is intentionally different from **Find People Who Understand**, which asks:
 
 > **Who has experienced something like me?**
 
-### Experience Representation
+### Experience Understanding and Meaningful Opposition
 
-Ventvo should understand a Crash Out through:
+Ventvo understands a Crash Out through its situation, human tension, position, direction, need or desire, emotional state, context, and intensity.
 
-- Situation
-- Human Tension
-- Position
-- Direction
-- Need / Desire
-- Emotional State
-- Context
-- Intensity
+A valid opposite requires a shared human tension and meaningful opposing positions or directions, supported by semantic evidence and safety/privacy eligibility. Different topics, emotions, literal antonyms, or random disagreement are not enough.
 
-The primary Crash Out signals are **Human Tension + Position + Direction**.
+Ventvo must never manufacture an opposite. A meaningful opposite may be highlighted as the doorway into the wider Crash Out Space, but it is not the whole destination.
 
-A Crash Out may contain multiple experience atoms. Ventvo should identify the strongest opposition-worthy atom instead of forcing an entire paragraph into one category.
+### The Wider Crash Out Space
 
-### Meaningful Opposition
+When Ventvo recognizes the human tension, the person can enter the ongoing Crash Out Space around it:
 
-A valid encounter requires a shared human tension, opposing positions or directions, semantic evidence that the relationship is real, useful contextual support where appropriate, safety/privacy eligibility, and sufficient confidence.
+- many experiences can meet around the same human tension;
+- an eligible opposite may be highlighted when one is found;
+- people can reply to individual experiences, and replies stay attached to the experience they address;
+- the conversation can continue through further experiences and replies without becoming a conventional group chat or comment section.
 
-Different topics, different emotions, literal antonyms, or random disagreement are not enough. Context can support opposition but cannot create it.
+If the tension is recognized but no opposing public experience is found, Ventvo may still open the relevant Space. It must not claim that an opposite was found. If Ventvo cannot identify a meaningful human tension at all, it should not force a Space or encounter.
 
-### No forced match
+### Prototype data and privacy
 
-If no meaningful opposite exists, Ventvo must not manufacture one.
+Until shared backend data exists, the frontend uses clearly disclosed fictional sample experiences and replies to demonstrate the wider Space. They are not real users or actual community activity. Replies written in the prototype are saved only on the current device.
 
-> **You let it out.**  
-> Nothing on the other side surfaced yet.
+The original Crash Out always remains private. It is never copied into the wider Space or published to discover an opposite.
 
-### Privacy
-
-The raw Crash Out remains private. It must never be published merely so Ventvo can discover an opposing experience.
-
-If delayed encounters are introduced later, only a privacy-safe representation should be retained for matching, subject to an explicit retention/deletion design. Deleting the Crash Out must remove its matching representation.
-
-### Prototype direction
-
-The current CrashOutOppositeExperienceService is prototype scaffolding, not the final intelligence layer.
-
-Target architecture:
-
-CrashOutExperienceInterpreter
-→ ExperienceRepresentation
-→ CrashOutOppositionEngine
-→ Candidate Eligibility
-→ CrashOutEncounter
-
-### Encounter UX
-
-The encounter should describe the relationship rather than expose an algorithmic result.
-
-> **You wanted someone to notice.**
->
-> Someone else wanted to be left alone.
->
-> *Two sides of needing people.*
-
-Do not call another person “your opposite”. Do not automatically add follows, likes, messages, comments, or connection requests.
+Delayed encounters, if introduced later, require a privacy-safe retained representation and an explicit retention/deletion design. Deleting a Crash Out must also remove any retained matching representation.
 
 ### Product separation
 
@@ -201,7 +168,13 @@ Do not call another person “your opposite”. Do not automatically add follows
 - **Crash Out** → meaningful opposition.
 - **Echo** → expression caused by another experience.
 
-Crash Out may share safety, privacy, moderation, and repository infrastructure with Resonance, but its defining matching semantics are separate.
+The current deterministic CrashOutOppositeExperienceService is prototype scaffolding, not the final intelligence layer. It should evolve toward:
+
+CrashOutExperienceInterpreter
+→ ExperienceRepresentation
+→ CrashOutOppositionEngine
+→ Candidate Eligibility
+→ CrashOutEncounter
 
 ## Resonance
 
