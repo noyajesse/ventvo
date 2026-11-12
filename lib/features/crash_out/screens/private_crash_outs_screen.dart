@@ -7,8 +7,8 @@ import '../providers/crash_out_provider.dart';
 import '../providers/crash_out_space_experience_provider.dart';
 import '../providers/crash_out_space_provider.dart';
 import '../providers/experience_thread_provider.dart';
-import 'experience_thread_screen.dart';
 import 'crash_out_space_screen.dart';
+import 'experience_thread_screen.dart';
 
 class PrivateCrashOutsScreen extends ConsumerWidget {
   const PrivateCrashOutsScreen({super.key});
@@ -130,7 +130,7 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
                   crashOut: crashOut,
                   hasEnteredSpace: hasEnteredSpace,
                   onOpen: hasEnteredSpace
-                      ? () => _openSpace(context, ref, crashOut, tension)
+                      ? () => _openSpace(context, ref, crashOut, tension!)
                       : thread == null
                           ? null
                           : () {
