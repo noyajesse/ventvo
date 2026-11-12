@@ -488,14 +488,3 @@ class _Signal {
 
   bool matches(String text) => _matcher(text);
 }
-,
-        ).hasMatch(prefix);
-
-        if (!negatedBeforeSignal) return true;
-      }
-      return false;
-    });
-  }
-
-  bool matches(String text) => _matcher(text);
-}
