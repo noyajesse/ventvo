@@ -1353,3 +1353,10 @@ Verification:
 - Updated README and architecture lifecycle wording to match the approved wider Crash Out Space direction: a recognized tension may open its Space even when no individual opposite is found, without claiming a match.
 - The Crash Out Space remains a local frontend prototype with clearly disclosed fictional examples; no backend, authentication, API, database, or realtime infrastructure was introduced.
 
+## 2026-11-12 — Crash Out Space return path
+
+- Persist the entered human-tension Space ID and optional highlighted opposing experience ID on the private Crash Out record.
+- Restore the same Space from the Private list after navigation away or app restart.
+- Keep the original Crash Out private and distinguish “entered a wider Space” from “found an opposite”.
+- Added a widget regression test for reopening a Space when no individual opposite was found.
+
