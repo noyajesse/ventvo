@@ -563,6 +563,124 @@ void main() {
     );
   });
 
+
+  test('concurrent replies are serialized without losing either reply', () async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    await container.read(crashOutSpaceProvider.future);
+    final notifier = container.read(crashOutSpaceProvider.notifier);
+
+    await Future.wait([
+      notifier.addReply(
+        spaceId: 'attention',
+        experienceId: 'experience-1',
+        reply: CrashOutSpaceReply(
+          id: 'reply-1',
+          experienceId: 'experience-1',
+          content: 'First concurrent reply.',
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      ),
+      notifier.addReply(
+        spaceId: 'attention',
+        experienceId: 'experience-1',
+        reply: CrashOutSpaceReply(
+          id: 'reply-2',
+          experienceId: 'experience-1',
+          content: 'Second concurrent reply.',
+          createdAt: DateTime(2026, 1, 2),
+        ),
+      ),
+    ]);
+
+    expect(
+      notifier.repliesFor('attention', 'experience-1').map((item) => item.id),
+      ['reply-1', 'reply-2'],
+    );
+  });
+
+  test('concurrent Space experiences are serialized without data loss', () async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    await container.read(crashOutSpaceExperienceProvider.future);
+    final notifier =
+        container.read(crashOutSpaceExperienceProvider.notifier);
+
+    await Future.wait([
+      notifier.addExperience(
+        CrashOutSpaceExperience(
+          id: 'experience-1',
+          spaceId: 'attention',
+          content: 'First experience.',
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      ),
+      notifier.addExperience(
+        CrashOutSpaceExperience(
+          id: 'experience-2',
+          spaceId: 'attention',
+          content: 'Second experience.',
+          createdAt: DateTime(2026, 1, 2),
+        ),
+      ),
+    ]);
+
+    expect(
+      notifier.experiencesFor('attention').map((item) => item.id).toSet(),
+      {'experience-1', 'experience-2'},
+    );
+  });
+
+  test('failed Space experience persistence does not publish unsaved data',
+      () async {
+    SharedPreferencesStorePlatform.instance =
+        _FailingSharedPreferencesStore({});
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    await container.read(crashOutSpaceExperienceProvider.future);
+    final notifier =
+        container.read(crashOutSpaceExperienceProvider.notifier);
+
+    await expectLater(
+      notifier.addExperience(
+        CrashOutSpaceExperience(
+          id: 'unsaved-experience',
+          spaceId: 'attention',
+          content: 'This must not appear as saved.',
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      ),
+      throwsA(isA<StateError>()),
+    );
+
+    expect(notifier.experiencesFor('attention'), isEmpty);
+  });
+
+  test('failed reply persistence does not publish an unsaved reply', () async {
+    SharedPreferencesStorePlatform.instance =
+        _FailingSharedPreferencesStore({});
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    await container.read(crashOutSpaceProvider.future);
+    final notifier = container.read(crashOutSpaceProvider.notifier);
+
+    await expectLater(
+      notifier.addReply(
+        spaceId: 'attention',
+        experienceId: 'experience-1',
+        reply: CrashOutSpaceReply(
+          id: 'unsaved-reply',
+          experienceId: 'experience-1',
+          content: 'This must not appear as saved.',
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      ),
+      throwsA(isA<StateError>()),
+    );
+
+    expect(notifier.repliesFor('attention', 'experience-1'), isEmpty);
+  });
+
 }
 
 class _DelayedSharedPreferencesStore extends SharedPreferencesStorePlatform {
