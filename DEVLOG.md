@@ -1371,3 +1371,16 @@ Branch: feat/crash-out-domain-lifecycle
 - Added a widget regression test that simulates a local persistence failure and verifies that retry can complete the Space entry.
 - No backend, authentication, database, API, or realtime infrastructure was introduced.
 - Flutter analysis and tests must be run locally after pulling these changes.
+
+
+## 2026-11-12 — Retire the legacy private encounter route
+
+- Removed navigation from the Private Crash Outs list into the retired one-to-one Experience Thread.
+- A Crash Out can reopen the wider Crash Out Space only after its Space-entry lifecycle is recorded.
+- Kept the legacy thread deletion cascade when a user lets go of a Crash Out, so obsolete local thread data can still be cleaned up.
+- Updated the private-list copy to distinguish a private Crash Out that has not entered a wider Space.
+- Added widget regression coverage for the retired route.
+- No backend, authentication, API, database, or realtime changes.
+
+Verification:
+- Run the focused Private Crash Outs widget test, then the full Flutter test suite and analyzer locally.
