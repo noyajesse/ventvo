@@ -323,3 +323,16 @@ No additional Space modes were introduced.
 - Added tests for idempotent preview seeding and recognition of “I hate people” as a connection-withdrawal signal.
 - Kept all changes frontend-only; no backend, auth, database, API, server, or realtime work was introduced.
 - Local Flutter validation is required after pulling the latest changes.
+
+
+## Unreleased — Crash Out lifecycle integrity
+
+### Fixed
+- Persist private Crash Out changes before publishing updated Riverpod state.
+- Serialize add, Space-entry, delete, and clear mutations so overlapping actions cannot overwrite one another.
+- Treat unsuccessful SharedPreferences writes and clears as failures rather than reporting unsaved state as successful.
+
+### Tested
+- Added coverage for concurrent Crash Out additions.
+- Added regression coverage ensuring failed local writes do not publish an unsaved Crash Out.
+- Strengthened the privacy lifecycle test to verify that Keep Private does not erase the Space-entered marker.
