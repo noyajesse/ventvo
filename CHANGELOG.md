@@ -336,3 +336,16 @@ No additional Space modes were introduced.
 - Added coverage for concurrent Crash Out additions.
 - Added regression coverage ensuring failed local writes do not publish an unsaved Crash Out.
 - Strengthened the privacy lifecycle test to verify that Keep Private does not erase the Space-entered marker.
+
+## Unreleased — Crash Out Space persistence integrity
+
+### Fixed
+- Serialize local experience and reply mutations to prevent concurrent writes from losing data.
+- Wait for initial local storage reads before mutating Crash Out Space collections.
+- Do not publish unsaved experiences or replies after failed local writes.
+- Treat unsuccessful local clears as failures.
+
+### Tested
+- Added regression coverage for concurrent experience/reply additions and failed local writes.
+- Updated README and architecture documentation to reflect the approved wider Crash Out Space lifecycle.
+
