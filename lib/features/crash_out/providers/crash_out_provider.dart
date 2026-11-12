@@ -64,20 +64,30 @@ class CrashOutNotifier extends AsyncNotifier<List<CrashOut>> {
   /// Records that the owner entered the wider tension Space.
   ///
   /// The Crash Out itself remains private; only its lifecycle marker changes.
-  Future<void> markSpaceEntered(String id) {
+  Future<void> markSpaceEntered(
+    String id, {
+    required String spaceId,
+    String? matchedExperienceId,
+  }) {
     return _runMutation(() async {
-      if (id.trim().isEmpty) return;
+      if (id.trim().isEmpty || spaceId.trim().isEmpty) return;
 
       final current = await _currentCrashOuts();
       final index = current.indexWhere((item) => item.id == id);
-      if (index == -1 ||
-          current[index].status == CrashOutStatus.spaceEntered) {
+      if (index == -1) return;
+
+      final existing = current[index];
+      if (existing.status == CrashOutStatus.spaceEntered &&
+          existing.spaceId == spaceId &&
+          existing.matchedExperienceId == matchedExperienceId) {
         return;
       }
 
       final updated = [...current];
-      updated[index] = current[index].copyWith(
+      updated[index] = existing.copyWith(
         status: CrashOutStatus.spaceEntered,
+        spaceId: spaceId,
+        matchedExperienceId: matchedExperienceId,
       );
       await _persist(updated);
     });
