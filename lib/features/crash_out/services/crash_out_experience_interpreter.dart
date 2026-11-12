@@ -477,7 +477,14 @@ class _Signal {
       for (final match in pattern.allMatches(text)) {
         final prefix = text.substring(0, match.start);
         final negatedBeforeSignal = RegExp(
-          r'\b(?:do not|does not|did not|will not|cannot|not|never|no longer)\s+(?:\w+\s+){0,2}
+          r'\b(?:do not|does not|did not|will not|cannot|not|never|no longer)\s+(?:\w+\s+){0,2}$',
+        ).hasMatch(prefix);
+
+        if (!negatedBeforeSignal) return true;
+      }
+      return false;
+    });
+  }
 
   bool matches(String text) => _matcher(text);
 }
