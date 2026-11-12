@@ -79,7 +79,7 @@ class CrashOutSpaceExperienceNotifier
   }) {
     return _runMutation(() async {
       final current = await _currentExperiences();
-      final id = 'opposing_experience_\${vent.id}';
+      final id = 'opposing_experience_${vent.id}';
       for (final existing in current) {
         if (existing.id == id && existing.spaceId == spaceId) return existing;
       }
@@ -115,11 +115,11 @@ class CrashOutSpaceExperienceNotifier
     return _runMutation(() async {
       final current = await _currentExperiences();
       final knownKeys =
-          current.map((item) => '\${item.spaceId}::\${item.id}').toSet();
+          current.map((item) => '${item.spaceId}::${item.id}').toSet();
       final additions = <CrashOutSpaceExperience>[];
 
       for (final item in prototypes) {
-        final key = '\${item.spaceId}::\${item.id}';
+        final key = '${item.spaceId}::${item.id}';
         if (item.id.trim().isEmpty ||
             item.spaceId.trim().isEmpty ||
             item.content.trim().isEmpty ||
