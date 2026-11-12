@@ -62,6 +62,7 @@ class CrashOut {
     DateTime? createdAt,
     String? spaceId,
     String? matchedExperienceId,
+    bool clearMatchedExperienceId = false,
     CrashOutStatus? status,
   }) {
     return CrashOut(
@@ -72,7 +73,9 @@ class CrashOut {
       type: type ?? this.type,
       createdAt: createdAt ?? this.createdAt,
       spaceId: spaceId ?? this.spaceId,
-      matchedExperienceId: matchedExperienceId ?? this.matchedExperienceId,
+      matchedExperienceId: clearMatchedExperienceId
+          ? null
+          : matchedExperienceId ?? this.matchedExperienceId,
       status: status ?? this.status,
     );
   }
