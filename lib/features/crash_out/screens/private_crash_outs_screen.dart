@@ -144,7 +144,7 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
                   crashOut: crashOut,
                   hasEnteredSpace: hasEnteredSpace,
                   onOpen: hasEnteredSpace
-                      ? () => _openSpace(context, ref, crashOut, tension!)
+                      ? () => _openSpace(context, ref, crashOut, tension)
                       : thread == null
                           ? null
                           : () {
