@@ -1395,3 +1395,13 @@ Verification:
 
 Verification:
 - Run the focused Crash Out lifecycle test, then the full Flutter test suite and analyzer locally.
+
+
+## 2026-11-12 — Respect negation in pattern-based experience signals
+
+- Updated regex-backed interpreter signals to apply the same nearby-negation guard used by phrase signals.
+- Added regression coverage for a negated "nobody notices" statement so it does not incorrectly produce an attention-seeking atom.
+- Kept interpretation deterministic and local; no backend or external language service was introduced.
+
+Verification:
+- Run the focused Crash Out opposite-experience service test, then the full Flutter test suite and analyzer locally.
