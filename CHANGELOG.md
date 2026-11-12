@@ -349,3 +349,13 @@ No additional Space modes were introduced.
 - Added regression coverage for concurrent experience/reply additions and failed local writes.
 - Updated README and architecture documentation to reflect the approved wider Crash Out Space lifecycle.
 
+## Unreleased — Crash Out Space return path
+
+### Fixed
+- Persist the wider Space destination and any highlighted opposing experience on the private Crash Out lifecycle record.
+- Allow people to reopen the same wider Space from their Private Crash Outs list.
+- Avoid showing the no-opposite message for Crash Outs that have already entered a wider Space.
+
+### Tested
+- Verify a Crash Out can reopen its Space when no individual opposite was found, without implying that a match exists.
+
