@@ -145,7 +145,7 @@ class CrashOutSpaceNotifier
     state = AsyncData(updated);
   }
 
-  Future<void> addReply({
+  Future<bool> addReply({
     required String spaceId,
     required String experienceId,
     required CrashOutSpaceReply reply,
@@ -155,10 +155,14 @@ class CrashOutSpaceNotifier
         reply.id.trim().isEmpty ||
         reply.experienceId != experienceId ||
         reply.content.trim().isEmpty) {
-      return;
+      return false;
     }
 
-    final current = state.asData?.value ?? const <String, List<CrashOutSpaceReply>>{};
+    // Wait for the initial SharedPreferences read before taking a snapshot.
+    // Treating AsyncLoading as an empty map could overwrite replies already
+    // persisted for other experiences.
+    await ref.read(crashOutSpaceProvider.future);
+    final current = state.requireValue;
     final key = _key(spaceId, experienceId);
     final existing = current[key] ?? const <CrashOutSpaceReply>[];
 
@@ -167,23 +171,25 @@ class CrashOutSpaceNotifier
     final replyToId = reply.replyToId;
     if (replyToId != null &&
         !existing.any((item) => item.id == replyToId)) {
-      return;
+      return false;
     }
-    if (existing.any((item) => item.id == reply.id)) return;
+    if (existing.any((item) => item.id == reply.id)) return false;
 
     final updated = <String, List<CrashOutSpaceReply>>{
       ...current,
       key: [...existing, reply],
     };
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(
+    final saved = await prefs.setString(
       _storageKey,
       jsonEncode({
         for (final entry in updated.entries)
           entry.key: entry.value.map((item) => item.toMap()).toList(),
       }),
     );
+    if (!saved) return false;
     state = AsyncData(updated);
+    return true;
   }
 
   Future<void> clearReplies() async {
