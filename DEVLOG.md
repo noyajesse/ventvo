@@ -1384,3 +1384,14 @@ Branch: feat/crash-out-domain-lifecycle
 
 Verification:
 - Run the focused Private Crash Outs widget test, then the full Flutter test suite and analyzer locally.
+
+
+## 2026-11-12 — Clear stale Crash Out opposition metadata
+
+- Fixed nullable lifecycle updates so re-entering a wider Space without a current opposing experience clears an older highlighted experience ID instead of silently retaining it.
+- Added regression coverage for the refreshed lifecycle state and its persisted reload.
+- This preserves the distinction between entering a recognized tension Space and actually finding an opposite; no match is claimed when none is currently available.
+- No backend, authentication, database, API, or realtime changes.
+
+Verification:
+- Run the focused Crash Out lifecycle test, then the full Flutter test suite and analyzer locally.
