@@ -1,6 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+// The platform store lets this test simulate a local write failure.
+// ignore: depend_on_referenced_packages
+import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 
 import 'package:ventvo/features/crash_out/models/crash_out.dart';
 import 'package:ventvo/features/crash_out/providers/crash_out_provider.dart';
@@ -32,14 +35,14 @@ void main() {
       createdAt: DateTime(2026, 1, 1),
     );
 
-    await container.read(crashOutProvider.notifier).addCrashOut(crashOut);
-    await container.read(crashOutProvider.notifier).keepPrivate(crashOut.id);
+    final notifier = container.read(crashOutProvider.notifier);
+    await notifier.addCrashOut(crashOut);
+    await notifier.markSpaceEntered(crashOut.id);
+    await notifier.keepPrivate(crashOut.id);
 
-    var items = await container.read(crashOutProvider.future);
-    expect(items.single.status, CrashOutStatus.keptPrivate);
-
-    items = await container.read(crashOutProvider.future);
-    expect(items.single.status, CrashOutStatus.keptPrivate);
+    final items = await container.read(crashOutProvider.future);
+    expect(items.single.status, CrashOutStatus.spaceEntered);
+    expect(items.single.status.isPrivate, isTrue);
   });
 
   test('letting go removes the Crash Out', () async {
@@ -137,4 +140,82 @@ void main() {
       expect(items, hasLength(2));
     },
   );
+
+  test('concurrent additions do not overwrite one another', () async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    await container.read(crashOutProvider.future);
+    final notifier = container.read(crashOutProvider.notifier);
+
+    await Future.wait([
+      notifier.addCrashOut(
+        CrashOut(
+          id: 'concurrent-1',
+          textContent: 'First concurrent entry.',
+          type: CrashOutType.text,
+          createdAt: DateTime(2026, 1, 7),
+        ),
+      ),
+      notifier.addCrashOut(
+        CrashOut(
+          id: 'concurrent-2',
+          textContent: 'Second concurrent entry.',
+          type: CrashOutType.text,
+          createdAt: DateTime(2026, 1, 8),
+        ),
+      ),
+    ]);
+
+    final items = await container.read(crashOutProvider.future);
+    expect(items.map((item) => item.id),
+        containsAll(['concurrent-1', 'concurrent-2']));
+    expect(items, hasLength(2));
+  });
+
+  test('failed local save does not publish an unsaved Crash Out', () async {
+    final store = _FailingSharedPreferencesStore();
+    SharedPreferencesStorePlatform.instance = store;
+
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    await container.read(crashOutProvider.future);
+    final notifier = container.read(crashOutProvider.notifier);
+
+    await expectLater(
+      notifier.addCrashOut(
+        CrashOut(
+          id: 'not-saved',
+          textContent: 'This must not appear as saved.',
+          type: CrashOutType.text,
+          createdAt: DateTime(2026, 1, 9),
+        ),
+      ),
+      throwsA(isA<StateError>()),
+    );
+
+    final currentState = container.read(crashOutProvider);
+    expect(currentState.asData!.value, isEmpty);
+    expect(store.values, isEmpty);
+  });
+}
+
+class _FailingSharedPreferencesStore extends SharedPreferencesStorePlatform {
+  final Map<String, Object> values = {};
+
+  @override
+  Future<Map<String, Object>> getAll() async => Map<String, Object>.of(values);
+
+  @override
+  Future<bool> setValue(String valueType, String key, Object value) async {
+    throw StateError('simulated local persistence failure');
+  }
+
+  @override
+  Future<bool> remove(String key) async => values.remove(key) != null;
+
+  @override
+  Future<bool> clear() async {
+    values.clear();
+    return true;
+  }
 }
