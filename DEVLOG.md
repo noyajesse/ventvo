@@ -1327,3 +1327,18 @@ Verification:
 - Kept Let Go as deletion; no public copy of the original Crash Out is created.
 - This is local prototype ownership metadata, not authentication or server-side authorization. No backend, database, API, or realtime work was introduced.
 - Flutter tests and analysis must be run locally after pulling this branch.
+
+
+## 2026-11-12 — Crash Out lifecycle persistence safeguards
+
+Branch: feat/crash-out-domain-lifecycle
+
+- Corrected Crash Out persistence ordering: local storage must complete successfully before Riverpod publishes the changed collection.
+- Treat a false SharedPreferences write/clear result as a persistence failure.
+- Serialized add, Space-entry, delete, and clear mutations so concurrent actions operate on the latest committed collection rather than stale snapshots.
+- Added regression coverage for overlapping additions and failed local writes; strengthened the Keep Private lifecycle test to ensure it preserves the Space-entered marker.
+- Kept Crash Outs private, retained legacy records, and made no backend, authentication, API, database, or realtime changes.
+
+Verification:
+- Source and tests were updated on the feature branch through GitHub.
+- Flutter tests and analysis have not been run in this environment. Run the focused lifecycle and Crash Out Space tests, then the full Flutter test suite and analyzer locally before treating this change as verified.
