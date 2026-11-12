@@ -1360,3 +1360,14 @@ Verification:
 - Keep the original Crash Out private and distinguish “entered a wider Space” from “found an opposite”.
 - Added a widget regression test for reopening a Space when no individual opposite was found.
 
+
+
+## 2026-11-12 — Crash Out processing recovery
+
+Branch: feat/crash-out-domain-lifecycle
+
+- Added an explicit failure state when Crash Out processing cannot load experiences or persist the wider Space locally.
+- The recovery screen explains that the original Crash Out remains private, offers an idempotent retry, and provides a route back to Private Crash Outs.
+- Added a widget regression test that simulates a local persistence failure and verifies that retry can complete the Space entry.
+- No backend, authentication, database, API, or realtime infrastructure was introduced.
+- Flutter analysis and tests must be run locally after pulling these changes.
