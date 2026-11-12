@@ -31,6 +31,13 @@ class CrashOut {
 
   final DateTime createdAt;
 
+  /// The wider Space entered for this Crash Out, stored as a HumanTension name.
+  /// Null for legacy records and Crash Outs that have not entered a Space.
+  final String? spaceId;
+
+  /// The eligible opposing experience highlighted when the Space was entered.
+  final String? matchedExperienceId;
+
   /// Current lifecycle state of this Crash Out.
   final CrashOutStatus status;
 
@@ -41,6 +48,8 @@ class CrashOut {
     this.audioPath,
     required this.type,
     required this.createdAt,
+    this.spaceId,
+    this.matchedExperienceId,
     this.status = CrashOutStatus.keptPrivate,
   });
 
@@ -51,6 +60,8 @@ class CrashOut {
     String? audioPath,
     CrashOutType? type,
     DateTime? createdAt,
+    String? spaceId,
+    String? matchedExperienceId,
     CrashOutStatus? status,
   }) {
     return CrashOut(
@@ -60,6 +71,8 @@ class CrashOut {
       audioPath: audioPath ?? this.audioPath,
       type: type ?? this.type,
       createdAt: createdAt ?? this.createdAt,
+      spaceId: spaceId ?? this.spaceId,
+      matchedExperienceId: matchedExperienceId ?? this.matchedExperienceId,
       status: status ?? this.status,
     );
   }
