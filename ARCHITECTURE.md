@@ -571,14 +571,19 @@ A Crash Out encounter may naturally lead to an Echo, but an Echo is not required
 
 15. Crash Out Lifecycle
 
-Release
-→ Understand experience
+Private release
+→ Understand the experience
+→ Recognize a meaningful human tension
 → Evaluate eligible public experiences
-→ Strong opposition?
-  → Yes: Encounter
-  → No: No encounter
+  → Meaningful opposite found: highlight it as a doorway
+  → No meaningful opposite found: do not claim a match
+→ Enter the wider Crash Out Space for the recognized tension
 
-A future delayed-encounter system may allow an opposite experience to surface later. That requires an explicit privacy-safe retention design.
+If Ventvo cannot identify a meaningful human tension, it must not force an encounter or a Space. If the tension is recognized but no opposing public experience is found, the wider Space may still open without claiming an opposite exists.
+
+The wider Space contains multiple experiences and ongoing replies. Prototype examples must be clearly disclosed as fictional/local-only content. The original private Crash Out is never copied into the Space.
+
+A future delayed-encounter system may allow an opposite experience to surface later. That requires an explicit privacy-safe retention and deletion design.
 
 If delayed matching is implemented, deleting the private Crash Out must also remove its matching representation.
 
