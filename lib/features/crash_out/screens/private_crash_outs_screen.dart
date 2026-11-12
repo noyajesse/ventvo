@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/crash_out.dart';
+import '../models/experience_representation.dart';
 import '../providers/crash_out_provider.dart';
+import '../providers/crash_out_space_experience_provider.dart';
+import '../providers/crash_out_space_provider.dart';
 import '../providers/experience_thread_provider.dart';
 import 'experience_thread_screen.dart';
+import 'crash_out_space_screen.dart';
 
 class PrivateCrashOutsScreen extends ConsumerWidget {
   const PrivateCrashOutsScreen({super.key});
@@ -23,6 +27,49 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Let go.')),
     );
+  }
+
+  Future<void> _openSpace(
+    BuildContext context,
+    WidgetRef ref,
+    CrashOut crashOut,
+    HumanTension tension,
+  ) async {
+    await ref.read(crashOutSpaceExperienceProvider.future);
+    await ref.read(crashOutSpaceProvider.future);
+    if (!context.mounted) return;
+
+    final experiences = ref
+        .read(crashOutSpaceExperienceProvider.notifier)
+        .experiencesFor(tension.name);
+    final matchedExperienceId = crashOut.matchedExperienceId;
+    if (matchedExperienceId != null) {
+      experiences.sort((a, b) {
+        if (a.id == matchedExperienceId) return -1;
+        if (b.id == matchedExperienceId) return 1;
+        return b.createdAt.compareTo(a.createdAt);
+      });
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CrashOutSpaceScreen(
+          tension: tension,
+          experiences: experiences,
+          matchedExperienceId: matchedExperienceId,
+        ),
+      ),
+    );
+  }
+
+  HumanTension? _spaceTensionFor(CrashOut crashOut) {
+    final spaceId = crashOut.spaceId;
+    if (spaceId == null) return null;
+    for (final tension in HumanTension.values) {
+      if (tension.name == spaceId) return tension;
+    }
+    return null;
   }
 
   @override
@@ -75,21 +122,28 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
                 final thread = ref
                     .read(experienceThreadProvider.notifier)
                     .threadForCrashOut(crashOut.id);
+                final tension = _spaceTensionFor(crashOut);
+                final hasEnteredSpace =
+                    crashOut.status == CrashOutStatus.spaceEntered &&
+                    tension != null;
                 return _PrivateCrashOutCard(
                   crashOut: crashOut,
-                  onOpenEncounter: thread == null
-                      ? null
-                      : () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ExperienceThreadScreen(
-                                crashOut: crashOut,
-                                thread: thread,
-                              ),
-                            ),
-                          );
-                        },
+                  hasEnteredSpace: hasEnteredSpace,
+                  onOpen: hasEnteredSpace
+                      ? () => _openSpace(context, ref, crashOut, tension)
+                      : thread == null
+                          ? null
+                          : () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ExperienceThreadScreen(
+                                    crashOut: crashOut,
+                                    thread: thread,
+                                  ),
+                                ),
+                              );
+                            },
                   onLetGo: () => _letGo(context, ref, crashOut),
                 );
               },
@@ -103,12 +157,14 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
 
 class _PrivateCrashOutCard extends StatelessWidget {
   final CrashOut crashOut;
-  final VoidCallback? onOpenEncounter;
+  final bool hasEnteredSpace;
+  final VoidCallback? onOpen;
   final VoidCallback onLetGo;
 
   const _PrivateCrashOutCard({
     required this.crashOut,
-    required this.onOpenEncounter,
+    required this.hasEnteredSpace,
+    required this.onOpen,
     required this.onLetGo,
   });
 
@@ -145,7 +201,15 @@ class _PrivateCrashOutCard extends StatelessWidget {
             style: const TextStyle(color: Colors.white, fontSize: 17, height: 1.5),
           ),
           const SizedBox(height: 20),
-          if (onOpenEncounter == null)
+          if (hasEnteredSpace)
+            const Padding(
+              padding: EdgeInsets.only(bottom: 14),
+              child: Text(
+                'Your original remains private. You can return to the wider experience Space.',
+                style: TextStyle(color: Colors.white38, fontSize: 12.5),
+              ),
+            )
+          else if (onOpen == null)
             const Padding(
               padding: EdgeInsets.only(bottom: 14),
               child: Text(
@@ -155,10 +219,10 @@ class _PrivateCrashOutCard extends StatelessWidget {
             ),
           Row(
             children: [
-              if (onOpenEncounter != null)
+              if (onOpen != null)
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: onOpenEncounter,
+                    onPressed: onOpen,
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.white,
                       side: const BorderSide(color: Colors.white24),
@@ -167,10 +231,10 @@ class _PrivateCrashOutCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
-                    child: const Text('Open encounter'),
+                    child: Text(hasEnteredSpace ? 'Open Space' : 'Open encounter'),
                   ),
                 ),
-              if (onOpenEncounter != null) const SizedBox(width: 10),
+              if (onOpen != null) const SizedBox(width: 10),
               IconButton(
                 onPressed: onLetGo,
                 tooltip: 'Let go',
