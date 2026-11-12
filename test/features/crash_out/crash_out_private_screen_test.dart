@@ -63,4 +63,29 @@ void main() {
     },
   );
 
+
+  testWidgets(
+    'a private Crash Out does not reopen the retired one-to-one encounter',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({
+        'ventvo_crash_outs':
+            '[{"id":"legacy-private","textContent":"I needed another perspective.","type":"text","createdAt":"2026-01-01T00:00:00.000","status":"keptPrivate"}]',
+        'ventvo_crash_out_space_experiences': '[]',
+        'ventvo_crash_out_space_replies': '{}',
+      });
+
+      await tester.pumpWidget(
+        const ProviderScope(
+          child: MaterialApp(home: PrivateCrashOutsScreen()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('No wider Space has been entered yet.'), findsOneWidget);
+      expect(find.text('Open encounter'), findsNothing);
+      expect(find.text('Open Space'), findsNothing);
+    },
+  );
+
+
 }
