@@ -103,6 +103,46 @@ void main() {
     },
   );
 
+
+  test(
+    're-entering a Space without an opposite clears a stale highlighted experience',
+    () async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      await container.read(crashOutProvider.future);
+      final notifier = container.read(crashOutProvider.notifier);
+      final crashOut = CrashOut(
+        id: 'crash-space-refresh',
+        textContent: 'I needed another perspective.',
+        type: CrashOutType.text,
+        createdAt: DateTime(2026, 1, 10),
+      );
+
+      await notifier.addCrashOut(crashOut);
+      await notifier.markSpaceEntered(
+        crashOut.id,
+        spaceId: 'attention',
+        matchedExperienceId: 'old-opposite',
+      );
+      await notifier.markSpaceEntered(
+        crashOut.id,
+        spaceId: 'attention',
+        matchedExperienceId: null,
+      );
+
+      final items = await container.read(crashOutProvider.future);
+      expect(items.single.status, CrashOutStatus.spaceEntered);
+      expect(items.single.spaceId, 'attention');
+      expect(items.single.matchedExperienceId, isNull);
+
+      final reloadedContainer = ProviderContainer();
+      addTearDown(reloadedContainer.dispose);
+      final reloaded = await reloadedContainer.read(crashOutProvider.future);
+      expect(reloaded.single.matchedExperienceId, isNull);
+    },
+  );
+
+
   test(
     'legacy Crash Outs without a Voice ID remain private and loadable',
     () async {
