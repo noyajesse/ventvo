@@ -349,6 +349,16 @@ No additional Space modes were introduced.
 - Added regression coverage for concurrent experience/reply additions and failed local writes.
 - Updated README and architecture documentation to reflect the approved wider Crash Out Space lifecycle.
 
+## Unreleased — Crash Out processing recovery
+
+### Fixed
+- Replace the indefinite processing state with a clear recovery screen when experience loading or local Space persistence fails.
+- Allow retrying the idempotent processing steps or returning to the Private Crash Outs list.
+- Reassure the user that the original Crash Out remains private when processing cannot complete.
+
+### Tested
+- Added a widget regression test that simulates a local persistence failure and verifies retry can complete the Space entry.
+
 ## Unreleased — Crash Out Space return path
 
 ### Fixed
