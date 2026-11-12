@@ -7,6 +7,7 @@ import '../providers/crash_out_provider.dart';
 import '../providers/crash_out_space_experience_provider.dart';
 import '../providers/crash_out_space_provider.dart';
 import '../providers/experience_thread_provider.dart';
+import '../services/crash_out_experience_interpreter.dart';
 import 'crash_out_space_screen.dart';
 import 'experience_thread_screen.dart';
 
@@ -65,9 +66,22 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
 
   HumanTension? _spaceTensionFor(CrashOut crashOut) {
     final spaceId = crashOut.spaceId;
-    if (spaceId == null) return null;
-    for (final tension in HumanTension.values) {
-      if (tension.name == spaceId) return tension;
+    if (spaceId != null) {
+      for (final tension in HumanTension.values) {
+        if (tension.name == spaceId) return tension;
+      }
+    }
+
+    // Earlier local versions recorded Space entry without its destination.
+    // Recover the same deterministic tension from the still-private original.
+    if (crashOut.status == CrashOutStatus.spaceEntered) {
+      final representation =
+          const CrashOutExperienceInterpreter().interpret(crashOut);
+      for (final atom in representation.atoms) {
+        if (atom.confidence >= 0.55 && atom.intensity >= 0.35) {
+          return atom.tension;
+        }
+      }
     }
     return null;
   }
