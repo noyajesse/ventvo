@@ -1405,3 +1405,12 @@ Verification:
 
 Verification:
 - Run the focused Crash Out opposite-experience service test, then the full Flutter test suite and analyzer locally.
+
+
+## 2026-11-12 — Echo author eligibility guard
+
+- Made Echo creation fail closed unless both the responding Voice and originating Moment Voice are known.
+- Prevented Echo creation when the author is the same Voice that created the originating Moment.
+- Added regression coverage for missing author identity and missing originating Voice identity.
+- This is a frontend domain safeguard only; production authorization must still be enforced by the backend.
+- No backend, authentication, API, database, or realtime infrastructure was introduced.
