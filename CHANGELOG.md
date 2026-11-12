@@ -1,3 +1,21 @@
+## Unreleased — Crash Out Space and processing hardening
+
+### Added
+- Added recovery actions for failed Crash Out processing so the user can retry or return to Private.
+- Added the wider Crash Out Space destination to the private lifecycle record, with an optional highlighted opposing experience ID.
+- Added a return path from Private Crash Outs to the same wider Space, including compatibility for older local records.
+
+### Improved
+- Serialized local Crash Out, Space experience and reply mutations to avoid lost updates.
+- Waited for initial local storage reads and avoided publishing state before successful persistence.
+- Validated reply-to-reply targets against the same experience and preserved drafts when a save fails.
+- Made experience signal matching respect nearby negation.
+
+### Boundaries
+- The original Crash Out remains private; it is never copied into the wider Space.
+- Fictional preview content is disclosed as prototype-only, and replies written by the user remain local to the device.
+- No backend, database, API, authentication, server-side authorization, or realtime infrastructure was added.
+
 ## Unreleased — Crash Out ownership and lifecycle foundation
 
 ### Added
