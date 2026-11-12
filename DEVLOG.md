@@ -1,3 +1,27 @@
+## 2026-11-12 — Crash Out lifecycle, Space persistence and interpreter hardening
+
+Branch: feat/crash-out-domain-lifecycle  
+Pull request: #3 (draft; targets development)
+
+Completed and locally verified:
+
+- Added owner Voice metadata to newly created private Crash Outs while retaining compatibility with older local records that have no owner ID.
+- Recorded the wider HumanTension Space entered by a private Crash Out and the optional ID of an eligible opposing experience highlighted as its doorway.
+- Kept the original Crash Out private after Space entry; the Space receives a separate public experience record, never the private source text.
+- Added recovery controls for local processing/read/write failures so the user can retry or return to Private without being left on an endless processing screen.
+- Allowed Private Crash Outs to reopen their recorded wider Space, including a deterministic fallback for older local entries without a stored destination.
+- Serialized private Crash Out, Space experience and reply mutations; waited for initial local storage reads; and treated unsuccessful writes/clears as failures rather than publishing unsaved state.
+- Kept replies attached to the experience they address and validated reply-to-reply references against that same experience.
+- Preserved reply drafts and reply targets when local saving fails; disabled the composer while a save is in progress.
+- Made the deterministic experience interpreter respect nearby negation and added regression coverage.
+- Kept fictional preview experiences/replies visibly identified as prototype content and disclosed that user-written replies remain on the current device.
+
+Verification: the user ran the focused Crash Out tests, the full `flutter test` suite, and `flutter analyze`; all tests passed and analysis was clean.
+
+Boundaries: frontend/local prototype only. No backend, database, API, authentication, server-side authorization, or realtime infrastructure was introduced. Owner Voice IDs remain local metadata, not production authorization.
+
+---
+
 ## 2026-10-27 — Crash Out reply persistence acceptance
 
 - Changed `CrashOutSpaceNotifier.addReply()` to report whether a reply was accepted and persisted locally.
