@@ -54,6 +54,8 @@ class CrashOutStorage {
       'type': crashOut.type.name,
       'createdAt': crashOut.createdAt.toIso8601String(),
       'status': crashOut.status.name,
+      'spaceId': crashOut.spaceId,
+      'matchedExperienceId': crashOut.matchedExperienceId,
     };
   }
 
@@ -68,6 +70,10 @@ class CrashOutStorage {
       type: _parseType(json['type']),
       createdAt: DateTime.parse(json['createdAt'] as String),
       status: _parseStatus(json['status']),
+      spaceId: json['spaceId'] is String ? json['spaceId'] as String : null,
+      matchedExperienceId: json['matchedExperienceId'] is String
+          ? json['matchedExperienceId'] as String
+          : null,
     );
   }
 
