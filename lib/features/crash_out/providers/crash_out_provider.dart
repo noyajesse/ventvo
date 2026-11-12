@@ -88,6 +88,7 @@ class CrashOutNotifier extends AsyncNotifier<List<CrashOut>> {
         status: CrashOutStatus.spaceEntered,
         spaceId: spaceId,
         matchedExperienceId: matchedExperienceId,
+        clearMatchedExperienceId: matchedExperienceId == null,
       );
       await _persist(updated);
     });
