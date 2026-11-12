@@ -90,7 +90,11 @@ class _CrashOutProcessingScreenState
 
     await ref
         .read(crashOutProvider.notifier)
-        .markSpaceEntered(widget.crashOut.id);
+        .markSpaceEntered(
+          widget.crashOut.id,
+          spaceId: tension.name,
+          matchedExperienceId: matchedExperienceId,
+        );
 
     final spaceExperiences = spaceNotifier.experiencesFor(tension.name);
     if (matchedExperienceId != null) {
