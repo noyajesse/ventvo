@@ -143,10 +143,16 @@ class CrashOutNotifier extends AsyncNotifier<List<CrashOut>> {
     });
   }
 
-  Future<void> clearCrashOuts() {
+  Future<void> clearCrashOuts({required String ownerVoiceId}) {
     return _runMutation(() async {
-      await _storage.clear();
-      state = const AsyncData([]);
+      if (ownerVoiceId.trim().isEmpty) return;
+
+      final current = await _currentCrashOuts();
+      final remaining = current
+          .where((item) => !_belongsToOwner(item, ownerVoiceId))
+          .toList();
+      if (remaining.length == current.length) return;
+      await _persist(remaining);
     });
   }
 }
