@@ -92,10 +92,16 @@ class _CrashOutProcessingScreenState
 
       if (!mounted) return;
 
+      final ownerVoiceId = widget.crashOut.ownerVoiceId?.trim();
+      if (ownerVoiceId == null || ownerVoiceId.isEmpty) {
+        throw StateError('This Crash Out has no owning Voice.');
+      }
+
       await ref
           .read(crashOutProvider.notifier)
           .markSpaceEntered(
             widget.crashOut.id,
+            ownerVoiceId: ownerVoiceId,
             spaceId: tension.name,
             matchedExperienceId: matchedExperienceId,
           );
