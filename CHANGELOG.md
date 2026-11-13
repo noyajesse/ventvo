@@ -1,3 +1,21 @@
+## Unreleased — Crash Out Voice ownership boundaries
+
+### Added
+- Require an owner Voice ID when creating a new private Crash Out.
+- Scope the Private Crash Outs screen to the active local Voice.
+- Require matching owner IDs for Space-entry transitions and deletion.
+- Exclude same-Voice Vents from Crash Out opposition candidates.
+- Preserve legacy unowned local Crash Outs for the current single-Voice prototype and claim them when Space entry is successfully recorded.
+
+### Fixed
+- Prevent one Voice from updating or deleting another Voice's owned Crash Out.
+- Prevent navigation into a Space when the lifecycle ownership check fails.
+- Avoid deleting associated local thread data when Crash Out deletion is rejected.
+
+### Boundaries
+- These are local prototype ownership checks, not production authentication or authorization.
+- No backend, database, API, authentication, server-side authorization, or realtime infrastructure was added.
+
 ## Unreleased — Crash Out Space and processing hardening
 
 ### Added
