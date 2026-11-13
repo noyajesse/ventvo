@@ -23,6 +23,8 @@ void main() {
         createdAt: DateTime(2026, 1, 1),
       );
       final store = _ToggleFailingSharedPreferencesStore({
+        'flutter.ventvo_voice_id': 'voice-1',
+        'flutter.ventvo_voice_created_at': '2026-01-01T00:00:00.000',
         'flutter.ventvo_crash_outs': jsonEncode([
           {
             'id': crashOut.id,
