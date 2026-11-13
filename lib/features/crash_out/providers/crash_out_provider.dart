@@ -40,6 +40,23 @@ class CrashOutNotifier extends AsyncNotifier<List<CrashOut>> {
     state = AsyncData(crashOuts);
   }
 
+  /// Returns private records owned by [ownerVoiceId].
+  ///
+  /// Records without an owner are legacy entries from the single-Voice local
+  /// prototype. They remain visible for compatibility until explicitly
+  /// claimed by the current local Voice through an owner-scoped mutation.
+  List<CrashOut> privateCrashOutsForOwner(String ownerVoiceId) {
+    final current = state.asData?.value ?? const <CrashOut>[];
+    return current
+        .where((item) =>
+            item.status.isPrivate &&
+            (item.ownerVoiceId == ownerVoiceId || item.ownerVoiceId == null))
+        .toList();
+  }
+
+  bool _belongsToOwner(CrashOut crashOut, String ownerVoiceId) =>
+      crashOut.ownerVoiceId == ownerVoiceId || crashOut.ownerVoiceId == null;
+
   Future<void> addCrashOut(CrashOut crashOut) {
     return _runMutation(() async {
       if (crashOut.id.trim().isEmpty) return;
@@ -70,7 +87,7 @@ class CrashOutNotifier extends AsyncNotifier<List<CrashOut>> {
     String? matchedExperienceId,
   }) {
     return _runMutation(() async {
-      if (id.trim().isEmpty || spaceId.trim().isEmpty) return;
+      if (id.trim().isEmpty ||\n          ownerVoiceId.trim().isEmpty ||\n          spaceId.trim().isEmpty) return;
 
       final current = await _currentCrashOuts();
       final index = current.indexWhere((item) => item.id == id);
