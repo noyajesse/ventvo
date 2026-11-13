@@ -3,7 +3,7 @@
 ### Added
 - Require an owner Voice ID when creating a new private Crash Out.
 - Scope the Private Crash Outs screen to the active local Voice.
-- Require matching owner IDs for Space-entry transitions and deletion.
+- Require matching owner IDs for Space-entry transitions, deletion and collection clearing.
 - Exclude same-Voice Vents from Crash Out opposition candidates.
 - Preserve legacy unowned local Crash Outs for the current single-Voice prototype and claim them when Space entry is successfully recorded.
 
