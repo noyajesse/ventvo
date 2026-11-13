@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../ventvo_voice/providers/vent_provider.dart';
+import '../../ventvo_voice/providers/voice_provider.dart';
 import '../data/crash_out_space_prototype_data.dart';
 import '../models/crash_out.dart';
 import '../models/experience_representation.dart';
@@ -39,6 +40,17 @@ class _CrashOutProcessingScreenState
 
   Future<void> _process() async {
     try {
+      final activeVoice = await ref.read(ventvoVoiceProvider.future);
+      final activeVoiceId = activeVoice?.voiceId?.trim();
+      final ownerVoiceId = widget.crashOut.ownerVoiceId?.trim();
+      if (activeVoiceId == null ||
+          activeVoiceId.isEmpty ||
+          ownerVoiceId == null ||
+          ownerVoiceId.isEmpty ||
+          activeVoiceId != ownerVoiceId) {
+        throw StateError('This private Crash Out belongs to another Voice.');
+      }
+
       final experiences = await ref.read(ventProvider.future);
       if (!mounted) return;
 
@@ -91,11 +103,6 @@ class _CrashOutProcessingScreenState
       }
 
       if (!mounted) return;
-
-      final ownerVoiceId = widget.crashOut.ownerVoiceId?.trim();
-      if (ownerVoiceId == null || ownerVoiceId.isEmpty) {
-        throw StateError('This Crash Out has no owning Voice.');
-      }
 
       final entered = await ref
           .read(crashOutProvider.notifier)
