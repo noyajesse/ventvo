@@ -138,9 +138,12 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
                 ),
               ),
               data: (crashOuts) {
-                final privateCrashOuts = ref
-                    .read(crashOutProvider.notifier)
-                    .privateCrashOutsForOwner(ownerVoiceId);
+                final privateCrashOuts = crashOuts
+                    .where((crashOut) =>
+                        crashOut.status.isPrivate &&
+                        (crashOut.ownerVoiceId == ownerVoiceId ||
+                            crashOut.ownerVoiceId == null))
+                    .toList();
 
                 if (privateCrashOuts.isEmpty) {
                   return const Center(
