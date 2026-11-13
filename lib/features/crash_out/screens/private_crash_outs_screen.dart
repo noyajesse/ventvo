@@ -20,13 +20,15 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
     CrashOut crashOut,
     String ownerVoiceId,
   ) async {
-    await ref
-        .read(experienceThreadProvider.notifier)
-        .deleteThreadForCrashOut(crashOut.id);
-    await ref.read(crashOutProvider.notifier).deleteCrashOut(
+    final deleted = await ref.read(crashOutProvider.notifier).deleteCrashOut(
           crashOut.id,
           ownerVoiceId: ownerVoiceId,
         );
+    if (!deleted) return;
+
+    await ref
+        .read(experienceThreadProvider.notifier)
+        .deleteThreadForCrashOut(crashOut.id);
     if (!context.mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -137,13 +139,10 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
                   style: TextStyle(color: Colors.white54),
                 ),
               ),
-              data: (crashOuts) {
-                final privateCrashOuts = crashOuts
-                    .where((crashOut) =>
-                        crashOut.status.isPrivate &&
-                        (crashOut.ownerVoiceId == ownerVoiceId ||
-                            crashOut.ownerVoiceId == null))
-                    .toList();
+              data: (_) {
+                final privateCrashOuts = ref
+                    .read(crashOutProvider.notifier)
+                    .privateCrashOutsForOwner(ownerVoiceId);
 
                 if (privateCrashOuts.isEmpty) {
                   return const Center(
