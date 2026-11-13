@@ -46,6 +46,8 @@ class CrashOutNotifier extends AsyncNotifier<List<CrashOut>> {
   /// prototype. They remain visible for compatibility until explicitly
   /// claimed by the current local Voice through an owner-scoped mutation.
   List<CrashOut> privateCrashOutsForOwner(String ownerVoiceId) {
+    if (ownerVoiceId.trim().isEmpty) return const [];
+
     final current = state.asData?.value ?? const <CrashOut>[];
     return current
         .where((item) =>
