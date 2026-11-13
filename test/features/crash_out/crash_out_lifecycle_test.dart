@@ -203,6 +203,37 @@ void main() {
     expect(items.single.spaceId, isNull);
   });
 
+  test('clearing one Voice Crash Outs preserves other owners', () async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    final notifier = container.read(crashOutProvider.notifier);
+
+    await notifier.addCrashOut(
+      CrashOut(
+        id: 'clear-owner-one',
+        ownerVoiceId: 'voice-one',
+        textContent: 'Owned by one.',
+        type: CrashOutType.text,
+        createdAt: DateTime(2026, 1, 12),
+      ),
+    );
+    await notifier.addCrashOut(
+      CrashOut(
+        id: 'clear-owner-two',
+        ownerVoiceId: 'voice-two',
+        textContent: 'Owned by two.',
+        type: CrashOutType.text,
+        createdAt: DateTime(2026, 1, 13),
+      ),
+    );
+
+    await notifier.clearCrashOuts(ownerVoiceId: 'voice-one');
+
+    final items = await container.read(crashOutProvider.future);
+    expect(items.map((item) => item.id), ['clear-owner-two']);
+    expect(items.single.ownerVoiceId, 'voice-two');
+  });
+
   test(
     'legacy Crash Outs without a Voice ID remain private and loadable',
     () async {
