@@ -473,10 +473,17 @@ class _Signal {
   }
 
   factory _Signal.pattern(RegExp pattern, String label) {
-    return _Signal._(
-      label,
-      (text) => pattern.hasMatch(text),
-    );
+    return _Signal._(label, (text) {
+      for (final match in pattern.allMatches(text)) {
+        final prefix = text.substring(0, match.start);
+        final negatedBeforeSignal = RegExp(
+          r'\b(?:do not|does not|did not|will not|cannot|not|never|no longer)\s+(?:\w+\s+){0,2}$',
+        ).hasMatch(prefix);
+
+        if (!negatedBeforeSignal) return true;
+      }
+      return false;
+    });
   }
 
   bool matches(String text) => _matcher(text);

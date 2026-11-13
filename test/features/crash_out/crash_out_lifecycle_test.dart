@@ -1,6 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+// The platform store lets this test simulate a local write failure.
+// ignore: depend_on_referenced_packages
+import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 
 import 'package:ventvo/features/crash_out/models/crash_out.dart';
 import 'package:ventvo/features/crash_out/providers/crash_out_provider.dart';
@@ -13,12 +16,30 @@ void main() {
   test('new Crash Out is private by default', () {
     final crashOut = CrashOut(
       id: 'crash-1',
+      ownerVoiceId: 'legacy-owner',
       textContent: 'Something I needed to let out.',
       type: CrashOutType.text,
       createdAt: DateTime(2026, 1, 1),
     );
 
     expect(crashOut.status, CrashOutStatus.keptPrivate);
+  });
+
+  test('new Crash Outs without an owner Voice are not stored', () async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    final notifier = container.read(crashOutProvider.notifier);
+
+    await notifier.addCrashOut(
+      CrashOut(
+        id: 'unowned-new-crash',
+        textContent: 'A new record must have an owner.',
+        type: CrashOutType.text,
+        createdAt: DateTime(2026, 1, 1),
+      ),
+    );
+
+    expect(await container.read(crashOutProvider.future), isEmpty);
   });
 
   test('Crash Out can remain private after an encounter', () async {
@@ -32,14 +53,18 @@ void main() {
       createdAt: DateTime(2026, 1, 1),
     );
 
-    await container.read(crashOutProvider.notifier).addCrashOut(crashOut);
-    await container.read(crashOutProvider.notifier).keepPrivate(crashOut.id);
+    final notifier = container.read(crashOutProvider.notifier);
+    await notifier.addCrashOut(crashOut);
+    await notifier.markSpaceEntered(
+      crashOut.id,
+      ownerVoiceId: 'legacy-owner',
+      spaceId: 'attention',
+    );
+    await notifier.keepPrivate(crashOut.id, ownerVoiceId: 'legacy-owner');
 
-    var items = await container.read(crashOutProvider.future);
-    expect(items.single.status, CrashOutStatus.keptPrivate);
-
-    items = await container.read(crashOutProvider.future);
-    expect(items.single.status, CrashOutStatus.keptPrivate);
+    final items = await container.read(crashOutProvider.future);
+    expect(items.single.status, CrashOutStatus.spaceEntered);
+    expect(items.single.status.isPrivate, isTrue);
   });
 
   test('letting go removes the Crash Out', () async {
@@ -48,15 +73,291 @@ void main() {
 
     final crashOut = CrashOut(
       id: 'crash-2',
+      ownerVoiceId: 'legacy-owner',
       textContent: 'I am letting this one go.',
       type: CrashOutType.text,
       createdAt: DateTime(2026, 1, 2),
     );
 
     await container.read(crashOutProvider.notifier).addCrashOut(crashOut);
-    await container.read(crashOutProvider.notifier).deleteCrashOut(crashOut.id);
+    await container.read(crashOutProvider.notifier).deleteCrashOut(
+      crashOut.id,
+      ownerVoiceId: 'legacy-owner',
+    );
 
     final items = await container.read(crashOutProvider.future);
     expect(items, isEmpty);
   });
+
+  test(
+    'entering a wider Space records the lifecycle and keeps the Crash Out private',
+    () async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      await container.read(crashOutProvider.future);
+      final notifier = container.read(crashOutProvider.notifier);
+      final crashOut = CrashOut(
+        id: 'crash-space-1',
+        ownerVoiceId: 'voice-owner-1',
+        textContent: 'I needed another perspective.',
+        type: CrashOutType.text,
+        createdAt: DateTime(2026, 1, 3),
+      );
+
+      await notifier.addCrashOut(crashOut);
+      await notifier.markSpaceEntered(
+        crashOut.id,
+        ownerVoiceId: 'voice-owner-1',
+        spaceId: 'attention',
+        matchedExperienceId: 'opposing-experience-1',
+      );
+
+      final items = await container.read(crashOutProvider.future);
+      expect(items.single.status, CrashOutStatus.spaceEntered);
+      expect(items.single.status.isPrivate, isTrue);
+      expect(items.single.ownerVoiceId, 'voice-owner-1');
+      expect(items.single.spaceId, 'attention');
+      expect(items.single.matchedExperienceId, 'opposing-experience-1');
+
+      final reloadedContainer = ProviderContainer();
+      addTearDown(reloadedContainer.dispose);
+      final reloaded = await reloadedContainer.read(crashOutProvider.future);
+      expect(reloaded.single.status, CrashOutStatus.spaceEntered);
+      expect(reloaded.single.ownerVoiceId, 'voice-owner-1');
+      expect(reloaded.single.spaceId, 'attention');
+      expect(reloaded.single.matchedExperienceId, 'opposing-experience-1');
+    },
+  );
+
+
+  test(
+    're-entering a Space without an opposite clears a stale highlighted experience',
+    () async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      await container.read(crashOutProvider.future);
+      final notifier = container.read(crashOutProvider.notifier);
+      final crashOut = CrashOut(
+        id: 'crash-space-refresh',
+        ownerVoiceId: 'voice-refresh',
+        textContent: 'I needed another perspective.',
+        type: CrashOutType.text,
+        createdAt: DateTime(2026, 1, 10),
+      );
+
+      await notifier.addCrashOut(crashOut);
+      await notifier.markSpaceEntered(
+        crashOut.id,
+        ownerVoiceId: 'voice-refresh',
+        spaceId: 'attention',
+        matchedExperienceId: 'old-opposite',
+      );
+      await notifier.markSpaceEntered(
+        crashOut.id,
+        ownerVoiceId: 'voice-refresh',
+        spaceId: 'attention',
+        matchedExperienceId: null,
+      );
+
+      final items = await container.read(crashOutProvider.future);
+      expect(items.single.status, CrashOutStatus.spaceEntered);
+      expect(items.single.spaceId, 'attention');
+      expect(items.single.matchedExperienceId, isNull);
+
+      final reloadedContainer = ProviderContainer();
+      addTearDown(reloadedContainer.dispose);
+      final reloaded = await reloadedContainer.read(crashOutProvider.future);
+      expect(reloaded.single.matchedExperienceId, isNull);
+    },
+  );
+
+
+  test('a different Voice cannot change or delete another Voice Crash Out', () async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    final notifier = container.read(crashOutProvider.notifier);
+    final crashOut = CrashOut(
+      id: 'owned-crash',
+      ownerVoiceId: 'voice-owner',
+      textContent: 'This belongs to one Voice.',
+      type: CrashOutType.text,
+      createdAt: DateTime(2026, 1, 11),
+    );
+
+    await notifier.addCrashOut(crashOut);
+    await notifier.markSpaceEntered(
+      crashOut.id,
+      ownerVoiceId: 'different-voice',
+      spaceId: 'attention',
+    );
+    await notifier.deleteCrashOut(
+      crashOut.id,
+      ownerVoiceId: 'different-voice',
+    );
+
+    final items = await container.read(crashOutProvider.future);
+    expect(items, hasLength(1));
+    expect(items.single.ownerVoiceId, 'voice-owner');
+    expect(items.single.status, CrashOutStatus.keptPrivate);
+    expect(items.single.spaceId, isNull);
+  });
+
+  test('clearing one Voice Crash Outs preserves other owners', () async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    final notifier = container.read(crashOutProvider.notifier);
+
+    await notifier.addCrashOut(
+      CrashOut(
+        id: 'clear-owner-one',
+        ownerVoiceId: 'voice-one',
+        textContent: 'Owned by one.',
+        type: CrashOutType.text,
+        createdAt: DateTime(2026, 1, 12),
+      ),
+    );
+    await notifier.addCrashOut(
+      CrashOut(
+        id: 'clear-owner-two',
+        ownerVoiceId: 'voice-two',
+        textContent: 'Owned by two.',
+        type: CrashOutType.text,
+        createdAt: DateTime(2026, 1, 13),
+      ),
+    );
+
+    await notifier.clearCrashOuts(ownerVoiceId: 'voice-one');
+
+    final items = await container.read(crashOutProvider.future);
+    expect(items.map((item) => item.id), ['clear-owner-two']);
+    expect(items.single.ownerVoiceId, 'voice-two');
+  });
+
+  test(
+    'legacy Crash Outs without a Voice ID remain private and loadable',
+    () async {
+      SharedPreferences.setMockInitialValues({
+        'ventvo_crash_outs':
+            '[{"id":"legacy-1","textContent":"Old local entry","type":"text","createdAt":"2026-01-04T00:00:00.000","status":"keptPrivate"}]',
+      });
+
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      final items = await container.read(crashOutProvider.future);
+      expect(items.single.ownerVoiceId, isNull);
+      expect(items.single.status, CrashOutStatus.keptPrivate);
+      expect(items.single.status.isPrivate, isTrue);
+    },
+  );
+
+  test(
+    'an early add preserves Crash Outs while the initial local load is pending',
+    () async {
+      SharedPreferences.setMockInitialValues({
+        'ventvo_crash_outs':
+            '[{"id":"saved-1","textContent":"Already saved","type":"text","createdAt":"2026-01-05T00:00:00.000","status":"keptPrivate"}]',
+      });
+
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      final notifier = container.read(crashOutProvider.notifier);
+
+      await notifier.addCrashOut(
+        CrashOut(
+          id: 'new-1',
+          ownerVoiceId: 'voice-1',
+          textContent: 'New entry',
+          type: CrashOutType.text,
+          createdAt: DateTime(2026, 1, 6),
+        ),
+      );
+
+      final items = await container.read(crashOutProvider.future);
+      expect(items.map((item) => item.id), containsAll(['saved-1', 'new-1']));
+      expect(items, hasLength(2));
+    },
+  );
+
+  test('concurrent additions do not overwrite one another', () async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    await container.read(crashOutProvider.future);
+    final notifier = container.read(crashOutProvider.notifier);
+
+    await Future.wait([
+      notifier.addCrashOut(
+        CrashOut(
+          id: 'concurrent-1',
+          ownerVoiceId: 'voice-concurrent',
+          textContent: 'First concurrent entry.',
+          type: CrashOutType.text,
+          createdAt: DateTime(2026, 1, 7),
+        ),
+      ),
+      notifier.addCrashOut(
+        CrashOut(
+          id: 'concurrent-2',
+          ownerVoiceId: 'voice-concurrent',
+          textContent: 'Second concurrent entry.',
+          type: CrashOutType.text,
+          createdAt: DateTime(2026, 1, 8),
+        ),
+      ),
+    ]);
+
+    final items = await container.read(crashOutProvider.future);
+    expect(items.map((item) => item.id),
+        containsAll(['concurrent-1', 'concurrent-2']));
+    expect(items, hasLength(2));
+  });
+
+  test('failed local save does not publish an unsaved Crash Out', () async {
+    final store = _FailingSharedPreferencesStore();
+    SharedPreferencesStorePlatform.instance = store;
+
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    await container.read(crashOutProvider.future);
+    final notifier = container.read(crashOutProvider.notifier);
+
+    await expectLater(
+      notifier.addCrashOut(
+        CrashOut(
+          id: 'not-saved',
+          ownerVoiceId: 'voice-failing',
+          textContent: 'This must not appear as saved.',
+          type: CrashOutType.text,
+          createdAt: DateTime(2026, 1, 9),
+        ),
+      ),
+      throwsA(isA<StateError>()),
+    );
+
+    final currentState = container.read(crashOutProvider);
+    expect(currentState.asData!.value, isEmpty);
+    expect(store.values, isEmpty);
+  });
+}
+
+class _FailingSharedPreferencesStore extends SharedPreferencesStorePlatform {
+  final Map<String, Object> values = {};
+
+  @override
+  Future<Map<String, Object>> getAll() async => Map<String, Object>.of(values);
+
+  @override
+  Future<bool> setValue(String valueType, String key, Object value) async {
+    throw StateError('simulated local persistence failure');
+  }
+
+  @override
+  Future<bool> remove(String key) async => values.remove(key) != null;
+
+  @override
+  Future<bool> clear() async {
+    values.clear();
+    return true;
+  }
 }

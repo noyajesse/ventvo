@@ -27,15 +27,19 @@ Crash Out is a separate private experience:
 
 Voice Space
   ↓
-Crash Out
-  ↓
-Private Release
+Private Crash Out
   ↓
 Experience Understanding
   ↓
-Meaningful Opposition
+Recognized Human Tension
   ↓
-Another Side of the Experience
+Meaningful Opposition Evaluation
+  ↓
+Wider Crash Out Space
+  ↓
+Many Experiences + Ongoing Replies
+
+The original Crash Out remains private throughout this journey.
 ```
 
 1. Ventvo Voice
@@ -468,39 +472,38 @@ The full Echo Note architecture is still under development.
 
 11. Crash Out
 
-Crash Out is a separate Ventvo experience.
+Crash Out is a separate private experience. It is not a Vent type, diary, notes application, therapist, conventional inbox, or generic people-matching workflow.
 
-It is not a Vent type, diary, notes application, or generic people-matching workflow.
+Its purpose is to let a Voice release something privately and, when the experience can be understood, encounter another side of the same human tension.
 
-Its defining behavior is:
+Current product journey:
 
 Voice Space
-→ Crash Out
-→ Private Release
+→ Private Crash Out
 → Experience Understanding
-→ Meaningful Opposition
-→ Another Side of the Experience
+→ Recognized Human Tension
+→ Meaningful Opposition Evaluation
+→ Wider Crash Out Space
+→ Many Experiences + Ongoing Replies
 
-The Crash Out remains private. It is not published merely so Ventvo can find an opposing experience.
+The original Crash Out remains private at every stage. Entering a wider Space records a private lifecycle state and destination; it does not publish, copy, or convert the original Crash Out into a public contribution.
 
 12. Crash Out Experience Representation
 
-Before Ventvo can identify an opposing experience, it should interpret the private experience into:
+The prototype interprets text Crash Outs into an ExperienceRepresentation containing:
 
-- Situation
-- Human Tension
-- Position
-- Direction
-- Need / Desire
-- Emotional State
-- Context
-- Intensity
+- one or more ExperienceAtoms;
+- a HumanTension for each atom;
+- a Position and Direction;
+- confidence and intensity values;
+- evidence labels supporting the interpretation;
+- contextual signals that may support later evaluation.
 
-The core Crash Out signals are Human Tension + Position + Direction.
+The primary opposition signals remain Human Tension + Position + Direction. Multiple atoms are allowed so one paragraph is not forced into a single interpretation.
 
-A Crash Out may contain multiple experience atoms. The system should identify the strongest opposition-worthy atom instead of forcing an entire paragraph into one category.
+The current CrashOutExperienceInterpreter is deterministic prototype logic. Its signal rules include grammatical/nearby-negation handling and are covered by regression tests. It is not an AI model or a reliable general-purpose understanding system. Phrase rules and confidence values are scaffolding for validation, not proof that a person's meaning has been fully understood.
 
-13. Crash Out Opposition
+13. Meaningful Opposition
 
 Crash Out is intentionally different from Find People Who Understand.
 
@@ -510,77 +513,59 @@ Find People Who Understand asks:
 
 Crash Out asks:
 
-> What is another side of what I am experiencing?
+> What is another side of what I'm experiencing?
 
-A valid Crash Out encounter requires:
+The current CrashOutOppositeExperienceService evaluates discoverable public Vent experiences. A candidate is considered only when it is eligible for discovery, is not excluded, and is not the originating Crash Out. A meaningful opposition requires atoms on the same HumanTension with opposing directions and sufficient confidence/intensity.
 
-- shared human tension;
-- opposing position/direction;
-- semantic evidence;
-- meaningful contextual support where useful;
-- safety/privacy eligibility;
-- sufficient confidence.
+Shared context may strengthen an already valid opposition, but context cannot create opposition. Shared topics, different emotions, literal antonyms, or random disagreement are not sufficient. If no eligible meaningful opposite is found, the system must not claim that a match exists.
 
-Shared topic, different emotion, literal antonyms, or random disagreement are not sufficient.
+A recognized human tension may still open its wider Crash Out Space when no individual opposite is found. In that case, the UI must not highlight a matched experience or imply that one was found.
 
-Context can support opposition but cannot create it.
+14. The Wider Crash Out Space
 
-The system must allow no encounter when no meaningful opposite exists.
+The destination is a wider, ongoing Space organized around a recognized HumanTension. It is not a one-to-one encounter, temporary private chat, conventional comment section, or subreddit.
 
-Example:
+A Space may contain:
 
-Private Crash Out:
+- multiple experiences associated with the same tension;
+- an eligible public Vent that serves as the highlighted doorway when a meaningful opposite was found;
+- replies attached to the specific experience they address;
+- continued replies to an earlier reply, provided the parent reply belongs to that same experience.
 
-> “I wish someone would check on me. I feel like I'm always the one checking on everyone else.”
+The original private Crash Out is never inserted into this collection. The public experience that may be highlighted is a separate Vent record.
 
-Public experience:
+Prototype/local data boundaries:
 
-> “I hate when people keep checking on me. Sometimes I just want everyone to leave me alone.”
+- Fictional preview experiences and replies are stored locally and are disclosed in the UI as sample content, not real user activity.
+- Replies written in the prototype are saved only on the current device.
+- Space experiences and replies use separate local persistence collections from private Crash Outs.
+- Local persistence is not shared, realtime, or evidence of another person receiving a reply.
 
-The people are not opposites. The experiences occupy opposing sides of the same human tension.
+15. Crash Out Lifecycle, Ownership and Persistence
 
-Prototype architecture:
+The current private lifecycle states are:
 
-CrashOutExperienceInterpreter
-→ ExperienceRepresentation
-→ CrashOutOppositionEngine
-→ Candidate Eligibility
-→ CrashOutEncounter
+- keptPrivate — the original Crash Out remains private and has not recorded entry into a wider Space.
+- spaceEntered — the original Crash Out remains private and records the wider Space destination, plus an optional matched experience ID when a real eligible opposite was found.
 
-The current deterministic CrashOutOppositeExperienceService is prototype scaffolding. Its phrase-based tensions should support validation and regression tests rather than grow indefinitely into a hard-coded ruleset.
+Both states are private. The Private Crash Outs screen can reopen a previously entered Space using its stored destination. Older local entries without a stored destination may use the deterministic interpreter to recover a recognized tension; this is a compatibility fallback, not a new match.
 
-14. Crash Out Encounter
+New Crash Outs must carry an owner Voice ID. The Private Crash Outs screen shows owner-bound records for the active local Voice, and lifecycle updates/deletion require that owner ID; mismatched owners are rejected. The opposition prototype also excludes a discoverable Vent whose owner Voice is the same as the originating Crash Out.
 
-The encounter should describe the relationship between the experiences rather than expose an algorithmic result.
+Older local records without an owner field remain readable as unassigned legacy data in the current single-Voice local prototype. A successful Space-entry transition claims the legacy record for the active Voice. This compatibility behavior must be redesigned before supporting multiple local accounts or sessions.
 
-Preferred direction:
+Voice IDs and these client-side checks are local prototype metadata only: they are not authentication, verified identity, or server-side authorization. Current local provider operations are not a production access-control boundary.
 
-> You wanted someone to notice.
->
-> Someone else wanted to be left alone.
->
-> Two sides of needing people.
+Private Crash Outs, Space experiences, and Space replies are persisted separately using local device storage. Their providers serialize mutations, wait for initial loading before changing collections, and publish updated state only after successful local writes. Reply validation keeps replies attached to their experience and rejects duplicate IDs or invalid reply-to-reply targets.
 
-Do not call another person “your opposite”.
+Let Go deletes the private Crash Out and its associated local Experience Thread data. It does not publish the original text into a Space. Space preview content and local replies remain separate collections.
 
-Do not automatically add follows, likes, messages, comments, or connection requests.
+Production/security boundary:
 
-The encounter itself is the product outcome.
-
-A Crash Out encounter may naturally lead to an Echo, but an Echo is not required.
-
-15. Crash Out Lifecycle
-
-Release
-→ Understand experience
-→ Evaluate eligible public experiences
-→ Strong opposition?
-  → Yes: Encounter
-  → No: No encounter
-
-A future delayed-encounter system may allow an opposite experience to surface later. That requires an explicit privacy-safe retention design.
-
-If delayed matching is implemented, deleting the private Crash Out must also remove its matching representation.
+- No backend, database, API, authentication, server-side authorization, or realtime infrastructure is part of this frontend prototype.
+- Local Voice IDs and Flutter provider checks must never be treated as proof of ownership or privacy in production.
+- A future backend must enforce account ownership, authorization, private/public data separation, candidate eligibility, moderation, abuse controls, and deletion/retention rules server-side.
+- Any future delayed encounter representation requires an explicit privacy-safe retention and deletion policy. Deleting a private Crash Out must also remove any private derived representation used for delayed discovery.
 
 16. Find People Who Understand
 

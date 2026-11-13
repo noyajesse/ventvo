@@ -12,6 +12,18 @@ class CrashOutSpaceExperienceNotifier
     extends AsyncNotifier<List<CrashOutSpaceExperience>> {
   static const _storageKey = 'ventvo_crash_out_space_experiences';
 
+  // Serialize mutations so overlapping additions and deletion stay consistent.
+  Future<void> _mutationQueue = Future<void>.value();
+
+  Future<T> _runMutation<T>(Future<T> Function() mutation) {
+    final result = _mutationQueue.then((_) => mutation());
+    _mutationQueue = result.then<void>(
+      (_) {},
+      onError: (Object error, StackTrace stackTrace) {},
+    );
+    return result;
+  }
+
   @override
   Future<List<CrashOutSpaceExperience>> build() async {
     final prefs = await SharedPreferences.getInstance();
@@ -33,6 +45,12 @@ class CrashOutSpaceExperienceNotifier
     }
   }
 
+  Future<List<CrashOutSpaceExperience>> _currentExperiences() async {
+    final current = state.asData?.value;
+    if (current != null) return current;
+    return future;
+  }
+
   List<CrashOutSpaceExperience> experiencesFor(String spaceId) {
     final current = state.asData?.value ?? const <CrashOutSpaceExperience>[];
     final result = current.where((item) => item.spaceId == spaceId).toList()
@@ -40,29 +58,48 @@ class CrashOutSpaceExperienceNotifier
     return result;
   }
 
+  Future<bool> _persist(
+    List<CrashOutSpaceExperience> experiences,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = await prefs.setString(
+      _storageKey,
+      jsonEncode(experiences.map((item) => item.toMap()).toList()),
+    );
+    if (!saved) return false;
+    state = AsyncData(experiences);
+    return true;
+  }
+
   /// Adds the discovered public opposite as the Space's initial doorway
   /// experience. Further Space content uses this separate local domain model.
   Future<CrashOutSpaceExperience> ensureFromVent({
     required String spaceId,
     required Vent vent,
-  }) async {
-    final current = state.asData?.value ?? const <CrashOutSpaceExperience>[];
-    final id = 'opposing_experience_${vent.id}';
-    for (final existing in current) {
-      if (existing.id == id && existing.spaceId == spaceId) return existing;
-    }
+  }) {
+    return _runMutation(() async {
+      final current = await _currentExperiences();
+      final id = 'opposing_experience_${vent.id}';
+      for (final existing in current) {
+        if (existing.id == id && existing.spaceId == spaceId) return existing;
+      }
 
-    final experience = CrashOutSpaceExperience(
-      id: id,
-      spaceId: spaceId,
-      content: vent.content,
-      createdAt: vent.createdAt,
-      voiceName: vent.voiceName,
-      voiceMark: vent.voiceMark,
-      sourceExperienceId: vent.id,
-    );
-    await _persist([...current, experience]);
-    return experience;
+      final experience = CrashOutSpaceExperience(
+        id: id,
+        spaceId: spaceId,
+        content: vent.content,
+        createdAt: vent.createdAt,
+        voiceName: vent.voiceName,
+        voiceMark: vent.voiceMark,
+        sourceExperienceId: vent.id,
+      );
+      if (!await _persist([...current, experience])) {
+        throw StateError(
+          'Failed to persist the Crash Out Space doorway locally.',
+        );
+      }
+      return experience;
+    });
   }
 
   /// Adds missing local preview examples without duplicating existing content.
@@ -72,54 +109,64 @@ class CrashOutSpaceExperienceNotifier
   /// in the UI and must never be treated as real user contributions.
   Future<void> ensurePrototypeExperiences(
     List<CrashOutSpaceExperience> prototypes,
-  ) async {
-    final current = state.asData?.value ?? const <CrashOutSpaceExperience>[];
-    final knownIds = current.map((item) => item.id).toSet();
-    final additions = <CrashOutSpaceExperience>[];
+  ) {
+    if (prototypes.isEmpty) return Future<void>.value();
 
-    // Track IDs as each item is accepted so duplicates inside the same fixture
-    // batch cannot be appended twice.
-    for (final item in prototypes) {
-      if (item.id.trim().isEmpty ||
-          item.spaceId.trim().isEmpty ||
-          item.content.trim().isEmpty ||
-          !knownIds.add(item.id)) {
-        continue;
+    return _runMutation(() async {
+      final current = await _currentExperiences();
+      final knownKeys =
+          current.map((item) => '${item.spaceId}::${item.id}').toSet();
+      final additions = <CrashOutSpaceExperience>[];
+
+      for (final item in prototypes) {
+        final key = '${item.spaceId}::${item.id}';
+        if (item.id.trim().isEmpty ||
+            item.spaceId.trim().isEmpty ||
+            item.content.trim().isEmpty ||
+            !knownKeys.add(key)) {
+          continue;
+        }
+        additions.add(item);
       }
-      additions.add(item);
-    }
 
-    if (additions.isEmpty) return;
-    await _persist([...current, ...additions]);
+      if (additions.isEmpty) return;
+      if (!await _persist([...current, ...additions])) {
+        throw StateError(
+          'Failed to persist Crash Out Space preview experiences locally.',
+        );
+      }
+    });
   }
 
-  Future<void> addExperience(CrashOutSpaceExperience experience) async {
-    if (experience.id.trim().isEmpty ||
-        experience.spaceId.trim().isEmpty ||
-        experience.content.trim().isEmpty) {
-      return;
-    }
-    final current = state.asData?.value ?? const <CrashOutSpaceExperience>[];
-    if (current.any((item) =>
-        item.id == experience.id && item.spaceId == experience.spaceId)) {
-      return;
-    }
-    await _persist([...current, experience]);
+  Future<void> addExperience(CrashOutSpaceExperience experience) {
+    return _runMutation(() async {
+      if (experience.id.trim().isEmpty ||
+          experience.spaceId.trim().isEmpty ||
+          experience.content.trim().isEmpty) {
+        return;
+      }
+      final current = await _currentExperiences();
+      if (current.any((item) =>
+          item.id == experience.id && item.spaceId == experience.spaceId)) {
+        return;
+      }
+      if (!await _persist([...current, experience])) {
+        throw StateError('Failed to persist Crash Out Space experience locally.');
+      }
+    });
   }
 
-  Future<void> _persist(List<CrashOutSpaceExperience> experiences) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(
-      _storageKey,
-      jsonEncode(experiences.map((item) => item.toMap()).toList()),
-    );
-    state = AsyncData(experiences);
-  }
-
-  Future<void> clearExperiences() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_storageKey);
-    state = const AsyncData([]);
+  Future<void> clearExperiences() {
+    return _runMutation(() async {
+      await _currentExperiences();
+      final prefs = await SharedPreferences.getInstance();
+      final existed = prefs.containsKey(_storageKey);
+      final removed = await prefs.remove(_storageKey);
+      if (existed && !removed) {
+        throw StateError('Failed to clear Crash Out Space experiences locally.');
+      }
+      state = const AsyncData([]);
+    });
   }
 }
 

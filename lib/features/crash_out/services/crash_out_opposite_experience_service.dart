@@ -28,7 +28,9 @@ class CrashOutOppositeExperienceService {
     for (final vent in experiences) {
       if (!vent.isDiscoverable ||
           excludedIds.contains(vent.id) ||
-          vent.originatingCrashOutId == crashOut.id) {
+          vent.originatingCrashOutId == crashOut.id ||
+          (crashOut.ownerVoiceId != null &&
+              vent.ownerVoiceId == crashOut.ownerVoiceId)) {
         continue;
       }
 

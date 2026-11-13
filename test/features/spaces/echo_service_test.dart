@@ -117,6 +117,30 @@ void main() {
     expect(storage.responses, isEmpty);
   });
 
+  test('rejects an Echo when the author Voice is unavailable', () async {
+    final echo = await service.leaveEcho(
+      space: discussion,
+      content: 'An Echo without a known author.',
+      voiceMark: '△',
+      sourceVoiceId: 'voice-1',
+    );
+
+    expect(echo, isNull);
+    expect(storage.responses, isEmpty);
+  });
+
+  test('rejects an Echo when the originating Voice is unavailable', () async {
+    final echo = await service.leaveEcho(
+      space: discussion,
+      content: 'An Echo without a verified source Voice.',
+      voiceMark: '△',
+      authorVoiceId: 'voice-2',
+    );
+
+    expect(echo, isNull);
+    expect(storage.responses, isEmpty);
+  });
+
   test('creates and persists a valid Echo without creating Resonance', () async {
     final echo = await service.leaveEcho(
       space: discussion,

@@ -1,3 +1,56 @@
+## Unreleased — Crash Out Voice ownership boundaries
+
+### Added
+- Require an owner Voice ID when creating a new private Crash Out.
+- Scope the Private Crash Outs screen to the active local Voice.
+- Require matching owner IDs for Space-entry transitions, deletion and collection clearing.
+- Exclude same-Voice Vents from Crash Out opposition candidates.
+- Preserve legacy unowned local Crash Outs for the current single-Voice prototype and claim them when Space entry is successfully recorded.
+
+### Fixed
+- Prevent one Voice from updating or deleting another Voice's owned Crash Out.
+- Prevent navigation into a Space when the lifecycle ownership check fails.
+- Avoid deleting associated local thread data when Crash Out deletion is rejected.
+
+### Boundaries
+- These are local prototype ownership checks, not production authentication or authorization.
+- No backend, database, API, authentication, server-side authorization, or realtime infrastructure was added.
+
+## Unreleased — Crash Out Space and processing hardening
+
+### Added
+- Added recovery actions for failed Crash Out processing so the user can retry or return to Private.
+- Added the wider Crash Out Space destination to the private lifecycle record, with an optional highlighted opposing experience ID.
+- Added a return path from Private Crash Outs to the same wider Space, including compatibility for older local records.
+
+### Improved
+- Serialized local Crash Out, Space experience and reply mutations to avoid lost updates.
+- Waited for initial local storage reads and avoided publishing state before successful persistence.
+- Validated reply-to-reply targets against the same experience and preserved drafts when a save fails.
+- Made experience signal matching respect nearby negation.
+
+### Boundaries
+- The original Crash Out remains private; it is never copied into the wider Space.
+- Fictional preview content is disclosed as prototype-only, and replies written by the user remain local to the device.
+- No backend, database, API, authentication, server-side authorization, or realtime infrastructure was added.
+
+## Unreleased — Crash Out ownership and lifecycle foundation
+
+### Added
+- Added an owner Voice ID to newly created private Crash Outs.
+- Added the `spaceEntered` lifecycle state to record entry into the wider tension Space.
+- Kept the original Crash Out private after entering a Space; the lifecycle marker does not imply a public copy or a confirmed opposite match.
+- Kept legacy local Crash Outs without an owner Voice ID readable.
+
+### Improved
+- Private Crash Out listing now includes both newly kept-private and Space-entered entries.
+- Crash Out provider mutations wait for initial local storage loading before changing the collection.
+- Let Go continues to delete the original Crash Out; no public experience is created from it.
+
+### Boundaries
+- Voice ownership is local prototype metadata, not authentication or server-side authorization.
+- No backend, database, API, authentication, or realtime infrastructure was added.
+
 ## Unreleased - Crash Out Opposition Architecture
 
 ## Unreleased — Crash Out reply persistence
@@ -306,3 +359,49 @@ No additional Space modes were introduced.
 - Added tests for idempotent preview seeding and recognition of “I hate people” as a connection-withdrawal signal.
 - Kept all changes frontend-only; no backend, auth, database, API, server, or realtime work was introduced.
 - Local Flutter validation is required after pulling the latest changes.
+
+
+## Unreleased — Crash Out lifecycle integrity
+
+### Fixed
+- Persist private Crash Out changes before publishing updated Riverpod state.
+- Serialize add, Space-entry, delete, and clear mutations so overlapping actions cannot overwrite one another.
+- Treat unsuccessful SharedPreferences writes and clears as failures rather than reporting unsaved state as successful.
+
+### Tested
+- Added coverage for concurrent Crash Out additions.
+- Added regression coverage ensuring failed local writes do not publish an unsaved Crash Out.
+- Strengthened the privacy lifecycle test to verify that Keep Private does not erase the Space-entered marker.
+
+## Unreleased — Crash Out Space persistence integrity
+
+### Fixed
+- Serialize local experience and reply mutations to prevent concurrent writes from losing data.
+- Wait for initial local storage reads before mutating Crash Out Space collections.
+- Do not publish unsaved experiences or replies after failed local writes.
+- Treat unsuccessful local clears as failures.
+
+### Tested
+- Added regression coverage for concurrent experience/reply additions and failed local writes.
+- Updated README and architecture documentation to reflect the approved wider Crash Out Space lifecycle.
+
+## Unreleased — Crash Out processing recovery
+
+### Fixed
+- Replace the indefinite processing state with a clear recovery screen when experience loading or local Space persistence fails.
+- Allow retrying the idempotent processing steps or returning to the Private Crash Outs list.
+- Reassure the user that the original Crash Out remains private when processing cannot complete.
+
+### Tested
+- Added a widget regression test that simulates a local persistence failure and verifies retry can complete the Space entry.
+
+## Unreleased — Crash Out Space return path
+
+### Fixed
+- Persist the wider Space destination and any highlighted opposing experience on the private Crash Out lifecycle record.
+- Allow people to reopen the same wider Space from their Private Crash Outs list.
+- Avoid showing the no-opposite message for Crash Outs that have already entered a wider Space.
+
+### Tested
+- Verify a Crash Out can reopen its Space when no individual opposite was found, without implying that a match exists.
+

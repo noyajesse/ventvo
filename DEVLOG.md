@@ -1,3 +1,51 @@
+## 2026-11-13 — Crash Out local Voice ownership boundaries
+
+Branch: feat/crash-out-domain-lifecycle  
+Pull request: #3 (draft; targets development)
+
+Implementation added; fresh local verification is pending.
+
+- Require a non-empty owner Voice ID when adding a new Crash Out.
+- Scope the Private screen to the active local Voice while preserving visibility of unassigned legacy records in the current single-Voice prototype.
+- Require owner IDs for lifecycle transitions, deletion and collection clearing; reject operations when the supplied owner does not match the stored owner.
+- Claim an unassigned legacy record for the active Voice when a successful Space-entry transition is persisted.
+- Return explicit success/failure from Space entry and deletion so the UI does not navigate or delete associated local thread data after an ownership rejection.
+- Exclude discoverable Vents owned by the same Voice as the originating Crash Out from opposition matching.
+- Keep the original Crash Out private and preserve the frontend/local-only security boundary.
+
+Verification still required locally:
+- `flutter analyze`
+- `flutter test test/features/crash_out/crash_out_lifecycle_test.dart test/features/crash_out/crash_out_private_screen_test.dart test/features/crash_out/crash_out_opposite_experience_service_test.dart test/features/crash_out/crash_out_processing_screen_test.dart`
+- `flutter test`
+
+No backend, database, API, authentication, server-side authorization, or realtime infrastructure was introduced.
+
+---
+
+## 2026-11-12 — Crash Out lifecycle, Space persistence and interpreter hardening
+
+Branch: feat/crash-out-domain-lifecycle  
+Pull request: #3 (draft; targets development)
+
+Completed and locally verified:
+
+- Added owner Voice metadata to newly created private Crash Outs while retaining compatibility with older local records that have no owner ID.
+- Recorded the wider HumanTension Space entered by a private Crash Out and the optional ID of an eligible opposing experience highlighted as its doorway.
+- Kept the original Crash Out private after Space entry; the Space receives a separate public experience record, never the private source text.
+- Added recovery controls for local processing/read/write failures so the user can retry or return to Private without being left on an endless processing screen.
+- Allowed Private Crash Outs to reopen their recorded wider Space, including a deterministic fallback for older local entries without a stored destination.
+- Serialized private Crash Out, Space experience and reply mutations; waited for initial local storage reads; and treated unsuccessful writes/clears as failures rather than publishing unsaved state.
+- Kept replies attached to the experience they address and validated reply-to-reply references against that same experience.
+- Preserved reply drafts and reply targets when local saving fails; disabled the composer while a save is in progress.
+- Made the deterministic experience interpreter respect nearby negation and added regression coverage.
+- Kept fictional preview experiences/replies visibly identified as prototype content and disclosed that user-written replies remain on the current device.
+
+Verification: the user ran the focused Crash Out tests, the full `flutter test` suite, and `flutter analyze`; all tests passed and analysis was clean.
+
+Boundaries: frontend/local prototype only. No backend, database, API, authentication, server-side authorization, or realtime infrastructure was introduced. Owner Voice IDs remain local metadata, not production authorization.
+
+---
+
 ## 2026-10-27 — Crash Out reply persistence acceptance
 
 - Changed `CrashOutSpaceNotifier.addReply()` to report whether a reply was accepted and persisted locally.
@@ -1315,3 +1363,102 @@ Verification:
 - Added regression coverage for negated attention-seeking and help-seeking phrases, including preservation of the intended away-direction signal.
 - Scope is limited to the Crash Out interpreter, its existing service regression suite, and this development log. No backend, authentication, database, API, realtime, or UI styling changes.
 - Flutter tests and analysis were not run through the GitHub connector; local verification remains required.
+
+
+## 2026-11-08 — Crash Out ownership and lifecycle foundation
+
+- Added an explicit optional owner Voice ID to the private Crash Out model; newly created Crash Outs attach to the current local Ventvo Voice.
+- Preserved compatibility with existing local Crash Out records that predate Voice ownership metadata.
+- Added a distinct `spaceEntered` lifecycle marker. It records entry into the wider tension Space without changing the original Crash Out's private status or claiming that an opposing experience was found.
+- Kept both lifecycle states in the owner's Private list.
+- Made Crash Out mutations wait for initial local storage loading so an early action cannot replace existing saved Crash Outs with an empty list.
+- Kept Let Go as deletion; no public copy of the original Crash Out is created.
+- This is local prototype ownership metadata, not authentication or server-side authorization. No backend, database, API, or realtime work was introduced.
+- Flutter tests and analysis must be run locally after pulling this branch.
+
+
+## 2026-11-12 — Crash Out lifecycle persistence safeguards
+
+Branch: feat/crash-out-domain-lifecycle
+
+- Corrected Crash Out persistence ordering: local storage must complete successfully before Riverpod publishes the changed collection.
+- Treat a false SharedPreferences write/clear result as a persistence failure.
+- Serialized add, Space-entry, delete, and clear mutations so concurrent actions operate on the latest committed collection rather than stale snapshots.
+- Added regression coverage for overlapping additions and failed local writes; strengthened the Keep Private lifecycle test to ensure it preserves the Space-entered marker.
+- Kept Crash Outs private, retained legacy records, and made no backend, authentication, API, database, or realtime changes.
+
+Verification:
+- Source and tests were updated on the feature branch through GitHub.
+- Flutter tests and analysis have not been run in this environment. Run the focused lifecycle and Crash Out Space tests, then the full Flutter test suite and analyzer locally before treating this change as verified.
+
+## 2026-11-12 — Crash Out Space persistence integrity
+
+- Serialized Crash Out Space experience and reply mutations so concurrent local actions cannot overwrite one another.
+- Made experience and reply mutations wait for their initial local storage reads before taking a snapshot.
+- Publish provider state only after SharedPreferences confirms the write; failed writes remain failures.
+- Check local deletion results before publishing cleared state.
+- Added regression coverage for concurrent experience/reply additions and failed local writes.
+- Updated README and architecture lifecycle wording to match the approved wider Crash Out Space direction: a recognized tension may open its Space even when no individual opposite is found, without claiming a match.
+- The Crash Out Space remains a local frontend prototype with clearly disclosed fictional examples; no backend, authentication, API, database, or realtime infrastructure was introduced.
+
+## 2026-11-12 — Crash Out Space return path
+
+- Persist the entered human-tension Space ID and optional highlighted opposing experience ID on the private Crash Out record.
+- Restore the same Space from the Private list after navigation away or app restart.
+- Keep the original Crash Out private and distinguish “entered a wider Space” from “found an opposite”.
+- Added a widget regression test for reopening a Space when no individual opposite was found.
+
+
+
+## 2026-11-12 — Crash Out processing recovery
+
+Branch: feat/crash-out-domain-lifecycle
+
+- Added an explicit failure state when Crash Out processing cannot load experiences or persist the wider Space locally.
+- The recovery screen explains that the original Crash Out remains private, offers an idempotent retry, and provides a route back to Private Crash Outs.
+- Added a widget regression test that simulates a local persistence failure and verifies that retry can complete the Space entry.
+- No backend, authentication, database, API, or realtime infrastructure was introduced.
+- Flutter analysis and tests must be run locally after pulling these changes.
+
+
+## 2026-11-12 — Retire the legacy private encounter route
+
+- Removed navigation from the Private Crash Outs list into the retired one-to-one Experience Thread.
+- A Crash Out can reopen the wider Crash Out Space only after its Space-entry lifecycle is recorded.
+- Kept the legacy thread deletion cascade when a user lets go of a Crash Out, so obsolete local thread data can still be cleaned up.
+- Updated the private-list copy to distinguish a private Crash Out that has not entered a wider Space.
+- Added widget regression coverage for the retired route.
+- No backend, authentication, API, database, or realtime changes.
+
+Verification:
+- Run the focused Private Crash Outs widget test, then the full Flutter test suite and analyzer locally.
+
+
+## 2026-11-12 — Clear stale Crash Out opposition metadata
+
+- Fixed nullable lifecycle updates so re-entering a wider Space without a current opposing experience clears an older highlighted experience ID instead of silently retaining it.
+- Added regression coverage for the refreshed lifecycle state and its persisted reload.
+- This preserves the distinction between entering a recognized tension Space and actually finding an opposite; no match is claimed when none is currently available.
+- No backend, authentication, database, API, or realtime changes.
+
+Verification:
+- Run the focused Crash Out lifecycle test, then the full Flutter test suite and analyzer locally.
+
+
+## 2026-11-12 — Respect negation in pattern-based experience signals
+
+- Updated regex-backed interpreter signals to apply the same nearby-negation guard used by phrase signals.
+- Added regression coverage for a negated "nobody notices" statement so it does not incorrectly produce an attention-seeking atom.
+- Kept interpretation deterministic and local; no backend or external language service was introduced.
+
+Verification:
+- Run the focused Crash Out opposite-experience service test, then the full Flutter test suite and analyzer locally.
+
+
+## 2026-11-12 — Echo author eligibility guard
+
+- Made Echo creation fail closed unless both the responding Voice and originating Moment Voice are known.
+- Prevented Echo creation when the author is the same Voice that created the originating Moment.
+- Added regression coverage for missing author identity and missing originating Voice identity.
+- This is a frontend domain safeguard only; production authorization must still be enforced by the backend.
+- No backend, authentication, API, database, or realtime infrastructure was introduced.

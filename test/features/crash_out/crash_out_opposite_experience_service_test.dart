@@ -161,6 +161,17 @@ void main() {
     );
   });
 
+  test('negated nobody-notices pattern does not create a toward signal', () {
+    final result = interpreter.interpret(
+      crashOut('I do not believe nobody notices me.'),
+    );
+
+    expect(
+      result.atoms.where((atom) => atom.tension == HumanTension.attention),
+      isEmpty,
+    );
+  });
+
   test('negated attention-seeking phrase does not create a toward signal', () {
     final result = interpreter.interpret(
       crashOut("I don't want someone to check on me."),
@@ -218,4 +229,63 @@ void main() {
 
     expect(match, isNull);
   });
+
+  test('does not match an opposite Vent from the originating Voice', () {
+    final source = crashOut('I wish someone would check on me.').copyWith(
+      ownerVoiceId: 'voice-1',
+    );
+    final sameVoiceOpposite = vent(
+      'same-voice-opposite',
+      'Please stop checking on me. I just want space.',
+    ).copyWith(ownerVoiceId: 'voice-1');
+
+    final match = service.find(
+      crashOut: source,
+      experiences: [sameVoiceOpposite],
+    );
+
+    expect(match, isNull);
+  });
+
+  test('does not match experiences originating from the same Crash Out', () {
+    final match = service.find(
+      crashOut: crashOut('I wish someone would check on me.'),
+      experiences: [
+        vent('self-origin', 'Please stop checking on me.').copyWith(
+          originatingCrashOutId: 'crash-1',
+        ),
+      ],
+    );
+
+    expect(match, isNull);
+  });
+
+  test('does not match explicitly excluded experience IDs', () {
+    final match = service.find(
+      crashOut: crashOut('I wish someone would check on me.'),
+      experiences: [
+        vent('excluded', 'Please stop checking on me.'),
+      ],
+      excludedIds: {'excluded'},
+    );
+
+    expect(match, isNull);
+  });
+
+  test('does not match pending or archived experiences', () {
+    final match = service.find(
+      crashOut: crashOut('I wish someone would check on me.'),
+      experiences: [
+        vent('pending', 'Please stop checking on me.').copyWith(
+          safetyState: VentSafetyState.pending,
+        ),
+        vent('archived', 'Please stop checking on me.').copyWith(
+          lifecycleState: VentLifecycleState.archived,
+        ),
+      ],
+    );
+
+    expect(match, isNull);
+  });
+
 }

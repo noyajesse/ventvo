@@ -27,36 +27,53 @@ class CrashOutStorage {
 
   Future<void> save(List<CrashOut> crashOuts) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(
+    final saved = await prefs.setString(
       _key,
       jsonEncode(crashOuts.map(_toJson).toList()),
     );
+    if (!saved) {
+      throw StateError('Failed to persist private Crash Outs locally.');
+    }
   }
 
   Future<void> clear() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_key);
+    final existed = prefs.containsKey(_key);
+    final removed = await prefs.remove(_key);
+    if (existed && !removed) {
+      throw StateError('Failed to clear private Crash Outs locally.');
+    }
   }
 
   Map<String, dynamic> _toJson(CrashOut crashOut) {
     return {
       'id': crashOut.id,
+      'ownerVoiceId': crashOut.ownerVoiceId,
       'textContent': crashOut.textContent,
       'audioPath': crashOut.audioPath,
       'type': crashOut.type.name,
       'createdAt': crashOut.createdAt.toIso8601String(),
       'status': crashOut.status.name,
+      'spaceId': crashOut.spaceId,
+      'matchedExperienceId': crashOut.matchedExperienceId,
     };
   }
 
   CrashOut _fromJson(Map<String, dynamic> json) {
     return CrashOut(
       id: json['id'] as String,
+      ownerVoiceId: json['ownerVoiceId'] is String
+          ? json['ownerVoiceId'] as String
+          : null,
       textContent: json['textContent'] as String?,
       audioPath: json['audioPath'] as String?,
       type: _parseType(json['type']),
       createdAt: DateTime.parse(json['createdAt'] as String),
       status: _parseStatus(json['status']),
+      spaceId: json['spaceId'] is String ? json['spaceId'] as String : null,
+      matchedExperienceId: json['matchedExperienceId'] is String
+          ? json['matchedExperienceId'] as String
+          : null,
     );
   }
 
