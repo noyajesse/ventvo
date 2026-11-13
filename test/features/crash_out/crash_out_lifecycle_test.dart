@@ -37,7 +37,11 @@ void main() {
 
     final notifier = container.read(crashOutProvider.notifier);
     await notifier.addCrashOut(crashOut);
-    await notifier.markSpaceEntered(\n      crashOut.id,\n      ownerVoiceId: 'legacy-owner',\n      spaceId: 'attention',\n    );
+    await notifier.markSpaceEntered(
+      crashOut.id,
+      ownerVoiceId: 'legacy-owner',
+      spaceId: 'attention',
+    );
     await notifier.keepPrivate(crashOut.id, ownerVoiceId: 'legacy-owner');
 
     final items = await container.read(crashOutProvider.future);
@@ -57,7 +61,10 @@ void main() {
     );
 
     await container.read(crashOutProvider.notifier).addCrashOut(crashOut);
-    await container.read(crashOutProvider.notifier).deleteCrashOut(\n      crashOut.id,\n      ownerVoiceId: 'legacy-owner',\n    );
+    await container.read(crashOutProvider.notifier).deleteCrashOut(
+      crashOut.id,
+      ownerVoiceId: 'legacy-owner',
+    );
 
     final items = await container.read(crashOutProvider.future);
     expect(items, isEmpty);
@@ -82,6 +89,7 @@ void main() {
       await notifier.addCrashOut(crashOut);
       await notifier.markSpaceEntered(
         crashOut.id,
+        ownerVoiceId: 'voice-owner-1',
         spaceId: 'attention',
         matchedExperienceId: 'opposing-experience-1',
       );
@@ -121,11 +129,13 @@ void main() {
       await notifier.addCrashOut(crashOut);
       await notifier.markSpaceEntered(
         crashOut.id,
+        ownerVoiceId: 'voice-refresh',
         spaceId: 'attention',
         matchedExperienceId: 'old-opposite',
       );
       await notifier.markSpaceEntered(
         crashOut.id,
+        ownerVoiceId: 'voice-refresh',
         spaceId: 'attention',
         matchedExperienceId: null,
       );
