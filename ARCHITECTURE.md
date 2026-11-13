@@ -550,7 +550,11 @@ The current private lifecycle states are:
 
 Both states are private. The Private Crash Outs screen can reopen a previously entered Space using its stored destination. Older local entries without a stored destination may use the deterministic interpreter to recover a recognized tension; this is a compatibility fallback, not a new match.
 
-New Crash Outs may store an owner Voice ID. Older local records without that field remain readable. This ID is local prototype metadata only: it is not authentication, verified identity, or server-side authorization. Current local provider operations are not a production access-control boundary.
+New Crash Outs must carry an owner Voice ID. The Private Crash Outs screen shows owner-bound records for the active local Voice, and lifecycle updates/deletion require that owner ID; mismatched owners are rejected. The opposition prototype also excludes a discoverable Vent whose owner Voice is the same as the originating Crash Out.
+
+Older local records without an owner field remain readable as unassigned legacy data in the current single-Voice local prototype. A successful Space-entry transition claims the legacy record for the active Voice. This compatibility behavior must be redesigned before supporting multiple local accounts or sessions.
+
+Voice IDs and these client-side checks are local prototype metadata only: they are not authentication, verified identity, or server-side authorization. Current local provider operations are not a production access-control boundary.
 
 Private Crash Outs, Space experiences, and Space replies are persisted separately using local device storage. Their providers serialize mutations, wait for initial loading before changing collections, and publish updated state only after successful local writes. Reply validation keeps replies attached to their experience and rejects duplicate IDs or invalid reply-to-reply targets.
 
