@@ -230,6 +230,23 @@ void main() {
     expect(match, isNull);
   });
 
+  test('does not match an opposite Vent from the originating Voice', () {
+    final source = crashOut('I wish someone would check on me.').copyWith(
+      ownerVoiceId: 'voice-1',
+    );
+    final sameVoiceOpposite = vent(
+      'same-voice-opposite',
+      'Please stop checking on me. I just want space.',
+    ).copyWith(ownerVoiceId: 'voice-1');
+
+    final match = service.find(
+      crashOut: source,
+      experiences: [sameVoiceOpposite],
+    );
+
+    expect(match, isNull);
+  });
+
   test('does not match experiences originating from the same Crash Out', () {
     final match = service.find(
       crashOut: crashOut('I wish someone would check on me.'),
