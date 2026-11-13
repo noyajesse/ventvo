@@ -97,7 +97,7 @@ class _CrashOutProcessingScreenState
         throw StateError('This Crash Out has no owning Voice.');
       }
 
-      await ref
+      final entered = await ref
           .read(crashOutProvider.notifier)
           .markSpaceEntered(
             widget.crashOut.id,
@@ -105,6 +105,9 @@ class _CrashOutProcessingScreenState
             spaceId: tension.name,
             matchedExperienceId: matchedExperienceId,
           );
+      if (!entered) {
+        throw StateError('This Voice cannot update the private Crash Out.');
+      }
 
       final spaceExperiences = spaceNotifier.experiencesFor(tension.name);
       if (matchedExperienceId != null) {
