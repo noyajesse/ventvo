@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../ventvo_voice/providers/voice_provider.dart';
 import '../models/crash_out.dart';
 import '../models/experience_representation.dart';
 import '../providers/crash_out_provider.dart';
@@ -17,11 +18,15 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     CrashOut crashOut,
+    String ownerVoiceId,
   ) async {
     await ref
         .read(experienceThreadProvider.notifier)
         .deleteThreadForCrashOut(crashOut.id);
-    await ref.read(crashOutProvider.notifier).deleteCrashOut(crashOut.id);
+    await ref.read(crashOutProvider.notifier).deleteCrashOut(
+          crashOut.id,
+          ownerVoiceId: ownerVoiceId,
+        );
     if (!context.mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -87,7 +92,7 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final crashOutState = ref.watch(crashOutProvider);
+    final voiceState = ref.watch(ventvoVoiceProvider);
 
     return Scaffold(
       backgroundColor: const Color(0xFF111111),
@@ -100,25 +105,22 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
         ),
       ),
       body: SafeArea(
-        child: crashOutState.when(
+        child: voiceState.when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (_, _) => const Center(
             child: Text(
-              'Couldn’t load your private Crash Outs.',
+              'Couldn’t load your Voice.',
               style: TextStyle(color: Colors.white54),
             ),
           ),
-          data: (crashOuts) {
-            final privateCrashOuts = crashOuts
-                .where((crashOut) => crashOut.status.isPrivate)
-                .toList();
-
-            if (privateCrashOuts.isEmpty) {
+          data: (voice) {
+            final ownerVoiceId = voice?.voiceId?.trim();
+            if (ownerVoiceId == null || ownerVoiceId.isEmpty) {
               return const Center(
                 child: Padding(
                   padding: EdgeInsets.all(30),
                   child: Text(
-                    'Nothing is kept here yet.',
+                    'Create your Voice before opening Private Crash Outs.',
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.white54, fontSize: 17),
                   ),
@@ -126,22 +128,56 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
               );
             }
 
-            return ListView.builder(
-              padding: const EdgeInsets.all(24),
-              itemCount: privateCrashOuts.length,
-              itemBuilder: (context, index) {
-                final crashOut = privateCrashOuts[index];
-                final tension = _spaceTensionFor(crashOut);
-                final hasEnteredSpace =
-                    crashOut.status == CrashOutStatus.spaceEntered &&
-                    tension != null;
-                return _PrivateCrashOutCard(
-                  crashOut: crashOut,
-                  hasEnteredSpace: hasEnteredSpace,
-                  onOpen: hasEnteredSpace
-                      ? () => _openSpace(context, ref, crashOut, tension)
-                      : null,
-                  onLetGo: () => _letGo(context, ref, crashOut),
+            final crashOutState = ref.watch(crashOutProvider);
+            return crashOutState.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (_, _) => const Center(
+                child: Text(
+                  'Couldn’t load your private Crash Outs.',
+                  style: TextStyle(color: Colors.white54),
+                ),
+              ),
+              data: (crashOuts) {
+                final privateCrashOuts = ref
+                    .read(crashOutProvider.notifier)
+                    .privateCrashOutsForOwner(ownerVoiceId);
+
+                if (privateCrashOuts.isEmpty) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(30),
+                      child: Text(
+                        'Nothing is kept here yet.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white54, fontSize: 17),
+                      ),
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.all(24),
+                  itemCount: privateCrashOuts.length,
+                  itemBuilder: (context, index) {
+                    final crashOut = privateCrashOuts[index];
+                    final tension = _spaceTensionFor(crashOut);
+                    final hasEnteredSpace =
+                        crashOut.status == CrashOutStatus.spaceEntered &&
+                        tension != null;
+                    return _PrivateCrashOutCard(
+                      crashOut: crashOut,
+                      hasEnteredSpace: hasEnteredSpace,
+                      onOpen: hasEnteredSpace
+                          ? () => _openSpace(context, ref, crashOut, tension)
+                          : null,
+                      onLetGo: () => _letGo(
+                        context,
+                        ref,
+                        crashOut,
+                        ownerVoiceId,
+                      ),
+                    );
+                  },
                 );
               },
             );
