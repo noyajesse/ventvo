@@ -37,8 +37,8 @@ void main() {
 
     final notifier = container.read(crashOutProvider.notifier);
     await notifier.addCrashOut(crashOut);
-    await notifier.markSpaceEntered(crashOut.id, spaceId: 'attention');
-    await notifier.keepPrivate(crashOut.id);
+    await notifier.markSpaceEntered(\n      crashOut.id,\n      ownerVoiceId: 'legacy-owner',\n      spaceId: 'attention',\n    );
+    await notifier.keepPrivate(crashOut.id, ownerVoiceId: 'legacy-owner');
 
     final items = await container.read(crashOutProvider.future);
     expect(items.single.status, CrashOutStatus.spaceEntered);
@@ -57,7 +57,7 @@ void main() {
     );
 
     await container.read(crashOutProvider.notifier).addCrashOut(crashOut);
-    await container.read(crashOutProvider.notifier).deleteCrashOut(crashOut.id);
+    await container.read(crashOutProvider.notifier).deleteCrashOut(\n      crashOut.id,\n      ownerVoiceId: 'legacy-owner',\n    );
 
     final items = await container.read(crashOutProvider.future);
     expect(items, isEmpty);
