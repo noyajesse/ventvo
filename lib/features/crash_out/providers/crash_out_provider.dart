@@ -67,41 +67,48 @@ class CrashOutNotifier extends AsyncNotifier<List<CrashOut>> {
     });
   }
 
-  /// Keeps the original Crash Out private. Entering a Space never publishes it.
-  Future<void> keepPrivate(String id) async {
-    if (id.trim().isEmpty) return;
+  /// Keeps the original Crash Out private without changing its lifecycle.
+  Future<void> keepPrivate(
+    String id, {
+    required String ownerVoiceId,
+  }) async {
+    if (id.trim().isEmpty || ownerVoiceId.trim().isEmpty) return;
 
     final current = await _currentCrashOuts();
-    // Both keptPrivate and spaceEntered are private lifecycle states.
-    // This operation intentionally does not erase the fact that a Space
-    // was previously entered.
-    if (!current.any((item) => item.id == id)) return;
+    final target = current.where((item) => item.id == id);
+    if (target.isEmpty || !_belongsToOwner(target.first, ownerVoiceId)) return;
   }
 
-  /// Records that the owner entered the wider tension Space.
-  ///
-  /// The Crash Out itself remains private; only its lifecycle marker changes.
+  /// Records entry into the wider tension Space without publishing the source.
   Future<void> markSpaceEntered(
     String id, {
+    required String ownerVoiceId,
     required String spaceId,
     String? matchedExperienceId,
   }) {
     return _runMutation(() async {
-      if (id.trim().isEmpty ||\n          ownerVoiceId.trim().isEmpty ||\n          spaceId.trim().isEmpty) return;
+      if (id.trim().isEmpty ||
+          ownerVoiceId.trim().isEmpty ||
+          spaceId.trim().isEmpty) {
+        return;
+      }
 
       final current = await _currentCrashOuts();
       final index = current.indexWhere((item) => item.id == id);
       if (index == -1) return;
 
       final existing = current[index];
+      if (!_belongsToOwner(existing, ownerVoiceId)) return;
       if (existing.status == CrashOutStatus.spaceEntered &&
           existing.spaceId == spaceId &&
-          existing.matchedExperienceId == matchedExperienceId) {
+          existing.matchedExperienceId == matchedExperienceId &&
+          existing.ownerVoiceId == ownerVoiceId) {
         return;
       }
 
       final updated = [...current];
       updated[index] = existing.copyWith(
+        ownerVoiceId: ownerVoiceId,
         status: CrashOutStatus.spaceEntered,
         spaceId: spaceId,
         matchedExperienceId: matchedExperienceId,
@@ -111,13 +118,20 @@ class CrashOutNotifier extends AsyncNotifier<List<CrashOut>> {
     });
   }
 
-  Future<void> deleteCrashOut(String id) {
+  Future<void> deleteCrashOut(
+    String id, {
+    required String ownerVoiceId,
+  }) {
     return _runMutation(() async {
-      if (id.trim().isEmpty) return;
+      if (id.trim().isEmpty || ownerVoiceId.trim().isEmpty) return;
 
       final current = await _currentCrashOuts();
+      final target = current.where((item) => item.id == id);
+      if (target.isEmpty || !_belongsToOwner(target.first, ownerVoiceId)) {
+        return;
+      }
+
       final updated = current.where((item) => item.id != id).toList();
-      if (updated.length == current.length) return;
       await _persist(updated);
     });
   }
