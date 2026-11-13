@@ -154,6 +154,37 @@ void main() {
 
 
   test(
+  test('a different Voice cannot change or delete another Voice Crash Out', () async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    final notifier = container.read(crashOutProvider.notifier);
+    final crashOut = CrashOut(
+      id: 'owned-crash',
+      ownerVoiceId: 'voice-owner',
+      textContent: 'This belongs to one Voice.',
+      type: CrashOutType.text,
+      createdAt: DateTime(2026, 1, 11),
+    );
+
+    await notifier.addCrashOut(crashOut);
+    await notifier.markSpaceEntered(
+      crashOut.id,
+      ownerVoiceId: 'different-voice',
+      spaceId: 'attention',
+    );
+    await notifier.deleteCrashOut(
+      crashOut.id,
+      ownerVoiceId: 'different-voice',
+    );
+
+    final items = await container.read(crashOutProvider.future);
+    expect(items, hasLength(1));
+    expect(items.single.ownerVoiceId, 'voice-owner');
+    expect(items.single.status, CrashOutStatus.keptPrivate);
+    expect(items.single.spaceId, isNull);
+  });
+
+  test(
     'legacy Crash Outs without a Voice ID remain private and loadable',
     () async {
       SharedPreferences.setMockInitialValues({
