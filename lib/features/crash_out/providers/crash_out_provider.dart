@@ -59,7 +59,10 @@ class CrashOutNotifier extends AsyncNotifier<List<CrashOut>> {
 
   Future<void> addCrashOut(CrashOut crashOut) {
     return _runMutation(() async {
-      if (crashOut.id.trim().isEmpty) return;
+      final ownerVoiceId = crashOut.ownerVoiceId?.trim();
+      if (crashOut.id.trim().isEmpty ||
+          ownerVoiceId == null ||
+          ownerVoiceId.isEmpty) return;
 
       final current = await _currentCrashOuts();
       if (current.any((item) => item.id == crashOut.id)) return;
@@ -80,7 +83,7 @@ class CrashOutNotifier extends AsyncNotifier<List<CrashOut>> {
   }
 
   /// Records entry into the wider tension Space without publishing the source.
-  Future<void> markSpaceEntered(
+  Future<bool> markSpaceEntered(
     String id, {
     required String ownerVoiceId,
     required String spaceId,
@@ -90,20 +93,20 @@ class CrashOutNotifier extends AsyncNotifier<List<CrashOut>> {
       if (id.trim().isEmpty ||
           ownerVoiceId.trim().isEmpty ||
           spaceId.trim().isEmpty) {
-        return;
+        return false;
       }
 
       final current = await _currentCrashOuts();
       final index = current.indexWhere((item) => item.id == id);
-      if (index == -1) return;
+      if (index == -1) return false;
 
       final existing = current[index];
-      if (!_belongsToOwner(existing, ownerVoiceId)) return;
+      if (!_belongsToOwner(existing, ownerVoiceId)) return false;
       if (existing.status == CrashOutStatus.spaceEntered &&
           existing.spaceId == spaceId &&
           existing.matchedExperienceId == matchedExperienceId &&
           existing.ownerVoiceId == ownerVoiceId) {
-        return;
+        return true;
       }
 
       final updated = [...current];
@@ -115,24 +118,26 @@ class CrashOutNotifier extends AsyncNotifier<List<CrashOut>> {
         clearMatchedExperienceId: matchedExperienceId == null,
       );
       await _persist(updated);
+      return true;
     });
   }
 
-  Future<void> deleteCrashOut(
+  Future<bool> deleteCrashOut(
     String id, {
     required String ownerVoiceId,
   }) {
     return _runMutation(() async {
-      if (id.trim().isEmpty || ownerVoiceId.trim().isEmpty) return;
+      if (id.trim().isEmpty || ownerVoiceId.trim().isEmpty) return false;
 
       final current = await _currentCrashOuts();
       final target = current.where((item) => item.id == id);
       if (target.isEmpty || !_belongsToOwner(target.first, ownerVoiceId)) {
-        return;
+        return false;
       }
 
       final updated = current.where((item) => item.id != id).toList();
       await _persist(updated);
+      return true;
     });
   }
 
