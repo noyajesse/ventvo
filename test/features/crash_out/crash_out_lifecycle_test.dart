@@ -16,6 +16,7 @@ void main() {
   test('new Crash Out is private by default', () {
     final crashOut = CrashOut(
       id: 'crash-1',
+      ownerVoiceId: 'legacy-owner',
       textContent: 'Something I needed to let out.',
       type: CrashOutType.text,
       createdAt: DateTime(2026, 1, 1),
@@ -55,6 +56,7 @@ void main() {
 
     final crashOut = CrashOut(
       id: 'crash-2',
+      ownerVoiceId: 'legacy-owner',
       textContent: 'I am letting this one go.',
       type: CrashOutType.text,
       createdAt: DateTime(2026, 1, 2),
@@ -121,6 +123,7 @@ void main() {
       final notifier = container.read(crashOutProvider.notifier);
       final crashOut = CrashOut(
         id: 'crash-space-refresh',
+        ownerVoiceId: 'voice-refresh',
         textContent: 'I needed another perspective.',
         type: CrashOutType.text,
         createdAt: DateTime(2026, 1, 10),
@@ -239,6 +242,7 @@ void main() {
       notifier.addCrashOut(
         CrashOut(
           id: 'concurrent-1',
+          ownerVoiceId: 'voice-concurrent',
           textContent: 'First concurrent entry.',
           type: CrashOutType.text,
           createdAt: DateTime(2026, 1, 7),
@@ -247,6 +251,7 @@ void main() {
       notifier.addCrashOut(
         CrashOut(
           id: 'concurrent-2',
+          ownerVoiceId: 'voice-concurrent',
           textContent: 'Second concurrent entry.',
           type: CrashOutType.text,
           createdAt: DateTime(2026, 1, 8),
@@ -273,6 +278,7 @@ void main() {
       notifier.addCrashOut(
         CrashOut(
           id: 'not-saved',
+          ownerVoiceId: 'voice-failing',
           textContent: 'This must not appear as saved.',
           type: CrashOutType.text,
           createdAt: DateTime(2026, 1, 9),
