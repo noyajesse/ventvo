@@ -7,7 +7,7 @@ Implementation added; fresh local verification is pending.
 
 - Require a non-empty owner Voice ID when adding a new Crash Out.
 - Scope the Private screen to the active local Voice while preserving visibility of unassigned legacy records in the current single-Voice prototype.
-- Require owner IDs for lifecycle transitions and deletion; reject operations when the supplied owner does not match the stored owner.
+- Require owner IDs for lifecycle transitions, deletion and collection clearing; reject operations when the supplied owner does not match the stored owner.
 - Claim an unassigned legacy record for the active Voice when a successful Space-entry transition is persisted.
 - Return explicit success/failure from Space entry and deletion so the UI does not navigate or delete associated local thread data after an ownership rejection.
 - Exclude discoverable Vents owned by the same Voice as the originating Crash Out from opposition matching.
