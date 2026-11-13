@@ -25,6 +25,23 @@ void main() {
     expect(crashOut.status, CrashOutStatus.keptPrivate);
   });
 
+  test('new Crash Outs without an owner Voice are not stored', () async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    final notifier = container.read(crashOutProvider.notifier);
+
+    await notifier.addCrashOut(
+      CrashOut(
+        id: 'unowned-new-crash',
+        textContent: 'A new record must have an owner.',
+        type: CrashOutType.text,
+        createdAt: DateTime(2026, 1, 1),
+      ),
+    );
+
+    expect(await container.read(crashOutProvider.future), isEmpty);
+  });
+
   test('Crash Out can remain private after an encounter', () async {
     final container = ProviderContainer();
     addTearDown(container.dispose);
