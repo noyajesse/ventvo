@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -89,6 +89,7 @@ class CrashOutSpaceExperienceNotifier
         spaceId: spaceId,
         content: vent.content,
         createdAt: vent.createdAt,
+        authorVoiceId: vent.ownerVoiceId,
         voiceName: vent.voiceName,
         voiceMark: vent.voiceMark,
         sourceExperienceId: vent.id,

@@ -1,4 +1,4 @@
-import '../models/crash_out.dart';
+﻿import '../models/crash_out.dart';
 import '../models/experience_representation.dart';
 
 /// Converts a Crash Out into opposition-worthy experience atoms.
@@ -61,7 +61,7 @@ class CrashOutExperienceInterpreter {
 
   String _normalize(String? rawText) {
     var text = rawText?.trim().toLowerCase() ?? '';
-    text = text.replaceAll(RegExp(r"[’‘]"), "'");
+    text = text.replaceAll(RegExp(r"[\u2019\u2018]"), "'");
     text = text.replaceAll(RegExp(r"\bcan't\b"), 'cannot');
     text = text.replaceAll(RegExp(r"\bwon't\b"), 'will not');
     text = text.replaceAll(RegExp(r"\bdon't\b"), 'do not');

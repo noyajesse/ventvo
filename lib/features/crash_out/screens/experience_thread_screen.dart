@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../ventvo_voice/providers/voice_provider.dart';
@@ -272,7 +272,7 @@ class _ReplyPreview extends StatelessWidget {
         ),
       ),
       child: Text(
-        '${identity.isEmpty ? 'Reply' : identity}  ·  ${contribution.content}',
+        '${identity.isEmpty ? 'Reply' : identity}  \u00B7  ${contribution.content}',
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: const TextStyle(

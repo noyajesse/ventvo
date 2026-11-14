@@ -1,4 +1,4 @@
-import '../models/crash_out_space_experience.dart';
+﻿import '../models/crash_out_space_experience.dart';
 import '../models/experience_representation.dart';
 import '../providers/crash_out_space_provider.dart';
 
@@ -73,7 +73,7 @@ class CrashOutSpacePrototypeData {
           spaceId: spaceId,
           content: examples[i].$2,
           voiceName: examples[i].$3,
-          voiceMark: '◇',
+          voiceMark: '\u25C7',
           createdAt: now.subtract(Duration(minutes: i * 7)),
         ),
     ];
@@ -131,7 +131,7 @@ class CrashOutSpacePrototypeData {
           experienceId: 'prototype_${examples[i].$2}',
           content: examples[i].$3,
           voiceName: examples[i].$4,
-          voiceMark: '◇',
+          voiceMark: '\u25C7',
           createdAt: now.subtract(Duration(minutes: i * 5)),
         ),
     ];

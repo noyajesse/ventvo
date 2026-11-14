@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../ventvo_voice/providers/voice_provider.dart';
@@ -65,6 +65,7 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
               experienceId: experienceId,
               content: content,
               createdAt: now,
+              authorVoiceId: voice?.voiceId,
               voiceName: voice?.name,
               voiceMark: voice?.mark,
               replyToId: replyToId,
@@ -440,7 +441,7 @@ class _ExperienceCard extends StatelessWidget {
                 ),
                 child: Text(
                   experience.voiceMark.trim().isEmpty
-                      ? '◇'
+                      ? '\u25C7'
                       : experience.voiceMark.trim(),
                   style: const TextStyle(
                     color: Color(0xFFD5C7F2),

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../ventvo_voice/providers/voice_provider.dart';
@@ -111,7 +111,7 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (_, _) => const Center(
             child: Text(
-              'Couldn’t load your Voice.',
+              'Couldn\u2019t load your Voice.',
               style: TextStyle(color: Colors.white54),
             ),
           ),

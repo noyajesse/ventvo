@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // The platform store lets this test simulate a local write failure.
@@ -48,6 +48,7 @@ void main() {
 
     final crashOut = CrashOut(
       id: 'crash-1',
+        ownerVoiceId: 'legacy-owner',
       textContent: 'Something I needed to let out.',
       type: CrashOutType.text,
       createdAt: DateTime(2026, 1, 1),

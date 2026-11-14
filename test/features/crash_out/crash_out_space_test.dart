@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -18,6 +18,7 @@ import 'package:ventvo/features/crash_out/providers/crash_out_space_provider.dar
 import 'package:ventvo/features/crash_out/screens/crash_out_space_screen.dart';
 import 'package:ventvo/features/crash_out/services/crash_out_experience_interpreter.dart';
 import 'package:ventvo/features/ventvo_voice/models/vent.dart';
+import 'package:ventvo/features/ventvo_voice/providers/voice_provider.dart';
 
 void main() {
   setUp(() {
@@ -435,7 +436,7 @@ void main() {
       id: 'public-vent-1',
       content: 'I need people to check on me.',
       spaceId: 'open-discussion',
-      voiceMark: '◇',
+      voiceMark: '\u25C7',
       voiceName: 'Nova',
       createdAt: DateTime(2026, 1, 1),
     );
@@ -462,7 +463,7 @@ void main() {
       id: 'public-vent-2',
       content: 'I need room to be alone.',
       spaceId: 'open-discussion',
-      voiceMark: '◇',
+      voiceMark: '\u25C7',
       createdAt: DateTime(2026, 1, 2),
     );
 
@@ -543,7 +544,7 @@ void main() {
     expect(notifier.experiencesFor('attention'), isEmpty);
   });
 
-  test('interprets “I hate people” as a connection tension', () {
+  test('interprets "I hate people" as a connection tension', () {
     final representation = const CrashOutExperienceInterpreter().interpret(
       CrashOut(
         id: 'private-crash-out',
@@ -681,6 +682,91 @@ void main() {
     expect(notifier.repliesFor('attention', 'experience-1'), isEmpty);
   });
 
+  test('ensureFromVent preserves ownerVoiceId as authorVoiceId', () async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    await container.read(crashOutSpaceExperienceProvider.future);
+    final notifier =
+        container.read(crashOutSpaceExperienceProvider.notifier);
+    final vent = Vent(
+      id: 'public-vent-voice-1',
+      content: 'I want someone to sit with me.',
+      spaceId: 'open-discussion',
+      voiceMark: '\u25C7',
+      ownerVoiceId: 'voice_owner_42',
+      voiceName: 'Nova',
+      createdAt: DateTime(2026, 1, 3),
+    );
+
+    final doorway = await notifier.ensureFromVent(
+      spaceId: 'connection',
+      vent: vent,
+    );
+
+    expect(doorway.authorVoiceId, 'voice_owner_42');
+    expect(notifier.experiencesFor('connection').single.authorVoiceId, 'voice_owner_42');
+  });
+
+
+  testWidgets(
+    'submitting a Space reply assigns and persists authorVoiceId',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      const spaceId = 'attention';
+      const experienceId = 'experience-voice-1';
+
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      final seededVoice = await container.read(ventvoVoiceProvider.notifier).ensureVoice(); await container.read(ventvoVoiceProvider.notifier).setVoice(seededVoice.copyWith(voiceId: 'voice_reply_author_7'));
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            home: CrashOutSpaceScreen(
+              tension: HumanTension.attention,
+              experiences: [
+                CrashOutSpaceExperience(
+                  id: experienceId,
+                  spaceId: spaceId,
+                  content: 'The experience being replied to.',
+                  voiceName: 'Sample Voice',
+                  createdAt: DateTime(2026, 1, 1),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Reply'));
+      await tester.pump();
+      await tester.enterText(find.byType(TextField), 'I hear you.');
+      await tester.pump();
+      await tester.tap(find.byIcon(Icons.arrow_upward_rounded));
+      await tester.pumpAndSettle();
+
+      final savedReplies = container
+          .read(crashOutSpaceProvider.notifier)
+          .repliesFor(spaceId, experienceId);
+      expect(savedReplies, hasLength(1));
+      expect(savedReplies.single.authorVoiceId, isNotNull);
+      expect(savedReplies.single.authorVoiceId, isNotEmpty);
+
+      final restoredContainer = ProviderContainer();
+      addTearDown(restoredContainer.dispose);
+      await restoredContainer.read(crashOutSpaceProvider.future);
+      final restoredReplies = restoredContainer
+          .read(crashOutSpaceProvider.notifier)
+          .repliesFor(spaceId, experienceId);
+      expect(restoredReplies, hasLength(1));
+      expect(
+        restoredReplies.single.authorVoiceId,
+        savedReplies.single.authorVoiceId,
+      );
+    },
+  );
 }
 
 class _DelayedSharedPreferencesStore extends SharedPreferencesStorePlatform {

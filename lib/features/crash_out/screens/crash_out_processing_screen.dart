@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../ventvo_voice/providers/vent_provider.dart';
@@ -197,7 +197,7 @@ class _CrashOutProcessingScreenState
                   ),
                   const SizedBox(height: 14),
                   const Text(
-                    'We couldn’t open the wider Space just now. Nothing from your original Crash Out was shared.',
+                    'We couldn\u2019t open the wider Space just now. Nothing from your original Crash Out was shared.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white54,

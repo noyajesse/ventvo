@@ -1,8 +1,9 @@
-class CrashOutSpaceExperience {
+﻿class CrashOutSpaceExperience {
   final String id;
   final String spaceId;
   final String content;
   final DateTime createdAt;
+  final String? authorVoiceId;
   final String? voiceName;
   final String voiceMark;
   final String? sourceExperienceId;
@@ -12,6 +13,7 @@ class CrashOutSpaceExperience {
     required this.spaceId,
     required this.content,
     required this.createdAt,
+    this.authorVoiceId,
     this.voiceName,
     this.voiceMark = '',
     this.sourceExperienceId,
@@ -22,6 +24,7 @@ class CrashOutSpaceExperience {
         'spaceId': spaceId,
         'content': content,
         'createdAt': createdAt.toIso8601String(),
+        'authorVoiceId': authorVoiceId,
         'voiceName': voiceName,
         'voiceMark': voiceMark,
         'sourceExperienceId': sourceExperienceId,
@@ -49,6 +52,9 @@ class CrashOutSpaceExperience {
       spaceId: spaceId,
       content: content,
       createdAt: parsedDate,
+      authorVoiceId: map['authorVoiceId'] is String
+          ? map['authorVoiceId'] as String
+          : null,
       voiceName: map['voiceName'] is String ? map['voiceName'] as String : null,
       voiceMark: map['voiceMark'] is String ? map['voiceMark'] as String : '',
       sourceExperienceId: map['sourceExperienceId'] is String
