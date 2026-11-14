@@ -1,15 +1,21 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/space.dart';
 
 class SpaceStorage {
+  SpaceStorage({this.prefs});
+
   static const _spacesKey = 'ventvo_spaces';
+  final SharedPreferences? prefs;
+
+  Future<SharedPreferences> get _instance async =>
+      prefs ?? await SharedPreferences.getInstance();
 
   Future<List<Space>> load() async {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_spacesKey);
+    final storage = await _instance;
+    final raw = storage.getString(_spacesKey);
 
     if (raw == null || raw.isEmpty) {
       return const [];
@@ -19,25 +25,34 @@ class SpaceStorage {
       final decoded = jsonDecode(raw);
       if (decoded is! List) return const [];
 
-      return decoded
-          .whereType<Map<String, dynamic>>()
-          .map(_fromMap)
-          .whereType<Space>()
-          .toList();
+      final spaces = <Space>[];
+      for (final item in decoded) {
+        if (item is Map<String, dynamic>) {
+          final parsed = _fromMap(item);
+          if (parsed != null) spaces.add(parsed);
+        }
+      }
+      return spaces;
     } catch (_) {
       return const [];
     }
   }
 
   Future<void> save(List<Space> spaces) async {
-    final prefs = await SharedPreferences.getInstance();
+    final storage = await _instance;
     final raw = jsonEncode(spaces.map(_toMap).toList());
-    await prefs.setString(_spacesKey, raw);
+    final saved = await storage.setString(_spacesKey, raw);
+    if (!saved) {
+      throw StateError('Failed to persist spaces to local storage.');
+    }
   }
 
   Future<void> clear() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_spacesKey);
+    final storage = await _instance;
+    final removed = await storage.remove(_spacesKey);
+    if (!removed) {
+      throw StateError('Failed to clear spaces from local storage.');
+    }
   }
 
   Map<String, dynamic> _toMap(Space space) {
