@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/ventvo_colors.dart';
@@ -329,15 +329,15 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
         _modeHeader(),
         const SizedBox(height: 28),
         _origin(origin),
-        const SizedBox(height: 30),
+        if (widget.space.isOpenDiscussion && echoes.isNotEmpty) ...[
+          const SizedBox(height: 36),
+          _echoSection(),
+        ],
+        const SizedBox(height: 36),
         SpaceResonanceSection(
           space: widget.space,
           excludedIds: widget.space.allVentIds,
         ),
-        if (widget.space.isOpenDiscussion && echoes.isNotEmpty) ...[
-          const SizedBox(height: 42),
-          _echoSection(),
-        ],
       ],
     );
   }
@@ -359,8 +359,8 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
         const SizedBox(height: 7),
         Text(
           isDiscussion
-              ? 'You shared this Moment in a space where people can respond.'
-              : 'You shared this Moment without asking anyone to respond.',
+              ? 'Shared in a space where people can leave an Echo.'
+              : 'Shared quietly without asking anyone to respond.',
           style: const TextStyle(
             color: VentvoColors.textSecondary,
             fontSize: 12,
@@ -400,7 +400,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
             ],
             const Spacer(),
             const Text(
-              'EXPERIENCE',
+              'MOMENT',
               style: TextStyle(
                 color: VentvoColors.textMuted,
                 fontSize: 8,
@@ -428,7 +428,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
         Container(width: 34, height: 1, color: VentvoColors.border),
         const SizedBox(height: 14),
         const Text(
-          'This is the experience everything else in this Space grows from.',
+          'Everything in this Space ripples outward from this Moment.',
           style: TextStyle(
             color: VentvoColors.textMuted,
             fontSize: 10,
@@ -454,7 +454,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
         ),
         const SizedBox(height: 6),
         const Text(
-          'Voices leaving something of themselves with this Moment.',
+          'Voices leaving a ripple of their own experience with this Moment.',
           style: TextStyle(color: VentvoColors.textMuted, fontSize: 11),
         ),
         const SizedBox(height: 18),
@@ -571,7 +571,6 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     );
   }
 
-
   Widget _echoComposer() {
     if (!composerOpen) {
       return SafeArea(
@@ -676,5 +675,4 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
       ),
     );
   }
-
 }

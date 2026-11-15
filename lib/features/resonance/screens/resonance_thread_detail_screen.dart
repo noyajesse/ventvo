@@ -1,14 +1,14 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/ventvo_colors.dart';
-import '../../spaces/models/echo_note.dart';
-import '../../spaces/providers/space_provider.dart';
-import '../../spaces/screens/space_screen.dart';
-import '../../spaces/models/space.dart';
-import '../../ventvo_voice/models/vent.dart';
 import '../../../systems/resonance/models/resonance_connection.dart';
 import '../../../systems/resonance/models/resonance_thread.dart';
+import '../../spaces/models/echo_note.dart';
+import '../../spaces/models/space.dart';
+import '../../spaces/providers/space_provider.dart';
+import '../../spaces/screens/space_screen.dart';
+import '../../ventvo_voice/models/vent.dart';
 import '../models/resonance_thread_experience.dart';
 import '../providers/resonance_thread_experience_provider.dart';
 import 'resonance_thread_map_integration_screen.dart';
@@ -23,6 +23,26 @@ class ResonanceThreadDetailScreen extends ConsumerWidget {
     required this.ventsById,
   });
 
+  String _storyTitle() {
+    final origin = ventsById[thread.originatingExperienceId]?.content.trim();
+    if (origin == null || origin.isEmpty) {
+      return 'A shared human story';
+    }
+    final firstLine = origin.split('\n').first.trim();
+    if (firstLine.length <= 54) return firstLine;
+    return '${firstLine.substring(0, 51).trimRight()}…';
+  }
+
+  String _storySubtitle(List<ResonanceThreadExperience> experiences) {
+    if (experiences.isEmpty) {
+      return 'Moments touching on a shared human experience.';
+    }
+    final trail = experiences
+        .map((item) => item.isEcho ? 'Echo' : 'Moment')
+        .join(' → ');
+    return '$trail · ${experiences.length} moments in this story';
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final spaces = ref.watch(spaceProvider).asData?.value ?? const <Space>[];
@@ -36,7 +56,7 @@ class ResonanceThreadDetailScreen extends ConsumerWidget {
         centerTitle: true,
         actions: [
           IconButton(
-            tooltip: 'Explore this landscape on a Map',
+            tooltip: 'Explore this story on a Map',
             icon: const Icon(Icons.hub_outlined),
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(
@@ -68,7 +88,7 @@ class ResonanceThreadDetailScreen extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(18, 18, 18, 36),
             children: [
               const Text(
-                'A STORY TAKING SHAPE',
+                'SHARED STORY',
                 style: TextStyle(
                   color: VentvoColors.textMuted,
                   fontSize: 8,
@@ -77,27 +97,28 @@ class ResonanceThreadDetailScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              const Text(
-                'A path through connected experiences',
-                style: TextStyle(
+              Text(
+                _storyTitle(),
+                style: const TextStyle(
                   color: VentvoColors.textPrimary,
-                  fontSize: 20,
+                  fontSize: 22,
                   fontWeight: FontWeight.w600,
-                  height: 1.25,
+                  height: 1.28,
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               Text(
-                '${thread.experienceIds.length} connected experiences',
+                _storySubtitle(experiences),
                 style: const TextStyle(
-                  color: VentvoColors.textMuted,
+                  color: VentvoColors.textSecondary,
                   fontSize: 12,
+                  height: 1.45,
                 ),
               ),
               const SizedBox(height: 26),
               if (experiences.isEmpty)
                 const Text(
-                  'These connected experiences are no longer available here.',
+                  'These experiences are no longer available here.',
                   style: TextStyle(
                     color: VentvoColors.textMuted,
                     fontSize: 14,
@@ -130,7 +151,7 @@ class ResonanceThreadDetailScreen extends ConsumerWidget {
                   border: Border.all(color: VentvoColors.border),
                 ),
                 child: const Text(
-                  'A Thread brings together experiences that have found meaningful connections. It does not ask anyone to join, follow, or keep a conversation going.',
+                  'A Thread weaves together Moments that carry a shared human truth. It does not ask anyone to join, follow, or perform.',
                   style: TextStyle(
                     color: VentvoColors.textSecondary,
                     fontSize: 13,
@@ -246,7 +267,7 @@ class _ExperienceStep extends StatelessWidget {
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () => SpaceScreen.open(context, experience.space!),
-                        child: const Text('Open original Moment'),
+                        child: const Text('Open Moment'),
                       ),
                     ),
                   ],
@@ -294,11 +315,11 @@ class _ConnectionBridge extends StatelessWidget {
   String? _labelFor(ResonanceConnectionType? type) {
     switch (type) {
       case ResonanceConnectionType.sharedExperience:
-        return 'Connected through a shared experience';
+        return 'Resonates through a shared experience';
       case ResonanceConnectionType.perspective:
-        return 'Connected through a different perspective';
+        return 'Resonates through a different perspective';
       case ResonanceConnectionType.response:
-        return 'Connected through a response';
+        return 'Echoed in response';
       case ResonanceConnectionType.similarity:
       case ResonanceConnectionType.discovery:
       case null:

@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/ventvo_colors.dart';
 import '../../../systems/resonance/models/resonance_candidate.dart';
 import '../../../systems/resonance/models/resonance_connection.dart';
 import '../../../systems/resonance/providers/resonance_provider.dart';
+import '../../resonance/screens/resonance_relationship_screen.dart';
 import '../../ventvo_voice/models/vent.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
 import '../../ventvo_voice/providers/voice_lifecycle_provider.dart';
@@ -13,7 +14,6 @@ import '../models/space.dart';
 import '../providers/space_provider.dart';
 import '../providers/space_resonance_provider.dart';
 import '../screens/space_screen.dart';
-import '../../resonance/screens/resonance_relationship_screen.dart';
 
 class SpaceResonanceSection extends ConsumerWidget {
   final Space space;
@@ -51,7 +51,7 @@ class SpaceResonanceSection extends ConsumerWidget {
             const _SectionCaption(),
             const SizedBox(height: 8),
             const Text(
-              'Elsewhere, someone is carrying an experience that may connect with this one.',
+              'Elsewhere, another Moment carries a similar human weight.',
               style: TextStyle(
                 color: VentvoColors.textSecondary,
                 fontSize: 13,
@@ -114,7 +114,7 @@ class _SectionCaption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Text(
-      'EXPERIENCES THAT MAY RESONATE',
+      'MOMENTS THAT RESONATE',
       style: TextStyle(
         color: VentvoColors.textMuted,
         fontSize: 8,
@@ -207,7 +207,7 @@ class _ResonanceCardState extends ConsumerState<_ResonanceCard> {
     return null;
   }
 
-  Future<void> _openRelationship() async {
+  Future<void> _openConnection() async {
     final current = connection;
     if (current == null || saving) return;
 
@@ -225,33 +225,25 @@ class _ResonanceCardState extends ConsumerState<_ResonanceCard> {
     ref.invalidate(voiceLifecycleProvider);
   }
 
-  String get _actionLabel {
-    final state = connection?.state;
-    switch (state) {
-      case ResonanceConnectionState.accepted:
-      case ResonanceConnectionState.active:
-        return 'Resonating';
-      case ResonanceConnectionState.closed:
-        return 'Resonance closed';
-      case ResonanceConnectionState.blocked:
-        return 'Resonance blocked';
-      case ResonanceConnectionState.suggested:
-        return 'Resonance sent';
-      case null:
-        return 'Resonate';
-    }
-  }
-
-  bool get _canOpenRelationship {
+  bool get _isMutual {
     final state = connection?.state;
     return state == ResonanceConnectionState.accepted ||
         state == ResonanceConnectionState.active;
   }
 
+  bool get _isClosedOrBlocked {
+    final state = connection?.state;
+    return state == ResonanceConnectionState.closed ||
+        state == ResonanceConnectionState.blocked;
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_isClosedOrBlocked) {
+      return const SizedBox.shrink();
+    }
+
     final hasResonated = connection != null;
-    final canOpenRelationship = _canOpenRelationship;
 
     return Material(
       color: VentvoColors.surface,
@@ -316,27 +308,40 @@ class _ResonanceCardState extends ConsumerState<_ResonanceCard> {
               ),
             ),
             const SizedBox(height: 13),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton.icon(
-                onPressed: saving
-                    ? null
-                    : canOpenRelationship
-                        ? _openRelationship
-                        : hasResonated
-                            ? null
-                            : _resonate,
-                icon: Icon(
-                  connection?.state == ResonanceConnectionState.suggested
-                      ? Icons.schedule_rounded
-                      : hasResonated
-                          ? Icons.check_rounded
-                          : Icons.blur_on_rounded,
-                  size: 15,
+            if (_isMutual)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'There’s resonance here.',
+                    style: TextStyle(
+                      color: VentvoColors.textSecondary,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: saving ? null : _openConnection,
+                    child: const Text('Open a connection'),
+                  ),
+                ],
+              )
+            else
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: (saving || hasResonated) ? null : _resonate,
+                  child: Text(
+                    hasResonated ? 'Resonated ∿' : 'Resonate ∿',
+                    style: TextStyle(
+                      color: hasResonated
+                          ? VentvoColors.textSecondary
+                          : VentvoColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
-                label: Text(_actionLabel),
               ),
-            ),
           ],
         ),
       ),
