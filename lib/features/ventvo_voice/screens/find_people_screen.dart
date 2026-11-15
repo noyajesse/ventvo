@@ -28,12 +28,12 @@ class _FindPeopleScreenState extends ConsumerState<FindPeopleScreen> {
     if (space == null || !vent.isDiscoverable) return const [];
 
     final vents = await ref.read(ventProvider.future);
-    final currentVoiceId = ref.read(voiceProvider).asData?.value?.id;
+    final currentVoiceId = ref.read(ventvoVoiceProvider).asData?.value?.voiceId;
     final excludedIds = <String>{
       vent.id,
       if (currentVoiceId != null)
         for (final item in vents)
-          if (item.authorVoiceId == currentVoiceId) item.id,
+          if (item.ownerVoiceId == currentVoiceId) item.id,
     };
 
     final candidates = await ref
@@ -67,11 +67,11 @@ class _FindPeopleScreenState extends ConsumerState<FindPeopleScreen> {
   @override
   Widget build(BuildContext context) {
     final vents = ref.watch(ventProvider).asData?.value ?? const <Vent>[];
-    final currentVoiceId = ref.watch(voiceProvider).asData?.value?.id;
+    final currentVoiceId = ref.watch(ventvoVoiceProvider).asData?.value?.voiceId;
     final ownDiscoverableVents = vents.where((vent) {
       if (!vent.isDiscoverable) return false;
       if (currentVoiceId == null) return true;
-      return vent.authorVoiceId == currentVoiceId || vent.authorVoiceId == null;
+      return vent.ownerVoiceId == currentVoiceId || vent.ownerVoiceId == null;
     }).toList();
 
     return Scaffold(
