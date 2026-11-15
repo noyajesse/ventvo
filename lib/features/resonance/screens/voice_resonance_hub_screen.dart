@@ -1,11 +1,10 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/ventvo_colors.dart';
 import '../providers/resonance_maps_provider.dart';
 import '../providers/resonance_threads_provider.dart';
 import 'resonance_connections_screen.dart';
-import 'resonance_gatherings_screen.dart';
 import 'resonance_maps_screen.dart';
 import 'resonance_threads_screen.dart';
 
@@ -35,14 +34,14 @@ class VoiceResonanceHubScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Resonance grows from meaningful connections between experiences. It is not a popularity measure.',
+            'Resonance grows from meaningful recognition between Moments. It is never a score or a popularity measure.',
             style: TextStyle(color: VentvoColors.textMuted, fontSize: 13, height: 1.55),
           ),
           const SizedBox(height: 28),
           _Entry(
             icon: Icons.waves_rounded,
             title: 'Your Resonances',
-            subtitle: 'See connections as they develop.',
+            subtitle: 'Moments that connected with yours.',
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (_) => const ResonanceConnectionsScreen(),
@@ -54,32 +53,34 @@ class VoiceResonanceHubScreen extends ConsumerWidget {
             icon: Icons.account_tree_outlined,
             title: 'Threads',
             subtitle: threads.when(
-              loading: () => 'Loading connected experiences',
-              error: (_, _) => 'Could not load Threads',
-              data: (items) => '${items.length} ${items.length == 1 ? 'Thread' : 'Threads'}',
+              loading: () => 'Gathering shared stories…',
+              error: (_, _) => 'Stories growing from shared experiences',
+              data: (items) => items.isEmpty
+                  ? 'Stories growing from shared experiences'
+                  : '${items.length} shared ${items.length == 1 ? 'story' : 'stories'}',
             ),
-            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ResonanceThreadsScreen())),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const ResonanceThreadsScreen()),
+            ),
           ),
           const SizedBox(height: 10),
           _Entry(
             icon: Icons.hub_outlined,
             title: 'Maps',
             subtitle: maps.when(
-              loading: () => 'Loading connected landscapes',
-              error: (_, _) => 'Could not load Maps',
-              data: (items) => '${items.length} ${items.length == 1 ? 'Map' : 'Maps'}',
+              loading: () => 'Exploring wider landscapes…',
+              error: (_, _) => 'Wider landscapes of shared moments',
+              data: (items) => items.isEmpty
+                  ? 'Wider landscapes of shared moments'
+                  : '${items.length} ${items.length == 1 ? 'landscape' : 'landscapes'} of moments',
             ),
-            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ResonanceMapsScreen())),
-          ),
-          const SizedBox(height: 10),
-          const _Entry(
-            icon: Icons.forum_outlined,
-            title: 'Gatherings',
-            subtitle: 'Meet where connected experiences converge',
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const ResonanceMapsScreen()),
+            ),
           ),
           const SizedBox(height: 28),
           const Text(
-            'Resonance begins with a shared experience, becomes a connection, and can later grow into Threads, Maps, and Gatherings.',
+            'Resonance begins with a single Moment, deepens through mutual recognition, and can grow into shared stories and landscapes.',
             style: TextStyle(color: VentvoColors.textMuted, fontSize: 12, height: 1.55),
           ),
         ],
@@ -89,18 +90,24 @@ class VoiceResonanceHubScreen extends ConsumerWidget {
 }
 
 class _Entry extends StatelessWidget {
-  const _Entry({required this.icon, required this.title, required this.subtitle, this.onTap});
+  const _Entry({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
   final IconData icon;
   final String title;
   final String subtitle;
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) => Material(
         color: VentvoColors.surface,
         borderRadius: BorderRadius.circular(22),
         child: InkWell(
-          onTap: onTap ?? () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ResonanceGatheringsScreen())),
+          onTap: onTap,
           borderRadius: BorderRadius.circular(22),
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -112,13 +119,30 @@ class _Entry extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(title, style: const TextStyle(color: VentvoColors.textPrimary, fontSize: 15, fontWeight: FontWeight.w600)),
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          color: VentvoColors.textPrimary,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                       const SizedBox(height: 4),
-                      Text(subtitle, style: const TextStyle(color: VentvoColors.textMuted, fontSize: 12)),
+                      Text(
+                        subtitle,
+                        style: const TextStyle(
+                          color: VentvoColors.textMuted,
+                          fontSize: 12,
+                        ),
+                      ),
                     ],
                   ),
                 ),
-                const Icon(Icons.arrow_forward_ios_rounded, size: 13, color: VentvoColors.textMuted),
+                const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 13,
+                  color: VentvoColors.textMuted,
+                ),
               ],
             ),
           ),

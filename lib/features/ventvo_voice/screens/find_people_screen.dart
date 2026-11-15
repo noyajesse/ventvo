@@ -1,14 +1,15 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/ventvo_colors.dart';
 import '../../../systems/resonance/models/resonance_candidate.dart';
 import '../../../systems/resonance/providers/resonance_provider.dart';
 import '../../feed/widgets/vent_card.dart';
-import 'resonance_connection_screen.dart';
+import '../../spaces/providers/space_provider.dart';
 import '../models/vent.dart';
 import '../providers/vent_provider.dart';
-import '../../spaces/providers/space_provider.dart';
+import '../providers/voice_provider.dart';
+import 'resonance_connection_screen.dart';
 
 class FindPeopleScreen extends ConsumerStatefulWidget {
   const FindPeopleScreen({super.key});
@@ -27,7 +28,13 @@ class _FindPeopleScreenState extends ConsumerState<FindPeopleScreen> {
     if (space == null || !vent.isDiscoverable) return const [];
 
     final vents = await ref.read(ventProvider.future);
-    final excludedIds = vents.map((item) => item.id).toSet();
+    final currentVoiceId = ref.read(voiceProvider).asData?.value?.id;
+    final excludedIds = <String>{
+      vent.id,
+      if (currentVoiceId != null)
+        for (final item in vents)
+          if (item.authorVoiceId == currentVoiceId) item.id,
+    };
 
     final candidates = await ref
         .read(ventResonanceDiscoveryServiceProvider)
@@ -60,27 +67,32 @@ class _FindPeopleScreenState extends ConsumerState<FindPeopleScreen> {
   @override
   Widget build(BuildContext context) {
     final vents = ref.watch(ventProvider).asData?.value ?? const <Vent>[];
-    final discoverableVents = vents.where((vent) => vent.isDiscoverable).toList();
+    final currentVoiceId = ref.watch(voiceProvider).asData?.value?.id;
+    final ownDiscoverableVents = vents.where((vent) {
+      if (!vent.isDiscoverable) return false;
+      if (currentVoiceId == null) return true;
+      return vent.authorVoiceId == currentVoiceId || vent.authorVoiceId == null;
+    }).toList();
 
     return Scaffold(
       backgroundColor: VentvoColors.background,
       appBar: AppBar(
         backgroundColor: VentvoColors.background,
         elevation: 0,
-        title: const Text('Find People Who Understand'),
+        title: const Text('Moments That Understand'),
       ),
       body: SafeArea(
-        child: discoverableVents.isEmpty
+        child: ownDiscoverableVents.isEmpty
             ? const _EmptyState(
-                title: 'Give us a moment to start from.',
+                title: 'Start with a Moment of your own.',
                 subtitle:
-                    'Release a public Vent first. Then you can use that experience to find other thoughts that may resonate with it.',
+                    'Release a public Vent first. Then Ventvo can surface other Moments carrying something close to it.',
               )
             : ListView(
                 padding: const EdgeInsets.fromLTRB(22, 18, 22, 40),
                 children: [
                   const Text(
-                    'Start with something you have already shared.',
+                    'Start with a Moment you have shared.',
                     style: TextStyle(
                       color: VentvoColors.textPrimary,
                       fontSize: 20,
@@ -90,7 +102,7 @@ class _FindPeopleScreenState extends ConsumerState<FindPeopleScreen> {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    'We use the experience in that Vent to look for other public thoughts that may resonate with it.',
+                    'Ventvo looks for other public Moments carrying a similar lived experience—no profiles, no matching scores.',
                     style: TextStyle(
                       color: VentvoColors.textMuted,
                       fontSize: 13,
@@ -98,7 +110,7 @@ class _FindPeopleScreenState extends ConsumerState<FindPeopleScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  ...discoverableVents.map(
+                  ...ownDiscoverableVents.map(
                     (vent) => Padding(
                       padding: const EdgeInsets.only(bottom: 10),
                       child: _VentChoice(
@@ -121,7 +133,7 @@ class _FindPeopleScreenState extends ConsumerState<FindPeopleScreen> {
                         }
                         if (snapshot.hasError) {
                           return const _EmptyState(
-                            title: 'We could not find matches right now.',
+                            title: 'We could not surface Moments right now.',
                             subtitle: 'Try again in a moment.',
                           );
                         }
@@ -131,7 +143,7 @@ class _FindPeopleScreenState extends ConsumerState<FindPeopleScreen> {
                           return const _EmptyState(
                             title: 'Nothing feels close enough yet.',
                             subtitle:
-                                'Only public, approved, active thoughts are considered. Your own Vent is not returned as a match.',
+                                'Only public, approved Moments from other Voices are surfaced here.',
                           );
                         }
 
@@ -139,7 +151,7 @@ class _FindPeopleScreenState extends ConsumerState<FindPeopleScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'Thoughts that may understand something of it',
+                              'Moments carrying something close to yours',
                               style: TextStyle(
                                 color: VentvoColors.textPrimary,
                                 fontSize: 17,
@@ -178,7 +190,7 @@ class _FindPeopleScreenState extends ConsumerState<FindPeopleScreen> {
                                               size: 16,
                                             ),
                                             label: const Text(
-                                              'This resonates with me',
+                                              'Resonate with this Moment ∿',
                                             ),
                                           ),
                                         ],
@@ -271,7 +283,7 @@ class _EmptyState extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Icon(
-                Icons.people_outline_rounded,
+                Icons.waves_rounded,
                 size: 44,
                 color: VentvoColors.textMuted,
               ),
@@ -294,7 +306,7 @@ class _EmptyState extends StatelessWidget {
                   fontSize: 13,
                   height: 1.5,
                 ),
-                ),
+              ),
             ],
           ),
         ),
