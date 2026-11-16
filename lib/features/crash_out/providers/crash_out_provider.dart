@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/crash_out.dart';
 import '../services/crash_out_storage.dart';
@@ -64,7 +64,9 @@ class CrashOutNotifier extends AsyncNotifier<List<CrashOut>> {
       final ownerVoiceId = crashOut.ownerVoiceId?.trim();
       if (crashOut.id.trim().isEmpty ||
           ownerVoiceId == null ||
-          ownerVoiceId.isEmpty) return;
+          ownerVoiceId.isEmpty) {
+        return;
+      }
 
       final current = await _currentCrashOuts();
       if (current.any((item) => item.id == crashOut.id)) return;
@@ -161,3 +163,4 @@ final crashOutProvider =
     AsyncNotifierProvider<CrashOutNotifier, List<CrashOut>>(
   CrashOutNotifier.new,
 );
+

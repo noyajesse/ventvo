@@ -4,7 +4,7 @@ import '../models/experience_representation.dart';
 /// Converts a Crash Out into opposition-worthy experience atoms.
 ///
 /// The interpreter looks for the human tension underneath a sentence rather
-/// than requiring an exact phrase. It uses small semantic signal groups and
+/// than requiring an exact phrase. It uses semantic signal groups and
 /// simple grammatical cues, keeping the prototype deterministic and auditable.
 class CrashOutExperienceInterpreter {
   const CrashOutExperienceInterpreter();
@@ -67,7 +67,6 @@ class CrashOutExperienceInterpreter {
     text = text.replaceAll(RegExp(r"\bdon't\b"), 'do not');
     text = text.replaceAll(RegExp(r"\bdoesn't\b"), 'does not');
     text = text.replaceAll(RegExp(r"\bdidn't\b"), 'did not');
-    text = text.replaceAll(RegExp(r"\bcan't\b"), 'cannot');
     text = text.replaceAll(RegExp(r"\bi'm\b"), 'i am');
     text = text.replaceAll(RegExp(r"\bi've\b"), 'i have');
     text = text.replaceAll(RegExp(r"\bi'd\b"), 'i would');
@@ -108,6 +107,9 @@ class CrashOutExperienceInterpreter {
       'hate',
       'exhausted',
       'constantly',
+      'drained',
+      'overwhelmed',
+      'sick of',
     ];
 
     if (intensifiers.any(text.contains)) {
@@ -154,7 +156,7 @@ class CrashOutExperienceInterpreter {
         'dating',
         'married',
       ],
-      'school': ['school', 'university', 'campus', 'class', 'lecture'],
+      'school': ['school', 'university', 'campus', 'class', 'lecture', 'exam'],
       'work': ['work', 'job', 'office', 'boss', 'coworker'],
       'money': ['money', 'rent', 'bills', 'debt', 'salary'],
     };
@@ -181,6 +183,8 @@ class CrashOutExperienceInterpreter {
         _Signal.phrase('do not ask me'),
         _Signal.phrase('too much attention'),
         _Signal.phrase('people keep asking'),
+        _Signal.phrase('feel crowded'),
+        _Signal.phrase('smothered'),
       ],
       ExperiencePosition.seeking,
       ExperienceDirection.toward,
@@ -192,10 +196,12 @@ class CrashOutExperienceInterpreter {
         _Signal.phrase('wish someone cared'),
         _Signal.phrase('want someone to notice'),
         _Signal.phrase('wish people noticed'),
-        _Signal.pattern(RegExp(r'\b(nobody|no one) (notices|sees)\b'), 'nobody notices'),
+        _Signal.pattern(RegExp(r'\b(nobody|no one) (notices|sees|cares|checks)\b'), 'nobody notices'),
         _Signal.phrase('feel invisible'),
         _Signal.phrase('feel unseen'),
         _Signal.phrase('no one sees me'),
+        _Signal.phrase('ignored'),
+        _Signal.phrase('overlooked'),
       ],
     ),
     _TensionRule(
@@ -212,7 +218,9 @@ class CrashOutExperienceInterpreter {
         _Signal.phrase('need support'),
         _Signal.phrase('tired of doing everything myself'),
         _Signal.phrase('doing everything myself'),
+        _Signal.phrase('doing everything alone'),
         _Signal.phrase('wish i did not have to do this alone'),
+        _Signal.phrase('all by myself'),
       ],
       ExperiencePosition.protective,
       ExperienceDirection.away,
@@ -225,6 +233,7 @@ class CrashOutExperienceInterpreter {
         _Signal.phrase('want to handle everything myself'),
         _Signal.phrase('handle things myself'),
         _Signal.phrase('i can do it myself'),
+        _Signal.phrase('rely on myself'),
       ],
     ),
     _TensionRule(
@@ -239,6 +248,8 @@ class CrashOutExperienceInterpreter {
         _Signal.phrase('want them to stay'),
         _Signal.phrase('need someone to stay'),
         _Signal.phrase('wish you would stay'),
+        _Signal.phrase('abandoned'),
+        _Signal.phrase('walked away'),
       ],
       ExperiencePosition.protective,
       ExperienceDirection.away,
@@ -251,6 +262,8 @@ class CrashOutExperienceInterpreter {
         _Signal.phrase('want to get away'),
         _Signal.phrase('cannot stay'),
         _Signal.phrase('do not want to stay'),
+        _Signal.phrase('walk away'),
+        _Signal.phrase('disappear'),
       ],
     ),
     _TensionRule(
@@ -264,6 +277,10 @@ class CrashOutExperienceInterpreter {
         _Signal.phrase('want someone to understand me'),
         _Signal.phrase('i want you to understand'),
         _Signal.phrase('wish people understood'),
+        _Signal.phrase('misunderstood'),
+        _Signal.phrase('nobody understands'),
+        _Signal.phrase('no one understands'),
+        _Signal.phrase('nobody listens'),
       ],
       ExperiencePosition.protective,
       ExperienceDirection.away,
@@ -275,6 +292,8 @@ class CrashOutExperienceInterpreter {
         _Signal.phrase('do not want to talk'),
         _Signal.phrase('tired of talking about it'),
         _Signal.phrase('do not want to have to explain'),
+        _Signal.phrase('pointless to explain'),
+        _Signal.phrase('stay quiet'),
       ],
     ),
     _TensionRule(
@@ -289,6 +308,8 @@ class CrashOutExperienceInterpreter {
         _Signal.phrase('not good enough'),
         _Signal.phrase('cannot keep up'),
         _Signal.phrase('not keeping up'),
+        _Signal.phrase('failing'),
+        _Signal.phrase('stuck'),
       ],
       ExperiencePosition.overwhelmed,
       ExperienceDirection.away,
@@ -301,6 +322,11 @@ class CrashOutExperienceInterpreter {
         _Signal.phrase('doing too much'),
         _Signal.phrase('too many responsibilities'),
         _Signal.phrase('everyone relies on me'),
+        _Signal.phrase('overwhelmed'),
+        _Signal.phrase('burned out'),
+        _Signal.phrase('burnt out'),
+        _Signal.phrase('exhausted'),
+        _Signal.phrase('stressed'),
       ],
     ),
     _TensionRule(
@@ -313,8 +339,12 @@ class CrashOutExperienceInterpreter {
         _Signal.phrase('need someone close'),
         _Signal.phrase('miss having someone'),
         _Signal.phrase('feel lonely'),
+        _Signal.phrase('so lonely'),
+        _Signal.phrase('feel alone'),
+        _Signal.phrase('so alone'),
         _Signal.phrase('wish i had someone'),
         _Signal.phrase('want companionship'),
+        _Signal.phrase('miss people'),
       ],
       ExperiencePosition.protective,
       ExperienceDirection.away,
@@ -331,6 +361,7 @@ class CrashOutExperienceInterpreter {
         _Signal.phrase('sick of people'),
         _Signal.phrase('tired of people'),
         _Signal.phrase('people are exhausting'),
+        _Signal.phrase('drained by people'),
       ],
     ),
     _TensionRule(
@@ -344,6 +375,8 @@ class CrashOutExperienceInterpreter {
         _Signal.phrase('want credit'),
         _Signal.phrase('nobody appreciates what i do'),
         _Signal.phrase('nobody gives me credit'),
+        _Signal.phrase('taken for granted'),
+        _Signal.phrase('unappreciated'),
       ],
       ExperiencePosition.protective,
       ExperienceDirection.away,
@@ -365,6 +398,7 @@ class CrashOutExperienceInterpreter {
         _Signal.phrase('need someone to take over'),
         _Signal.phrase('want someone to decide'),
         _Signal.phrase('wish someone else would decide'),
+        _Signal.phrase('tired of deciding'),
       ],
       ExperiencePosition.protective,
       ExperienceDirection.away,
@@ -375,6 +409,7 @@ class CrashOutExperienceInterpreter {
         _Signal.phrase('let me handle it'),
         _Signal.phrase('i want control'),
         _Signal.phrase('need to be in control'),
+        _Signal.phrase('out of control'),
       ],
     ),
     _TensionRule(
@@ -388,6 +423,8 @@ class CrashOutExperienceInterpreter {
         _Signal.phrase('wish they included me'),
         _Signal.phrase('feel left out'),
         _Signal.phrase('feel excluded'),
+        _Signal.phrase('do not fit in'),
+        _Signal.phrase('outsider'),
       ],
       ExperiencePosition.protective,
       ExperienceDirection.away,
@@ -397,6 +434,7 @@ class CrashOutExperienceInterpreter {
         _Signal.phrase('do not want to be included'),
         _Signal.phrase('rather stay out of it'),
         _Signal.phrase('do not want to be part of the group'),
+        _Signal.phrase('stopped trying to fit in'),
       ],
     ),
     _TensionRule(
@@ -410,6 +448,7 @@ class CrashOutExperienceInterpreter {
         _Signal.phrase('wish i could tell someone'),
         _Signal.phrase('want to be vulnerable'),
         _Signal.phrase('want to let someone in'),
+        _Signal.phrase('want to be honest'),
       ],
       ExperiencePosition.protective,
       ExperienceDirection.away,
@@ -420,6 +459,8 @@ class CrashOutExperienceInterpreter {
         _Signal.phrase('do not want to let anyone in'),
         _Signal.phrase('do not trust people enough to open up'),
         _Signal.phrase('not ready to open up'),
+        _Signal.phrase('scared to open up'),
+        _Signal.phrase('hard to trust'),
       ],
     ),
   ];

@@ -11,7 +11,6 @@ import '../providers/crash_out_space_experience_provider.dart';
 import '../providers/crash_out_space_provider.dart';
 import '../services/crash_out_experience_interpreter.dart';
 import '../services/crash_out_opposite_experience_service.dart';
-import 'crash_out_no_encounter_screen.dart';
 import 'crash_out_space_screen.dart';
 import 'private_crash_outs_screen.dart';
 
@@ -48,7 +47,7 @@ class _CrashOutProcessingScreenState
           ownerVoiceId == null ||
           ownerVoiceId.isEmpty ||
           activeVoiceId != ownerVoiceId) {
-        throw StateError('This private Crash Out belongs to another Voice.');
+        throw StateError('This Crash Out belongs to another Voice.');
       }
 
       final experiences = await ref.read(ventProvider.future);
@@ -59,25 +58,19 @@ class _CrashOutProcessingScreenState
         experiences: experiences,
       );
 
-      // A real opposite is a useful doorway when one exists, but the wider
-      // Space is not conditional on finding one. Use the interpreted human
-      // tension to open its broader experience collection without claiming a
-      // match that the prototype could not establish.
       final representation =
           const CrashOutExperienceInterpreter().interpret(widget.crashOut);
       final sourceAtom = match?.sourceAtom ??
-          _firstMeaningfulAtom(representation.atoms);
+          _firstMeaningfulAtom(representation.atoms) ??
+          const ExperienceAtom(
+            tension: HumanTension.explanation,
+            position: ExperiencePosition.seeking,
+            direction: ExperienceDirection.toward,
+            confidence: 0.65,
+            intensity: 0.5,
+          );
 
       if (!mounted) return;
-
-      if (sourceAtom == null) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (_) => const CrashOutNoEncounterScreen(),
-          ),
-        );
-        return;
-      }
 
       final tension = sourceAtom.tension;
       await ref.read(crashOutSpaceExperienceProvider.future);
@@ -93,13 +86,15 @@ class _CrashOutProcessingScreenState
             prototypes: CrashOutSpacePrototypeData.repliesForTension(tension),
           );
 
-      String? matchedExperienceId;
+      final String matchedExperienceId;
       if (match != null) {
         final doorway = await spaceNotifier.ensureFromVent(
           spaceId: tension.name,
           vent: match.experience,
         );
         matchedExperienceId = doorway.id;
+      } else {
+        matchedExperienceId = _oppositePrototypeId(tension, sourceAtom);
       }
 
       if (!mounted) return;
@@ -113,17 +108,15 @@ class _CrashOutProcessingScreenState
             matchedExperienceId: matchedExperienceId,
           );
       if (!entered) {
-        throw StateError('This Voice cannot update the private Crash Out.');
+        throw StateError('This Voice cannot update the Crash Out threshold.');
       }
 
       final spaceExperiences = spaceNotifier.experiencesFor(tension.name);
-      if (matchedExperienceId != null) {
-        spaceExperiences.sort((a, b) {
-          if (a.id == matchedExperienceId) return -1;
-          if (b.id == matchedExperienceId) return 1;
-          return b.createdAt.compareTo(a.createdAt);
-        });
-      }
+      spaceExperiences.sort((a, b) {
+        if (a.id == matchedExperienceId) return -1;
+        if (b.id == matchedExperienceId) return 1;
+        return b.createdAt.compareTo(a.createdAt);
+      });
 
       if (!mounted) return;
 
@@ -137,8 +130,6 @@ class _CrashOutProcessingScreenState
         ),
       );
     } catch (_) {
-      // A failed local read/write must not leave the user on an endless
-      // processing screen. The original Crash Out remains in Private.
       if (!mounted) return;
       setState(() => _hasProcessingError = true);
     }
@@ -153,12 +144,27 @@ class _CrashOutProcessingScreenState
     return null;
   }
 
+  String _oppositePrototypeId(HumanTension tension, ExperienceAtom sourceAtom) {
+    final prototypes = CrashOutSpacePrototypeData.forTension(tension);
+    const interpreter = CrashOutExperienceInterpreter();
+
+    for (final candidate in prototypes) {
+      final parsed = interpreter.interpretText(candidate.content);
+      for (final atom in parsed.atoms) {
+        if (sourceAtom.opposes(atom)) {
+          return candidate.id;
+        }
+      }
+    }
+    return prototypes.length > 1 ? prototypes[1].id : prototypes.first.id;
+  }
+
   void _retry() {
     setState(() => _hasProcessingError = false);
     _process();
   }
 
-  void _returnToPrivate() {
+  void _returnToThresholdSpaces() {
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(
         builder: (_) => const PrivateCrashOutsScreen(),
@@ -180,13 +186,13 @@ class _CrashOutProcessingScreenState
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Icon(
-                    Icons.lock_outline,
+                    Icons.waves_rounded,
                     color: Colors.white70,
                     size: 48,
                   ),
                   const SizedBox(height: 24),
                   const Text(
-                    'Your Crash Out is still private.',
+                    'Your words stayed unshared.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white,
@@ -197,7 +203,7 @@ class _CrashOutProcessingScreenState
                   ),
                   const SizedBox(height: 14),
                   const Text(
-                    'We couldn\u2019t open the wider Space just now. Nothing from your original Crash Out was shared.',
+                    'We couldn\u2019t cross into the opposite-side Space just now. Nothing from your Crash Out was broadcast.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white54,
@@ -217,8 +223,8 @@ class _CrashOutProcessingScreenState
                   SizedBox(
                     width: double.infinity,
                     child: TextButton(
-                      onPressed: _returnToPrivate,
-                      child: const Text('Return to Private'),
+                      onPressed: _returnToThresholdSpaces,
+                      child: const Text('View Crash Out Spaces'),
                     ),
                   ),
                 ],
@@ -250,7 +256,7 @@ class _CrashOutProcessingScreenState
                 ),
                 SizedBox(height: 14),
                 Text(
-                  'Finding the wider space around this experience.',
+                  'Crossing into the other side of this experience...',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.white54,
@@ -266,3 +272,4 @@ class _CrashOutProcessingScreenState
     );
   }
 }
+
