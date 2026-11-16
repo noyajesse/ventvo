@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,7 +12,7 @@ import 'package:ventvo/features/crash_out/screens/crash_out_processing_screen.da
 
 void main() {
   testWidgets(
-    'processing failure keeps the Crash Out private and allows retry',
+    'processing failure keeps the Crash Out unshared and allows retry',
     (tester) async {
       SharedPreferences.setMockInitialValues({});
       final crashOut = CrashOut(
@@ -49,15 +49,15 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Your Crash Out is still private.'), findsOneWidget);
+      expect(find.text('Your words stayed unshared.'), findsOneWidget);
       expect(
         find.text(
-          'We couldn’t open the wider Space just now. Nothing from your original Crash Out was shared.',
+          'We couldn\u2019t cross into the opposite-side Space just now. Nothing from your Crash Out was broadcast.',
         ),
         findsOneWidget,
       );
       expect(find.text('Try again'), findsOneWidget);
-      expect(find.text('Return to Private'), findsOneWidget);
+      expect(find.text('View Crash Out Spaces'), findsOneWidget);
 
       store.throwOnWrite = false;
       await tester.tap(find.text('Try again'));
@@ -78,7 +78,7 @@ class _ToggleFailingSharedPreferencesStore
   bool throwOnWrite = true;
 
   @override
-  Future<Map<String, Object>> getAll() async => Map<String, Object>.of(values);
+  Future> getAll() async => Map<String, Object>.of(values);
 
   @override
   Future<bool> setValue(String valueType, String key, Object value) async {
