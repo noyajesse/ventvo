@@ -1,10 +1,12 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/ventvo_colors.dart';
+import '../providers/resonance_gathering_provider.dart';
 import '../providers/resonance_maps_provider.dart';
 import '../providers/resonance_threads_provider.dart';
 import 'resonance_connections_screen.dart';
+import 'resonance_gatherings_screen.dart';
 import 'resonance_maps_screen.dart';
 import 'resonance_threads_screen.dart';
 
@@ -15,6 +17,11 @@ class VoiceResonanceHubScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final threads = ref.watch(resonanceThreadsProvider);
     final maps = ref.watch(resonanceMapsProvider);
+    final gatheringService = ref.watch(resonanceGatheringServiceProvider);
+    final gatheringCount = maps.asData?.value
+            .expand(gatheringService.discoverCandidates)
+            .length ??
+        0;
 
     return Scaffold(
       backgroundColor: VentvoColors.background,
@@ -78,9 +85,24 @@ class VoiceResonanceHubScreen extends ConsumerWidget {
               MaterialPageRoute(builder: (_) => const ResonanceMapsScreen()),
             ),
           ),
+          const SizedBox(height: 10),
+          _Entry(
+            icon: Icons.groups_outlined,
+            title: 'Gatherings',
+            subtitle: maps.when(
+              loading: () => 'Sensing small circles…',
+              error: (_, _) => 'Small circles where connected experiences meet',
+              data: (_) => gatheringCount == 0
+                  ? 'Small circles where connected experiences meet'
+                  : '$gatheringCount ${gatheringCount == 1 ? 'gathering' : 'gatherings'} emerging',
+            ),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const ResonanceGatheringsScreen()),
+            ),
+          ),
           const SizedBox(height: 28),
           const Text(
-            'Resonance begins with a single Moment, deepens through mutual recognition, and can grow into shared stories and landscapes.',
+            'Resonance begins with a single Moment, deepens through mutual recognition, and can grow into shared stories, landscapes, and small gatherings.',
             style: TextStyle(color: VentvoColors.textMuted, fontSize: 12, height: 1.55),
           ),
         ],
