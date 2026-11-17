@@ -78,7 +78,8 @@ class _ToggleFailingSharedPreferencesStore
   bool throwOnWrite = true;
 
   @override
-  Future> getAll() async => Map<String, Object>.of(values);
+  Future<Map<String, Object>> getAll() async =>
+      Map<String, Object>.of(values);
 
   @override
   Future<bool> setValue(String valueType, String key, Object value) async {
@@ -98,3 +99,5 @@ class _ToggleFailingSharedPreferencesStore
     return true;
   }
 }
+
+
