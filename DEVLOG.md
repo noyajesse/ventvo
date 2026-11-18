@@ -1,3 +1,11 @@
+## 2026-11-18 — Moment-centered Space & Resonance Hub completion
+
+Branch: feat/moment-centered-space-resonance
+
+- Aligned Resonance Hub, Threads, Hybrid Maps, and experience-first Discovery with the Product Experience Audit (Phases 2–6).
+- Integrated Gatherings into VoiceResonanceHubScreen with live candidate discovery counts while preserving opt-in, ephemeral boundaries.
+- Sanitized UTF-8 glyphs across Resonance screens and verified full-repository lutter analyze and lutter test suites pass with zero issues.
+
 ## 2026-11-13 — Crash Out local Voice ownership boundaries
 
 Branch: feat/crash-out-domain-lifecycle  
