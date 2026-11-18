@@ -5,6 +5,7 @@ import '../../../core/theme/ventvo_colors.dart';
 import '../../../systems/resonance/models/resonance_candidate.dart';
 import '../../../systems/resonance/models/resonance_connection.dart';
 import '../../../systems/resonance/providers/resonance_provider.dart';
+import '../../../systems/resonance/services/resonance_demo_data_service.dart';
 import '../../resonance/screens/resonance_relationship_screen.dart';
 import '../../ventvo_voice/models/vent.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
@@ -42,8 +43,10 @@ class SpaceResonanceSection extends ConsumerWidget {
 
         if (visible.isEmpty) return const SizedBox.shrink();
 
-        final spaces = ref.watch(spaceProvider).asData?.value ?? const [];
-        final vents = ref.watch(ventProvider).asData?.value ?? const [];
+        final storedSpaces =
+            ref.watch(spaceProvider).asData?.value ?? const <Space>[];
+        final spaces = [...storedSpaces, ...ResonanceDemoDataService.spaces];
+        final vents = ref.watch(ventProvider).asData?.value ?? const <Vent>[];
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,6 +74,7 @@ class SpaceResonanceSection extends ConsumerWidget {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 10),
                   child: _ResonanceCard(
+                    sourceSpace: space,
                     candidate: candidate,
                     vent: vent,
                     targetSpace: targetSpace,
@@ -100,7 +104,8 @@ class SpaceResonanceSection extends ConsumerWidget {
     List<Space> spaces,
   ) {
     for (final candidateSpace in spaces) {
-      if (candidateSpace.allVentIds.contains(candidate.id)) {
+      if (candidateSpace.id == candidate.id ||
+          candidateSpace.allVentIds.contains(candidate.id)) {
         return candidateSpace;
       }
     }
@@ -126,12 +131,14 @@ class _SectionCaption extends StatelessWidget {
 }
 
 class _ResonanceCard extends ConsumerStatefulWidget {
+  final Space sourceSpace;
   final ResonanceCandidate candidate;
   final Vent vent;
   final Space targetSpace;
   final VoidCallback onTap;
 
   const _ResonanceCard({
+    required this.sourceSpace,
     required this.candidate,
     required this.vent,
     required this.targetSpace,
@@ -156,7 +163,7 @@ class _ResonanceCardState extends ConsumerState<_ResonanceCard> {
     final existing = await ref
         .read(resonanceConnectionServiceProvider)
         .getConnectionBetween(
-          widget.targetSpace.originatingVentId,
+          widget.sourceSpace.originatingVentId,
           widget.candidate.id,
         );
 
@@ -176,7 +183,7 @@ class _ResonanceCardState extends ConsumerState<_ResonanceCard> {
       return;
     }
 
-    final sourceVent = await _loadSourceVent();
+    final sourceVent = _findSourceVent();
     if (sourceVent?.ownerVoiceId != sourceVoiceId) {
       if (mounted) setState(() => saving = false);
       return;
@@ -184,7 +191,7 @@ class _ResonanceCardState extends ConsumerState<_ResonanceCard> {
 
     final service = ref.read(resonanceConnectionServiceProvider);
     final suggested = await service.suggestConnection(
-      sourceId: widget.targetSpace.originatingVentId,
+      sourceId: widget.sourceSpace.originatingVentId,
       sourceVoiceId: sourceVoiceId,
       candidate: widget.candidate,
     );
@@ -197,10 +204,10 @@ class _ResonanceCardState extends ConsumerState<_ResonanceCard> {
     ref.invalidate(voiceLifecycleProvider);
   }
 
-  Future<Vent?> _loadSourceVent() async {
+  Vent? _findSourceVent() {
     final vents = ref.read(ventProvider).asData?.value ?? const <Vent>[];
     for (final vent in vents) {
-      if (vent.id == widget.targetSpace.originatingVentId) {
+      if (vent.id == widget.sourceSpace.originatingVentId) {
         return vent;
       }
     }
@@ -243,6 +250,12 @@ class _ResonanceCardState extends ConsumerState<_ResonanceCard> {
       return const SizedBox.shrink();
     }
 
+    final activeVoiceId =
+        ref.watch(ventvoVoiceProvider).asData?.value?.voiceId?.trim();
+    final sourceVent = _findSourceVent();
+    final canInitiateResonance = activeVoiceId != null &&
+        activeVoiceId.isNotEmpty &&
+        sourceVent?.ownerVoiceId?.trim() == activeVoiceId;
     final hasResonated = connection != null;
 
     return Material(
@@ -307,13 +320,13 @@ class _ResonanceCardState extends ConsumerState<_ResonanceCard> {
                 ],
               ),
             ),
-            const SizedBox(height: 13),
-            if (_isMutual)
+            if (_isMutual) ...[
+              const SizedBox(height: 13),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    'There’s resonance here.',
+                    'There\u2019s resonance here.',
                     style: TextStyle(
                       color: VentvoColors.textSecondary,
                       fontSize: 12,
@@ -325,14 +338,15 @@ class _ResonanceCardState extends ConsumerState<_ResonanceCard> {
                     child: const Text('Open a connection'),
                   ),
                 ],
-              )
-            else
+              ),
+            ] else if (canInitiateResonance || hasResonated) ...[
+              const SizedBox(height: 13),
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: (saving || hasResonated) ? null : _resonate,
                   child: Text(
-                    hasResonated ? 'Resonated ∿' : 'Resonate ∿',
+                    hasResonated ? 'Resonated \u223F' : 'Resonate \u223F',
                     style: TextStyle(
                       color: hasResonated
                           ? VentvoColors.textSecondary
@@ -342,6 +356,7 @@ class _ResonanceCardState extends ConsumerState<_ResonanceCard> {
                   ),
                 ),
               ),
+            ],
           ],
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/theme/ventvo_colors.dart';
 import '../../ventvo_voice/providers/voice_provider.dart';
 import '../models/crash_out.dart';
 import '../providers/crash_out_provider.dart';
@@ -68,14 +69,14 @@ class _CrashOutScreenState extends ConsumerState<CrashOutScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF111111),
+      backgroundColor: VentvoColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF111111),
+        backgroundColor: VentvoColors.background,
         elevation: 0,
         title: const Text(
           'Crash Out',
           style: TextStyle(
-            color: Colors.white,
+            color: VentvoColors.textPrimary,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -91,7 +92,7 @@ class _CrashOutScreenState extends ConsumerState<CrashOutScreen> {
                 "You don't have to make\nsense of it yet.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.white,
+                  color: VentvoColors.textPrimary,
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
                   height: 1.2,
@@ -101,7 +102,7 @@ class _CrashOutScreenState extends ConsumerState<CrashOutScreen> {
               const Text(
                 'Just let it out.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white54, fontSize: 18),
+                style: TextStyle(color: VentvoColors.textSecondary, fontSize: 18),
               ),
               const SizedBox(height: 40),
               Expanded(
@@ -109,9 +110,9 @@ class _CrashOutScreenState extends ConsumerState<CrashOutScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.white10,
+                    color: VentvoColors.surface,
                     borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: Colors.white12),
+                    border: Border.all(color: VentvoColors.border),
                   ),
                   child: TextField(
                     controller: _controller,
@@ -120,15 +121,15 @@ class _CrashOutScreenState extends ConsumerState<CrashOutScreen> {
                     minLines: null,
                     textAlignVertical: TextAlignVertical.top,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: VentvoColors.textPrimary,
                       fontSize: 18,
                       height: 1.5,
                     ),
-                    cursorColor: Colors.white,
+                    cursorColor: VentvoColors.primary,
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       hintText: 'Let it out...',
-                      hintStyle: TextStyle(color: Colors.white24, fontSize: 18),
+                      hintStyle: TextStyle(color: VentvoColors.textMuted, fontSize: 18),
                     ),
                   ),
                 ),

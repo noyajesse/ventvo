@@ -1,6 +1,7 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/theme/ventvo_colors.dart';
 import '../../ventvo_voice/providers/vent_provider.dart';
 import '../../ventvo_voice/providers/voice_provider.dart';
 import '../data/crash_out_space_prototype_data.dart';
@@ -177,7 +178,7 @@ class _CrashOutProcessingScreenState
   Widget build(BuildContext context) {
     if (_hasProcessingError) {
       return Scaffold(
-        backgroundColor: const Color(0xFF111111),
+        backgroundColor: VentvoColors.background,
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
@@ -187,7 +188,7 @@ class _CrashOutProcessingScreenState
                 children: [
                   const Icon(
                     Icons.waves_rounded,
-                    color: Colors.white70,
+                    color: VentvoColors.textSecondary,
                     size: 48,
                   ),
                   const SizedBox(height: 24),
@@ -195,7 +196,7 @@ class _CrashOutProcessingScreenState
                     'Your words stayed unshared.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: VentvoColors.textPrimary,
                       fontSize: 25,
                       fontWeight: FontWeight.bold,
                       height: 1.2,
@@ -206,7 +207,7 @@ class _CrashOutProcessingScreenState
                     'We couldn\u2019t cross into the opposite-side Space just now. Nothing from your Crash Out was broadcast.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.white54,
+                      color: VentvoColors.textSecondary,
                       fontSize: 16,
                       height: 1.5,
                     ),
@@ -248,7 +249,7 @@ class _CrashOutProcessingScreenState
                   'You let it out.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: VentvoColors.textPrimary,
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                     height: 1.2,
@@ -259,7 +260,7 @@ class _CrashOutProcessingScreenState
                   'Crossing into the other side of this experience...',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Colors.white54,
+                    color: VentvoColors.textSecondary,
                     fontSize: 17,
                     height: 1.5,
                   ),

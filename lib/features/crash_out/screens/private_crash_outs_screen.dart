@@ -1,6 +1,7 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/theme/ventvo_colors.dart';
 import '../../ventvo_voice/providers/voice_provider.dart';
 import '../models/crash_out.dart';
 import '../models/experience_representation.dart';
@@ -97,13 +98,13 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
     final voiceState = ref.watch(ventvoVoiceProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF111111),
+      backgroundColor: VentvoColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF111111),
+        backgroundColor: VentvoColors.background,
         elevation: 0,
         title: const Text(
           'Private',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: VentvoColors.textPrimary, fontWeight: FontWeight.bold),
         ),
       ),
       body: SafeArea(
@@ -112,7 +113,7 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
           error: (_, _) => const Center(
             child: Text(
               'Couldn\u2019t load your Voice.',
-              style: TextStyle(color: Colors.white54),
+              style: TextStyle(color: VentvoColors.textSecondary),
             ),
           ),
           data: (voice) {
@@ -124,7 +125,7 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
                   child: Text(
                     'Create your Voice before opening Private Crash Outs.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white54, fontSize: 17),
+                    style: TextStyle(color: VentvoColors.textSecondary, fontSize: 17),
                   ),
                 ),
               );
@@ -136,7 +137,7 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
               error: (_, _) => const Center(
                 child: Text(
                   'Couldn’t load your private Crash Outs.',
-                  style: TextStyle(color: Colors.white54),
+                  style: TextStyle(color: VentvoColors.textSecondary),
                 ),
               ),
               data: (_) {
@@ -151,7 +152,7 @@ class PrivateCrashOutsScreen extends ConsumerWidget {
                       child: Text(
                         'Nothing is kept here yet.',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white54, fontSize: 17),
+                        style: TextStyle(color: VentvoColors.textSecondary, fontSize: 17),
                       ),
                     ),
                   );
@@ -209,21 +210,21 @@ class _PrivateCrashOutCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 18),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white10,
+        color: VentvoColors.surface,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: Colors.white12),
+        border: Border.all(color: VentvoColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Row(
             children: [
-              Icon(Icons.lock_outline, color: Colors.white54, size: 18),
+              Icon(Icons.lock_outline, color: VentvoColors.textSecondary, size: 18),
               SizedBox(width: 8),
               Text(
                 'Private Crash Out',
                 style: TextStyle(
-                  color: Colors.white54,
+                  color: VentvoColors.textSecondary,
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
                 ),
@@ -233,7 +234,7 @@ class _PrivateCrashOutCard extends StatelessWidget {
           const SizedBox(height: 14),
           Text(
             crashOut.textContent ?? 'Crash Out',
-            style: const TextStyle(color: Colors.white, fontSize: 17, height: 1.5),
+            style: const TextStyle(color: VentvoColors.textPrimary, fontSize: 17, height: 1.5),
           ),
           const SizedBox(height: 20),
           if (hasEnteredSpace)
@@ -241,7 +242,7 @@ class _PrivateCrashOutCard extends StatelessWidget {
               padding: EdgeInsets.only(bottom: 14),
               child: Text(
                 'Your original remains private. You can return to the wider experience Space.',
-                style: TextStyle(color: Colors.white38, fontSize: 12.5),
+                style: TextStyle(color: VentvoColors.textMuted, fontSize: 12.5),
               ),
             )
           else if (onOpen == null)
@@ -249,7 +250,7 @@ class _PrivateCrashOutCard extends StatelessWidget {
               padding: EdgeInsets.only(bottom: 14),
               child: Text(
                 'No wider Space has been entered yet.',
-                style: TextStyle(color: Colors.white38, fontSize: 12.5),
+                style: TextStyle(color: VentvoColors.textMuted, fontSize: 12.5),
               ),
             ),
           Row(
@@ -259,8 +260,8 @@ class _PrivateCrashOutCard extends StatelessWidget {
                   child: OutlinedButton(
                     onPressed: onOpen,
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      side: const BorderSide(color: Colors.white24),
+                      foregroundColor: VentvoColors.textPrimary,
+                      side: const BorderSide(color: VentvoColors.border),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
@@ -273,7 +274,7 @@ class _PrivateCrashOutCard extends StatelessWidget {
               IconButton(
                 onPressed: onLetGo,
                 tooltip: 'Let go',
-                icon: const Icon(Icons.delete_outline, color: Colors.white54),
+                icon: const Icon(Icons.delete_outline, color: VentvoColors.textSecondary),
               ),
             ],
           ),

@@ -110,7 +110,7 @@ class VoiceSpaceScreen extends ConsumerWidget {
               _VoiceEntry(
                 icon: Icons.blur_on_rounded,
                 title: 'Resonance',
-                subtitle: '$threadCount Threads · $mapCount Maps',
+                subtitle: '$threadCount ${threadCount == 1 ? 'Thread' : 'Threads'} · $mapCount ${mapCount == 1 ? 'Map' : 'Maps'}',
                 onTap: () => open(const VoiceResonanceHubScreen()),
               ),
               if (crashOuts.isNotEmpty) ...[
@@ -353,11 +353,11 @@ class _StatsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(
         children: [
-          _Stat(label: 'Vents', value: vents),
+          _Stat(label: 'Moments', value: vents),
           const SizedBox(width: 12),
-          _Stat(label: 'Resonance', value: resonance),
+          _Stat(label: 'Threads', value: resonance),
           const SizedBox(width: 12),
-          _Stat(label: 'Arcs', value: arcs),
+          _Stat(label: 'Maps', value: arcs),
         ],
       );
 }

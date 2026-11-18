@@ -290,7 +290,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                       child: ElevatedButton(
                         onPressed: _startVenting,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF216A89),
+                          backgroundColor: VentvoColors.buttonBlue,
                           foregroundColor: Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(

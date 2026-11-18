@@ -1,6 +1,7 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/theme/ventvo_colors.dart';
 import '../../ventvo_voice/providers/voice_provider.dart';
 import '../models/crash_out_space_experience.dart';
 import '../models/experience_representation.dart';
@@ -104,10 +105,10 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
     final title = _spaceTitle(widget.tension);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF101014),
+      backgroundColor: VentvoColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF101014),
-        foregroundColor: Colors.white,
+        backgroundColor: VentvoColors.background,
+        foregroundColor: VentvoColors.textPrimary,
         elevation: 0,
         titleSpacing: 4,
         title: const Text(
@@ -136,7 +137,7 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
                   Text(
                     title,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: VentvoColors.textPrimary,
                       fontSize: 30,
                       fontWeight: FontWeight.w700,
                       height: 1.12,
@@ -155,9 +156,9 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
                   Container(
                     padding: const EdgeInsets.all(13),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1C1A24),
+                      color: VentvoColors.surface,
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: const Color(0xFF393346)),
+                      border: Border.all(color: VentvoColors.border),
                     ),
                     child: const Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -175,7 +176,7 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
                               Text(
                                 'Prototype preview',
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: VentvoColors.textPrimary,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w700,
                                 ),
@@ -201,7 +202,7 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
                       const Text(
                         'Experiences',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: VentvoColors.textPrimary,
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
                         ),
@@ -213,7 +214,7 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
                           vertical: 3,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF292633),
+                          color: VentvoColors.surfaceElevated,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -253,7 +254,7 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.fromLTRB(18, 9, 18, 5),
-                color: const Color(0xFF19181F),
+                color: VentvoColors.surfaceElevated,
                 child: Row(
                   children: [
                     Expanded(
@@ -294,7 +295,7 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
                       enabled: !_isSending,
                       minLines: 1,
                       maxLines: 4,
-                      style: const TextStyle(color: Colors.white, fontSize: 14),
+                      style: const TextStyle(color: VentvoColors.textPrimary, fontSize: 14),
                       decoration: InputDecoration(
                         hintText: _replyingToExperienceId == null
                             ? 'Choose an experience to reply to'
@@ -304,7 +305,7 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
                           fontSize: 13,
                         ),
                         filled: true,
-                        fillColor: const Color(0xFF24222B),
+                        fillColor: VentvoColors.surfaceElevated,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(18),
                           borderSide: BorderSide.none,
@@ -333,12 +334,12 @@ class _CrashOutSpaceScreenState extends ConsumerState<CrashOutSpaceScreen> {
                             ),
                           )
                         : const Icon(Icons.arrow_upward_rounded),
-                    color: const Color(0xFF17161C),
-                    disabledColor: const Color(0xFF777480),
+                    color: VentvoColors.surface,
+                    disabledColor: VentvoColors.textMuted,
                     style: IconButton.styleFrom(
                       backgroundColor: _hasText && _replyingToExperienceId != null
-                          ? const Color(0xFFC7B4F4)
-                          : const Color(0xFF302E37),
+                          ? VentvoColors.primary
+                          : VentvoColors.border,
                     ),
                   ),
                 ],
@@ -418,12 +419,12 @@ class _ExperienceCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.fromLTRB(16, 15, 14, 9),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A191F),
+        color: VentvoColors.surface,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: isMatched
-              ? const Color(0xFF76658F)
-              : const Color(0xFF302E37),
+              ? VentvoColors.primary
+              : VentvoColors.border,
         ),
       ),
       child: Column(
@@ -436,7 +437,7 @@ class _ExperienceCard extends StatelessWidget {
                 height: 30,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF2C2836),
+                  color: VentvoColors.surfaceElevated,
                   borderRadius: BorderRadius.circular(11),
                 ),
                 child: Text(
@@ -500,7 +501,7 @@ class _ExperienceCard extends StatelessWidget {
                           width: 2,
                           height: 34,
                           decoration: BoxDecoration(
-                            color: const Color(0xFF76658F),
+                            color: VentvoColors.primary,
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
@@ -557,7 +558,7 @@ class _ExperienceCard extends StatelessWidget {
                       child: TextButton(
                         onPressed: () => onReplyToReply(reply.id),
                         style: TextButton.styleFrom(
-                          foregroundColor: const Color(0xFFAAA6B5),
+                          foregroundColor: VentvoColors.textSecondary,
                           visualDensity: VisualDensity.compact,
                           padding: const EdgeInsets.symmetric(horizontal: 8),
                           minimumSize: const Size(0, 28),
@@ -579,7 +580,7 @@ class _ExperienceCard extends StatelessWidget {
               icon: const Icon(Icons.reply_rounded, size: 16),
               label: const Text('Reply'),
               style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFFC7B4F4),
+                foregroundColor: VentvoColors.primary,
                 textStyle: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,

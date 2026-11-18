@@ -66,6 +66,17 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     });
   }
 
+  bool _isOwnMoment(List<Vent> vents, String? activeVoiceId) {
+    final normalizedActive = activeVoiceId?.trim();
+    if (normalizedActive == null || normalizedActive.isEmpty) return false;
+    for (final vent in vents) {
+      if (vent.id == widget.space.originatingVentId) {
+        return vent.ownerVoiceId?.trim() == normalizedActive;
+      }
+    }
+    return false;
+  }
+
   Future<void> _leaveEcho() async {
     if (sending) return;
 
@@ -86,7 +97,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     final echo = await echoService.leaveEcho(
       space: widget.space,
       content: text,
-      voiceMark: voice?.mark ?? '◇',
+      voiceMark: voice?.mark ?? '\u25C7',
       authorVoiceId: voice?.voiceId,
       sourceVoiceId: origin?.ownerVoiceId,
     );
@@ -100,6 +111,12 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
         composerOpen = false;
       });
       focusNode.unfocus();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Unable to leave an Echo on this Moment right now.'),
+        ),
+      );
     }
 
     setState(() => sending = false);
@@ -180,7 +197,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                           space: widget.space,
                           echo: echo,
                           content: noteController.text,
-                          voiceMark: voice?.mark ?? '◇',
+                          voiceMark: voice?.mark ?? '\u25C7',
                         );
                         if (context.mounted) Navigator.pop(context, result);
                       },
@@ -230,6 +247,12 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ventsAsync = ref.watch(ventProvider);
+    final activeVoiceId =
+        ref.watch(ventvoVoiceProvider).asData?.value?.voiceId;
+    final vents = ventsAsync.asData?.value ?? const <Vent>[];
+    final isOwnMoment = _isOwnMoment(vents, activeVoiceId);
+
     return Scaffold(
       backgroundColor: VentvoColors.background,
       body: SafeArea(
@@ -237,34 +260,35 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
           children: [
             _topBar(),
             Expanded(
-              child: ref.watch(ventProvider).when(
-                    loading: () => const Center(
-                      child: SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 1.5,
-                          color: VentvoColors.textMuted,
-                        ),
-                      ),
+              child: ventsAsync.when(
+                loading: () => const Center(
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 1.5,
+                      color: VentvoColors.textMuted,
                     ),
-                    error: (_, _) => const Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 32),
-                        child: Text(
-                          'This Space could not be opened.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: VentvoColors.textMuted,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                    ),
-                    data: _content,
                   ),
+                ),
+                error: (_, _) => const Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 32),
+                    child: Text(
+                      'This Space could not be opened.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: VentvoColors.textMuted,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ),
+                data: (loadedVents) => _content(loadedVents, isOwnMoment),
+              ),
             ),
-            if (widget.space.isOpenDiscussion) _echoComposer(),
+            if (widget.space.isOpenDiscussion)
+              isOwnMoment ? _ownMomentFooter() : _echoComposer(),
           ],
         ),
       ),
@@ -306,7 +330,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     );
   }
 
-  Widget _content(List<Vent> allVents) {
+  Widget _content(List<Vent> allVents, bool isOwnMoment) {
     final ids = widget.space.allVentIds.toSet();
     final moments = allVents.where((vent) => ids.contains(vent.id)).toList()
       ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
@@ -329,9 +353,19 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
         _modeHeader(),
         const SizedBox(height: 28),
         _origin(origin),
-        if (widget.space.isOpenDiscussion && echoes.isNotEmpty) ...[
+        if (widget.space.isOpenDiscussion) ...[
           const SizedBox(height: 36),
-          _echoSection(),
+          if (echoes.isNotEmpty)
+            _echoSection()
+          else if (!isOwnMoment)
+            const Text(
+              'No Echoes yet \u2014 leave a ripple of your own experience below.',
+              style: TextStyle(
+                color: VentvoColors.textMuted,
+                fontSize: 12,
+                height: 1.45,
+              ),
+            ),
         ],
         const SizedBox(height: 36),
         SpaceResonanceSection(
@@ -508,7 +542,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                     GestureDetector(
                       onTap: () => _openEchoNoteComposer(echo),
                       child: const Text(
-                        'Add an Echo Note…',
+                        'Add an Echo Note\u2026',
                         style: TextStyle(
                           color: VentvoColors.textMuted,
                           fontSize: 10,
@@ -571,6 +605,35 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
     );
   }
 
+  Widget _ownMomentFooter() {
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+          decoration: BoxDecoration(
+            color: VentvoColors.surface,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: VentvoColors.border.withValues(alpha: 0.45),
+            ),
+          ),
+          child: const Text(
+            'Your Moment \u2014 other Voices can leave Echoes here.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: VentvoColors.textMuted,
+              fontSize: 12,
+              height: 1.4,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _echoComposer() {
     if (!composerOpen) {
       return SafeArea(
@@ -589,7 +652,7 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                   children: [
                     Expanded(
                       child: Text(
-                        'Leave an Echo…',
+                        'Leave an Echo\u2026',
                         style: TextStyle(
                           color: VentvoColors.textMuted,
                           fontSize: 13,
@@ -639,7 +702,8 @@ class _SpaceScreenState extends ConsumerState<SpaceScreen> {
                           height: 1.45,
                         ),
                         decoration: const InputDecoration(
-                          hintText: 'Tell your own experience or perspective…',
+                          hintText:
+                              'Tell your own experience or perspective\u2026',
                           hintStyle: TextStyle(
                             color: VentvoColors.textMuted,
                             fontSize: 12,
